@@ -1,7 +1,10 @@
 package fr.wseduc.wiki.controllers;
 
+import java.util.Map;
 
-import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.vertx.java.core.Vertx;
+import org.vertx.java.core.http.RouteMatcher;
+import org.vertx.java.platform.Container;
 import org.vertx.java.core.http.HttpServerRequest;
 
 import fr.wseduc.rs.ApiDoc;
@@ -10,13 +13,23 @@ import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Post;
 import fr.wseduc.rs.Put;
 import fr.wseduc.security.SecuredAction;
+import fr.wseduc.webutils.http.BaseController;
 
-public class WikiController extends MongoDbControllerHelper {
+public class WikiController extends BaseController {
 
+	private final WikiService wikiService;
+	
 	public WikiController(String collection) {
-		super(collection);
+		wikiService = new WikiService(collection);
 	}
-
+	
+	@Override
+    public void init(Vertx vertx, Container container, RouteMatcher rm, Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions)
+    {
+		super.init(vertx, container, rm, securedActions);
+		this.wikiService.init(vertx, container);
+    }
+	
 	@Get("")
 	@ApiDoc("Get HTML view")
 	@SecuredAction("wiki.view")
@@ -24,36 +37,63 @@ public class WikiController extends MongoDbControllerHelper {
 		renderView(request);
 	}
 	
-	// TODO : définir les securedAction associées au wiki et ajouter les annotations
-	// TODO : ajouter des resourceFilter
-	@Get("/list/:filter")
-	@ApiDoc("List all wikis")
-	public void list(HttpServerRequest request) {
-		super.list(request);
-	}
+	/* TODO : gestion des droits
+	 	- définir les securedAction associées au wiki et ajouter les annotations
+		- ajouter des resourceFilter
+	 */
 	
-	@Get("/:id")
-	@ApiDoc("Get wiki by id")
-	public void get(HttpServerRequest request) {
-		retrieve(request);
+	@Get("/list")
+	@ApiDoc("List wikis")
+	public void listWikis(HttpServerRequest request) {
+		wikiService.listWikis(request);
 	}
 	
 	@Post("")
 	@ApiDoc("Add wiki")
-	public void add(HttpServerRequest request) {
-		create(request);
+	public void addWiki(HttpServerRequest request) {
+		// TODO
 	}
 
-	@Put("/:id")
+	@Put("/:idwiki")
 	@ApiDoc("Update wiki by id")
-	public void update(HttpServerRequest request) {
-		super.update(request);
+	public void updateWiki(HttpServerRequest request) {
+		// TODO
 	}
 	
-	@Delete("/:id")
+	@Delete("/:idwiki")
 	@ApiDoc("Delete wiki by id")
-	public void delete(HttpServerRequest request) {
-		super.delete(request);
+	public void deleteWiki(HttpServerRequest request) {
+		// TODO
 	}
-		
+	
+	
+	@Get("/:idwiki/page")
+	@ApiDoc("Get main page of a wiki")
+	public void getMainPage(HttpServerRequest request) {
+		wikiService.getMainPage(request);
+	}
+	
+	@Get("/:idwiki/page/:idpage")
+	@ApiDoc("Get a specific page of a wiki")
+	public void getPage(HttpServerRequest request) {
+		wikiService.getPage(request);
+	}
+	
+	@Post("/:idwiki/page")
+	@ApiDoc("Add page to wiki")
+	public void addPage(HttpServerRequest request) {
+		// TODO
+	}
+
+	@Put("/:idwiki/page/:idpage")
+	@ApiDoc("Update page by id")
+	public void updatePage(HttpServerRequest request) {
+		// TODO
+	}
+	
+	@Delete("/:idwiki/page/:idpage")
+	@ApiDoc("Delete page by id")
+	public void deletePage(HttpServerRequest request) {
+		// TODO
+	}
 }

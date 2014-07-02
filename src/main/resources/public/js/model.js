@@ -9,8 +9,7 @@ model.build = function() {
 	this.collection(Wiki, {
 		sync : function() {
 			var that = this;
-			// TODO : gestion des droits
-			http().get('/wiki/list/ALL').done(function(data) {
+			http().get('/wiki/list').done(function(data) {
 				that.addRange(data);
 			});
 		}
