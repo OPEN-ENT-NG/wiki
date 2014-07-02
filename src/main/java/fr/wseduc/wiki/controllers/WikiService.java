@@ -1,7 +1,12 @@
 package fr.wseduc.wiki.controllers;
 
+import static org.entcore.common.mongodb.MongoDbResult.validActionResultHandler;
+
+import org.bson.types.ObjectId;
 import org.entcore.common.http.response.DefaultResponseHandler;
 import org.entcore.common.mongodb.MongoDbResult;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.eventbus.EventBus;
@@ -14,7 +19,10 @@ import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
+import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.http.Renders;
+import fr.wseduc.webutils.request.RequestUtils;
 
 public class WikiService {
 
@@ -32,6 +40,7 @@ public class WikiService {
 		this.mongo = MongoDb.getInstance();
 	}
 
+	// TODO : créer des constantes pour les noms des champs
 	// TODO gestion des droits
 
 	public void listWikis(final HttpServerRequest request) {
@@ -92,4 +101,86 @@ public class WikiService {
 				MongoDbResult.validResultHandler(handler));
 	}
 
+	public void createWiki(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							// Get user info
+							JsonObject now = MongoDb.now();
+							JsonObject owner = new JsonObject().putString(
+									"userId", user.getUserId()).putString(
+									"displayName", user.getUsername());
+
+							// Create an empty main page, entitled "Accueil"
+							JsonObject mainPage = new JsonObject();
+							mainPage.putString("_id", new ObjectId().toString())
+									.putBoolean("isMain", true)
+									.putString("title", "Accueil")
+									.putString("content", "");
+							JsonArray pages = new JsonArray();
+							pages.addObject(mainPage);
+
+							JsonObject newWiki = new JsonObject();
+							// TODO : check data object
+							newWiki.putString("title", data.getString("title"))
+									.putObject("owner", owner)
+									.putObject("created", now)
+									.putObject("modified", now)
+									.putArray("pages", pages);
+
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+							mongo.save(collection, data,
+									validActionResultHandler(handler));
+						}
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
+	}
+
+	public void createPage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							String idWiki = request.params().get("idwiki");
+							QueryBuilder query = QueryBuilder.start("_id").is(
+									idWiki);
+
+							// TODO : check data object
+							JsonObject newPage = new JsonObject();
+							newPage.putString("_id", new ObjectId().toString())
+									.putString("title", data.getString("title"))
+									.putString("content",
+											data.getString("content"));
+
+							MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+							modifier.push("pages", newPage);
+
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+
+							mongo.update(collection, MongoQueryBuilder
+									.build(query), modifier.build(),
+									MongoDbResult
+											.validActionResultHandler(handler));
+						}
+
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
+	}
 }

@@ -3,9 +3,9 @@ package fr.wseduc.wiki.controllers;
 import java.util.Map;
 
 import org.vertx.java.core.Vertx;
+import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.java.platform.Container;
-import org.vertx.java.core.http.HttpServerRequest;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -49,9 +49,9 @@ public class WikiController extends BaseController {
 	}
 	
 	@Post("")
-	@ApiDoc("Add wiki")
-	public void addWiki(HttpServerRequest request) {
-		// TODO
+	@ApiDoc("Create wiki")
+	public void createWiki(HttpServerRequest request) {
+		wikiService.createWiki(request);
 	}
 
 	@Put("/:idwiki")
@@ -81,8 +81,8 @@ public class WikiController extends BaseController {
 	
 	@Post("/:idwiki/page")
 	@ApiDoc("Add page to wiki")
-	public void addPage(HttpServerRequest request) {
-		// TODO
+	public void createPage(HttpServerRequest request) {
+		wikiService.createPage(request);
 	}
 
 	@Put("/:idwiki/page/:idpage")
