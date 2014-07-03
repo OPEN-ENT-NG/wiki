@@ -2,9 +2,15 @@ package fr.wseduc.wiki.controllers;
 
 import java.util.Map;
 
+import org.entcore.common.http.response.DefaultResponseHandler;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
+import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
+import org.vertx.java.core.json.JsonArray;
+import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.platform.Container;
 
 import fr.wseduc.rs.ApiDoc;
@@ -13,14 +19,19 @@ import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Post;
 import fr.wseduc.rs.Put;
 import fr.wseduc.security.SecuredAction;
+import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.BaseController;
+import fr.wseduc.webutils.http.Renders;
+import fr.wseduc.webutils.request.RequestUtils;
+import fr.wseduc.wiki.service.WikiService;
+import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 
 public class WikiController extends BaseController {
 
 	private final WikiService wikiService;
 	
 	public WikiController(String collection) {
-		wikiService = new WikiService(collection);
+		wikiService = new WikiServiceMongoImpl(collection);
 	}
 	
 	@Override
@@ -45,13 +56,40 @@ public class WikiController extends BaseController {
 	@Get("/list")
 	@ApiDoc("List wikis")
 	public void listWikis(HttpServerRequest request) {
-		wikiService.listWikis(request);
+		Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
+				.arrayResponseHandler(request);
+		
+		wikiService.listWikis(handler);
 	}
 	
 	@Post("")
 	@ApiDoc("Create wiki")
-	public void createWiki(HttpServerRequest request) {
-		wikiService.createWiki(request);
+	public void createWiki(final HttpServerRequest request) {
+		
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+							
+							String wikiTitle = data.getString("title");
+							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
+								Renders.badRequest(request);
+								return;
+							}
+							
+							wikiService.createWiki(user, wikiTitle, handler);
+						}
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Put("/:idwiki")
@@ -70,19 +108,55 @@ public class WikiController extends BaseController {
 	@Get("/:idwiki/page")
 	@ApiDoc("Get main page of a wiki")
 	public void getMainPage(HttpServerRequest request) {
-		wikiService.getMainPage(request);
+		String idwiki = request.params().get("idwiki");
+		Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+				.defaultResponseHandler(request);
+		
+		wikiService.getMainPage(idwiki, handler);
 	}
 	
 	@Get("/:idwiki/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
 	public void getPage(HttpServerRequest request) {
-		wikiService.getPage(request);
+		String idWiki = request.params().get("idwiki");
+		String idPage = request.params().get("idpage");
+		
+		Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+				.defaultResponseHandler(request);
+		
+		wikiService.getPage(idWiki, idPage, handler);
 	}
 	
 	@Post("/:idwiki/page")
 	@ApiDoc("Add page to wiki")
-	public void createPage(HttpServerRequest request) {
-		wikiService.createPage(request);
+	public void createPage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+							
+							String idWiki = request.params().get("idwiki");
+							
+							String pageTitle = data.getString("title");
+							String pageContent = data.getString("content");
+							if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null || pageContent.trim().isEmpty()) {
+								Renders.badRequest(request);
+								return;
+							}
+							
+							wikiService.createPage(user, idWiki, pageTitle, pageContent, handler);					
+						}
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Put("/:idwiki/page/:idpage")
