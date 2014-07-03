@@ -1,17 +1,12 @@
 package fr.wseduc.wiki.controllers;
 
-import java.util.Map;
-
 import org.entcore.common.http.response.DefaultResponseHandler;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Container;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -33,14 +28,7 @@ public class WikiController extends BaseController {
 	public WikiController(String collection) {
 		wikiService = new WikiServiceMongoImpl(collection);
 	}
-	
-	@Override
-    public void init(Vertx vertx, Container container, RouteMatcher rm, Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions)
-    {
-		super.init(vertx, container, rm, securedActions);
-		this.wikiService.init(vertx, container);
-    }
-	
+		
 	@Get("")
 	@ApiDoc("Get HTML view")
 	@SecuredAction("wiki.view")

@@ -6,11 +6,8 @@ import org.bson.types.ObjectId;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.user.UserInfos;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.eventbus.EventBus;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Container;
 
 import com.mongodb.QueryBuilder;
 
@@ -22,16 +19,10 @@ import fr.wseduc.webutils.Either;
 public class WikiServiceMongoImpl implements WikiService {
 
 	protected final String collection;
-
-	protected EventBus eb;
 	protected MongoDb mongo;
 
 	public WikiServiceMongoImpl(final String collection) {
 		this.collection = collection;
-	}
-
-	public void init(Vertx vertx, Container container) {
-		this.eb = vertx.eventBus();
 		this.mongo = MongoDb.getInstance();
 	}
 
