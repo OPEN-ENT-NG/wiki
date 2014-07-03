@@ -8,10 +8,13 @@ import org.vertx.java.core.json.JsonObject;
 import fr.wseduc.webutils.Either;
 
 public interface WikiService {
-	
+
 	public void listWikis(Handler<Either<String, JsonArray>> handler);
-	
-	public void createWiki(final UserInfos user, String wikiTitle,
+
+	public void createWiki(UserInfos user, String wikiTitle,
+			Handler<Either<String, JsonObject>> handler);
+
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void getMainPage(String idwiki,
@@ -22,5 +25,9 @@ public interface WikiService {
 
 	public void createPage(UserInfos user, String idWiki, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler);
+
+	public void updatePage(UserInfos user, String idWiki, String idPage,
+			String pageTitle, String pageContent,
+			Handler<Either<String, JsonObject>> handler);
 
 }

@@ -82,8 +82,33 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki")
 	@ApiDoc("Update wiki by id")
-	public void updateWiki(HttpServerRequest request) {
-		// TODO
+	public void updateWiki(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+							
+							String idWiki = request.params().get("idwiki");
+							
+							String wikiTitle = data.getString("title");
+							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
+								Renders.badRequest(request);
+								return;
+							}
+							
+							wikiService.updateWiki(user, idWiki, wikiTitle, handler);
+						}
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 	
 	@Delete("/:idwiki")
@@ -149,8 +174,35 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki/page/:idpage")
 	@ApiDoc("Update page by id")
-	public void updatePage(HttpServerRequest request) {
-		// TODO
+	public void updatePage(final HttpServerRequest request) {		
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+									.defaultResponseHandler(request);
+							
+							String idWiki = request.params().get("idwiki");
+							String idPage = request.params().get("idpage");
+							
+							String pageTitle = data.getString("title");
+							String pageContent = data.getString("content");
+							if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null || pageContent.trim().isEmpty()) {
+								Renders.badRequest(request);
+								return;
+							}
+							
+							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, handler);					
+						}
+					});
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 	
 	@Delete("/:idwiki/page/:idpage")

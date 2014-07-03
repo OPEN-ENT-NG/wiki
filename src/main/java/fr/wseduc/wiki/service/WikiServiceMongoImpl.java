@@ -9,6 +9,7 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
@@ -29,6 +30,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	// TODO : créer des constantes pour les noms des champs
 	// TODO gestion des droits
 
+	@Override
 	public void listWikis(Handler<Either<String, JsonArray>> handler) {
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("owner", 1)
@@ -40,6 +42,7 @@ public class WikiServiceMongoImpl implements WikiService {
 				sort, projection, MongoDbResult.validResultsHandler(handler));
 	}
 
+	@Override
 	public void getMainPage(String idwiki,
 			Handler<Either<String, JsonObject>> handler) {
 
@@ -59,6 +62,7 @@ public class WikiServiceMongoImpl implements WikiService {
 				MongoDbResult.validResultHandler(handler));
 	}
 
+	@Override
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
 
@@ -78,7 +82,8 @@ public class WikiServiceMongoImpl implements WikiService {
 				MongoDbResult.validResultHandler(handler));
 	}
 
-	public void createWiki(final UserInfos user, String wikiTitle,
+	@Override
+	public void createWiki(UserInfos user, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler) {
 		JsonObject now = MongoDb.now();
 		JsonObject owner = new JsonObject().putString("userId",
@@ -101,6 +106,22 @@ public class WikiServiceMongoImpl implements WikiService {
 		mongo.save(collection, newWiki, validActionResultHandler(handler));
 	}
 
+	@Override
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
+			Handler<Either<String, JsonObject>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("title", wikiTitle);
+		modifier.set("modified", MongoDb.now());
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
 	public void createPage(UserInfos user, String idWiki, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler) {
 
@@ -118,4 +139,25 @@ public class WikiServiceMongoImpl implements WikiService {
 				modifier.build(),
 				MongoDbResult.validActionResultHandler(handler));
 	}
+
+	@Override
+	public void updatePage(UserInfos user, String idWiki, String idPage,
+			String pageTitle, String pageContent,
+			Handler<Either<String, JsonObject>> handler) {
+
+		// Query
+		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages").elemMatch(idPageDBO);
+
+		// Update
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("pages.$.title", pageTitle)
+				.set("pages.$.content", pageContent)
+				.set("modified", MongoDb.now());
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
 }
