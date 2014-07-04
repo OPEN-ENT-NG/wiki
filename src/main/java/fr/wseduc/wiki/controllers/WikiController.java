@@ -43,11 +43,20 @@ public class WikiController extends BaseController {
 
 	@Get("/list")
 	@ApiDoc("List wikis")
-	public void listWikis(HttpServerRequest request) {
-		Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
-				.arrayResponseHandler(request);
+	public void listWikis(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
+							.arrayResponseHandler(request);
 
-		wikiService.listWikis(handler);
+					wikiService.listWikis(handler);
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Post("")
@@ -133,24 +142,42 @@ public class WikiController extends BaseController {
 
 	@Get("/:idwiki/page")
 	@ApiDoc("Get main page of a wiki")
-	public void getMainPage(HttpServerRequest request) {
-		String idwiki = request.params().get("idwiki");
-		Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-				.defaultResponseHandler(request);
+	public void getMainPage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					String idwiki = request.params().get("idwiki");
+					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+							.defaultResponseHandler(request);
 
-		wikiService.getMainPage(idwiki, handler);
+					wikiService.getMainPage(idwiki, handler);
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Get("/:idwiki/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
-	public void getPage(HttpServerRequest request) {
-		String idWiki = request.params().get("idwiki");
-		String idPage = request.params().get("idpage");
+	public void getPage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					String idWiki = request.params().get("idwiki");
+					String idPage = request.params().get("idpage");
 
-		Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-				.defaultResponseHandler(request);
+					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+							.defaultResponseHandler(request);
 
-		wikiService.getPage(idWiki, idPage, handler);
+					wikiService.getPage(idWiki, idPage, handler);
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 
 	@Post("/:idwiki/page")
