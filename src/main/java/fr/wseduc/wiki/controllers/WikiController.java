@@ -13,6 +13,7 @@ import fr.wseduc.rs.Delete;
 import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Post;
 import fr.wseduc.rs.Put;
+import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.BaseController;
@@ -36,13 +37,9 @@ public class WikiController extends BaseController {
 		renderView(request);
 	}
 
-	/*
-	 * TODO : gestion des droits : définir les securedAction associées au wiki
-	 * et ajouter les annotations ; ajouter des resourceFilter
-	 */
-
 	@Get("/list")
 	@ApiDoc("List wikis")
+	@SecuredAction("wiki.list")
 	public void listWikis(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -61,6 +58,7 @@ public class WikiController extends BaseController {
 
 	@Post("")
 	@ApiDoc("Create wiki")
+	@SecuredAction("wiki.create")
 	public void createWiki(final HttpServerRequest request) {
 
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
@@ -91,6 +89,7 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki")
 	@ApiDoc("Update wiki by id")
+	@SecuredAction(value = "wiki.update", type = ActionType.RESOURCE)
 	public void updateWiki(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -123,6 +122,7 @@ public class WikiController extends BaseController {
 
 	@Delete("/:idwiki")
 	@ApiDoc("Delete wiki by id")
+	@SecuredAction(value = "wiki.delete", type = ActionType.RESOURCE)
 	public void deleteWiki(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -142,6 +142,7 @@ public class WikiController extends BaseController {
 
 	@Get("/:idwiki/page")
 	@ApiDoc("Get main page of a wiki")
+	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
 	public void getMainPage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -161,6 +162,7 @@ public class WikiController extends BaseController {
 
 	@Get("/:idwiki/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
+	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
 	public void getPage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -182,6 +184,7 @@ public class WikiController extends BaseController {
 
 	@Post("/:idwiki/page")
 	@ApiDoc("Add page to wiki")
+	@SecuredAction("wiki.page.create")
 	public void createPage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -217,6 +220,7 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki/page/:idpage")
 	@ApiDoc("Update page by idwiki and idpage")
+	@SecuredAction(value = "wiki.page.update", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -253,6 +257,7 @@ public class WikiController extends BaseController {
 
 	@Delete("/:idwiki/page/:idpage")
 	@ApiDoc("Delete page by idwiki and idpage")
+	@SecuredAction(value = "wiki.page.delete", type = ActionType.RESOURCE)
 	public void deletePage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override

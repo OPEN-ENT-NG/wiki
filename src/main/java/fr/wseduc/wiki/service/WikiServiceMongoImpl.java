@@ -28,7 +28,6 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	// TODO : créer des constantes pour les noms des champs
-	// TODO gestion des droits
 
 	@Override
 	public void listWikis(Handler<Either<String, JsonArray>> handler) {
