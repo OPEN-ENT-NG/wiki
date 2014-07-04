@@ -55,6 +55,27 @@ public class WikiController extends BaseController {
 			}
 		});
 	}
+	
+	@Get("/list/:idwiki")
+	@ApiDoc("List pages of a given wiki")
+	@SecuredAction("wiki.page.list")
+	public void listPages(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
+							.arrayResponseHandler(request);
+
+					String idWiki = request.params().get("idwiki");
+					
+					wikiService.listPages(user, idWiki, handler);
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
+	}
 
 	@Post("")
 	@ApiDoc("Create wiki")

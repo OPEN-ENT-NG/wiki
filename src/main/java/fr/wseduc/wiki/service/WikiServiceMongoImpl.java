@@ -42,6 +42,22 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
+	public void listPages(UserInfos user, String idWiki,
+			Handler<Either<String, JsonArray>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+
+		JsonObject projection = new JsonObject();
+		projection.putNumber("title", 1).putNumber("pages._id", 1)
+				.putNumber("pages.title", 1);
+
+		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
+
+		mongo.find(collection, MongoQueryBuilder.build(query), sort,
+				projection, MongoDbResult.validResultsHandler(handler));
+	}
+
+	@Override
 	public void createWiki(UserInfos user, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler) {
 		JsonObject now = MongoDb.now();
