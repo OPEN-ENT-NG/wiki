@@ -43,6 +43,54 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
+	public void createWiki(UserInfos user, String wikiTitle,
+			Handler<Either<String, JsonObject>> handler) {
+		JsonObject now = MongoDb.now();
+		JsonObject owner = new JsonObject().putString("userId",
+				user.getUserId()).putString("displayName", user.getUsername());
+
+		// Create an empty main page, entitled "Accueil"
+		JsonObject mainPage = new JsonObject();
+		mainPage.putString("_id", new ObjectId().toString())
+				.putBoolean("isMain", true).putString("title", "Accueil")
+				.putString("content", "");
+		JsonArray pages = new JsonArray();
+		pages.addObject(mainPage);
+
+		JsonObject newWiki = new JsonObject();
+
+		newWiki.putString("title", wikiTitle).putObject("owner", owner)
+				.putObject("created", now).putObject("modified", now)
+				.putArray("pages", pages);
+
+		mongo.save(collection, newWiki, validActionResultHandler(handler));
+	}
+
+	@Override
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
+			Handler<Either<String, JsonObject>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("title", wikiTitle);
+		modifier.set("modified", MongoDb.now());
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
+	public void deleteWiki(String idWiki,
+			Handler<Either<String, JsonObject>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		mongo.delete(collection, MongoQueryBuilder.build(query),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
 	public void getMainPage(String idwiki,
 			Handler<Either<String, JsonObject>> handler) {
 
@@ -80,45 +128,6 @@ public class WikiServiceMongoImpl implements WikiService {
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));
-	}
-
-	@Override
-	public void createWiki(UserInfos user, String wikiTitle,
-			Handler<Either<String, JsonObject>> handler) {
-		JsonObject now = MongoDb.now();
-		JsonObject owner = new JsonObject().putString("userId",
-				user.getUserId()).putString("displayName", user.getUsername());
-
-		// Create an empty main page, entitled "Accueil"
-		JsonObject mainPage = new JsonObject();
-		mainPage.putString("_id", new ObjectId().toString())
-				.putBoolean("isMain", true).putString("title", "Accueil")
-				.putString("content", "");
-		JsonArray pages = new JsonArray();
-		pages.addObject(mainPage);
-
-		JsonObject newWiki = new JsonObject();
-
-		newWiki.putString("title", wikiTitle).putObject("owner", owner)
-				.putObject("created", now).putObject("modified", now)
-				.putArray("pages", pages);
-
-		mongo.save(collection, newWiki, validActionResultHandler(handler));
-	}
-
-	@Override
-	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
-			Handler<Either<String, JsonObject>> handler) {
-
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
-
-		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-		modifier.set("title", wikiTitle);
-		modifier.set("modified", MongoDb.now());
-
-		mongo.update(collection, MongoQueryBuilder.build(query),
-				modifier.build(),
-				MongoDbResult.validActionResultHandler(handler));
 	}
 
 	@Override
@@ -162,11 +171,22 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void deleteWiki(String idWiki,
+	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
 
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
-		mongo.delete(collection, MongoQueryBuilder.build(query),
+		// Query
+		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
+				.elemMatch(idPageDBO);
+
+		// Update
+		JsonObject idPageJO = new JsonObject();
+		idPageJO.putString("_id", idPage);
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.pull("pages", idPageJO);
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(),
 				MongoDbResult.validActionResultHandler(handler));
 	}
 

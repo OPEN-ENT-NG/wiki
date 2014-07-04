@@ -189,7 +189,7 @@ public class WikiController extends BaseController {
 	}
 
 	@Put("/:idwiki/page/:idpage")
-	@ApiDoc("Update page by id")
+	@ApiDoc("Update page by idwiki and idpage")
 	public void updatePage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
@@ -225,8 +225,23 @@ public class WikiController extends BaseController {
 	}
 
 	@Delete("/:idwiki/page/:idpage")
-	@ApiDoc("Delete page by id")
-	public void deletePage(HttpServerRequest request) {
-		// TODO
+	@ApiDoc("Delete page by idwiki and idpage")
+	public void deletePage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
+							.defaultResponseHandler(request);
+
+					String idWiki = request.params().get("idwiki");
+					String idPage = request.params().get("idpage");
+
+					wikiService.deletePage(idWiki, idPage, handler);
+				} else {
+					Renders.unauthorized(request);
+				}
+			}
+		});
 	}
 }
