@@ -147,7 +147,8 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages").elemMatch(idPageDBO);
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
+				.elemMatch(idPageDBO);
 
 		// Update
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
@@ -157,6 +158,15 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
+	public void deleteWiki(String idWiki,
+			Handler<Either<String, JsonObject>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		mongo.delete(collection, MongoQueryBuilder.build(query),
 				MongoDbResult.validActionResultHandler(handler));
 	}
 
