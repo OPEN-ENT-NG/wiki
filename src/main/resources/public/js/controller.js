@@ -11,27 +11,41 @@ function WikiController($scope, template){
 	$scope.saveContent = function(){
 		var wiki = new Wiki();
 		wiki.title = $scope.titleOfNewWiki;
-		wiki.content = $scope.contentOfNewWiki;
-		model.wikis.push(wiki);
+		
 		var data = {
-				title : wiki.title,
-				content : wiki.content
+				title : wiki.title
 		};
-		http().postJson('/wiki', data);
+		http().postJson('/wiki', data).done(function(content){
+			model.wikis.push(wiki);
+			// TODO : mettre à jour model.wikis avec les donnees creees en base
+		});
 
 		$scope.titleOfNewWiki = "";
-		$scope.contentOfNewWiki = "";
 	};
 
 	$scope.openSelectedWiki = function(selectedWiki){
-		console.log("test dmt : selectedWiki");
 		$scope.selectedWiki = selectedWiki;
-		$scope.divToShow = 'selected_wiki_content';
-		template.open('main', 'view-wiki-page');
+		
+		http().get('/wiki/' + selectedWiki._id + '/page').done(function(wiki){
+			$scope.selectedWiki.pages = wiki.pages;
+			$scope.divToShow = 'selected_wiki_content';
+			$scope.template.open('main', 'view-wiki-page');
+		});
 	}
 	
 	$scope.displayWikiList = function(){
 		$scope.divToShow = 'wiki_list';
+	}
+	
+	$scope.listPages = function(){
+		http().get('/wiki/list/' + $scope.selectedWiki._id).done(function(wikiArray){
+			$scope.selectedWiki.pages = wikiArray[0].pages;
+			$scope.divToShow = 'selected_wiki_pageslist';
+		});
+	}
+	
+	$scope.openSelectedPage = function(){
+		// TODO
 	}
 	
 	$scope.wikis = model.wikis;

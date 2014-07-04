@@ -20,7 +20,6 @@
 			<h1>Nouveau wiki</h1>
 			<input type="text" ng-model="titleOfNewWiki" />
 			<button ng-click="saveContent()">Sauvegarder</button>
-			<rich-text-editor ng-model="contentOfNewWiki" />
 		</div>
 		
 		<div ng-show="divToShow == 'wiki_list'">
@@ -34,6 +33,15 @@
 		<!-- ng-show doesn't work with ng-include in Angular 1.2.0rc2 :  https://github.com/angular/angular.js/issues/3981 -->
 		<div ng-show="divToShow == 'selected_wiki_content'">
 			<div class="row" ng-include="template.containers.main" ng-model="selectedWiki"></div>
+		</div>
+		
+		<div ng-show="divToShow == 'selected_wiki_pageslist'">
+			<a ng-click="displayWikiList()">Afficher la liste des wikis</a>
+			<h1>[[selectedWiki.title]]</h1>
+			<h2>Liste des pages</h2>
+			<div ng-repeat="page in selectedWiki.pages">
+				<a ng-click="openSelectedPage()">[[page.title]]</a>
+			</div>
 		</div>
 	</section>
 
