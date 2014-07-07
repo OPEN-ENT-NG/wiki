@@ -43,20 +43,22 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.displayNewWikiForm = function(){
-		create-wiki("main", "create-wiki");
+		template.open("main", "create-wiki");
 	};
 	
+	$scope.wiki = new Wiki();
+	
 	$scope.createNewWiki = function(){
-		var wiki = new Wiki();
-		wiki.title = $scope.titleOfNewWiki;
-		
 		var data = {
-				title : wiki.title
+				title : $scope.wiki.title
 		};
-		http().postJson('/wiki', data).done(function(wiki){
-			$scope.titleOfNewWiki = "";
+		http().postJson('/wiki', data).done(function(createdWiki){
+			$scope.wiki = new Wiki();
 
-			// TODO : open new wiki. Utiliser "wiki._id"
+			var aWiki = new Wiki();
+			aWiki.title = data.title;
+			aWiki._id = createdWiki._id;
+			$scope.openSelectedWiki(aWiki);
 		});
 		
 	};
