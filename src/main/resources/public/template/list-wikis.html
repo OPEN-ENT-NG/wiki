@@ -1,0 +1,12 @@
+<button ng-click="displayNewWikiForm()">Créer</button>
+<h1>Liste des wikis</h1>
+<div class="row" ng-repeat="wiki in wikis.all">
+	<div class="three cell">
+		<a ng-click="openSelectedWiki(wiki)">[[wiki.title]]</a>
+	</div>
+	<div class="three cell">[[ wiki.owner.displayName ]]</div>
+	<div class="three cell">[[ formatDate(wiki.modified) ]]</div>
+	<div class="three cell">
+		<button ng-click="deleteWiki(wiki)">Supprimer le wiki</button>
+	</div>
+</div>

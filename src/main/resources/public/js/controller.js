@@ -1,52 +1,110 @@
-function WikiController($scope, template){
+routes.define(function($routeProvider){
+    $routeProvider
+      .when('/view/:wikiId/:pageId', {
+        action: 'viewPage'
+      })
+      .when('/wiki-list', {
+        action: 'viewWikiList'
+      })
+      .otherwise({
+        redirectTo: '/wiki-list'
+      })
+});
+
+
+function WikiController($scope, template, model, route){
 
 	$scope.template = template;
-	$scope.divToShow = 'wiki_list';
 	
+	// Definition des actions
+	route({
+	    viewPage: function(params){
+	    	$scope.selectedWiki = new Wiki({ _id: params.wikiId});
+	    	$scope.selectedWiki.getWikiInfo();
+	    	$scope.selectedWiki.findPage(params.pageId);
+	    	template.open('main', 'view-wiki-page');
+	    },
+	    viewWikiList: function(params){
+	      template.open('main', 'list-wikis');
+	    }
+	});
+	
+    $scope.formatDate = function(date){
+        var momentDate = moment(date);
+        return momentDate.lang('fr').format('dddd DD MMM YYYY, hh:mm:ss');
+    };
+	
+	// fix temporaire en attendant une nouvelle version d'ent-core
+	template.open('main', 'list-wikis');
+		
 	$scope.deleteWiki = function(wikiToRemove){
 		model.wikis.remove(wikiToRemove);
-		http().delete('/wiki/' + wikiToRemove._id);
+		wikiToRemove.deleteWiki();
 	};
 	
-	$scope.saveContent = function(){
+	$scope.displayNewWikiForm = function(){
+		create-wiki("main", "create-wiki");
+	};
+	
+	$scope.createNewWiki = function(){
 		var wiki = new Wiki();
 		wiki.title = $scope.titleOfNewWiki;
 		
 		var data = {
 				title : wiki.title
 		};
-		http().postJson('/wiki', data).done(function(content){
-			model.wikis.push(wiki);
-			// TODO : mettre à jour model.wikis avec les donnees creees en base
-		});
+		http().postJson('/wiki', data).done(function(wiki){
+			$scope.titleOfNewWiki = "";
 
-		$scope.titleOfNewWiki = "";
+			// TODO : open new wiki. Utiliser "wiki._id"
+		});
+		
 	};
 
 	$scope.openSelectedWiki = function(selectedWiki){
 		$scope.selectedWiki = selectedWiki;
-		
-		http().get('/wiki/' + selectedWiki._id + '/page').done(function(wiki){
-			$scope.selectedWiki.pages = wiki.pages;
-			$scope.divToShow = 'selected_wiki_content';
-			$scope.template.open('main', 'view-wiki-page');
-		});
+		selectedWiki.getMainPage();
+		template.open('main', 'view-wiki-page');
 	}
 	
 	$scope.displayWikiList = function(){
-		$scope.divToShow = 'wiki_list';
+		template.open('main', 'list-wikis');
 	}
 	
-	$scope.listPages = function(){
-		http().get('/wiki/list/' + $scope.selectedWiki._id).done(function(wikiArray){
-			$scope.selectedWiki.pages = wikiArray[0].pages;
-			$scope.divToShow = 'selected_wiki_pageslist';
-		});
+	$scope.listPages = function(selectedWiki){
+		$scope.selectedWiki = selectedWiki;
+		$scope.selectedWiki = new Wiki({ _id: selectedWiki._id });
+		$scope.selectedWiki.getWikiInfo();				
+		$scope.selectedWiki.pages.sync();
+		
+		template.open('main', 'list-wiki-pages');
 	}
 	
-	$scope.openSelectedPage = function(){
-		// TODO
+	$scope.openSelectedPage = function(wikiId, pageId){
+    	$scope.selectedWiki = new Wiki({ _id: wikiId});
+    	$scope.selectedWiki.getWikiInfo();
+    	$scope.selectedWiki.findPage(pageId);
+    	template.open('main', 'view-wiki-page');
 	}
+	
+	$scope.newPage = function(){
+		template.open('main', 'create-page');
+	}
+
+	$scope.page = new Page();
+	
+	$scope.savePage = function(){
+		var data = {
+				title : $scope.page.title,
+				content : $scope.page.content
+		};
+		$scope.selectedWiki.createPage(data);
+		
+		// TODO : display created page
+		
+		$scope.page = new Page();
+		
+	};
 	
 	$scope.wikis = model.wikis;
 	$scope.titleOfNewWiki = "Titre";

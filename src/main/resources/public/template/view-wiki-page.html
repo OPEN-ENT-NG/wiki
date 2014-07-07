@@ -1,5 +1,6 @@
 <a ng-click="displayWikiList()">Afficher la liste des wikis</a>
 <h1>[[selectedWiki.title]]</h1>
-<a ng-click="listPages()">Afficher la liste des pages</a>
-<h2>[[selectedWiki.pages[0].title]]</h2>
-<div ng-bind-html="selectedWiki.pages[0].content"/>
+<a ng-click="listPages(selectedWiki)">Afficher la liste des pages</a>
+<h2>[[selectedWiki.page.title]]</h2>
+<div bind-html="selectedWiki.page.content"/>
+<button ng-click="newPage()">Nouvelle Page</button>
