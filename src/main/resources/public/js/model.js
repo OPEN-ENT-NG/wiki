@@ -45,8 +45,10 @@ Wiki.prototype.createPage = function(data, callback) {
 	});
 }
 
-Wiki.prototype.updatePage = function(data, pageId) {
-	http().putJson('/wiki/' + this._id + '/page/' + pageId, data);
+Wiki.prototype.updatePage = function(data, pageId, callback) {
+	http().putJson('/wiki/' + this._id + '/page/' + pageId, data).done(function(result){
+		callback(result);
+	});
 }
 
 Wiki.prototype.deletePage = function(wikiId, pageId, callback) {

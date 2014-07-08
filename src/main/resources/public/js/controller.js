@@ -6,6 +6,9 @@ routes.define(function($routeProvider){
       .when('/wiki-list', {
         action: 'viewWikiList'
       })
+      .when('/edit/:wikiId/:pageId', {
+        action: 'editPage'
+      })
       .otherwise({
         redirectTo: '/wiki-list'
       })
@@ -27,7 +30,10 @@ function WikiController($scope, template, model, route){
 	    },
 	    viewWikiList: function(params){
 	      template.open('main', 'list-wikis');
-	    }
+	    },
+	    editPage: function(params){
+			template.open('main', 'edit-page');
+		}
 	});
 	
     $scope.formatDate = function(date){
@@ -89,10 +95,10 @@ function WikiController($scope, template, model, route){
     	$scope.selectedWiki = new Wiki({ _id: wikiId});
     	$scope.selectedWiki.getWikiInfo();
     	$scope.selectedWiki.findPage(pageId, function(result){
-            template.open('main', 'view-wiki-page');
+            window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
         });
 	}
-	
+		
 	$scope.newPage = function(){
 		template.open('main', 'create-page');
 	}
@@ -105,8 +111,7 @@ function WikiController($scope, template, model, route){
 				content : $scope.page.content
 		};
 		$scope.selectedWiki.createPage(data, function(result){
-			// TODO : à revoir. Afficher la page créée
-            $scope.template.open('main', 'view-wiki-page');
+			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + result._id;
         });
 	};
 	
@@ -114,7 +119,7 @@ function WikiController($scope, template, model, route){
 		$scope.selectedWiki.page.title = selectedWiki.page.title;
 		$scope.selectedWiki.page.content = selectedWiki.page.content;
 		$scope.selectedWiki.page._id = selectedWiki.page._id;
-		template.open('main', 'edit-page');
+		window.location.href = '/wiki#/edit/' + $scope.selectedWiki._id + '/' + selectedWiki.page._id;
 	}
 	
 	$scope.updatePage = function(){
@@ -122,11 +127,9 @@ function WikiController($scope, template, model, route){
 				title : $scope.selectedWiki.page.title,
 				content : $scope.selectedWiki.page.content
 		};
-		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.page._id);
-		
-		// TODO : display updated page
-		
-		$scope.selectedWiki.page = new Page();		
+		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.page._id, function(result){
+			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
+        });
 	};
 	
 	$scope.deletePage = function(){

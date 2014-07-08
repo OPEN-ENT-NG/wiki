@@ -146,14 +146,18 @@ public class WikiServiceMongoImpl implements WikiService {
 				MongoDbResult.validResultHandler(handler));
 	}
 
+	public String newObjectId() {
+		return new ObjectId().toString();
+	}
+
 	@Override
-	public void createPage(String idWiki, String pageTitle,
+	public void createPage(String idWiki, String newPageId, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		JsonObject newPage = new JsonObject();
-		newPage.putString("_id", new ObjectId().toString())
+		newPage.putString("_id", newPageId)
 				.putString("title", pageTitle)
 				.putString("content", pageContent);
 
@@ -166,9 +170,8 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void updatePage(String idWiki, String idPage,
-			String pageTitle, String pageContent,
-			Handler<Either<String, JsonObject>> handler) {
+	public void updatePage(String idWiki, String idPage, String pageTitle,
+			String pageContent, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);

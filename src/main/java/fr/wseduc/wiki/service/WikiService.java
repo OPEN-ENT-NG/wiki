@@ -29,8 +29,8 @@ public interface WikiService {
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void createPage(String idWiki, String pageTitle, String pageContent,
-			Handler<Either<String, JsonObject>> handler);
+	public void createPage(String idWiki, String newPageId, String pageTitle,
+			String pageContent, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(String idWiki, String idPage, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler);

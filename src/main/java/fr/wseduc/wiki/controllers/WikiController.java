@@ -146,7 +146,24 @@ public class WikiController extends BaseController {
 		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
 			public void handle(JsonObject data) {
-				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+				final String newPageId = ((WikiServiceMongoImpl) wikiService)
+						.newObjectId();
+
+				// Return attribute _id of created page in case of success
+				Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
+					@Override
+					public void handle(Either<String, JsonObject> event) {
+						if (event.isRight()) {
+							JsonObject result = new JsonObject();
+							result.putString("_id", newPageId);
+							renderJson(request, result);
+						} else {
+							JsonObject error = new JsonObject().putString(
+									"error", event.left().getValue());
+							renderJson(request, error, 400);
+						}
+					}
+				};
 
 				String idWiki = request.params().get("idwiki");
 
@@ -158,7 +175,8 @@ public class WikiController extends BaseController {
 					return;
 				}
 
-				wikiService.createPage(idWiki, pageTitle, pageContent, handler);
+				wikiService.createPage(idWiki, newPageId, pageTitle,
+						pageContent, handler);
 			}
 		});
 
