@@ -49,7 +49,7 @@ public class WikiController extends BaseController {
 
 	@Get("/list/:idwiki")
 	@ApiDoc("List pages of a given wiki")
-	@SecuredAction("wiki.page.list")
+	@SecuredAction(value ="wiki.page.list", type = ActionType.RESOURCE)
 	public void listPages(final HttpServerRequest request) {
 		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
@@ -115,16 +115,6 @@ public class WikiController extends BaseController {
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
 		wikiService.deleteWiki(idWiki, handler);
-	}
-
-	@Get("/:idwiki/page")
-	@ApiDoc("Get main page of a wiki")
-	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
-	public void getMainPage(final HttpServerRequest request) {
-		String idwiki = request.params().get("idwiki");
-		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
-
-		wikiService.getMainPage(idwiki, handler);
 	}
 
 	@Get("/:idwiki/page/:idpage")

@@ -1,10 +1,13 @@
 routes.define(function($routeProvider){
     $routeProvider
+      .when('/view/:wikiId', {
+        action: 'listPages'
+      })
       .when('/view/:wikiId/:pageId', {
         action: 'viewPage'
       })
       .when('/wiki-list', {
-        action: 'viewWikiList'
+        action: 'listWikis'
       })
       .when('/edit/:wikiId/:pageId', {
         action: 'editPage'
@@ -21,14 +24,19 @@ function WikiController($scope, template, model, route){
 	
 	// Definition des actions
 	route({
+		listPages: function(params){
+			$scope.selectedWiki = new Wiki({ _id: params.wikiId });
+			$scope.selectedWiki.pages.sync(function(){
+				template.open('main', 'list-wiki-pages');
+	        });			
+		},
 	    viewPage: function(params){
 	    	$scope.selectedWiki = new Wiki({ _id: params.wikiId});
-	    	$scope.selectedWiki.getWikiInfo();
 	    	$scope.selectedWiki.findPage(params.pageId, function(result){
 	            template.open('main', 'view-wiki-page');
 	        });
 	    },
-	    viewWikiList: function(params){
+	    listWikis: function(params){
 	      template.open('main', 'list-wikis');
 	    },
 	    editPage: function(params){
@@ -72,34 +80,28 @@ function WikiController($scope, template, model, route){
 
 	$scope.displayWikiList = function(){
 		model.wikis.sync();
-		template.open('main', 'list-wikis');
+		window.location.href = '/wiki#//wiki-list';
 	}
 	
 	$scope.listPages = function(selectedWiki){
 		$scope.selectedWiki = selectedWiki;
-		$scope.selectedWiki = new Wiki({ _id: selectedWiki._id });
-		$scope.selectedWiki.getWikiInfo();				
-		$scope.selectedWiki.pages.sync();
-		
-		template.open('main', 'list-wiki-pages');
+		window.location.href = '/wiki#/view/' + selectedWiki._id;
 	}
 
 	$scope.openSelectedWiki = function(selectedWiki){
-		$scope.selectedWiki = selectedWiki;
-		selectedWiki.getMainPage(function(result){
-            template.open('main', 'view-wiki-page');
-        });
+		$scope.listPages(selectedWiki);
 	}
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
     	$scope.selectedWiki = new Wiki({ _id: wikiId});
-    	$scope.selectedWiki.getWikiInfo();
     	$scope.selectedWiki.findPage(pageId, function(result){
             window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
         });
 	}
 		
-	$scope.newPage = function(){
+	$scope.newPage = function(selectedWiki){
+		$scope.page = new Page();
+		$scope.selectedWiki = selectedWiki;
 		template.open('main', 'create-page');
 	}
 
@@ -135,7 +137,7 @@ function WikiController($scope, template, model, route){
 	$scope.deletePage = function(){
 		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
 			$scope.selectedWiki.pages.sync();
-            $scope.template.open('main', 'list-wiki-pages');
+			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id;
         });
 	};
 	

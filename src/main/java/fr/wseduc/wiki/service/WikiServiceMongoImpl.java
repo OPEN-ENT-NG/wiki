@@ -65,13 +65,7 @@ public class WikiServiceMongoImpl implements WikiService {
 		JsonObject owner = new JsonObject().putString("userId",
 				user.getUserId()).putString("displayName", user.getUsername());
 
-		// Create an empty main page, entitled "Accueil"
-		JsonObject mainPage = new JsonObject();
-		mainPage.putString("_id", new ObjectId().toString())
-				.putBoolean("isMain", true).putString("title", "Accueil")
-				.putString("content", "");
 		JsonArray pages = new JsonArray();
-		pages.addObject(mainPage);
 
 		JsonObject newWiki = new JsonObject();
 
@@ -107,26 +101,6 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void getMainPage(String idwiki,
-			Handler<Either<String, JsonObject>> handler) {
-
-		// Matcher
-		QueryBuilder query = QueryBuilder.start("_id").is(idwiki);
-
-		// Projection
-		JsonObject isMainPage = new JsonObject();
-		isMainPage.putBoolean("isMain", true);
-		JsonObject elemMatch = new JsonObject();
-		elemMatch.putObject("$elemMatch", isMainPage);
-		JsonObject projection = new JsonObject();
-		projection.putObject("pages", elemMatch);
-
-		// Send query to event bus
-		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
-				MongoDbResult.validResultHandler(handler));
-	}
-
-	@Override
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
 
@@ -139,7 +113,7 @@ public class WikiServiceMongoImpl implements WikiService {
 		JsonObject elemMatch = new JsonObject();
 		elemMatch.putObject("$elemMatch", matchId);
 		JsonObject projection = new JsonObject();
-		projection.putObject("pages", elemMatch);
+		projection.putObject("pages", elemMatch).putNumber("title", 1);
 
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,

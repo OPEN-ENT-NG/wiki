@@ -4,3 +4,4 @@
 <div ng-repeat="page in selectedWiki.pages.all">
 	<a ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
 </div>
+<button ng-click="newPage(selectedWiki)">Nouvelle Page</button>

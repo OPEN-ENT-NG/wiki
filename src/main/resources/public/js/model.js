@@ -7,33 +7,22 @@ function Wiki() {
 	var wiki = this;
 	
 	this.collection(Page, {
-		sync : function() {
+		sync : function(callback) {
 			http().get('/wiki/list/' + wiki._id).done(function(wikiArray) {
 				this.load(wikiArray[0].pages);
+				wiki.title = wikiArray[0].title;
+				callback();
 			}.bind(this));			
 		}
 	})
 	
 }
 
-Wiki.prototype.getWikiInfo = function() {
-	http().get('/wiki/' + this._id + '/page').done(function(wiki){
-		this.title = wiki.title;
-		// TODO : créer une API pour récupérer uniquement les infos du wiki		
-	}.bind(this));
-}
-
-Wiki.prototype.getMainPage = function(callback) {
-	http().get('/wiki/' + this._id + '/page').done(function(wiki){
-		this.page = new Page( wiki.pages[0] );
-		callback(wiki);
-	}.bind(this));
-}
-
 Wiki.prototype.findPage = function(pageId, callback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			this.page = new Page( wiki.pages[0] );
+			this.title = wiki.title;
 			callback(wiki);
 		}.bind(this));
 }
