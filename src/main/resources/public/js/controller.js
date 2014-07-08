@@ -21,8 +21,9 @@ function WikiController($scope, template, model, route){
 	    viewPage: function(params){
 	    	$scope.selectedWiki = new Wiki({ _id: params.wikiId});
 	    	$scope.selectedWiki.getWikiInfo();
-	    	$scope.selectedWiki.findPage(params.pageId);
-	    	template.open('main', 'view-wiki-page');
+	    	$scope.selectedWiki.findPage(params.pageId, function(result){
+	            template.open('main', 'view-wiki-page');
+	        });
 	    },
 	    viewWikiList: function(params){
 	      template.open('main', 'list-wikis');
@@ -63,12 +64,6 @@ function WikiController($scope, template, model, route){
 		
 	};
 
-	$scope.openSelectedWiki = function(selectedWiki){
-		$scope.selectedWiki = selectedWiki;
-		selectedWiki.getMainPage();
-		template.open('main', 'view-wiki-page');
-	}
-	
 	$scope.displayWikiList = function(){
 		model.wikis.sync();
 		template.open('main', 'list-wikis');
@@ -81,6 +76,13 @@ function WikiController($scope, template, model, route){
 		$scope.selectedWiki.pages.sync();
 		
 		template.open('main', 'list-wiki-pages');
+	}
+
+	$scope.openSelectedWiki = function(selectedWiki){
+		$scope.selectedWiki = selectedWiki;
+		selectedWiki.getMainPage(function(result){
+            template.open('main', 'view-wiki-page');
+        });
 	}
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
@@ -126,6 +128,14 @@ function WikiController($scope, template, model, route){
 		
 		$scope.selectedWiki.page = new Page();		
 	};
+	
+	$scope.deletePage = function(){
+		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
+			$scope.selectedWiki.pages.sync();
+            $scope.template.open('main', 'list-wiki-pages');
+        });
+	};
+	
 	
 	$scope.wikis = model.wikis;
 	$scope.titleOfNewWiki = "Titre";

@@ -9,19 +9,11 @@ function Wiki() {
 	this.collection(Page, {
 		sync : function() {
 			http().get('/wiki/list/' + wiki._id).done(function(wikiArray) {
-				console.log("wikiArray");
-				console.log(wikiArray);
 				this.load(wikiArray[0].pages);
 			}.bind(this));			
 		}
 	})
 	
-}
-
-Wiki.prototype.getMainPage = function() {
-	http().get('/wiki/' + this._id + '/page').done(function(wiki){
-		this.page = new Page( wiki.pages[0] );
-	}.bind(this));
 }
 
 Wiki.prototype.getWikiInfo = function() {
@@ -31,11 +23,18 @@ Wiki.prototype.getWikiInfo = function() {
 	}.bind(this));
 }
 
+Wiki.prototype.getMainPage = function(callback) {
+	http().get('/wiki/' + this._id + '/page').done(function(wiki){
+		this.page = new Page( wiki.pages[0] );
+		callback(wiki);
+	}.bind(this));
+}
+
 Wiki.prototype.findPage = function(pageId, callback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			this.page = new Page( wiki.pages[0] );
-			callback();
+			callback(wiki);
 		}.bind(this));
 }
 
@@ -48,6 +47,12 @@ Wiki.prototype.createPage = function(data, callback) {
 
 Wiki.prototype.updatePage = function(data, pageId) {
 	http().putJson('/wiki/' + this._id + '/page/' + pageId, data);
+}
+
+Wiki.prototype.deletePage = function(wikiId, pageId, callback) {
+	http().delete('/wiki/' + wikiId + '/page/' + pageId).done(function(result){
+		callback(result);
+	});
 }
 
 Wiki.prototype.deleteWiki = function() {
