@@ -31,18 +31,29 @@ Wiki.prototype.getWikiInfo = function() {
 	}.bind(this));
 }
 
-Wiki.prototype.findPage = function(idpage) {	
-	http().get('/wiki/' + this._id + '/page/' + idpage).done(function(wiki){
-		this.page = new Page( wiki.pages[0] );
-	}.bind(this));
+Wiki.prototype.findPage = function(pageId, callback) {
+	http().get('/wiki/' + this._id + '/page/' + pageId)
+		.done(function(wiki){
+			this.page = new Page( wiki.pages[0] );
+			callback();
+		}.bind(this));
 }
 
-Wiki.prototype.createPage = function(data) {
-	http().postJson('/wiki/' + this._id + '/page', data);
+Wiki.prototype.createPage = function(data, callback) {
+	http().postJson('/wiki/' + this._id + '/page', data)
+	.done(function(result){
+		callback(result);
+	});
+}
+
+Wiki.prototype.updatePage = function(data, pageId) {
+	http().putJson('/wiki/' + this._id + '/page/' + pageId, data);
 }
 
 Wiki.prototype.deleteWiki = function() {
-	http().delete('/wiki/' + this._id);
+	http().delete('/wiki/' + this._id).done(function(){
+		model.wikis.remove(this);
+	}.bind(this));
 }
 
 

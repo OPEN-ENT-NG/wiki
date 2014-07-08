@@ -3,4 +3,5 @@
 <a ng-click="listPages(selectedWiki)">Afficher la liste des pages</a>
 <h2>[[selectedWiki.page.title]]</h2>
 <div bind-html="selectedWiki.page.content"/>
+<button ng-click="editPage(selectedWiki)">Modifier</button>
 <button ng-click="newPage()">Nouvelle Page</button>

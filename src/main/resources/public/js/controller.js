@@ -30,6 +30,7 @@ function WikiController($scope, template, model, route){
 	});
 	
     $scope.formatDate = function(date){
+    	// TODO : à corriger
         var momentDate = moment(date);
         return momentDate.lang('fr').format('dddd DD MMM YYYY, hh:mm:ss');
     };
@@ -38,7 +39,6 @@ function WikiController($scope, template, model, route){
 	template.open('main', 'list-wikis');
 		
 	$scope.deleteWiki = function(wikiToRemove){
-		model.wikis.remove(wikiToRemove);
 		wikiToRemove.deleteWiki();
 	};
 	
@@ -70,6 +70,7 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.displayWikiList = function(){
+		model.wikis.sync();
 		template.open('main', 'list-wikis');
 	}
 	
@@ -85,8 +86,9 @@ function WikiController($scope, template, model, route){
 	$scope.openSelectedPage = function(wikiId, pageId){
     	$scope.selectedWiki = new Wiki({ _id: wikiId});
     	$scope.selectedWiki.getWikiInfo();
-    	$scope.selectedWiki.findPage(pageId);
-    	template.open('main', 'view-wiki-page');
+    	$scope.selectedWiki.findPage(pageId, function(result){
+            template.open('main', 'view-wiki-page');
+        });
 	}
 	
 	$scope.newPage = function(){
@@ -95,17 +97,34 @@ function WikiController($scope, template, model, route){
 
 	$scope.page = new Page();
 	
-	$scope.savePage = function(){
+	$scope.createPage = function(){
 		var data = {
 				title : $scope.page.title,
 				content : $scope.page.content
 		};
-		$scope.selectedWiki.createPage(data);
+		$scope.selectedWiki.createPage(data, function(result){
+			// TODO : à revoir. Afficher la page créée
+            $scope.template.open('main', 'view-wiki-page');
+        });
+	};
+	
+	$scope.editPage = function(selectedWiki) {
+		$scope.selectedWiki.page.title = selectedWiki.page.title;
+		$scope.selectedWiki.page.content = selectedWiki.page.content;
+		$scope.selectedWiki.page._id = selectedWiki.page._id;
+		template.open('main', 'edit-page');
+	}
+	
+	$scope.updatePage = function(){
+		var data = {
+				title : $scope.selectedWiki.page.title,
+				content : $scope.selectedWiki.page.content
+		};
+		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.page._id);
 		
-		// TODO : display created page
+		// TODO : display updated page
 		
-		$scope.page = new Page();
-		
+		$scope.selectedWiki.page = new Page();		
 	};
 	
 	$scope.wikis = model.wikis;
