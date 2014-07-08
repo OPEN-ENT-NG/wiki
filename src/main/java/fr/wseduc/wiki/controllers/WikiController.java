@@ -1,6 +1,8 @@
 package fr.wseduc.wiki.controllers;
 
-import org.entcore.common.http.response.DefaultResponseHandler;
+import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
+import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
+
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
@@ -17,7 +19,6 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.http.BaseController;
-import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.RequestUtils;
 import fr.wseduc.wiki.service.WikiService;
 import fr.wseduc.wiki.service.WikiServiceMongoImpl;
@@ -41,47 +42,26 @@ public class WikiController extends BaseController {
 	@ApiDoc("List wikis")
 	@SecuredAction("wiki.list")
 	public void listWikis(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
-							.arrayResponseHandler(request);
+		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
-					wikiService.listWikis(handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		wikiService.listWikis(handler);
 	}
-	
+
 	@Get("/list/:idwiki")
 	@ApiDoc("List pages of a given wiki")
 	@SecuredAction("wiki.page.list")
 	public void listPages(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					Handler<Either<String, JsonArray>> handler = DefaultResponseHandler
-							.arrayResponseHandler(request);
+		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
-					String idWiki = request.params().get("idwiki");
-					
-					wikiService.listPages(user, idWiki, handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		String idWiki = request.params().get("idwiki");
+
+		wikiService.listPages(idWiki, handler);
 	}
 
 	@Post("")
 	@ApiDoc("Create wiki")
 	@SecuredAction("wiki.create")
 	public void createWiki(final HttpServerRequest request) {
-
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
 			public void handle(final UserInfos user) {
@@ -89,20 +69,17 @@ public class WikiController extends BaseController {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-									.defaultResponseHandler(request);
+							Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
 							String wikiTitle = data.getString("title");
 							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
-								Renders.badRequest(request);
+								badRequest(request);
 								return;
 							}
 
 							wikiService.createWiki(user, wikiTitle, handler);
 						}
 					});
-				} else {
-					Renders.unauthorized(request);
 				}
 			}
 		});
@@ -112,31 +89,20 @@ public class WikiController extends BaseController {
 	@ApiDoc("Update wiki by id")
 	@SecuredAction(value = "wiki.update", type = ActionType.RESOURCE)
 	public void updateWiki(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-									.defaultResponseHandler(request);
+			public void handle(JsonObject data) {
+				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-							String idWiki = request.params().get("idwiki");
+				String idWiki = request.params().get("idwiki");
 
-							String wikiTitle = data.getString("title");
-							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
-								Renders.badRequest(request);
-								return;
-							}
-
-							wikiService.updateWiki(user, idWiki, wikiTitle,
-									handler);
-						}
-					});
-				} else {
-					Renders.unauthorized(request);
+				String wikiTitle = data.getString("title");
+				if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
+					badRequest(request);
+					return;
 				}
+
+				wikiService.updateWiki(idWiki, wikiTitle, handler);
 			}
 		});
 	}
@@ -145,133 +111,81 @@ public class WikiController extends BaseController {
 	@ApiDoc("Delete wiki by id")
 	@SecuredAction(value = "wiki.delete", type = ActionType.RESOURCE)
 	public void deleteWiki(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					String idWiki = request.params().get("idwiki");
-					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-							.defaultResponseHandler(request);
+		String idWiki = request.params().get("idwiki");
+		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-					wikiService.deleteWiki(idWiki, handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		wikiService.deleteWiki(idWiki, handler);
 	}
 
 	@Get("/:idwiki/page")
 	@ApiDoc("Get main page of a wiki")
 	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
 	public void getMainPage(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					String idwiki = request.params().get("idwiki");
-					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-							.defaultResponseHandler(request);
+		String idwiki = request.params().get("idwiki");
+		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-					wikiService.getMainPage(idwiki, handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		wikiService.getMainPage(idwiki, handler);
 	}
 
 	@Get("/:idwiki/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
 	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
 	public void getPage(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					String idWiki = request.params().get("idwiki");
-					String idPage = request.params().get("idpage");
+		String idWiki = request.params().get("idwiki");
+		String idPage = request.params().get("idpage");
 
-					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-							.defaultResponseHandler(request);
+		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-					wikiService.getPage(idWiki, idPage, handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		wikiService.getPage(idWiki, idPage, handler);
 	}
 
 	@Post("/:idwiki/page")
 	@ApiDoc("Add page to wiki")
 	@SecuredAction("wiki.page.create")
 	public void createPage(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-									.defaultResponseHandler(request);
+			public void handle(JsonObject data) {
+				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-							String idWiki = request.params().get("idwiki");
+				String idWiki = request.params().get("idwiki");
 
-							String pageTitle = data.getString("title");
-							String pageContent = data.getString("content");
-							if (pageTitle == null || pageTitle.trim().isEmpty()
-									|| pageContent == null
-									|| pageContent.trim().isEmpty()) {
-								Renders.badRequest(request);
-								return;
-							}
-
-							wikiService.createPage(user, idWiki, pageTitle,
-									pageContent, handler);
-						}
-					});
-				} else {
-					Renders.unauthorized(request);
+				String pageTitle = data.getString("title");
+				String pageContent = data.getString("content");
+				if (pageTitle == null || pageTitle.trim().isEmpty()
+						|| pageContent == null || pageContent.trim().isEmpty()) {
+					badRequest(request);
+					return;
 				}
+
+				wikiService.createPage(idWiki, pageTitle, pageContent, handler);
 			}
 		});
+
 	}
 
 	@Put("/:idwiki/page/:idpage")
 	@ApiDoc("Update page by idwiki and idpage")
 	@SecuredAction(value = "wiki.page.update", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-									.defaultResponseHandler(request);
+			public void handle(JsonObject data) {
+				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-							String idWiki = request.params().get("idwiki");
-							String idPage = request.params().get("idpage");
+				String idWiki = request.params().get("idwiki");
+				String idPage = request.params().get("idpage");
 
-							String pageTitle = data.getString("title");
-							String pageContent = data.getString("content");
-							if (pageTitle == null || pageTitle.trim().isEmpty()
-									|| pageContent == null
-									|| pageContent.trim().isEmpty()) {
-								Renders.badRequest(request);
-								return;
-							}
-
-							wikiService.updatePage(user, idWiki, idPage,
-									pageTitle, pageContent, handler);
-						}
-					});
-				} else {
-					Renders.unauthorized(request);
+				String pageTitle = data.getString("title");
+				String pageContent = data.getString("content");
+				if (pageTitle == null || pageTitle.trim().isEmpty()
+						|| pageContent == null || pageContent.trim().isEmpty()) {
+					badRequest(request);
+					return;
 				}
+
+				wikiService.updatePage(idWiki, idPage, pageTitle, pageContent,
+						handler);
 			}
 		});
 	}
@@ -280,21 +194,11 @@ public class WikiController extends BaseController {
 	@ApiDoc("Delete page by idwiki and idpage")
 	@SecuredAction(value = "wiki.page.delete", type = ActionType.RESOURCE)
 	public void deletePage(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					Handler<Either<String, JsonObject>> handler = DefaultResponseHandler
-							.defaultResponseHandler(request);
+		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-					String idWiki = request.params().get("idwiki");
-					String idPage = request.params().get("idpage");
+		String idWiki = request.params().get("idwiki");
+		String idPage = request.params().get("idpage");
 
-					wikiService.deletePage(idWiki, idPage, handler);
-				} else {
-					Renders.unauthorized(request);
-				}
-			}
-		});
+		wikiService.deletePage(idWiki, idPage, handler);
 	}
 }

@@ -10,13 +10,14 @@ import fr.wseduc.webutils.Either;
 public interface WikiService {
 
 	public void listWikis(Handler<Either<String, JsonArray>> handler);
-	
-	public void listPages(UserInfos user, String idWiki, Handler<Either<String, JsonArray>> handler);
+
+	public void listPages(String idWiki,
+			Handler<Either<String, JsonArray>> handler);
 
 	public void createWiki(UserInfos user, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
+	public void updateWiki(String idWiki, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void deleteWiki(String idWiki,
@@ -28,12 +29,11 @@ public interface WikiService {
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void createPage(UserInfos user, String idWiki, String pageTitle,
-			String pageContent, Handler<Either<String, JsonObject>> handler);
-
-	public void updatePage(UserInfos user, String idWiki, String idPage,
-			String pageTitle, String pageContent,
+	public void createPage(String idWiki, String pageTitle, String pageContent,
 			Handler<Either<String, JsonObject>> handler);
+
+	public void updatePage(String idWiki, String idPage, String pageTitle,
+			String pageContent, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);

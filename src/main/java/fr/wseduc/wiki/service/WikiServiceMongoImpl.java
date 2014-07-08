@@ -27,6 +27,7 @@ public class WikiServiceMongoImpl implements WikiService {
 		this.mongo = MongoDb.getInstance();
 	}
 
+	// TODO : hériter de MongoDbCrudService pour économiser du code
 	// TODO : créer des constantes pour les noms des champs
 
 	@Override
@@ -42,7 +43,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void listPages(UserInfos user, String idWiki,
+	public void listPages(String idWiki,
 			Handler<Either<String, JsonArray>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
@@ -82,7 +83,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void updateWiki(UserInfos user, String idWiki, String wikiTitle,
+	public void updateWiki(String idWiki, String wikiTitle,
 			Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
@@ -146,7 +147,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void createPage(UserInfos user, String idWiki, String pageTitle,
+	public void createPage(String idWiki, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
@@ -165,7 +166,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void updatePage(UserInfos user, String idWiki, String idPage,
+	public void updatePage(String idWiki, String idPage,
 			String pageTitle, String pageContent,
 			Handler<Either<String, JsonObject>> handler) {
 
