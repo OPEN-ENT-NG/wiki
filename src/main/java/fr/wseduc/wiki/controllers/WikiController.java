@@ -57,52 +57,12 @@ public class WikiController extends BaseController {
 
 		wikiService.listPages(idWiki, handler);
 	}
-
+	
 	@Get("/listallpages")
 	@ApiDoc("List pages of all wikis")
 	@SecuredAction("wiki.list")
 	public void listAllPages(final HttpServerRequest request) {
-		
-		// TODO : faire ce traitement côté client
-		// Return an array of pages (instead of an array of wikis)
-		Handler<Either<String, JsonArray>> handler = new Handler<Either<String, JsonArray>>() {
-			@Override
-			public void handle(Either<String, JsonArray> event) {
-				if (event.isRight()) {
-					JsonArray wikiArray = event.right().getValue();
-					JsonArray returnedPageArray = new JsonArray();
-
-					try {
-						for (Object wiki : wikiArray) {
-							JsonObject wikiJO = (JsonObject) wiki;
-							String wikiId = wikiJO.getString("_id");
-							String wikiTitle = wikiJO.getString("title");
-
-							JsonArray pageArray = wikiJO.getArray("pages");
-							for (Object aPage : pageArray) {
-								JsonObject pageJO = (JsonObject) aPage;
-								JsonObject newPage = pageJO.copy();
-								newPage.putString("wiki_id", wikiId);
-								newPage.putString("wiki_title", wikiTitle);
-								returnedPageArray.addObject(newPage);
-							}
-						}
-
-						renderJson(request, returnedPageArray);
-					} catch (Exception e) {
-						log.error(e.getMessage());
-						JsonObject error = new JsonObject().putString("error",
-								e.getMessage());
-						renderJson(request, error, 500);
-					}
-
-				} else {
-					JsonObject error = new JsonObject().putString("error",
-							event.left().getValue());
-					renderJson(request, error, 400);
-				}
-			}
-		};
+		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
 		wikiService.listAllPages(handler);
 	}

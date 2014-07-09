@@ -63,7 +63,7 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("pages._id", 1)
-				.putNumber("pages.title", 1);
+				.putNumber("pages.title", 1).putNumber("owner", 1);
 
 		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
 
