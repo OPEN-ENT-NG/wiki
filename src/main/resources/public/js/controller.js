@@ -67,6 +67,7 @@ function WikiController($scope, template, model, route){
 		var data = {
 				title : $scope.wiki.title
 		};
+		// TODO : appel REST à déplacer dans le model
 		http().postJson('/wiki', data).done(function(createdWiki){
 			$scope.wiki = new Wiki();
 
