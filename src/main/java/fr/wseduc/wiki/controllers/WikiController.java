@@ -3,6 +3,7 @@ package fr.wseduc.wiki.controllers;
 import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
 
+import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
@@ -18,17 +19,17 @@ import fr.wseduc.rs.Put;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
-import fr.wseduc.webutils.http.BaseController;
 import fr.wseduc.webutils.request.RequestUtils;
 import fr.wseduc.wiki.service.WikiService;
 import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 
-public class WikiController extends BaseController {
+public class WikiController extends MongoDbControllerHelper {
 
 	private final WikiService wikiService;
-
+	
 	public WikiController(String collection) {
-		wikiService = new WikiServiceMongoImpl(collection);
+		super(collection);
+		wikiService = new WikiServiceMongoImpl(collection);		
 	}
 
 	@Get("")
@@ -49,7 +50,7 @@ public class WikiController extends BaseController {
 
 	@Get("/list/:idwiki")
 	@ApiDoc("List pages of a given wiki")
-	@SecuredAction(value = "wiki.page.list", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void listPages(final HttpServerRequest request) {
 		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
@@ -96,7 +97,7 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki")
 	@ApiDoc("Update wiki by id")
-	@SecuredAction(value = "wiki.update", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void updateWiki(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
@@ -118,7 +119,7 @@ public class WikiController extends BaseController {
 
 	@Delete("/:idwiki")
 	@ApiDoc("Delete wiki by id")
-	@SecuredAction(value = "wiki.delete", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void deleteWiki(final HttpServerRequest request) {
 		String idWiki = request.params().get("idwiki");
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
@@ -128,7 +129,7 @@ public class WikiController extends BaseController {
 
 	@Get("/:idwiki/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
-	@SecuredAction(value = "wiki.page.get", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void getPage(final HttpServerRequest request) {
 		String idWiki = request.params().get("idwiki");
 		String idPage = request.params().get("idpage");
@@ -183,7 +184,7 @@ public class WikiController extends BaseController {
 
 	@Put("/:idwiki/page/:idpage")
 	@ApiDoc("Update page by idwiki and idpage")
-	@SecuredAction(value = "wiki.page.update", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
@@ -209,7 +210,7 @@ public class WikiController extends BaseController {
 
 	@Delete("/:idwiki/page/:idpage")
 	@ApiDoc("Delete page by idwiki and idpage")
-	@SecuredAction(value = "wiki.page.delete", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void deletePage(final HttpServerRequest request) {
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
@@ -217,5 +218,26 @@ public class WikiController extends BaseController {
 		String idPage = request.params().get("idpage");
 
 		wikiService.deletePage(idWiki, idPage, handler);
+	}
+		
+	@Get("/share/json/:id")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	public void shareWiki(final HttpServerRequest request) {
+		super.shareJson(request);
+	}
+	
+	@Put("/share/json/:id")
+	@ApiDoc("Share wiki by id.")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	public void shareWikiSubmit(final HttpServerRequest request) {
+		// TODO : renseigner notifyShareTemplate ?
+		super.shareJsonSubmit(request, null);
+	}
+	
+	@Put("/share/remove/:id")
+	@ApiDoc("Remove Share by wikiId.")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	public void shareWikiRemove(final HttpServerRequest request) {
+		super.removeShare(request);
 	}
 }

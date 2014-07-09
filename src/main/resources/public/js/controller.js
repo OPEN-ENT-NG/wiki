@@ -21,6 +21,7 @@ routes.define(function($routeProvider){
 function WikiController($scope, template, model, route){
 
 	$scope.template = template;
+	$scope.display = {showPanel: false};
 	
 	// Definition des actions
 	route({
@@ -44,18 +45,24 @@ function WikiController($scope, template, model, route){
 		}
 	});
 	
+	// fix temporaire en attendant une nouvelle version d'ent-core
+	template.open('main', 'list-wikis');
+	
     $scope.formatDate = function(date){
     	// TODO : à corriger
         var momentDate = moment(date);
         return momentDate.lang('fr').format('dddd DD MMM YYYY, hh:mm:ss');
-    };
-	
-	// fix temporaire en attendant une nouvelle version d'ent-core
-	template.open('main', 'list-wikis');
+    };	
 		
 	$scope.deleteWiki = function(wikiToRemove){
 		wikiToRemove.deleteWiki();
 	};
+	
+	$scope.shareWiki = function(wiki){
+		$scope.currentWiki = wiki;
+		$scope.display.showPanel = true;
+	}
+
 	
 	$scope.displayNewWikiForm = function(){
 		template.open("main", "create-wiki");
@@ -67,8 +74,7 @@ function WikiController($scope, template, model, route){
 		var data = {
 				title : $scope.wiki.title
 		};
-		// TODO : appel REST à déplacer dans le model
-		http().postJson('/wiki', data).done(function(createdWiki){
+		$scope.wiki.createWiki(data, function(createdWiki){
 			$scope.wiki = new Wiki();
 
 			var aWiki = new Wiki();
@@ -76,7 +82,6 @@ function WikiController($scope, template, model, route){
 			aWiki._id = createdWiki._id;
 			$scope.openSelectedWiki(aWiki);
 		});
-		
 	};
 
 	$scope.displayWikiList = function(){
@@ -141,7 +146,6 @@ function WikiController($scope, template, model, route){
 			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id;
         });
 	};
-	
 	
 	$scope.wikis = model.wikis;
 	$scope.titleOfNewWiki = "Titre";

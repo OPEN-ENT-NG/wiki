@@ -46,6 +46,12 @@ Wiki.prototype.deletePage = function(wikiId, pageId, callback) {
 	});
 }
 
+Wiki.prototype.createWiki = function(data, callback) {
+	http().postJson('/wiki', data).done(function(result){
+		callback(result);
+	});
+}
+
 Wiki.prototype.deleteWiki = function() {
 	http().delete('/wiki/' + this._id).done(function(){
 		model.wikis.remove(this);

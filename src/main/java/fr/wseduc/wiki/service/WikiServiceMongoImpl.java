@@ -19,8 +19,8 @@ import fr.wseduc.webutils.Either;
 
 public class WikiServiceMongoImpl implements WikiService {
 
-	protected final String collection;
-	protected MongoDb mongo;
+	private final String collection;
+	private final MongoDb mongo;
 
 	public WikiServiceMongoImpl(final String collection) {
 		this.collection = collection;
@@ -194,5 +194,7 @@ public class WikiServiceMongoImpl implements WikiService {
 				modifier.build(),
 				MongoDbResult.validActionResultHandler(handler));
 	}
+	
+
 
 }

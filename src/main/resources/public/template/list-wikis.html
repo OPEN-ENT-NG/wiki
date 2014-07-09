@@ -7,6 +7,15 @@
 	<div class="three cell">[[ wiki.owner.displayName ]]</div>
 	<div class="three cell">[[ formatDate(wiki.modified) ]]</div>
 	<div class="three cell">
-		<button ng-click="deleteWiki(wiki)">Supprimer le wiki</button>
+		<button ng-click="deleteWiki(wiki)">Supprimer</button>
+		<button ng-click="shareWiki(wiki)">Partager</button>
 	</div>
+	
+	<!-- Lightbox to share wikis -->
+	<div ng-if="currentWiki._id">
+		<lightbox show="display.showPanel" on-close="currentWiki = {}; display.showPanel = false;">
+			<share-panel app-prefix="'wiki'" resources="currentWiki"/>
+		</lightbox>
+	</div>
+
 </div>
