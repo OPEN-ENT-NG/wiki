@@ -34,7 +34,7 @@ function WikiController($scope, template, model, route){
 	    viewPage: function(params){
 	    	$scope.selectedWiki = new Wiki({ _id: params.wikiId});
 	    	$scope.selectedWiki.findPage(params.pageId, function(result){
-	            template.open('main', 'view-wiki-page');
+	            template.open('main', 'view-page');
 	        });
 	    },
 	    listWikis: function(params){
@@ -53,7 +53,7 @@ function WikiController($scope, template, model, route){
         var momentDate = moment(date);
         return momentDate.lang('fr').format('dddd DD MMM YYYY, hh:mm:ss');
     };	
-		
+	
 	$scope.deleteWiki = function(wikiToRemove){
 		wikiToRemove.deleteWiki();
 	};
@@ -81,6 +81,20 @@ function WikiController($scope, template, model, route){
 			aWiki.title = data.title;
 			aWiki._id = createdWiki._id;
 			$scope.openSelectedWiki(aWiki);
+		});
+	};
+	
+    $scope.displayEditWikiForm = function(wiki){
+    	$scope.wiki = wiki;
+    	template.open("main", "edit-wiki");
+    };
+    
+	$scope.renameWiki = function(){
+		var data = {
+				title : $scope.wiki.title
+		};
+		$scope.wiki.renameWiki(data, function(){
+			$scope.displayWikiList();
 		});
 	};
 

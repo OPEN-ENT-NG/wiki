@@ -4,9 +4,10 @@
 	<div class="three cell">
 		<a ng-click="openSelectedWiki(wiki)">[[wiki.title]]</a>
 	</div>
-	<div class="three cell">[[ wiki.owner.displayName ]]</div>
-	<div class="three cell">[[ formatDate(wiki.modified) ]]</div>
-	<div class="three cell">
+	<div class="two cell">[[ wiki.owner.displayName ]]</div>
+	<div class="two cell">[[ formatDate(wiki.modified) ]]</div>
+	<div class="five cell">
+		<button ng-click="displayEditWikiForm(wiki)">Renommer</button>
 		<button ng-click="deleteWiki(wiki)">Supprimer</button>
 		<button ng-click="shareWiki(wiki)">Partager</button>
 	</div>

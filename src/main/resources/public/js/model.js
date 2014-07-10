@@ -52,6 +52,12 @@ Wiki.prototype.createWiki = function(data, callback) {
 	});
 }
 
+Wiki.prototype.renameWiki = function(data, callback) {
+	http().putJson('/wiki/' + this._id, data).done(function(){
+		callback();
+	});
+}
+
 Wiki.prototype.deleteWiki = function() {
 	http().delete('/wiki/' + this._id).done(function(){
 		model.wikis.remove(this);
