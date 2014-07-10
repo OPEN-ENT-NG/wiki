@@ -11,7 +11,7 @@ public class Wiki extends BaseServer {
 	
 	@Override
 	public void start() {
-		setResourceProvider(new MongoAppFilter(WIKI_COLLECTION, "idwiki"));
+		setResourceProvider(new MongoAppFilter(WIKI_COLLECTION));
 		super.start();
 		addController(new WikiController(WIKI_COLLECTION));
 	}

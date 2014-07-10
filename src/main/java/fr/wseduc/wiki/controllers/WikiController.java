@@ -48,13 +48,13 @@ public class WikiController extends MongoDbControllerHelper {
 		wikiService.listWikis(handler);
 	}
 
-	@Get("/list/:idwiki")
-	@ApiDoc("List pages of a given wiki")
+	@Get("/list/:id")
+	@ApiDoc("List pages for a given wikiId")
 	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void listPages(final HttpServerRequest request) {
 		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
-		String idWiki = request.params().get("idwiki");
+		String idWiki = request.params().get("id");
 
 		wikiService.listPages(idWiki, handler);
 	}
@@ -95,7 +95,7 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
-	@Put("/:idwiki")
+	@Put("/:id")
 	@ApiDoc("Update wiki by id")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void updateWiki(final HttpServerRequest request) {
@@ -104,7 +104,7 @@ public class WikiController extends MongoDbControllerHelper {
 			public void handle(JsonObject data) {
 				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-				String idWiki = request.params().get("idwiki");
+				String idWiki = request.params().get("id");
 
 				String wikiTitle = data.getString("title");
 				if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
@@ -117,21 +117,21 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
-	@Delete("/:idwiki")
+	@Delete("/:id")
 	@ApiDoc("Delete wiki by id")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void deleteWiki(final HttpServerRequest request) {
-		String idWiki = request.params().get("idwiki");
+		String idWiki = request.params().get("id");
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
 		wikiService.deleteWiki(idWiki, handler);
 	}
 
-	@Get("/:idwiki/page/:idpage")
+	@Get("/:id/page/:idpage")
 	@ApiDoc("Get a specific page of a wiki")
 	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void getPage(final HttpServerRequest request) {
-		String idWiki = request.params().get("idwiki");
+		String idWiki = request.params().get("id");
 		String idPage = request.params().get("idpage");
 
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
@@ -139,7 +139,7 @@ public class WikiController extends MongoDbControllerHelper {
 		wikiService.getPage(idWiki, idPage, handler);
 	}
 
-	@Post("/:idwiki/page")
+	@Post("/:id/page")
 	@ApiDoc("Add page to wiki")
 	@SecuredAction("wiki.page.create")
 	public void createPage(final HttpServerRequest request) {
@@ -165,7 +165,7 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 				};
 
-				String idWiki = request.params().get("idwiki");
+				String idWiki = request.params().get("id");
 
 				String pageTitle = data.getString("title");
 				String pageContent = data.getString("content");
@@ -182,7 +182,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 	}
 
-	@Put("/:idwiki/page/:idpage")
+	@Put("/:id/page/:idpage")
 	@ApiDoc("Update page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
@@ -191,7 +191,7 @@ public class WikiController extends MongoDbControllerHelper {
 			public void handle(JsonObject data) {
 				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-				String idWiki = request.params().get("idwiki");
+				String idWiki = request.params().get("id");
 				String idPage = request.params().get("idpage");
 
 				String pageTitle = data.getString("title");
@@ -208,26 +208,27 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
-	@Delete("/:idwiki/page/:idpage")
+	@Delete("/:id/page/:idpage")
 	@ApiDoc("Delete page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void deletePage(final HttpServerRequest request) {
 		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-		String idWiki = request.params().get("idwiki");
+		String idWiki = request.params().get("id");
 		String idPage = request.params().get("idpage");
 
 		wikiService.deletePage(idWiki, idPage, handler);
 	}
 		
 	@Get("/share/json/:id")
+	@ApiDoc("List rights for given a wikiId")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWiki(final HttpServerRequest request) {
 		super.shareJson(request);
 	}
 	
 	@Put("/share/json/:id")
-	@ApiDoc("Share wiki by id.")
+	@ApiDoc("Add rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiSubmit(final HttpServerRequest request) {
 		// TODO : renseigner notifyShareTemplate ?
@@ -235,7 +236,7 @@ public class WikiController extends MongoDbControllerHelper {
 	}
 	
 	@Put("/share/remove/:id")
-	@ApiDoc("Remove Share by wikiId.")
+	@ApiDoc("Remove rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiRemove(final HttpServerRequest request) {
 		super.removeShare(request);
