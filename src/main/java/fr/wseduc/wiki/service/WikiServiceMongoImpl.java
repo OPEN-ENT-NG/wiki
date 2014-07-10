@@ -2,6 +2,9 @@ package fr.wseduc.wiki.service;
 
 import static org.entcore.common.mongodb.MongoDbResult.validActionResultHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.user.UserInfos;
@@ -10,6 +13,7 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
@@ -58,9 +62,21 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void listAllPages(Handler<Either<String, JsonArray>> handler) {
-		QueryBuilder query = new QueryBuilder();
+	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler) {
+		// Query : return pages visible by current user only (i.e. owner or shared)
+		List<DBObject> groups = new ArrayList<>();
+		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
+		for (String gpId: user.getProfilGroupsIds()) {
+			groups.add(QueryBuilder.start("groupId").is(gpId).get());
+		}
+		
+		QueryBuilder query = new QueryBuilder().or(
+				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
+				QueryBuilder.start("shared").elemMatch(
+						new QueryBuilder().or(groups.toArray(new DBObject[groups.size()])).get()
+				).get());
 
+		// Projection
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("pages._id", 1)
 				.putNumber("pages.title", 1).putNumber("owner", 1);
