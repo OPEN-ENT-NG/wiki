@@ -55,10 +55,8 @@ function WikiController($scope, template, model, route){
 	// fix temporaire en attendant une nouvelle version d'ent-core
 	template.open('main', 'list-wikis');
 	
-    $scope.formatDate = function(date){
-    	// TODO : à corriger
-        var momentDate = moment(date);
-        return momentDate.lang('fr').format('dddd DD MMM YYYY, hh:mm:ss');
+    $scope.formatDate = function(dateObject){
+    	return moment(dateObject.$date).lang('fr').format('dddd DD MMM YYYY, HH:mm:ss');
     };	
 	
 	$scope.deleteWiki = function(wikiToRemove){
