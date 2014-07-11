@@ -64,6 +64,33 @@ Wiki.prototype.deleteWiki = function() {
 	}.bind(this));
 }
 
+Wiki.prototype.listAllPages = function(callback) {
+	http().get('/wiki/listallpages').done(
+			function(wikis) {
+				
+				var pagesArray = _.map(
+						wikis, 
+						function(wiki) {
+							var pages = _.map(wiki.pages, function(page) {
+								return {
+									title : page.title + ' [' + wiki.title + ']',
+									_id : page._id,
+									wiki_id : wiki._id,
+									toString : function() {
+										return this.title;
+									}
+								}
+							});
+							
+							return pages;
+						}
+					);
+
+				pagesArray = _.flatten(pagesArray);
+				callback(pagesArray);
+			});
+}
+
 
 model.build = function() {
 	this.makeModels([ Wiki, Page ]);

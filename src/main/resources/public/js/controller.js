@@ -22,6 +22,13 @@ function WikiController($scope, template, model, route){
 
 	$scope.template = template;
 	$scope.display = {showPanel: false};
+	$scope.wiki = new Wiki();
+	
+	// Utilise pour alimenter la barre de recherche des pages
+	$scope.wiki.listAllPages( function(pagesArray) {
+			$scope.allpageslist = pagesArray;
+		}
+	);
 	
 	// Definition des actions
 	route({
@@ -67,8 +74,6 @@ function WikiController($scope, template, model, route){
 	$scope.displayNewWikiForm = function(){
 		template.open("main", "create-wiki");
 	};
-	
-	$scope.wiki = new Wiki();
 	
 	$scope.createNewWiki = function(){
 		var data = {
