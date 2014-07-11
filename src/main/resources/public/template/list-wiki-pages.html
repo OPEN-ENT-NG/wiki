@@ -1,7 +1,7 @@
-<a ng-click="displayWikiList()">Afficher la liste des wikis</a>
+<a ng-click="displayWikiList()" translate content="wiki.displaylist"></a>
 <h1>[[selectedWiki.title]]</h1>
-<h2>Liste des pages</h2>
+<h2 translate content="wiki.pagelist.label"></h2>
 <div ng-repeat="page in selectedWiki.pages.all">
 	<a ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
 </div>
-<button ng-click="newPage(selectedWiki)">Nouvelle Page</button>
+<button ng-click="newPage(selectedWiki)" translate content="wiki.create.new.page"></button>

@@ -1,5 +1,5 @@
-<button ng-click="displayNewWikiForm()">Créer</button>
-<h1>Liste des wikis</h1>
+<button ng-click="displayNewWikiForm()" translate content="wiki.create"></button>
+<h1 translate content="wiki.list.label"></h1>
 <div class="row" ng-repeat="wiki in wikis.all">
 	<div class="three cell">
 		<a ng-click="openSelectedWiki(wiki)">[[wiki.title]]</a>
@@ -7,9 +7,9 @@
 	<div class="two cell">[[ wiki.owner.displayName ]]</div>
 	<div class="two cell">[[ formatDate(wiki.modified) ]]</div>
 	<div class="five cell">
-		<button ng-click="displayEditWikiForm(wiki)">Renommer</button>
-		<button ng-click="deleteWiki(wiki)">Supprimer</button>
-		<button ng-click="shareWiki(wiki)">Partager</button>
+		<button ng-click="displayEditWikiForm(wiki)" translate content="wiki.update"></button>
+		<button ng-click="deleteWiki(wiki)" translate content="wiki.delete"></button>
+		<button ng-click="shareWiki(wiki)" translate content="wiki.share"></button>
 	</div>
 	
 	<!-- Lightbox to share wikis -->

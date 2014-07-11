@@ -1,3 +1,25 @@
 {
-	"template.title": "Template"
+	"wiki.head.title": "Wiki",
+	
+	"wiki.page.createform.save": "Enregistrer",
+	"wiki.page.editform.save": "Enregistrer",
+	"wiki.page.edit": "Modifier",
+	"wiki.page.delete": "Supprimer",
+	
+	"wiki.createform.label": "Nouveau wiki",
+	"wiki.createform.create": "Créer",
+	
+	"wiki.editform.label": "Renommer le wiki",
+	"wiki.editform.save": "Enregistrer",
+
+	"wiki.displaylist": "Afficher la liste des wikis",
+	"wiki.page.displaylist.label": "Afficher la liste des pages",
+	"wiki.pagelist.label": "Liste des pages",
+	"wiki.create.new.page": "Nouvelle Page",
+
+	"wiki.list.label": "Liste des wikis",
+	"wiki.create": "Créer",
+	"wiki.update": "Renommer",
+	"wiki.delete": "Supprimer",
+	"wiki.share": "Partager"
 }
