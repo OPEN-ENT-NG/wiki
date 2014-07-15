@@ -113,10 +113,15 @@ function WikiController($scope, template, model, route){
 				title : $scope.wiki.title
 		};
 		$scope.wiki.renameWiki(data, function(){
+			// Maj de allpageslist pour la barre de recherche
+			$scope.wiki.listAllPages( function(pagesArray) {
+					$scope.allpageslist = pagesArray;
+			});
+			
 			$scope.displayWikiList();
 		});
 	};
-
+	
 	$scope.displayWikiList = function(){
 		model.wikis.sync();
 		window.location.href = '/wiki#//wiki-list';
