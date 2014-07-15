@@ -69,7 +69,8 @@ function WikiController($scope, template, model, route){
 	}
 
 	
-	$scope.displayNewWikiForm = function(){
+	$scope.displayCreateWikiForm = function(){
+		$scope.wiki = new Wiki( { title: "Titre" } );
 		template.open("main", "create-wiki");
 	};
 	
@@ -87,10 +88,18 @@ function WikiController($scope, template, model, route){
 		});
 	};
 	
+	$scope.cancelCreateWiki = function(){
+		$scope.displayWikiList();
+	};
+	
     $scope.displayEditWikiForm = function(wiki){
     	$scope.wiki = wiki;
     	template.open("main", "edit-wiki");
     };
+    
+	$scope.cancelEditWiki = function(){
+		$scope.displayWikiList();
+	};
     
 	$scope.renameWiki = function(){
 		var data = {
@@ -127,6 +136,10 @@ function WikiController($scope, template, model, route){
 		$scope.selectedWiki = selectedWiki;
 		template.open('main', 'create-page');
 	}
+	
+	$scope.cancelCreatePage = function(selectedWiki){
+		template.open('main', 'list-wiki-pages');
+	}
 
 	$scope.page = new Page();
 	
@@ -147,6 +160,10 @@ function WikiController($scope, template, model, route){
 		window.location.href = '/wiki#/edit/' + $scope.selectedWiki._id + '/' + selectedWiki.page._id;
 	}
 	
+	$scope.cancelEditPage = function(selectedWiki) {
+		$scope.openSelectedPage(selectedWiki._id, selectedWiki.page._id);
+	}
+	
 	$scope.updatePage = function(){
 		var data = {
 				title : $scope.selectedWiki.page.title,
@@ -165,7 +182,6 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.wikis = model.wikis;
-	$scope.titleOfNewWiki = "Titre";
 	$scope.selectedWiki = "";
 
 	model.on("wikis.change", function(){

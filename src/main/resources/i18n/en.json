@@ -2,15 +2,19 @@
 	"wiki.head.title": "Wiki",
 	
 	"wiki.page.createform.save": "Save",
+	"wiki.page.createform.cancel": "Cancel",
 	"wiki.page.editform.save": "Save",
+	"wiki.page.editform.cancel": "Cancel",
 	"wiki.page.edit": "Edit",
 	"wiki.page.delete": "Delete",
 	
 	"wiki.createform.label": "New wiki",
 	"wiki.createform.create": "Create",
+	"wiki.createform.cancel": "Cancel",
 	
 	"wiki.editform.label": "Rename wiki",
 	"wiki.editform.save": "Save",
+	"wiki.editform.cancel": "Cancel",
 
 	"wiki.displaylist": "Display wiki list",
 	"wiki.page.displaylist.label": "Display page list",
