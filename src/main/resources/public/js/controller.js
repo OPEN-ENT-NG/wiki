@@ -60,13 +60,20 @@ function WikiController($scope, template, model, route){
     };	
 	
 	$scope.deleteWiki = function(wikiToRemove){
-		wikiToRemove.deleteWiki();
+		wikiToRemove.deleteWiki(
+			function(){
+				// Maj de allpageslist pour la barre de recherche
+				$scope.wiki.listAllPages( function(pagesArray) {
+						$scope.allpageslist = pagesArray;
+				});
+			} 
+		);
 	};
 	
 	$scope.shareWiki = function(wiki){
 		$scope.currentWiki = wiki;
 		$scope.display.showPanel = true;
-	}
+	};
 
 	
 	$scope.displayCreateWikiForm = function(){
@@ -149,6 +156,12 @@ function WikiController($scope, template, model, route){
 				content : $scope.page.content
 		};
 		$scope.selectedWiki.createPage(data, function(result){
+			// Maj de allpageslist pour la barre de recherche
+			$scope.wiki.listAllPages( function(pagesArray) {
+					$scope.allpageslist = pagesArray;
+				}
+			);
+			
 			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + result._id;
         });
 	};
@@ -170,6 +183,12 @@ function WikiController($scope, template, model, route){
 				content : $scope.selectedWiki.page.content
 		};
 		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.page._id, function(result){
+			// Maj de allpageslist pour la barre de recherche
+			$scope.wiki.listAllPages( function(pagesArray) {
+					$scope.allpageslist = pagesArray;
+				}
+			);
+			
 			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
         });
 	};
@@ -177,6 +196,13 @@ function WikiController($scope, template, model, route){
 	$scope.deletePage = function(){
 		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
 			$scope.selectedWiki.pages.sync();
+			
+			// Maj de allpageslist pour la barre de recherche
+			$scope.wiki.listAllPages( function(pagesArray) {
+					$scope.allpageslist = pagesArray;
+				}
+			);
+			
 			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id;
         });
 	};

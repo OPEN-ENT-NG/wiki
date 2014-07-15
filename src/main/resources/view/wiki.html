@@ -13,17 +13,11 @@
 	<portal>
 		<section ng-controller="WikiController">
 			<container template="main"></container>
-			
-			<div class="row reduce-block-six" ng-if="showSelectedPage">
-			Vous avez sélectionné la page "[[selectedPage.title]]", d'id [[selectedPage._id]]
-			et de wiki_id [[selectedPage.wiki_id]]
-			</div>
 			<autocomplete
 				options="allpageslist"
-				ng-change="showSelectedPage=true"
+				ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
 				ng-model="selectedPage">
 			</autocomplete>
-
 		</section>
 	</portal>
 </body>
