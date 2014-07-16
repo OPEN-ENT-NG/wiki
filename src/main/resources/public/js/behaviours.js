@@ -1,32 +1,34 @@
 var wikiBehaviours = {
 	resources: {
 		edit: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|updateWiki'
+			right: 'fr-wseduc-wiki-controllers-WikiController|updateWiki'
 		},
 		delete: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|deleteWiki'
+			right: 'fr-wseduc-wiki-controllers-WikiController|deleteWiki'
 		},
 		share: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|shareWiki'
+			right: 'fr-wseduc-wiki-controllers-WikiController|shareWiki'
 		},
 		listPages: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|listPages'
+			right: 'fr-wseduc-wiki-controllers-WikiController|listPages'
 		},
 		getPage: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|getPage'
+			right: 'fr-wseduc-wiki-controllers-WikiController|getPage'
+		},
+		createPage: {
+			right: 'fr-wseduc-wiki-controllers-WikiController|createPage'
 		},
 		editPage: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|updatePage'
+			right: 'fr-wseduc-wiki-controllers-WikiController|updatePage'
 		},
 		deletePage: {
-			right: 'fr.wseduc.wiki.controllers.WikiController|deletePage'
+			right: 'fr-wseduc-wiki-controllers-WikiController|deletePage'
 		}
 	},
 	workflow: {
 		create: 'fr.wseduc.wiki.controllers.WikiController|createWiki',
 		list: 'fr.wseduc.wiki.controllers.WikiController|listWikis',
 		view: 'fr.wseduc.wiki.controllers.WikiController|view',
-		createPage: 'fr.wseduc.wiki.controllers.WikiController|createPage',
 		listAllPages: 'fr.wseduc.wiki.controllers.WikiController|listAllPages'
 	}
 };
@@ -36,18 +38,11 @@ Behaviours.register('wiki', {
 	resource: function(resource){
 		console.log("Behaviours.resource call");
 		var rightsContainer = resource;
-		console.log(rightsContainer);
-		
 		if(!resource.myRights){
 			resource.myRights = {};
 		}
 		
 		for(var behaviour in wikiBehaviours.resources){
-			console.log(wikiBehaviours.resources[behaviour]);
-			if(model.me.hasRight(rightsContainer, wikiBehaviours.resources[behaviour])) {
-				console.log("hasRight is true");
-			}
-			
 			if(model.me.hasRight(rightsContainer, wikiBehaviours.resources[behaviour]) || model.me.userId === resource.owner.userId){
 				if(resource.myRights[behaviour] !== undefined){
 					resource.myRights[behaviour] = resource.myRights[behaviour] && wikiBehaviours.resources[behaviour];
@@ -57,7 +52,6 @@ Behaviours.register('wiki', {
 				}
 			}
 		}
-		console.log(resource.myRights);
 		return resource;
 	},
 	workflow: function(){

@@ -155,7 +155,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 	@Post("/:id/page")
 	@ApiDoc("Add page to wiki")
-	@SecuredAction("wiki.page.create")
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void createPage(final HttpServerRequest request) {
 		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 			@Override
@@ -235,7 +235,7 @@ public class WikiController extends MongoDbControllerHelper {
 	}
 		
 	@Get("/share/json/:id")
-	@ApiDoc("List rights for given a wikiId")
+	@ApiDoc("List rights for a given wikiId")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWiki(final HttpServerRequest request) {
 		super.shareJson(request);

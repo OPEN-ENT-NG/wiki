@@ -86,15 +86,18 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.createNewWiki = function(){
-		var data = {
+		var wikidata = {
 				title : $scope.wiki.title
 		};
-		$scope.wiki.createWiki(data, function(createdWiki){
+		var wikis = model.wikis;
+		$scope.wiki.createWiki(wikidata, function(createdWiki){
 			$scope.wiki = new Wiki();
 
 			var aWiki = new Wiki();
-			aWiki.title = data.title;
+			// aWiki.title = wikidata.title;
 			aWiki._id = createdWiki._id;
+			wikis.sync();
+			// $scope.selectedWiki = aWiki;
 			$scope.openSelectedWiki(aWiki);
 		});
 	};
@@ -128,11 +131,10 @@ function WikiController($scope, template, model, route){
 	
 	$scope.displayWikiList = function(){
 		model.wikis.sync();
-		window.location.href = '/wiki#//wiki-list';
+		window.location.href = '/wiki#/wiki-list';
 	}
 	
 	$scope.listPages = function(selectedWiki){
-		$scope.selectedWiki = selectedWiki;
 		window.location.href = '/wiki#/view/' + selectedWiki._id;
 	}
 

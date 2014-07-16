@@ -9,8 +9,8 @@ function Wiki() {
 	this.collection(Page, {
 		sync : function(callback) {
 			http().get('/wiki/list/' + wiki._id).done(function(wikiArray) {
+				wiki = wikiArray[0];
 				this.load(wikiArray[0].pages);
-				wiki.title = wikiArray[0].title;
 				callback();
 			}.bind(this));			
 		}
@@ -99,8 +99,8 @@ model.build = function() {
 
 	this.collection(Wiki, {
 		sync : function() {
-			http().get('/wiki/list').done(function(data) {
-				this.load(data);
+			http().get('/wiki/list').done(function(wikilist) {
+				this.load(wikilist);
 			}.bind(this));
 		},
 		behaviours: 'wiki'
