@@ -35,29 +35,34 @@ public class WikiServiceMongoImpl implements WikiService {
 	// TODO : créer des constantes pour les noms des champs
 
 	@Override
-	public void listWikis(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		// Query : return wikis visible by current user only (i.e. owner or shared)
+	public void listWikis(UserInfos user,
+			Handler<Either<String, JsonArray>> handler) {
+		// Query : return wikis visible by current user only (i.e. owner or
+		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId: user.getProfilGroupsIds()) {
+		for (String gpId : user.getProfilGroupsIds()) {
 			groups.add(QueryBuilder.start("groupId").is(gpId).get());
 		}
-		
+
 		QueryBuilder query = new QueryBuilder().or(
 				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
-				QueryBuilder.start("shared").elemMatch(
-						new QueryBuilder().or(groups.toArray(new DBObject[groups.size()])).get()
-				).get());
-		
+				QueryBuilder
+						.start("shared")
+						.elemMatch(
+								new QueryBuilder().or(
+										groups.toArray(new DBObject[groups
+												.size()])).get()).get());
+
 		// Projection
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("owner", 1)
-				.putNumber("modified", 1);
+				.putNumber("modified", 1).putNumber("shared", 1);
 
 		JsonObject sort = new JsonObject().putNumber("modified", -1);
 
-		mongo.find(collection, MongoQueryBuilder.build(query),
-				sort, projection, MongoDbResult.validResultsHandler(handler));
+		mongo.find(collection, MongoQueryBuilder.build(query), sort,
+				projection, MongoDbResult.validResultsHandler(handler));
 	}
 
 	@Override
@@ -67,7 +72,7 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("pages._id", 1)
-				.putNumber("pages.title", 1);
+				.putNumber("pages.title", 1).putNumber("shared", 1).putNumber("owner", 1);
 
 		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
 
@@ -76,19 +81,24 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler) {
-		// Query : return pages visible by current user only (i.e. owner or shared)
+	public void listAllPages(UserInfos user,
+			Handler<Either<String, JsonArray>> handler) {
+		// Query : return pages visible by current user only (i.e. owner or
+		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId: user.getProfilGroupsIds()) {
+		for (String gpId : user.getProfilGroupsIds()) {
 			groups.add(QueryBuilder.start("groupId").is(gpId).get());
 		}
-		
+
 		QueryBuilder query = new QueryBuilder().or(
 				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
-				QueryBuilder.start("shared").elemMatch(
-						new QueryBuilder().or(groups.toArray(new DBObject[groups.size()])).get()
-				).get());
+				QueryBuilder
+						.start("shared")
+						.elemMatch(
+								new QueryBuilder().or(
+										groups.toArray(new DBObject[groups
+												.size()])).get()).get());
 
 		// Projection
 		JsonObject projection = new JsonObject();
@@ -156,7 +166,8 @@ public class WikiServiceMongoImpl implements WikiService {
 		JsonObject elemMatch = new JsonObject();
 		elemMatch.putObject("$elemMatch", matchId);
 		JsonObject projection = new JsonObject();
-		projection.putObject("pages", elemMatch).putNumber("title", 1);
+		projection.putObject("pages", elemMatch).putNumber("title", 1)
+				.putNumber("owner", 1).putNumber("shared", 1);
 
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
@@ -224,7 +235,5 @@ public class WikiServiceMongoImpl implements WikiService {
 				modifier.build(),
 				MongoDbResult.validActionResultHandler(handler));
 	}
-	
-
 
 }

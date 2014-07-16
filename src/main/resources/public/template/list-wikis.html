@@ -1,15 +1,22 @@
-<button ng-click="displayCreateWikiForm()" translate content="wiki.create"></button>
+<button ng-click="displayCreateWikiForm()" workflow="wiki.create" translate content="wiki.create"></button>
 <h1 translate content="wiki.list.label"></h1>
-<div class="row" ng-repeat="wiki in wikis.all">
+
+<div class="row" workflow="wiki.list" ng-repeat="wiki in wikis.all">
 	<div class="three cell">
 		<a ng-click="openSelectedWiki(wiki)">[[wiki.title]]</a>
 	</div>
 	<div class="two cell">[[ wiki.owner.displayName ]]</div>
 	<div class="two cell">[[ formatDate(wiki.modified) ]]</div>
 	<div class="five cell">
-		<button ng-click="displayEditWikiForm(wiki)" translate content="wiki.update"></button>
-		<button ng-click="deleteWiki(wiki)" translate content="wiki.delete"></button>
-		<button ng-click="shareWiki(wiki)" translate content="wiki.share"></button>
+		<behaviour name="edit" resource="wiki">
+			<button ng-click="displayEditWikiForm(wiki)" translate content="wiki.update"></button>
+		</behaviour>
+		<behaviour name="delete" resource="wiki">
+			<button ng-click="deleteWiki(wiki)" translate content="wiki.delete"></button>
+		</behaviour>
+		<behaviour name="share" resource="wiki">
+			<button ng-click="shareWiki(wiki)" translate content="wiki.share"></button>
+		</behaviour>
 	</div>
 	
 	<!-- Lightbox to share wikis -->
@@ -18,5 +25,4 @@
 			<share-panel app-prefix="'wiki'" resources="currentWiki"/>
 		</lightbox>
 	</div>
-
 </div>

@@ -94,6 +94,7 @@ Wiki.prototype.listAllPages = function(callback) {
 
 
 model.build = function() {
+	model.me.workflow.load(['wiki']);
 	this.makeModels([ Wiki, Page ]);
 
 	this.collection(Wiki, {
@@ -101,7 +102,8 @@ model.build = function() {
 			http().get('/wiki/list').done(function(data) {
 				this.load(data);
 			}.bind(this));
-		}
+		},
+		behaviours: 'wiki'
 
 	})
 };

@@ -5,5 +5,9 @@
 	<h2>[[selectedWiki.page.title]]</h2>
 	<div bind-html="selectedWiki.page.content" />
 </nav>
-<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
-<button ng-click="deletePage()" translate content="wiki.page.delete"></button>
+<behaviour name="editPage" resource="selectedWiki">
+	<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
+</behaviour>
+<behaviour name="deletePage" resource="selectedWiki">
+	<button ng-click="deletePage()" translate content="wiki.page.delete"></button>
+</behaviour>
