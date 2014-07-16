@@ -14,7 +14,7 @@ routes.define(function($routeProvider){
       })
       .otherwise({
         redirectTo: '/wiki-list'
-      })
+      });
 });
 
 
@@ -33,13 +33,17 @@ function WikiController($scope, template, model, route){
 	// Definition des actions
 	route({
 		listPages: function(params){
-			$scope.selectedWiki = new Wiki({ _id: params.wikiId });
+			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+				return wiki._id === params.wikiId;
+			});
 			$scope.selectedWiki.pages.sync(function(){
 				template.open('main', 'list-wiki-pages');
-	        });			
+	        });
 		},
 	    viewPage: function(params){
-	    	$scope.selectedWiki = new Wiki({ _id: params.wikiId});
+			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+				return wiki._id === params.wikiId;
+			});
 	    	$scope.selectedWiki.findPage(params.pageId, function(result){
 	            template.open('main', 'view-page');
 	        });
@@ -137,7 +141,9 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
-    	$scope.selectedWiki = new Wiki({ _id: wikiId});
+    	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+			return wiki._id === wikiId;
+		});
     	$scope.selectedWiki.findPage(pageId, function(result){
             window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
         });
