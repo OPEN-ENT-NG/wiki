@@ -11,8 +11,8 @@
 		<behaviour name="edit" resource="wiki">
 			<button ng-click="displayEditWikiForm(wiki)" translate content="wiki.update"></button>
 		</behaviour>
-		<behaviour name="delete" resource="wiki">
-			<button ng-click="deleteWiki(wiki)" translate content="wiki.delete"></button>
+		<behaviour name="deleteWiki" resource="wiki">
+			<button ng-click="showDeleteWikiPopup(wiki)" translate content="wiki.delete"></button>
 		</behaviour>
 		<behaviour name="share" resource="wiki">
 			<button ng-click="shareWiki(wiki)" translate content="wiki.share"></button>
@@ -25,4 +25,17 @@
 			<share-panel app-prefix="'wiki'" resources="currentWiki"/>
 		</lightbox>
 	</div>
+	
+	<!-- Lightbox to confirm wiki deletion -->
+	<div ng-if="wikiToDelete._id">
+		<lightbox show="display.showConfirmDelete" on-close="wikiToDelete = {}; display.showConfirmDelete = false">
+		<h2>Supprimer un wiki</h2>
+		<p>Voulez-vous vraiment supprimer le wiki [[wikiToDelete.title]] ?</p>
+		<div class="row">
+			<button ng-click="deleteWiki(wikiToDelete)" class="right-magnet">Supprimer</button>
+			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">Annuler</button>
+		</div>
+		</lightbox>
+	</div>
+	
 </div>

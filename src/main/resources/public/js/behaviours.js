@@ -3,7 +3,7 @@ var wikiBehaviours = {
 		edit: {
 			right: 'fr-wseduc-wiki-controllers-WikiController|updateWiki'
 		},
-		delete: {
+		deleteWiki: {
 			right: 'fr-wseduc-wiki-controllers-WikiController|deleteWiki'
 		},
 		share: {

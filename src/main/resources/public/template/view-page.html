@@ -9,5 +9,15 @@
 	<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
 </behaviour>
 <behaviour name="deletePage" resource="selectedWiki">
-	<button ng-click="deletePage()" translate content="wiki.page.delete"></button>
+	<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
 </behaviour>
+
+<!-- Lightbox to confirm page deletion -->
+<lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">
+<h2>Supprimer une page</h2>
+<p>Voulez-vous vraiment supprimer la page ?</p>
+<div class="row">
+	<button ng-click="deletePage()" class="right-magnet">Supprimer</button>
+	<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">Annuler</button>
+</div>
+</lightbox>

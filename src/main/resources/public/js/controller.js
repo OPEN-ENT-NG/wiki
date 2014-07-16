@@ -66,10 +66,14 @@ function WikiController($scope, template, model, route){
 	$scope.deleteWiki = function(wikiToRemove){
 		wikiToRemove.deleteWiki(
 			function(){
+				$scope.wikiToDelete = {}; 
+				$scope.display.showConfirmDelete = false;
+				
 				// Maj de allpageslist pour la barre de recherche
 				$scope.wiki.listAllPages( function(pagesArray) {
 						$scope.allpageslist = pagesArray;
 				});
+				
 			} 
 		);
 	};
@@ -79,6 +83,10 @@ function WikiController($scope, template, model, route){
 		$scope.display.showPanel = true;
 	};
 
+	$scope.showDeleteWikiPopup = function(wiki){
+		$scope.wikiToDelete = wiki;
+		$scope.display.showConfirmDelete = true;
+	};
 	
 	$scope.displayCreateWikiForm = function(){
 		$scope.wiki = new Wiki( { title: "Titre" } );
