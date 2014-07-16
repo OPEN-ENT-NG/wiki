@@ -35,14 +35,28 @@ public class WikiServiceMongoImpl implements WikiService {
 	// TODO : créer des constantes pour les noms des champs
 
 	@Override
-	public void listWikis(Handler<Either<String, JsonArray>> handler) {
+	public void listWikis(UserInfos user, Handler<Either<String, JsonArray>> handler) {
+		// Query : return wikis visible by current user only (i.e. owner or shared)
+		List<DBObject> groups = new ArrayList<>();
+		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
+		for (String gpId: user.getProfilGroupsIds()) {
+			groups.add(QueryBuilder.start("groupId").is(gpId).get());
+		}
+		
+		QueryBuilder query = new QueryBuilder().or(
+				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
+				QueryBuilder.start("shared").elemMatch(
+						new QueryBuilder().or(groups.toArray(new DBObject[groups.size()])).get()
+				).get());
+		
+		// Projection
 		JsonObject projection = new JsonObject();
 		projection.putNumber("title", 1).putNumber("owner", 1)
 				.putNumber("modified", 1);
 
 		JsonObject sort = new JsonObject().putNumber("modified", -1);
 
-		mongo.find(collection, MongoQueryBuilder.build(new QueryBuilder()),
+		mongo.find(collection, MongoQueryBuilder.build(query),
 				sort, projection, MongoDbResult.validResultsHandler(handler));
 	}
 

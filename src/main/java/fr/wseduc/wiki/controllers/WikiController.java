@@ -43,9 +43,16 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("List wikis")
 	@SecuredAction("wiki.list")
 	public void listWikis(final HttpServerRequest request) {
-		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
 
-		wikiService.listWikis(handler);
+					wikiService.listWikis(user, handler);
+				}
+			}
+		});
 	}
 
 	@Get("/list/:id")

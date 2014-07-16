@@ -9,7 +9,7 @@ import fr.wseduc.webutils.Either;
 
 public interface WikiService {
 
-	public void listWikis(Handler<Either<String, JsonArray>> handler);
+	public void listWikis(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void listPages(String idWiki,
 			Handler<Either<String, JsonArray>> handler);
