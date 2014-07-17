@@ -1,10 +1,15 @@
 <a ng-click="displayWikiList()" translate content="wiki.displaylist"></a>
 <h1>[[selectedWiki.title]]</h1>
-<h2 translate content="wiki.pagelist.label"></h2>
-<div ng-repeat="page in selectedWiki.pages.all">
-	<a ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
-</div>
+<nav class="vertical">
+	<h2 translate content="wiki.pagelist.label"></h2>
+	<ul>
+	  <li ng-repeat="page in selectedWiki.pages.all">
+		<a ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
+	  </li>
+	</ul>
+	
+	<behaviour name="createPage" resource="selectedWiki">
+		<button ng-click="newPage(selectedWiki)" translate content="wiki.create.new.page"></button>
+	</behaviour>
 
-<behaviour name="createPage" resource="selectedWiki">
-	<button ng-click="newPage(selectedWiki)" translate content="wiki.create.new.page"></button>
-</behaviour>
+</nav>

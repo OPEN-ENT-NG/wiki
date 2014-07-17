@@ -1,14 +1,14 @@
 <a ng-click="displayWikiList()" translate content="wiki.displaylist"></a>
-<h1>[[selectedWiki.title]]</h1>
 <a ng-click="listPages(selectedWiki)" translate content="wiki.page.displaylist.label"></a>
-<nav class="vertical">
+<h1>[[selectedWiki.title]]</h1>
+<article>
 	<h2>[[selectedWiki.page.title]]</h2>
 	<div bind-html="selectedWiki.page.content" />
-</nav>
-<behaviour name="editPage" resource="selectedWiki">
+</article>
+<behaviour name="editPage" resource="selectedWiki" class="cell">
 	<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
 </behaviour>
-<behaviour name="deletePage" resource="selectedWiki">
+<behaviour name="deletePage" resource="selectedWiki" class="cell">
 	<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
 </behaviour>
 
