@@ -32,8 +32,8 @@
 	<!-- Lightbox to confirm wiki deletion -->
 	<div ng-if="display.showConfirmDelete">
 		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
-		<h2>Supprimer un (des) wiki(s)</h2>
-		<p>Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?</p>
+		<h2><i18n>wiki.delete.confirmform.title</i18n></h2>
+		<p><i18n>wiki.delete.confirmform.message</i18n></p>
 		<p ng-repeat="aWiki in wikis.selection()">[[aWiki.title]]</p>
 		<div class="row">
 			<button ng-click="deleteWikiSelection()" class="right-magnet">Supprimer</button>

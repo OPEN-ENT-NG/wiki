@@ -27,7 +27,14 @@
 	"wiki.delete": "Supprimer",
 	"wiki.share": "Partager",
 	
+	"wiki.delete.confirmform.title": "Supprimer un (des) wiki(s)",
+	"wiki.delete.confirmform.message": "Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?",
+	
 	"wiki.table.head.title": "Titre",
 	"wiki.table.head.author": "Auteur",
-	"wiki.table.head.modificationDate": "Modifié le"
+	"wiki.table.head.modificationDate": "Modifié le",
+	
+	"wiki.read": "Lecture",
+	"wiki.contrib": "Contribution",
+	"wiki.manager": "Gestion"
 }
