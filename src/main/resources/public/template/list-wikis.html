@@ -5,7 +5,7 @@
 	<table class="twelve">
 		<thead>
 			<tr>
-				<th></th>
+				<th><input type="checkbox" ng-model="display.selectWikis" ng-change="switchAllWikis()" /></th>
 				<th><i18n>wiki.table.head.title</i18n></th>
 				<th><i18n>wiki.table.head.author</i18n></th>
 				<th><i18n>wiki.table.head.modificationDate</i18n></th>
@@ -30,12 +30,13 @@
 	
 	
 	<!-- Lightbox to confirm wiki deletion -->
-	<div ng-if="wikiToDelete._id">
-		<lightbox show="display.showConfirmDelete" on-close="wikiToDelete = {}; display.showConfirmDelete = false">
-		<h2>Supprimer un wiki</h2>
-		<p>Voulez-vous vraiment supprimer le wiki [[wikiToDelete.title]] ?</p>
+	<div ng-if="display.showConfirmDelete">
+		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
+		<h2>Supprimer un (des) wiki(s)</h2>
+		<p>Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?</p>
+		<p ng-repeat="aWiki in wikis.selection()">[[aWiki.title]]</p>
 		<div class="row">
-			<button ng-click="deleteWiki(wikiToDelete)" class="right-magnet">Supprimer</button>
+			<button ng-click="deleteWikiSelection()" class="right-magnet">Supprimer</button>
 			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">Annuler</button>
 		</div>
 		</lightbox>
@@ -54,9 +55,7 @@
 				</button>
 			</behaviour>
 			<behaviour name="deleteWiki" resource="wikis.selection()" class="cell">
-				<button ng-if="wikis.selection().length === 1"
-						ng-click="showDeleteWikiPopup(wikis.selection()[0])"
-				>
+				<button ng-click="display.showConfirmDelete = true">
 					<i18n>wiki.delete</i18n>
 				</button>
 			</behaviour>

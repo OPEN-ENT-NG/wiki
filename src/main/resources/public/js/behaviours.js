@@ -94,6 +94,7 @@ Behaviours.register('wiki', {
 										owner : wiki.owner.userId,
 										icon : '/img/icons/unknown-large.png', // TODO : à modifier
 										path : '/wiki#/view/' + wiki._id + '/' + page._id,
+										wiki_id : wiki._id,
 										id : page._id
 									};
 								});
