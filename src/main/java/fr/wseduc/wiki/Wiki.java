@@ -1,9 +1,10 @@
 package fr.wseduc.wiki;
 
 import org.entcore.common.http.BaseServer;
-import org.entcore.common.http.filter.MongoAppFilter;
 
 import fr.wseduc.wiki.controllers.WikiController;
+import org.entcore.common.http.filter.ShareAndOwner;
+import org.entcore.common.mongodb.MongoDbConf;
 
 public class Wiki extends BaseServer {
 
@@ -11,9 +12,10 @@ public class Wiki extends BaseServer {
 	
 	@Override
 	public void start() {
-		setResourceProvider(new MongoAppFilter(WIKI_COLLECTION));
 		super.start();
 		addController(new WikiController(WIKI_COLLECTION));
+		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
+		setDefaultResourceFilter(new ShareAndOwner());
 	}
 
 }
