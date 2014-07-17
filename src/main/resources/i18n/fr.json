@@ -25,5 +25,9 @@
 	"wiki.create": "Créer",
 	"wiki.update": "Renommer",
 	"wiki.delete": "Supprimer",
-	"wiki.share": "Partager"
+	"wiki.share": "Partager",
+	
+	"wiki.table.head.title": "Titre",
+	"wiki.table.head.author": "Auteur",
+	"wiki.table.head.modificationDate": "Modifié le"
 }

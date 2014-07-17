@@ -36,7 +36,6 @@ var wikiBehaviours = {
 Behaviours.register('wiki', {
 	behaviours: wikiBehaviours,
 	resource: function(resource){
-		console.log("Behaviours.resource call");
 		var rightsContainer = resource;
 		if(!resource.myRights){
 			resource.myRights = {};
@@ -55,7 +54,6 @@ Behaviours.register('wiki', {
 		return resource;
 	},
 	workflow: function(){
-		console.log("Behaviours.workflow call");
 		var workflow = { };
 		var wikiWorkflow = wikiBehaviours.workflow;
 		for(var prop in wikiWorkflow){

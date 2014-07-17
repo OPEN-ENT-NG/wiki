@@ -1,30 +1,33 @@
 <button ng-click="displayCreateWikiForm()" workflow="wiki.create" translate content="wiki.create"></button>
 <h1 translate content="wiki.list.label"></h1>
 
-<div class="row" workflow="wiki.list" ng-repeat="wiki in wikis.all">
-	<div class="three cell">
-		<a ng-click="openSelectedWiki(wiki)">[[wiki.title]]</a>
-	</div>
-	<div class="two cell">[[ wiki.owner.displayName ]]</div>
-	<div class="two cell">[[ formatDate(wiki.modified) ]]</div>
-	<div class="five cell">
-		<behaviour name="edit" resource="wiki">
-			<button ng-click="displayEditWikiForm(wiki)" translate content="wiki.update"></button>
-		</behaviour>
-		<behaviour name="deleteWiki" resource="wiki">
-			<button ng-click="showDeleteWikiPopup(wiki)" translate content="wiki.delete"></button>
-		</behaviour>
-		<behaviour name="share" resource="wiki">
-			<button ng-click="shareWiki(wiki)" translate content="wiki.share"></button>
-		</behaviour>
-	</div>
+<div class="twelve cell" workflow="wiki.list">
+	<table class="twelve">
+		<thead>
+			<tr>
+				<th></th>
+				<th><i18n>wiki.table.head.title</i18n></th>
+				<th><i18n>wiki.table.head.author</i18n></th>
+				<th><i18n>wiki.table.head.modificationDate</i18n></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }">
+				<td><input type="checkbox" ng-model="wiki.selected" /></td>
+				<td ng-click="openSelectedWiki(wiki)"><a>[[wiki.title]]</a></td>
+				<td ng-click="openSelectedWiki(wiki)">[[wiki.owner.displayName]]</td>
+				<td ng-click="openSelectedWiki(wiki)">[[formatDate(wiki.modified)]]</td>
+			</tr>
+		</tbody>
+	</table>
 	
 	<!-- Lightbox to share wikis -->
-	<div ng-if="currentWiki._id">
-		<lightbox show="display.showPanel" on-close="currentWiki = {}; display.showPanel = false;">
-			<share-panel app-prefix="'wiki'" resources="currentWiki"/>
+	<div ng-if="display.showPanel">
+		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
+			<share-panel app-prefix="'wiki'" resources="wikis.selection()"/>
 		</lightbox>
 	</div>
+	
 	
 	<!-- Lightbox to confirm wiki deletion -->
 	<div ng-if="wikiToDelete._id">
@@ -36,6 +39,32 @@
 			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">Annuler</button>
 		</div>
 		</lightbox>
-	</div>
+	</div>	
 	
 </div>
+
+<section class="toggle-buttons" ng-class="{ hide: wikis.selection().length === 0 }">
+	<div class="toggle block-container">
+		<div class="row">
+			<behaviour name="edit" resource="wikis.selection()" class="cell">
+				<button ng-if="wikis.selection().length === 1"
+					ng-click="displayEditWikiForm(wikis.selection()[0])"
+				>
+					<i18n>wiki.update</i18n>
+				</button>
+			</behaviour>
+			<behaviour name="deleteWiki" resource="wikis.selection()" class="cell">
+				<button ng-if="wikis.selection().length === 1"
+						ng-click="showDeleteWikiPopup(wikis.selection()[0])"
+				>
+					<i18n>wiki.delete</i18n>
+				</button>
+			</behaviour>
+			<behaviour name="share" resource="wikis.selection()" class="cell">
+				<button ng-click="display.showPanel = true">
+					<i18n>wiki.share</i18n>
+				</button>
+			</behaviour>
+		</div>
+	</div>
+</section>

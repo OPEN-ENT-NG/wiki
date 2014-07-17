@@ -17,7 +17,7 @@
 <h2>Supprimer une page</h2>
 <p>Voulez-vous vraiment supprimer la page ?</p>
 <div class="row">
-	<button ng-click="deletePage()" class="right-magnet">Supprimer</button>
+	<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">Supprimer</button>
 	<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">Annuler</button>
 </div>
 </lightbox>
