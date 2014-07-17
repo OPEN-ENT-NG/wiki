@@ -9,6 +9,9 @@ routes.define(function($routeProvider){
       .when('/wiki-list', {
         action: 'listWikis'
       })
+      .when('/edit/:wikiId', {
+        action: 'editWiki'
+      })
       .when('/edit/:wikiId/:pageId', {
         action: 'editPage'
       })
@@ -33,12 +36,15 @@ function WikiController($scope, template, model, route){
 	// Definition des actions
 	route({
 		listPages: function(params){
-			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-				return wiki._id === params.wikiId;
+			model.wikis.on('sync', function(){
+				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+					return wiki._id === params.wikiId;
+				});
+				$scope.selectedWiki.pages.sync(function(){
+					template.open('main', 'list-wiki-pages');
+		        });
 			});
-			$scope.selectedWiki.pages.sync(function(){
-				template.open('main', 'list-wiki-pages');
-	        });
+			model.wikis.sync();
 		},
 	    viewPage: function(params){
 			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
@@ -49,8 +55,11 @@ function WikiController($scope, template, model, route){
 	        });
 	    },
 	    listWikis: function(params){
-	      template.open('main', 'list-wikis');
+			template.open('main', 'list-wikis');
 	    },
+	    editWiki: function(params){
+	    	template.open("main", "edit-wiki");
+		},
 	    editPage: function(params){
 			template.open('main', 'edit-page');
 		}
@@ -97,26 +106,23 @@ function WikiController($scope, template, model, route){
 		var wikidata = {
 				title : $scope.wiki.title
 		};
-		var wikis = model.wikis;
+
 		$scope.wiki.createWiki(wikidata, function(createdWiki){
 			$scope.wiki = new Wiki();
 
 			var aWiki = new Wiki();
-			// aWiki.title = wikidata.title;
 			aWiki._id = createdWiki._id;
-			wikis.sync();
-			// $scope.selectedWiki = aWiki;
 			$scope.openSelectedWiki(aWiki);
 		});
 	};
 	
 	$scope.cancelCreateWiki = function(){
-		$scope.displayWikiList();
+		template.open('main', 'list-wikis');
 	};
 	
     $scope.displayEditWikiForm = function(wiki){
     	$scope.wiki = wiki;
-    	template.open("main", "edit-wiki");
+    	window.location.href = '/wiki#/edit/' + wiki._id;
     };
     
 	$scope.cancelEditWiki = function(){
