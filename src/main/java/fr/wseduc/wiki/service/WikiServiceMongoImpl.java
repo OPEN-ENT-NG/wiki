@@ -56,8 +56,7 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		// Projection
 		JsonObject projection = new JsonObject();
-		projection.putNumber("title", 1).putNumber("owner", 1)
-				.putNumber("modified", 1).putNumber("shared", 1);
+		projection.putNumber("pages", 0).putNumber("created", 0);
 
 		JsonObject sort = new JsonObject().putNumber("modified", -1);
 
@@ -71,8 +70,7 @@ public class WikiServiceMongoImpl implements WikiService {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		JsonObject projection = new JsonObject();
-		projection.putNumber("title", 1).putNumber("pages._id", 1)
-				.putNumber("pages.title", 1).putNumber("shared", 1).putNumber("owner", 1);
+		projection.putNumber("pages.content", 0).putNumber("created", 0);
 
 		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
 
@@ -102,8 +100,7 @@ public class WikiServiceMongoImpl implements WikiService {
 
 		// Projection
 		JsonObject projection = new JsonObject();
-		projection.putNumber("title", 1).putNumber("pages._id", 1)
-				.putNumber("pages.title", 1).putNumber("owner", 1);
+		projection.putNumber("pages.content", 0).putNumber("created", 0);
 
 		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
 
@@ -112,7 +109,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void createWiki(UserInfos user, String wikiTitle,
+	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
 		JsonObject now = MongoDb.now();
 		JsonObject owner = new JsonObject().putString("userId",
@@ -125,6 +122,9 @@ public class WikiServiceMongoImpl implements WikiService {
 		newWiki.putString("title", wikiTitle).putObject("owner", owner)
 				.putObject("created", now).putObject("modified", now)
 				.putArray("pages", pages);
+		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
+			newWiki.putString("thumbnail", thumbnail);
+		}
 
 		mongo.save(collection, newWiki, validActionResultHandler(handler));
 	}

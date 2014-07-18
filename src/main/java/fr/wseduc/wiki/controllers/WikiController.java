@@ -100,8 +100,9 @@ public class WikiController extends MongoDbControllerHelper {
 								badRequest(request);
 								return;
 							}
+							String thumbnail = data.getString("thumbnail");
 
-							wikiService.createWiki(user, wikiTitle, handler);
+							wikiService.createWiki(user, wikiTitle, thumbnail, handler);
 						}
 					});
 				}

@@ -24,7 +24,7 @@ routes.define(function($routeProvider){
 function WikiController($scope, template, model, route){
 
 	$scope.template = template;
-	$scope.display = {showPanel: false};
+	$scope.display = {showPanel: false, viewWikisAs: 'list'};
 	$scope.wiki = new Wiki();
 	
 	// Utilise pour alimenter la barre de recherche des pages
@@ -98,7 +98,8 @@ function WikiController($scope, template, model, route){
 	
 	$scope.createNewWiki = function(){
 		var wikidata = {
-				title : $scope.wiki.title
+				title : $scope.wiki.title,
+				thumbnail : $scope.wiki.thumbnail
 		};
 
 		$scope.wiki.createWiki(wikidata, function(createdWiki){
@@ -149,6 +150,13 @@ function WikiController($scope, template, model, route){
 		else{
 			$scope.wikis.deselectAll();
 		}
+	};
+	
+	$scope.getWikiThumbnail = function(wiki){
+		if(!wiki.thumbnail || wiki.thumbnail === ''){
+			return '/img/illustrations/blog.png';
+		}
+		return wiki.thumbnail + '?thumbnail=120x120';
 	};
 	
 	$scope.listPages = function(selectedWiki){

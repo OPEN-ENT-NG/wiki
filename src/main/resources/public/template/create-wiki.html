@@ -1,6 +1,36 @@
 <h1 translate content="wiki.createform.label"></h1>
-<article>
-	<input type="text" ng-model="wiki.title" />
-	<button class="cancel" ng-click="cancelCreateWiki()" translate content="wiki.createform.cancel"></button>
-	<button ng-click="createNewWiki()" translate content="wiki.createform.create"/>
+<div class="row">
+	<hr />
+</div>
+
+<article class="row">
+	<section class="row">
+		<form class="row reduce-block-six">
+			<div class="row">
+				<div class="two cell clip fixed-block height-two">
+					<div class="absolute" loading-panel="upload-wiki-thumbnail">
+						<image-select ng-model="wiki.thumbnail" default="/img/illustrations/blog.png"></image-select>
+					</div>
+
+				</div>
+				<div class="ten cell reduce-block-eight">
+					<input type="text" ng-model="wiki.title" required translate-attr="placeholder" placeholder="Entrez le titre de votre wiki" class="twelve cell" />
+					<div class="row">
+						<hr class="row" />
+					</div>
+					<media-select ng-model="wiki.thumbnail" label="Changer l'image" file-format="'img'"></media-select>
+				</div>
+
+			</div>
+			<div class="row reduce-block-eight">
+				<input type="submit" ng-click="createNewWiki()" translate-attr="value" class="button right-magnet" value="wiki.createform.create">
+				<input type="button" class="button right-magnet cancel" translate-attr="value" ng-click="cancelCreateWiki()" value="wiki.createform.cancel">
+				<div class="clear"></div>
+			</div>
+		</form>
+
+	</section>
 </article>
+</div>
+<div class="clear"></div>
+</div>
