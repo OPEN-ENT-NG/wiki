@@ -36,7 +36,7 @@ function WikiController($scope, template, model, route){
 	// Definition des actions
 	route({
 		listPages: function(params){
-			model.wikis.on('sync', function(){
+			model.wikis.one('sync', function(){
 				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 					return wiki._id === params.wikiId;
 				});
@@ -190,6 +190,15 @@ function WikiController($scope, template, model, route){
 	$scope.page = new Page();
 	
 	$scope.createPage = function(){
+
+		if( _.find($scope.selectedWiki.pages.all, function(page){
+				return page.title === $scope.page.title;
+			})
+		){
+			notify.error('wiki.page.createform.titlealreadyexist.error');
+			return;
+		}
+		
 		var data = {
 				title : $scope.page.title,
 				content : $scope.page.content
@@ -217,6 +226,15 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.updatePage = function(){
+		
+		if( _.find($scope.selectedWiki.pages.all, function(page){
+					return page.title === $scope.selectedWiki.page.title && page._id !== $scope.selectedWiki.page._id;
+				})
+		){
+			notify.error('wiki.page.editform.titlealreadyexist.error');
+			return;
+		}
+		
 		var data = {
 				title : $scope.selectedWiki.page.title,
 				content : $scope.selectedWiki.page.content
@@ -234,8 +252,6 @@ function WikiController($scope, template, model, route){
 	
 	$scope.deletePage = function(){
 		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
-			$scope.selectedWiki.pages.sync();
-			
 			// Maj de allpageslist pour la barre de recherche
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;

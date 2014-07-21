@@ -3,8 +3,10 @@
 	
 	"wiki.page.createform.save": "Enregistrer",
 	"wiki.page.createform.input.placeholder": "Entrez le titre de la page",
+	"wiki.page.createform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.createform.cancel": "Annuler",
 	"wiki.page.editform.save": "Enregistrer",
+	"wiki.page.editform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.editform.cancel": "Annuler",
 	"wiki.page.edit": "Modifier",
 	"wiki.page.delete": "Supprimer",
