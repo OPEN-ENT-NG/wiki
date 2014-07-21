@@ -13,12 +13,17 @@
 	<portal>
 		<section ng-controller="WikiController">
 			<container template="main"></container>
-			<autocomplete
-				workflow="wiki.listAllPages"
-				options="allpageslist"
-				ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
-				ng-model="selectedPage">
-			</autocomplete>
+			<div class="row">
+				<hr />
+			</div>
+			<div class="row">
+				<autocomplete
+					workflow="wiki.listAllPages"
+					options="allpageslist"
+					ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
+					ng-model="selectedPage">
+				</autocomplete>
+			</div>
 		</section>
 	</portal>
 </body>

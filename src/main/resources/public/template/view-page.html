@@ -13,19 +13,27 @@
 	<h2>[[selectedWiki.page.title]]</h2>
 	<div bind-html="selectedWiki.page.content" />
 </article>
-<behaviour name="editPage" resource="selectedWiki" class="cell">
-	<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
-</behaviour>
-<behaviour name="deletePage" resource="selectedWiki" class="cell">
-	<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
-</behaviour>
+<div class="row">
+	<div class="display-buttons">
+	<behaviour name="editPage" resource="selectedWiki" class="cell">
+		<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
+	</behaviour>
+	<behaviour name="deletePage" resource="selectedWiki" class="cell">
+		<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
+	</behaviour>
+	</div>
+</div>
 
 <!-- Lightbox to confirm page deletion -->
 <lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">
-<h2>Supprimer une page</h2>
-<p>Voulez-vous vraiment supprimer la page ?</p>
+<h2><i18n>wiki.page.confirmdeleteform.title</i18n></h2>
+<p><i18n>wiki.page.confirmdeleteform.message</i18n></p>
 <div class="row">
-	<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">Supprimer</button>
-	<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">Annuler</button>
+	<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">
+		<i18n>wiki.page.confirmdeleteform.title.delete</i18n>
+	</button>
+	<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">
+		<i18n>wiki.page.confirmdeleteform.title.cancel</i18n>
+	</button>
 </div>
 </lightbox>

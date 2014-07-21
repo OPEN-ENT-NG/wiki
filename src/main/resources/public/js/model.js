@@ -52,7 +52,7 @@ Wiki.prototype.createWiki = function(data, callback) {
 	});
 }
 
-Wiki.prototype.renameWiki = function(data, callback) {
+Wiki.prototype.updateWiki = function(data, callback) {
 	http().putJson('/wiki/' + this._id, data).done(function(){
 		callback();
 	});

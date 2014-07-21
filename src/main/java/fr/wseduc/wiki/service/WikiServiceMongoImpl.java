@@ -130,7 +130,7 @@ public class WikiServiceMongoImpl implements WikiService {
 	}
 
 	@Override
-	public void updateWiki(String idWiki, String wikiTitle,
+	public void updateWiki(String idWiki, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
@@ -138,6 +138,12 @@ public class WikiServiceMongoImpl implements WikiService {
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.set("title", wikiTitle);
 		modifier.set("modified", MongoDb.now());
+		if(thumbnail==null || thumbnail.trim().isEmpty()){
+			modifier.set("thumbnail", "");
+		}
+		else {
+			modifier.set("thumbnail", thumbnail);
+		}
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),

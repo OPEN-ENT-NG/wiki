@@ -62,12 +62,16 @@
 	<!-- Lightbox to confirm wiki deletion -->
 	<div ng-if="display.showConfirmDelete">
 		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
-		<h2><i18n>wiki.delete.confirmform.title</i18n></h2>
-		<p><i18n>wiki.delete.confirmform.message</i18n></p>
+		<h2><i18n>wiki.confirmdeleteform.title</i18n></h2>
+		<p><i18n>wiki.confirmdeleteform.message</i18n></p>
 		<p ng-repeat="aWiki in wikis.selection()">[[aWiki.title]]</p>
 		<div class="row">
-			<button ng-click="deleteWikiSelection()" class="right-magnet">Supprimer</button>
-			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">Annuler</button>
+			<button ng-click="deleteWikiSelection()" class="right-magnet">
+				<i18n>wiki.confirmdeleteform.title.delete</i18n>
+			</button>
+			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">
+				<i18n>wiki.confirmdeleteform.title.cancel</i18n>
+			</button>
 		</div>
 		</lightbox>
 	</div>	

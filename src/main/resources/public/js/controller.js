@@ -92,7 +92,7 @@ function WikiController($scope, template, model, route){
 	};
 
 	$scope.displayCreateWikiForm = function(){
-		$scope.wiki = new Wiki( { title: "Titre" } );
+		$scope.wiki = new Wiki();
 		template.open("main", "create-wiki");
 	};
 	
@@ -124,11 +124,12 @@ function WikiController($scope, template, model, route){
 		$scope.displayWikiList();
 	};
     
-	$scope.renameWiki = function(){
+	$scope.updateWiki = function(){
 		var data = {
-				title : $scope.wiki.title
+				title : $scope.wiki.title,
+				thumbnail : $scope.wiki.thumbnail,
 		};
-		$scope.wiki.renameWiki(data, function(){
+		$scope.wiki.updateWiki(data, function(){
 			// Maj de allpageslist pour la barre de recherche
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;

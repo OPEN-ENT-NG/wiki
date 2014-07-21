@@ -2,6 +2,7 @@
 	"wiki.head.title": "Wiki",
 	
 	"wiki.page.createform.save": "Enregistrer",
+	"wiki.page.createform.input.placeholder": "Entrez le titre de la page",
 	"wiki.page.createform.cancel": "Annuler",
 	"wiki.page.editform.save": "Enregistrer",
 	"wiki.page.editform.cancel": "Annuler",
@@ -9,10 +10,11 @@
 	"wiki.page.delete": "Supprimer",
 	
 	"wiki.createform.label": "Nouveau wiki",
+	"wiki.createform.input.placeholder": "Entrez le titre de votre wiki",
 	"wiki.createform.create": "Créer",
 	"wiki.createform.cancel": "Annuler",
 	
-	"wiki.editform.label": "Renommer le wiki",
+	"wiki.editform.label": "Modifier un wiki",
 	"wiki.editform.save": "Enregistrer",
 	"wiki.editform.cancel": "Annuler",
 
@@ -23,12 +25,19 @@
 
 	"wiki.list.label": "Liste des wikis",
 	"wiki.create": "Créer",
-	"wiki.update": "Renommer",
+	"wiki.update": "Modifier",
 	"wiki.delete": "Supprimer",
 	"wiki.share": "Partager",
 	
-	"wiki.delete.confirmform.title": "Supprimer un (des) wiki(s)",
-	"wiki.delete.confirmform.message": "Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?",
+	"wiki.confirmdeleteform.title": "Supprimer un (des) wiki(s)",
+	"wiki.confirmdeleteform.message": "Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?",
+	"wiki.confirmdeleteform.title.cancel": "Annuler",
+	"wiki.confirmdeleteform.title.delete": "Supprimer",
+	
+	"wiki.page.confirmdeleteform.title": "Supprimer une page",
+	"wiki.page.confirmdeleteform.message": "Voulez-vous vraiment supprimer la page ?",
+	"wiki.page.confirmdeleteform.title.cancel": "Annuler",
+	"wiki.page.confirmdeleteform.title.delete": "Supprimer",
 	
 	"wiki.table.head.title": "Titre",
 	"wiki.table.head.author": "Auteur",

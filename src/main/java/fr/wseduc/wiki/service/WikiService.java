@@ -19,7 +19,7 @@ public interface WikiService {
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void updateWiki(String idWiki, String wikiTitle,
+	public void updateWiki(String idWiki, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void deleteWiki(String idWiki,
