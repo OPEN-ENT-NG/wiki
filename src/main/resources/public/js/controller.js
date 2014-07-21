@@ -97,6 +97,19 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.createNewWiki = function(){
+		// Verification du champ titre
+		if (!$scope.wiki.title || $scope.wiki.title.trim().length === 0){
+			return;
+		}
+		if( _.find(model.wikis.all, function(wiki){
+			return $scope.wiki.title.trim() === wiki.title.trim() && 
+					model.me.userId === wiki.owner.userId;
+			})
+		){
+			notify.error('wiki.createform.titlealreadyexist.error');
+			return;
+		}
+		
 		var wikidata = {
 				title : $scope.wiki.title,
 				thumbnail : $scope.wiki.thumbnail
@@ -125,6 +138,20 @@ function WikiController($scope, template, model, route){
 	};
     
 	$scope.updateWiki = function(){
+		// Verification du champ titre
+		if (!$scope.wiki.title || $scope.wiki.title.trim().length === 0){
+			return;
+		}
+		if( _.find(model.wikis.all, function(wiki){
+			return ($scope.wiki.title.trim() === wiki.title.trim() && 
+					model.me.userId === wiki.owner.userId && 
+					wiki._id !== $scope.wiki._id);
+			})
+		){
+			notify.error('wiki.editform.titlealreadyexist.error');
+			return;
+		}
+		
 		var data = {
 				title : $scope.wiki.title,
 				thumbnail : $scope.wiki.thumbnail,
@@ -190,9 +217,12 @@ function WikiController($scope, template, model, route){
 	$scope.page = new Page();
 	
 	$scope.createPage = function(){
-
+		// Verification du champ titre
+		if (!$scope.page.title || $scope.page.title.trim().length === 0){
+			return;
+		}
 		if( _.find($scope.selectedWiki.pages.all, function(page){
-				return page.title === $scope.page.title;
+				return page.title.trim() === $scope.page.title.trim();
 			})
 		){
 			notify.error('wiki.page.createform.titlealreadyexist.error');
@@ -226,9 +256,13 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.updatePage = function(){
-		
+		// Verification du champ titre
+		if (!$scope.selectedWiki.page.title || $scope.selectedWiki.page.title.trim().length === 0){
+			return;
+		}
 		if( _.find($scope.selectedWiki.pages.all, function(page){
-					return page.title === $scope.selectedWiki.page.title && page._id !== $scope.selectedWiki.page._id;
+					return page.title.trim() === $scope.selectedWiki.page.title.trim() && 
+							page._id !== $scope.selectedWiki.page._id;
 				})
 		){
 			notify.error('wiki.page.editform.titlealreadyexist.error');

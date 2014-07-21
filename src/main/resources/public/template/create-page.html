@@ -1,13 +1,15 @@
 <h1>[[selectedWiki.title]]</h1>
 <article>
-	<div class="row">
-		<input type="text" ng-model="page.title" translate-attr="placeholder" placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
-	</div>
-	<div class="row">
-		<html-editor ng-model="page.content"></html-editor>
-	</div>
-	<div class="row">
-		<button class="cancel" ng-click="cancelCreatePage(selectedWiki)" translate content="wiki.page.createform.cancel"></button>
-		<button ng-click="createPage()" translate content="wiki.page.createform.save"></button>	
-	</div>
+	<form class="row">
+		<div class="row">
+			<input type="text" ng-model="page.title" required translate-attr="placeholder" placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
+		</div>
+		<div class="row">
+			<html-editor ng-model="page.content"></html-editor>
+		</div>
+		<div class="row">
+			<button class="cancel" ng-click="cancelCreatePage(selectedWiki)" translate content="wiki.page.createform.cancel"></button>
+			<button ng-click="createPage()" translate content="wiki.page.createform.save"></button>	
+		</div>
+	</form>
 </article>

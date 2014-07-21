@@ -13,10 +13,12 @@
 	
 	"wiki.createform.label": "New wiki",
 	"wiki.createform.input.placeholder": "Type the title of your wiki",
+	"wiki.createform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.createform.create": "Create",
 	"wiki.createform.cancel": "Cancel",
 	
 	"wiki.editform.label": "Update wiki",
+	"wiki.editform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.editform.save": "Save",
 	"wiki.editform.cancel": "Cancel",
 
