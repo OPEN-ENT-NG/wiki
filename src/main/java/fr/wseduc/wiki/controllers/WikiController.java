@@ -2,6 +2,7 @@ package fr.wseduc.wiki.controllers;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
+import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
@@ -150,7 +151,7 @@ public class WikiController extends MongoDbControllerHelper {
 		String idWiki = request.params().get("id");
 		String idPage = request.params().get("idpage");
 
-		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+		Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
 
 		wikiService.getPage(idWiki, idPage, handler);
 	}

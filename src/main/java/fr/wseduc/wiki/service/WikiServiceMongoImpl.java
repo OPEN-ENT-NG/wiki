@@ -236,6 +236,7 @@ public class WikiServiceMongoImpl implements WikiService {
 		idPageJO.putString("_id", idPage);
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.pull("pages", idPageJO);
+		modifier.set("modified", MongoDb.now());
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),
