@@ -8,9 +8,8 @@ function Wiki() {
 	
 	this.collection(Page, {
 		sync : function(callback) {
-			http().get('/wiki/list/' + wiki._id).done(function(wikiArray) {
-				wiki = wikiArray[0];
-				this.load(wikiArray[0].pages);
+			http().get('/wiki/' + wiki._id + '/listpages').done(function(returnedWiki) {
+				this.load(returnedWiki.pages);
 				callback();
 			}.bind(this));			
 		}

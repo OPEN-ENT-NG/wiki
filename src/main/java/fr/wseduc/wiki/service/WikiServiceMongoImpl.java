@@ -66,16 +66,14 @@ public class WikiServiceMongoImpl implements WikiService {
 
 	@Override
 	public void listPages(String idWiki,
-			Handler<Either<String, JsonArray>> handler) {
+			Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		JsonObject projection = new JsonObject();
 		projection.putNumber("pages.content", 0).putNumber("created", 0);
 
-		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
-
-		mongo.find(collection, MongoQueryBuilder.build(query), sort,
-				projection, MongoDbResult.validResultsHandler(handler));
+		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
+				MongoDbResult.validResultHandler(handler));
 	}
 
 	@Override

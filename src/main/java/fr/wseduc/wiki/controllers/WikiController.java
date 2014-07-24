@@ -56,11 +56,11 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
-	@Get("/list/:id")
-	@ApiDoc("List pages for a given wikiId")
+	@Get("/:id/listpages")
+	@ApiDoc("Get a wiki with all its pages' titles")
 	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void listPages(final HttpServerRequest request) {
-		Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
+		Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
 
 		String idWiki = request.params().get("id");
 
@@ -68,7 +68,7 @@ public class WikiController extends MongoDbControllerHelper {
 	}
 	
 	@Get("/listallpages")
-	@ApiDoc("List pages of all wikis, visible by current user")
+	@ApiDoc("List wikis, visible by current user, with all their pages' titles")
 	@SecuredAction("wiki.list")
 	public void listAllPages(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
