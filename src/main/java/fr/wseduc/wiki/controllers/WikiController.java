@@ -241,20 +241,21 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("List rights for a given wikiId")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWiki(final HttpServerRequest request) {
-		super.shareJson(request);
+		super.shareJson(request, false);
 	}
 	
 	@Put("/share/json/:id")
 	@ApiDoc("Add rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiSubmit(final HttpServerRequest request) {
-		super.shareJsonSubmit(request, null);
+		super.shareJsonSubmit(request, null, false);
 	}
 	
 	@Put("/share/remove/:id")
 	@ApiDoc("Remove rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiRemove(final HttpServerRequest request) {
-		super.removeShare(request);
+		super.removeShare(request, false);
 	}
+
 }
