@@ -1,12 +1,11 @@
 package fr.wseduc.wiki.service;
 
-import static org.entcore.common.mongodb.MongoDbResult.validActionResultHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.entcore.common.mongodb.MongoDbResult;
+import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.json.JsonArray;
@@ -21,17 +20,17 @@ import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
 
-public class WikiServiceMongoImpl implements WikiService {
+public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
 
 	private final String collection;
 	private final MongoDb mongo;
 
 	public WikiServiceMongoImpl(final String collection) {
+		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
 	}
 
-	// TODO : hériter de MongoDbCrudService pour économiser du code
 	// TODO : créer des constantes pour les noms des champs
 
 	@Override
@@ -109,52 +108,37 @@ public class WikiServiceMongoImpl implements WikiService {
 	@Override
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
-		JsonObject now = MongoDb.now();
-		JsonObject owner = new JsonObject().putString("userId",
-				user.getUserId()).putString("displayName", user.getUsername());
-
-		JsonArray pages = new JsonArray();
-
+		
 		JsonObject newWiki = new JsonObject();
-
-		newWiki.putString("title", wikiTitle).putObject("owner", owner)
-				.putObject("created", now).putObject("modified", now)
-				.putArray("pages", pages);
+		newWiki.putString("title", wikiTitle)
+				.putArray("pages", new JsonArray());		
 		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
 			newWiki.putString("thumbnail", thumbnail);
 		}
 
-		mongo.save(collection, newWiki, validActionResultHandler(handler));
+		super.create(newWiki, user, handler);
 	}
 
 	@Override
 	public void updateWiki(String idWiki, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
 
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
-
-		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-		modifier.set("title", wikiTitle);
-		modifier.set("modified", MongoDb.now());
+		JsonObject data = new JsonObject();
+		data.putString("title", wikiTitle);
 		if(thumbnail==null || thumbnail.trim().isEmpty()){
-			modifier.set("thumbnail", "");
+			data.putString("thumbnail", "");
 		}
 		else {
-			modifier.set("thumbnail", thumbnail);
+			data.putString("thumbnail", thumbnail);
 		}
-
-		mongo.update(collection, MongoQueryBuilder.build(query),
-				modifier.build(),
-				MongoDbResult.validActionResultHandler(handler));
+		
+		super.update(idWiki, data, handler);
 	}
 
 	@Override
 	public void deleteWiki(String idWiki,
 			Handler<Either<String, JsonObject>> handler) {
-
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
-		mongo.delete(collection, MongoQueryBuilder.build(query),
-				MongoDbResult.validActionResultHandler(handler));
+		super.delete(idWiki, handler);
 	}
 
 	@Override
