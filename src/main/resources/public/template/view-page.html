@@ -1,28 +1,31 @@
 <div class="row">
-	<a ng-click="displayWikiList()" translate content="wiki.displaylist"></a>
-</div>
-<div class="row">
 	<a ng-click="listPages(selectedWiki)" translate content="wiki.page.displaylist.label"></a>
 </div>
 <div class="row">
 	<hr />
 </div>
 
-<h1>[[selectedWiki.title]]</h1>
 <article>
-	<h2>[[selectedWiki.page.title]]</h2>
+	<div class="row">
+		<div class="seven cell">
+			<h2>[[selectedWiki.page.title]]</h2>
+		</div>
+		<div class="five cell">
+			<div class="display-buttons">
+				<behaviour name="editPage" resource="selectedWiki" class="cell">
+					<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
+				</behaviour>
+				<behaviour name="deletePage" resource="selectedWiki" class="cell">
+					<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
+				</behaviour>
+			</div>
+		</div>
+	</div>
+
+	
 	<div bind-html="selectedWiki.page.content" />
 </article>
-<div class="row">
-	<div class="display-buttons">
-	<behaviour name="editPage" resource="selectedWiki" class="cell">
-		<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
-	</behaviour>
-	<behaviour name="deletePage" resource="selectedWiki" class="cell">
-		<button ng-click="display.showConfirmDeletePage = true;" translate content="wiki.page.delete"></button>
-	</behaviour>
-	</div>
-</div>
+
 
 <!-- Lightbox to confirm page deletion -->
 <lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">

@@ -1,7 +1,8 @@
-<button ng-click="displayCreateWikiForm()" workflow="wiki.create" translate content="wiki.create"></button>
-<h1 translate content="wiki.list.label"></h1>
+<nav class="contextual-buttons row">
+	<div class="action-buttons">
+		<button ng-click="displayCreateWikiForm()" workflow="wiki.create" translate content="wiki.create"></button>
+	</div>
 
-<div class="row">
 	<div class="display-buttons">
 		<i class="show-list"
 		   ng-class="{ selected: display.viewWikisAs === 'list' }"
@@ -10,7 +11,7 @@
 			ng-class="{ selected: display.viewWikisAs === 'icons' }"
 			ng-click="display.viewWikisAs = 'icons'"></i>
 	</div>
-</div>
+</nav>
 
 <div class="twelve cell" workflow="wiki.list">
 	<!-- Display wikis as a list -->
@@ -38,17 +39,18 @@
 	<!-- Display wikis as icons -->
 	<div ng-if="display.viewWikisAs === 'icons'">
 	  <div show="display.viewWikisAs === 'icons'" class="icons-view">
-		<div ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }" class="element reduce-block-six">
-		
-		  <div ng-click="openSelectedWiki(wiki)" class="img container">
-			<div class="clip twelve cell height-twelve"><img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" /></div>
-		  </div>
-		  <input type="checkbox" data-ng-model="wiki.selected"/>
-		  <legend>
-		    <a ng-click="openSelectedWiki(wiki)" class="medium-text">[[wiki.title]]</a>
-			<strong class="small-text">[[wiki.owner.displayName]]</strong>
-		  </legend>
-		</div>
+		  <article>
+				<div ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }" class="element reduce-block-six">
+				  <div ng-click="openSelectedWiki(wiki)" class="img container">
+					<div class="clip twelve cell height-twelve"><img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" /></div>
+				  </div>
+				  <input type="checkbox" data-ng-model="wiki.selected"/>
+				  <legend>
+				    <a ng-click="openSelectedWiki(wiki)" class="medium-text">[[wiki.title]]</a>
+					<strong class="small-text">[[wiki.owner.displayName]]</strong>
+				  </legend>
+				</div>
+			</article>
 	  </div>
 	</div>
 		

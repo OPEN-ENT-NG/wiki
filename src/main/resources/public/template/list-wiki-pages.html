@@ -1,7 +1,7 @@
-<a ng-click="displayWikiList()" translate content="wiki.displaylist"></a>
-<h1>[[selectedWiki.title]]</h1>
 <nav class="vertical">
-	<h2 translate content="wiki.pagelist.label"></h2>
+	<div class="row">
+		<h2 translate content="wiki.pagelist.label"></h2>
+	</div>
 	<ul>
 	  <li ng-repeat="page in selectedWiki.pages.all">
 		<a ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>

@@ -26,6 +26,7 @@ function WikiController($scope, template, model, route){
 	$scope.template = template;
 	$scope.display = {showPanel: false, viewWikisAs: 'list'};
 	$scope.wiki = new Wiki();
+	$scope.applicationName = lang.translate('wiki.title');
 	
 	// Utilise pour alimenter la barre de recherche des pages
 	$scope.wiki.listAllPages( function(pagesArray) {
@@ -55,6 +56,7 @@ function WikiController($scope, template, model, route){
 	        });
 	    },
 	    listWikis: function(params){
+	    	delete $scope.selectedWiki;
 			template.open('main', 'list-wikis');
 	    },
 	    editWiki: function(params){

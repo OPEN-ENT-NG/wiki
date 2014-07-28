@@ -1,5 +1,6 @@
 {
 	"wiki.head.title": "Wiki",
+	"wiki.title": "Wiki",
 	
 	"wiki.page.createform.save": "Save",
 	"wiki.page.createform.input.placeholder": "Type the page title",
@@ -11,13 +12,11 @@
 	"wiki.page.edit": "Edit",
 	"wiki.page.delete": "Delete",
 	
-	"wiki.createform.label": "New wiki",
 	"wiki.createform.input.placeholder": "Type the title of your wiki",
 	"wiki.createform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.createform.create": "Create",
 	"wiki.createform.cancel": "Cancel",
 	
-	"wiki.editform.label": "Update wiki",
 	"wiki.editform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.editform.save": "Save",
 	"wiki.editform.cancel": "Cancel",
@@ -27,7 +26,6 @@
 	"wiki.pagelist.label": "Page list",
 	"wiki.create.new.page": "New Page",
 
-	"wiki.list.label": "Wiki list",
 	"wiki.create": "Create",
 	"wiki.update": "Update",
 	"wiki.delete": "Delete",
