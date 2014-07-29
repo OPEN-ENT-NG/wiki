@@ -9,8 +9,14 @@ routes.define(function($routeProvider){
       .when('/wiki-list', {
         action: 'listWikis'
       })
+      .when('/create', {
+        action: 'displayCreateWikiForm'
+      })
       .when('/edit/:wikiId', {
         action: 'editWiki'
+      })
+      .when('/create-page', {
+        action: 'displayCreatePageForm'
       })
       .when('/edit/:wikiId/:pageId', {
         action: 'editPage'
@@ -59,8 +65,16 @@ function WikiController($scope, template, model, route){
 	    	delete $scope.selectedWiki;
 			template.open('main', 'list-wikis');
 	    },
+	    displayCreateWikiForm: function(){
+			$scope.wiki = new Wiki();
+			template.open("main", "create-wiki");
+	    },
 	    editWiki: function(params){
 	    	template.open("main", "edit-wiki");
+		},
+		displayCreatePageForm: function(){
+			$scope.page = new Page();
+			template.open('main', 'create-page');
 		},
 	    editPage: function(params){
 			template.open('main', 'edit-page');
@@ -94,8 +108,7 @@ function WikiController($scope, template, model, route){
 	};
 
 	$scope.displayCreateWikiForm = function(){
-		$scope.wiki = new Wiki();
-		template.open("main", "create-wiki");
+		window.location.href = '/wiki#/create';
 	};
 	
 	$scope.createNewWiki = function(){
@@ -127,7 +140,7 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.cancelCreateWiki = function(){
-		template.open('main', 'list-wikis');
+		window.location.href = '/wiki#/wiki-list';
 	};
 	
     $scope.displayEditWikiForm = function(wiki){
@@ -206,14 +219,12 @@ function WikiController($scope, template, model, route){
         });
 	}
 		
-	$scope.newPage = function(selectedWiki){
-		$scope.page = new Page();
-		$scope.selectedWiki = selectedWiki;
-		template.open('main', 'create-page');
+	$scope.newPage = function(){
+		window.location.href = '/wiki#/create-page';
 	}
 	
 	$scope.cancelCreatePage = function(selectedWiki){
-		template.open('main', 'list-wiki-pages');
+		window.location.href = '/wiki#/view/' + selectedWiki._id;
 	}
 
 	$scope.page = new Page();

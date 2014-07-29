@@ -7,8 +7,9 @@
 			<html-editor ng-model="page.content"></html-editor>
 		</div>
 		<div class="row">
-			<button class="cancel" ng-click="cancelCreatePage(selectedWiki)" translate content="wiki.page.createform.cancel"></button>
-			<button ng-click="createPage()" translate content="wiki.page.createform.save"></button>	
+			<button class="right-magnet" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+			<button class="right-magnet cancel" ng-click="cancelCreatePage(selectedWiki)" translate content="wiki.page.createform.cancel"></button>
 		</div>
+		<div class="clear"></div>
 	</form>
 </article>
