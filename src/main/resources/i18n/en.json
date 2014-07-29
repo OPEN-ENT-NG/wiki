@@ -16,10 +16,12 @@
 	"wiki.createform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.createform.create": "Create",
 	"wiki.createform.cancel": "Cancel",
+	"wiki.createform.change.picture": "Change picture",
 	
 	"wiki.editform.titlealreadyexist.error": "You have already created a wiki with this title",
 	"wiki.editform.save": "Save",
 	"wiki.editform.cancel": "Cancel",
+	"wiki.editform.change.picture": "Change picture",
 
 	"wiki.pagelist.label": "Page list",
 	"wiki.create.new.page": "New Page",

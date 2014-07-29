@@ -14,12 +14,14 @@
 	
 	"wiki.createform.input.placeholder": "Entrez le titre de votre wiki",
 	"wiki.createform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",
-	"wiki.createform.create": "Créer",
+	"wiki.createform.create": "Enregistrer",
 	"wiki.createform.cancel": "Annuler",
+	"wiki.createform.change.picture": "Changer l'image",
 	
 	"wiki.editform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",
 	"wiki.editform.save": "Enregistrer",
 	"wiki.editform.cancel": "Annuler",
+	"wiki.editform.change.picture": "Changer l'image",
 
 	"wiki.pagelist.label": "Liste des pages",
 	"wiki.create.new.page": "Nouvelle Page",

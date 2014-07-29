@@ -6,20 +6,18 @@
 	<section class="row">
 		<form class="row reduce-block-six">
 			<div class="row">
-				<div class="two cell clip fixed-block height-one">
+				<div class="one cell clip fixed-block height-one">
 					<div class="absolute" loading-panel="upload-wiki-thumbnail">
 						<image-select ng-model="wiki.thumbnail" default="/img/illustrations/blog.png"></image-select>
 					</div>
-
 				</div>
-				<div class="ten cell reduce-block-eight">
+				<div class="eleven cell reduce-block-eight">
 					<input type="text" ng-model="wiki.title" required translate-attr="placeholder" placeholder="wiki.createform.input.placeholder" class="twelve cell" />
 					<div class="row">
 						<hr class="row" />
 					</div>
-					<media-select ng-model="wiki.thumbnail" label="Changer l'image" file-format="'img'"></media-select>
+					<media-select ng-model="wiki.thumbnail" translate-attr="label" label="wiki.createform.change.picture" file-format="'img'"></media-select>
 				</div>
-
 			</div>
 			<div class="row reduce-block-eight">
 				<input type="submit" ng-click="createNewWiki()" translate-attr="value" class="button right-magnet" value="wiki.createform.create">

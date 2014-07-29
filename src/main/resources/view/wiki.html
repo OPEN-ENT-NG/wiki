@@ -27,7 +27,8 @@
 					workflow="wiki.listAllPages"
 					options="allpageslist"
 					ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
-					ng-model="selectedPage">
+					ng-model="selectedPage"
+					ng-if="!isCreatingOrEditing()">
 				</autocomplete>
 			</div>
 			<div class="clear"></div>

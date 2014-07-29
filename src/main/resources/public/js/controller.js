@@ -34,6 +34,14 @@ function WikiController($scope, template, model, route){
 	$scope.wiki = new Wiki();
 	$scope.applicationName = lang.translate('wiki.title');
 	
+	$scope.isCreatingOrEditing = function(){
+		return (template.contains('main', 'create-wiki') || 
+				template.contains('main', 'edit-wiki') || 
+				template.contains('main', 'create-page') ||  
+				template.contains('main', 'edit-page'));
+	}
+	
+	
 	// Utilise pour alimenter la barre de recherche des pages
 	$scope.wiki.listAllPages( function(pagesArray) {
 			$scope.allpageslist = pagesArray;
