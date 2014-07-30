@@ -87,7 +87,8 @@
 		<div class="row">
 			<behaviour name="edit" resource="wikis.selection()" class="cell">
 				<button ng-if="wikis.selection().length === 1"
-					ng-click="displayEditWikiForm(wikis.selection()[0])">
+					ng-click="displayEditWikiForm(wikis.selection()[0])"
+				>
 					<i18n>wiki.update</i18n>
 				</button>
 			</behaviour>
@@ -99,12 +100,6 @@
 			<behaviour name="share" resource="wikis.selection()" class="cell">
 				<button ng-click="display.showPanel = true">
 					<i18n>wiki.share</i18n>
-				</button>
-			</behaviour>
-			<behaviour name="createPage" resource="wikis.selection()" class="cell">
-				<button ng-if="wikis.selection().length === 1" 
-					ng-click="newPage()">
-					<i18n>wiki.create.new.page</i18n>
 				</button>
 			</behaviour>
 		</div>
