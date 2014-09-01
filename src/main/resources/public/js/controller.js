@@ -1,18 +1,15 @@
-//routes.define(function($routeProvider){
-//    $routeProvider
-//      .when('/view/:wikiId', {
-//        action: 'listPages'
-//      })
-//      .when('/view/:wikiId/:pageId', {
-//        action: 'viewPage'
-//      })
-//      .when('/wiki-list', {
-//        action: 'listWikis'
-//      })
-//      .otherwise({
-//        redirectTo: '/wiki-list'
-//      });
-//});
+routes.define(function($routeProvider){
+    $routeProvider
+      .when('/view/:wikiId', {
+        action: 'listPages'
+      })
+      .when('/view/:wikiId/:pageId', {
+        action: 'viewPage'
+      })
+      .otherwise({
+        action: 'listWikis'
+      });
+});
 
 
 function WikiController($scope, template, model, route){
@@ -29,7 +26,6 @@ function WikiController($scope, template, model, route){
 				template.contains('main', 'edit-page'));
 	}
 	
-	
 	// Utilise pour alimenter la barre de recherche des pages
 	$scope.wiki.listAllPages( function(pagesArray) {
 			$scope.allpageslist = pagesArray;
@@ -37,23 +33,20 @@ function WikiController($scope, template, model, route){
 	);
 	
 	// Definition des actions
-//	route({
-//		listPages: function(params){
-//			model.wikis.one('sync', function(){
-//				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-//					return wiki._id === params.wikiId;
-//				});
-//				$scope.selectedWiki.pages.sync(function(){
-//					template.open('main', 'list-wiki-pages');
-//		        });
-//			});
-//			model.wikis.sync();
-//		},
-//	    listWikis: function(params){
-//	    	delete $scope.selectedWiki;
-//			template.open('main', 'list-wikis');
-//	    }
-//	});
+	route({
+		listPages: function(params){
+			$scope.listPages(params.wikiId);
+		},
+	    listWikis: function(){
+	    	$scope.displayWikiList();
+	    },
+	    viewPage: function(params){
+			model.wikis.one('sync', function(){
+		    	$scope.openSelectedPage(params.wikiId, params.pageId);
+			});
+			model.wikis.sync();
+	    }
+	});
 	
 	template.open('main', 'list-wikis');
 	
@@ -156,10 +149,12 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.displayWikiList = function(){
-		model.wikis.sync();
-		
-    	delete $scope.selectedWiki;
-		template.open('main', 'list-wikis');
+    	model.wikis.one('sync', function(){
+	    	delete $scope.selectedWiki;
+	    	window.location.hash = '';
+			template.open('main', 'list-wikis');
+    	});
+    	model.wikis.sync();
 	}
 	
 	$scope.switchAllWikis = function(){
@@ -178,14 +173,14 @@ function WikiController($scope, template, model, route){
 		return wiki.thumbnail + '?thumbnail=120x120';
 	};
 	
-	$scope.listPages = function(selectedWiki){
+	$scope.listPages = function(wikiId){
 		model.wikis.one('sync', function(){
 			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-				return wiki._id === selectedWiki._id;
+				return wiki._id === wikiId;
 			});
 			$scope.selectedWiki.pages.sync(function(){
 				template.open('main', 'list-wiki-pages');
-				window.location.hash = '/view/' + selectedWiki._id;
+				window.location.hash = '/view/' + wikiId;
 	        });
 		});
 		
@@ -193,7 +188,7 @@ function WikiController($scope, template, model, route){
 	}
 
 	$scope.openSelectedWiki = function(selectedWiki){
-		$scope.listPages(selectedWiki);
+		$scope.listPages(selectedWiki._id);
 	}
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
@@ -250,10 +245,6 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.editPage = function(selectedWiki) {
-//		$scope.selectedWiki.page.title = selectedWiki.page.title;
-//		$scope.selectedWiki.page.content = selectedWiki.page.content;
-//		$scope.selectedWiki.page._id = selectedWiki.page._id;
-		
 		$scope.selectedWiki.editedPage = new Page();
 		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
 		template.open('main', 'edit-page');
@@ -302,7 +293,7 @@ function WikiController($scope, template, model, route){
 			);
 			
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
-			$scope.listPages($scope.selectedWiki);
+			$scope.listPages($scope.selectedWiki._id);
         });
 	};
 	
