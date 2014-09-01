@@ -1,30 +1,18 @@
-routes.define(function($routeProvider){
-    $routeProvider
-      .when('/view/:wikiId', {
-        action: 'listPages'
-      })
-      .when('/view/:wikiId/:pageId', {
-        action: 'viewPage'
-      })
-      .when('/wiki-list', {
-        action: 'listWikis'
-      })
-      .when('/create', {
-        action: 'displayCreateWikiForm'
-      })
-      .when('/edit/:wikiId', {
-        action: 'editWiki'
-      })
-      .when('/create-page', {
-        action: 'displayCreatePageForm'
-      })
-      .when('/edit/:wikiId/:pageId', {
-        action: 'editPage'
-      })
-      .otherwise({
-        redirectTo: '/wiki-list'
-      });
-});
+//routes.define(function($routeProvider){
+//    $routeProvider
+//      .when('/view/:wikiId', {
+//        action: 'listPages'
+//      })
+//      .when('/view/:wikiId/:pageId', {
+//        action: 'viewPage'
+//      })
+//      .when('/wiki-list', {
+//        action: 'listWikis'
+//      })
+//      .otherwise({
+//        redirectTo: '/wiki-list'
+//      });
+//});
 
 
 function WikiController($scope, template, model, route){
@@ -49,47 +37,24 @@ function WikiController($scope, template, model, route){
 	);
 	
 	// Definition des actions
-	route({
-		listPages: function(params){
-			model.wikis.one('sync', function(){
-				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-					return wiki._id === params.wikiId;
-				});
-				$scope.selectedWiki.pages.sync(function(){
-					template.open('main', 'list-wiki-pages');
-		        });
-			});
-			model.wikis.sync();
-		},
-	    viewPage: function(params){
-			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-				return wiki._id === params.wikiId;
-			});
-	    	$scope.selectedWiki.findPage(params.pageId, function(result){
-	            template.open('main', 'view-page');
-	        });
-	    },
-	    listWikis: function(params){
-	    	delete $scope.selectedWiki;
-			template.open('main', 'list-wikis');
-	    },
-	    displayCreateWikiForm: function(){
-			$scope.wiki = new Wiki();
-			template.open("main", "create-wiki");
-	    },
-	    editWiki: function(params){
-	    	template.open("main", "edit-wiki");
-		},
-		displayCreatePageForm: function(){
-			$scope.page = new Page();
-			template.open('main', 'create-page');
-		},
-	    editPage: function(params){
-			template.open('main', 'edit-page');
-		}
-	});
+//	route({
+//		listPages: function(params){
+//			model.wikis.one('sync', function(){
+//				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+//					return wiki._id === params.wikiId;
+//				});
+//				$scope.selectedWiki.pages.sync(function(){
+//					template.open('main', 'list-wiki-pages');
+//		        });
+//			});
+//			model.wikis.sync();
+//		},
+//	    listWikis: function(params){
+//	    	delete $scope.selectedWiki;
+//			template.open('main', 'list-wikis');
+//	    }
+//	});
 	
-	// fix temporaire en attendant une nouvelle version d'ent-core
 	template.open('main', 'list-wikis');
 	
     $scope.formatDate = function(dateObject){
@@ -116,7 +81,8 @@ function WikiController($scope, template, model, route){
 	};
 
 	$scope.displayCreateWikiForm = function(){
-		window.location.href = '/wiki#/create';
+		$scope.wiki = new Wiki();
+		template.open("main", "create-wiki");
 	};
 	
 	$scope.createNewWiki = function(){
@@ -148,12 +114,12 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.cancelCreateWiki = function(){
-		window.location.href = '/wiki#/wiki-list';
+		template.open('main', 'list-wikis');
 	};
 	
     $scope.displayEditWikiForm = function(wiki){
     	$scope.wiki = wiki;
-    	window.location.href = '/wiki#/edit/' + wiki._id;
+    	template.open("main", "edit-wiki");
     };
     
 	$scope.cancelEditWiki = function(){
@@ -191,7 +157,9 @@ function WikiController($scope, template, model, route){
 	
 	$scope.displayWikiList = function(){
 		model.wikis.sync();
-		window.location.href = '/wiki#/wiki-list';
+		
+    	delete $scope.selectedWiki;
+		template.open('main', 'list-wikis');
 	}
 	
 	$scope.switchAllWikis = function(){
@@ -211,7 +179,17 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.listPages = function(selectedWiki){
-		window.location.href = '/wiki#/view/' + selectedWiki._id;
+		model.wikis.one('sync', function(){
+			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+				return wiki._id === selectedWiki._id;
+			});
+			$scope.selectedWiki.pages.sync(function(){
+				template.open('main', 'list-wiki-pages');
+				window.location.hash = '/view/' + selectedWiki._id;
+	        });
+		});
+		
+		model.wikis.sync();
 	}
 
 	$scope.openSelectedWiki = function(selectedWiki){
@@ -222,17 +200,19 @@ function WikiController($scope, template, model, route){
     	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 			return wiki._id === wikiId;
 		});
-    	$scope.selectedWiki.findPage(pageId, function(result){
-            window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
+    	$scope.selectedWiki.getPage(pageId, function(result){
+            window.location.hash = '/view/' + wikiId + '/' + pageId;
+            template.open('main', 'view-page');
         });
 	}
 		
 	$scope.newPage = function(){
-		window.location.href = '/wiki#/create-page';
+		$scope.page = new Page();
+		template.open('main', 'create-page');
 	}
 	
 	$scope.cancelCreatePage = function(selectedWiki){
-		window.location.href = '/wiki#/view/' + selectedWiki._id;
+		template.open('main', 'list-wiki-pages');
 	}
 
 	$scope.page = new Page();
@@ -261,29 +241,36 @@ function WikiController($scope, template, model, route){
 				}
 			);
 			
-			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + result._id;
+	        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
+				window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+				template.open('main', 'view-page');
+	        });
+
         });
 	};
 	
 	$scope.editPage = function(selectedWiki) {
-		$scope.selectedWiki.page.title = selectedWiki.page.title;
-		$scope.selectedWiki.page.content = selectedWiki.page.content;
-		$scope.selectedWiki.page._id = selectedWiki.page._id;
-		window.location.href = '/wiki#/edit/' + $scope.selectedWiki._id + '/' + selectedWiki.page._id;
+//		$scope.selectedWiki.page.title = selectedWiki.page.title;
+//		$scope.selectedWiki.page.content = selectedWiki.page.content;
+//		$scope.selectedWiki.page._id = selectedWiki.page._id;
+		
+		$scope.selectedWiki.editedPage = new Page();
+		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
+		template.open('main', 'edit-page');
 	}
 	
 	$scope.cancelEditPage = function(selectedWiki) {
-		$scope.openSelectedPage(selectedWiki._id, selectedWiki.page._id);
+        template.open('main', 'view-page');
 	}
 	
 	$scope.updatePage = function(){
 		// Verification du champ titre
-		if (!$scope.selectedWiki.page.title || $scope.selectedWiki.page.title.trim().length === 0){
+		if (!$scope.selectedWiki.editedPage.title || $scope.selectedWiki.editedPage.title.trim().length === 0){
 			return;
 		}
 		if( _.find($scope.selectedWiki.pages.all, function(page){
-					return page.title.trim() === $scope.selectedWiki.page.title.trim() && 
-							page._id !== $scope.selectedWiki.page._id;
+					return page.title.trim() === $scope.selectedWiki.editedPage.title.trim() && 
+							page._id !== $scope.selectedWiki.editedPage._id;
 				})
 		){
 			notify.error('wiki.page.editform.titlealreadyexist.error');
@@ -291,17 +278,18 @@ function WikiController($scope, template, model, route){
 		}
 		
 		var data = {
-				title : $scope.selectedWiki.page.title,
-				content : $scope.selectedWiki.page.content
+				title : $scope.selectedWiki.editedPage.title,
+				content : $scope.selectedWiki.editedPage.content
 		};
-		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.page._id, function(result){
+		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.editedPage._id, function(result){
 			// Maj de allpageslist pour la barre de recherche
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 				}
 			);
 			
-			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
+			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
+			template.open('main', 'view-page');
         });
 	};
 	
@@ -313,7 +301,8 @@ function WikiController($scope, template, model, route){
 				}
 			);
 			
-			window.location.href = '/wiki#/view/' + $scope.selectedWiki._id;
+			window.location.hash = '/view/' + $scope.selectedWiki._id;
+			$scope.listPages($scope.selectedWiki);
         });
 	};
 	

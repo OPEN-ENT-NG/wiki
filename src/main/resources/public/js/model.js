@@ -17,11 +17,12 @@ function Wiki() {
 	
 }
 
-Wiki.prototype.findPage = function(pageId, callback) {
+Wiki.prototype.getPage = function(pageId, callback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			this.page = new Page( wiki.pages[0] );
 			this.title = wiki.title;
+			this.owner = wiki.owner;
 			callback(wiki);
 		}.bind(this));
 }
