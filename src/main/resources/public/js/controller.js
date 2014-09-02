@@ -213,7 +213,6 @@ function WikiController($scope, template, model, route){
 	$scope.page = new Page();
 	
 	$scope.createPage = function(){
-		template.open('main', 'view-page');
 		// Verification du champ titre
 		if (!$scope.page.title || $scope.page.title.trim().length === 0){
 			return;
@@ -225,6 +224,8 @@ function WikiController($scope, template, model, route){
 			notify.error('wiki.page.createform.titlealreadyexist.error');
 			return;
 		}
+		
+		template.open('main', 'view-page');
 		
 		var data = {
 				title : $scope.page.title,
@@ -272,15 +273,15 @@ function WikiController($scope, template, model, route){
 				title : $scope.selectedWiki.editedPage.title,
 				content : $scope.selectedWiki.editedPage.content
 		};
+		$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
+		template.open('main', 'view-page');
+		
 		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.editedPage._id, function(result){
 			// Maj de allpageslist pour la barre de recherche
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 				}
 			);
-			
-			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-			template.open('main', 'view-page');
         });
 	};
 	
