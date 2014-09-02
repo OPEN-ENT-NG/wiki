@@ -68,43 +68,36 @@ Behaviours.register('wiki', {
 		return ['read', 'contrib', 'manager', 'comment'];
 	},
 	
-	// Used by component "linker", to create hypertext links between wiki pages
-	search : function(searchText, callback) {
-		http().get('/wiki/listallpages').done(
-				function(wikis) {
-	
-					var pagesArray = _.map(
-							wikis, 
-							function(wiki) {
-								var pages = wiki.pages;
-								
-								// Keep pages whose title contain searchText, or whose id equals searchText
-								pages = _.filter(pages, function(page) {
-									return lang.removeAccents(page.title.toLowerCase())
-											.indexOf(
-													lang.removeAccents(searchText)
-															.toLowerCase()) !== -1
-											|| page._id === searchText;
-								});
-								
-								pages = _.map(pages, function(page) {
-									return {
-										title : page.title + ' [' + wiki.title + ']',
-										ownerName : wiki.owner.displayName,
-										owner : wiki.owner.userId,
-										icon : '/img/icons/unknown-large.png', // TODO : à modifier
-										path : '/wiki#/view/' + wiki._id + '/' + page._id,
-										wiki_id : wiki._id,
-										id : page._id
-									};
-								});
-								
-								return pages;
-							}
-					);
-					pagesArray = _.flatten(pagesArray);
-						
-					callback(pagesArray);
+	// Used by component "linker" to load wiki pages
+	loadResources: function(callback){
+		http().get('/wiki/listallpages').done(function(wikis) {
+			var pagesArray = _.map(wikis, function(wiki) {
+				var pages = _.map(wiki.pages, function(page) {
+					var wikiIcon;
+					if (typeof (wiki.thumbnail) === 'undefined' || wiki.thumbnail === '' ) {
+						wikiIcon = '/img/icons/unknown-large.png';
+					}
+					else {
+						wikiIcon = wiki.thumbnail + '?thumbnail=48x48';
+					}
+					
+					return {
+						title : page.title + ' [' + wiki.title + ']',
+						ownerName : wiki.owner.displayName,
+						owner : wiki.owner.userId,
+						icon : wikiIcon,
+						path : '/wiki#/view/' + wiki._id + '/' + page._id,
+						wiki_id : wiki._id,
+						id : page._id
+					};
 				});
+				return pages;
+			});
+			
+			this.resources = _.flatten(pagesArray);
+			if(typeof callback === 'function'){
+				callback(this.resources);
+			}
+		}.bind(this));
 	}
 });
