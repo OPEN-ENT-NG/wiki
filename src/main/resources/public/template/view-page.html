@@ -2,7 +2,7 @@
 	<hr />
 </div>
 
-<article>
+<article ng-if="selectedWiki.page !== undefined">
 	<div class="row">
 		<div class="seven cell">
 			<h2>[[selectedWiki.page.title]]</h2>
@@ -18,11 +18,16 @@
 			</div>
 		</div>
 	</div>
-
 	
 	<div bind-html="selectedWiki.page.content" />
 </article>
 
+<article ng-if="selectedWiki.page === undefined">
+	<div class="row twelve cell">
+		<p><i18n>wiki.page.empty</i18n></p>
+	</div>
+	<div class="clear"></div>
+</article>
 
 <!-- Lightbox to confirm page deletion -->
 <lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">

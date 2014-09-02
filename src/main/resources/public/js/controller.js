@@ -7,13 +7,27 @@ routes.define(function($routeProvider){
         action: 'viewPage'
       })
       .otherwise({
-        action: 'listWikis'
+        action: 'defaultView'
       });
 });
 
 
 function WikiController($scope, template, model, route){
 
+	var parseQueryString = function(queryString) {
+	    var params = {}, temp, i;
+	    var queries = queryString.split("&");
+	 
+	    for (i=0; i<queries.length; i++) {
+	    	 // Split into key/value pairs
+	        temp = queries[i].split('=');
+	        params[temp[0]] = temp[1];
+	    }
+	 
+	    return params;
+	};
+	
+	
 	$scope.template = template;
 	$scope.display = {showPanel: false, viewWikisAs: 'list'};
 	$scope.wiki = new Wiki();
@@ -26,18 +40,32 @@ function WikiController($scope, template, model, route){
 				template.contains('main', 'edit-page'));
 	}
 	
-	// Utilise pour alimenter la barre de recherche des pages
+	// Used to feed search bar
 	$scope.wiki.listAllPages( function(pagesArray) {
 			$scope.allpageslist = pagesArray;
 		}
 	);
 	
-	// Definition des actions
 	route({
 		listPages: function(params){
 			$scope.listPages(params.wikiId);
 		},
-	    listWikis: function(){
+		defaultView: function(){
+			// Linker case - when accessing a page via URL ?wiki=wikiId&page=pageId
+			var queryString = window.location.search;
+			if(typeof (queryString) !== undefined) {
+				queryString = queryString.substring(1); // remove character '?'
+				var parameters = parseQueryString(queryString);
+				if(parameters.wiki && parameters.page) {
+					model.wikis.one('sync', function(){
+				    	$scope.openSelectedPage(parameters.wiki, parameters.page);
+					});
+					model.wikis.sync();
+					return;
+				}
+			}
+			
+			// Default case
 	    	$scope.displayWikiList();
 	    },
 	    viewPage: function(params){
@@ -57,7 +85,7 @@ function WikiController($scope, template, model, route){
 	$scope.deleteWikiSelection = function(){
 		_.map($scope.wikis.selection(), function(wikiToRemove){
 			wikiToRemove.deleteWiki( function(){
-						// Maj de allpageslist, SANS appel serveur, pour la barre de recherche
+						// Updates variable "allpageslist" for search bar, without any server call
 						$scope.allpageslist = _.filter($scope.allpageslist, function(page){
 							return page.wiki_id !== wikiToRemove._id;
 						});
@@ -79,7 +107,7 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.createNewWiki = function(){
-		// Verification du champ titre
+		// Check field "title"
 		if (!$scope.wiki.title || $scope.wiki.title.trim().length === 0){
 			return;
 		}
@@ -120,7 +148,7 @@ function WikiController($scope, template, model, route){
 	};
     
 	$scope.updateWiki = function(){
-		// Verification du champ titre
+		// Check field "title"
 		if (!$scope.wiki.title || $scope.wiki.title.trim().length === 0){
 			return;
 		}
@@ -139,7 +167,7 @@ function WikiController($scope, template, model, route){
 				thumbnail : $scope.wiki.thumbnail,
 		};
 		$scope.wiki.updateWiki(data, function(){
-			// Maj de allpageslist pour la barre de recherche
+			// Updates "allpageslist" for search bar
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 			});
@@ -196,6 +224,10 @@ function WikiController($scope, template, model, route){
     	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 			return wiki._id === wikiId;
 		});
+    	if(!$scope.selectedWiki) {
+    		notify.error('wiki.notfound');
+    		return;
+    	}
     	$scope.selectedWiki.getPage(pageId, function(result){
             window.location.hash = '/view/' + wikiId + '/' + pageId;
         });
@@ -213,7 +245,7 @@ function WikiController($scope, template, model, route){
 	$scope.page = new Page();
 	
 	$scope.createPage = function(){
-		// Verification du champ titre
+		// Check field "title"
 		if (!$scope.page.title || $scope.page.title.trim().length === 0){
 			return;
 		}
@@ -232,7 +264,7 @@ function WikiController($scope, template, model, route){
 				content : $scope.page.content
 		};
 		$scope.selectedWiki.createPage(data, function(result){
-			// Maj de allpageslist pour la barre de recherche
+			// Updates "allpageslist" for search bar
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 				}
@@ -256,7 +288,7 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.updatePage = function(){
-		// Verification du champ titre
+		// Check field "title"
 		if (!$scope.selectedWiki.editedPage.title || $scope.selectedWiki.editedPage.title.trim().length === 0){
 			return;
 		}
@@ -277,7 +309,7 @@ function WikiController($scope, template, model, route){
 		template.open('main', 'view-page');
 		
 		$scope.selectedWiki.updatePage(data, $scope.selectedWiki.editedPage._id, function(result){
-			// Maj de allpageslist pour la barre de recherche
+			// Updates "allpageslist" for search bar
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 				}
@@ -287,7 +319,7 @@ function WikiController($scope, template, model, route){
 	
 	$scope.deletePage = function(){
 		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
-			// Maj de allpageslist pour la barre de recherche
+			// Updates "allpageslist" for search bar
 			$scope.wiki.listAllPages( function(pagesArray) {
 					$scope.allpageslist = pagesArray;
 				}

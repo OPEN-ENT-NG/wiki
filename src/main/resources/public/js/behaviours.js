@@ -86,7 +86,7 @@ Behaviours.register('wiki', {
 						ownerName : wiki.owner.displayName,
 						owner : wiki.owner.userId,
 						icon : wikiIcon,
-						path : '/wiki#/view/' + wiki._id + '/' + page._id,
+						path : '/wiki?wiki=' + wiki._id + '&page=' + page._id,
 						wiki_id : wiki._id,
 						id : page._id
 					};

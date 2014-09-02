@@ -24,7 +24,10 @@ Wiki.prototype.getPage = function(pageId, callback) {
 			this.title = wiki.title;
 			this.owner = wiki.owner;
 			callback(wiki);
-		}.bind(this));
+		}.bind(this))
+		.e404(function(e){
+			notify.error('wiki.page.notfound');
+		});
 }
 
 Wiki.prototype.createPage = function(data, callback) {
