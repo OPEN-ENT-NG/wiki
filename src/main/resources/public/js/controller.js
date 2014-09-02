@@ -192,12 +192,12 @@ function WikiController($scope, template, model, route){
 	}
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
+		template.open('main', 'view-page');
     	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 			return wiki._id === wikiId;
 		});
     	$scope.selectedWiki.getPage(pageId, function(result){
             window.location.hash = '/view/' + wikiId + '/' + pageId;
-            template.open('main', 'view-page');
         });
 	}
 		
@@ -213,6 +213,7 @@ function WikiController($scope, template, model, route){
 	$scope.page = new Page();
 	
 	$scope.createPage = function(){
+		template.open('main', 'view-page');
 		// Verification du champ titre
 		if (!$scope.page.title || $scope.page.title.trim().length === 0){
 			return;
@@ -238,7 +239,6 @@ function WikiController($scope, template, model, route){
 			
 	        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
 				window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-				template.open('main', 'view-page');
 	        });
 
         });
