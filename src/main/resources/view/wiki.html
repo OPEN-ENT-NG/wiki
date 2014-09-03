@@ -15,11 +15,11 @@
 			<div class="nine cell">
 			<h1 ng-if="selectedWiki.title && selectedWiki.title!==''">
 				<a ng-click="displayWikiList()">[[applicationName]]</a> : 
-				<a ng-click="listPages(selectedWiki._id)">[[selectedWiki.title]]</a>
+				<a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
 			</h1>
 			<h1 ng-if="!(selectedWiki.title && selectedWiki.title!=='')">
 				<a ng-click="displayWikiList()">[[applicationName]]</a>
-			</h1>	
+			</h1>
 					
 			</div>
 			<div class="three cell">

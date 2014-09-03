@@ -108,10 +108,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
-		
+
 		JsonObject newWiki = new JsonObject();
 		newWiki.putString("title", wikiTitle)
-				.putArray("pages", new JsonArray());		
+				.putArray("pages", new JsonArray());
 		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
 			newWiki.putString("thumbnail", thumbnail);
 		}
@@ -131,7 +131,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		else {
 			data.putString("thumbnail", thumbnail);
 		}
-		
+
 		super.update(idWiki, data, handler);
 	}
 
@@ -153,6 +153,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		matchId.putString("_id", idPage);
 		JsonObject elemMatch = new JsonObject();
 		elemMatch.putObject("$elemMatch", matchId);
+
 		JsonObject projection = new JsonObject();
 		projection.putObject("pages", elemMatch).putNumber("title", 1)
 				.putNumber("owner", 1).putNumber("shared", 1);
@@ -168,16 +169,22 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void createPage(String idWiki, String newPageId, String pageTitle,
-			String pageContent, Handler<Either<String, JsonObject>> handler) {
+			String pageContent, boolean isIndex,  Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
+		// Add new page to array "pages"
 		JsonObject newPage = new JsonObject();
 		newPage.putString("_id", newPageId).putString("title", pageTitle)
 				.putString("content", pageContent);
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.push("pages", newPage);
+
+		// Set new page as index
+		if(isIndex) {
+			modifier.set("index", newPageId);
+		}
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),

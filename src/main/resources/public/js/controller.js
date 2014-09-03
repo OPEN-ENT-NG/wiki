@@ -1,7 +1,7 @@
 routes.define(function($routeProvider){
     $routeProvider
       .when('/view/:wikiId', {
-        action: 'listPages'
+        action: 'viewWiki'
       })
       .when('/view/:wikiId/:pageId', {
         action: 'viewPage'
@@ -38,7 +38,7 @@ function WikiController($scope, template, model, route){
 				template.contains('main', 'edit-wiki') || 
 				template.contains('main', 'create-page') ||  
 				template.contains('main', 'edit-page'));
-	}
+	};
 	
 	// Used to feed search bar
 	$scope.wiki.listAllPages( function(pagesArray) {
@@ -47,8 +47,8 @@ function WikiController($scope, template, model, route){
 	);
 	
 	route({
-		listPages: function(params){
-			$scope.listPages(params.wikiId);
+		viewWiki: function(params){
+			$scope.viewWiki(params.wikiId);
 		},
 		defaultView: function(){
 			// Linker case - when accessing a page via URL ?wiki=wikiId&page=pageId
@@ -127,10 +127,7 @@ function WikiController($scope, template, model, route){
 
 		$scope.wiki.createWiki(wikidata, function(createdWiki){
 			$scope.wiki = new Wiki();
-
-			var aWiki = new Wiki();
-			aWiki._id = createdWiki._id;
-			$scope.openSelectedWiki(aWiki);
+			$scope.viewWiki(createdWiki._id);
 		});
 	};
 	
@@ -183,7 +180,7 @@ function WikiController($scope, template, model, route){
 			template.open('main', 'list-wikis');
     	});
     	model.wikis.sync();
-	}
+	};
 	
 	$scope.switchAllWikis = function(){
 		if($scope.display.selectWikis){
@@ -201,24 +198,43 @@ function WikiController($scope, template, model, route){
 		return wiki.thumbnail + '?thumbnail=120x120';
 	};
 	
-	$scope.listPages = function(wikiId){
+	$scope.viewWiki = function(wikiId){
 		model.wikis.one('sync', function(){
-			$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-				return wiki._id === wikiId;
-			});
-			$scope.selectedWiki.pages.sync(function(){
-				template.open('main', 'list-wiki-pages');
-				window.location.hash = '/view/' + wikiId;
-	        });
+			$scope.openSelectedWiki(wikiId);
 		});
 		
 		model.wikis.sync();
-	}
+	};
 
-	$scope.openSelectedWiki = function(selectedWiki){
-		$scope.listPages(selectedWiki._id);
-	}
+	$scope.openSelectedWiki = function(wikiId){
+		$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+			return wiki._id === wikiId;
+		});
+		if($scope.selectedWiki.index && $scope.selectedWiki.index.length > 0) {
+			// Open index if it exists
+			$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.index);
+		}
+		else { // List pages
+			$scope.selectedWiki.pages.sync(function(){
+				template.open('main', 'list-wiki-pages');
+				window.location.hash = '/view/' + $scope.selectedWiki._id;
+	        });
+		}
+	};
 	
+	$scope.listPages = function(wikiId){
+        model.wikis.one('sync', function(){
+            $scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+                return wiki._id === wikiId;
+            });
+			$scope.selectedWiki.pages.sync(function(){
+				template.open('main', 'list-wiki-pages');
+				window.location.hash = '/view/' + $scope.selectedWiki._id;
+	        });
+        });
+        model.wikis.sync();
+	};
+
 	$scope.openSelectedPage = function(wikiId, pageId){
 		template.open('main', 'view-page');
     	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
@@ -230,17 +246,18 @@ function WikiController($scope, template, model, route){
     	}
     	$scope.selectedWiki.getPage(pageId, function(result){
             window.location.hash = '/view/' + wikiId + '/' + pageId;
+            $scope.$apply();
         });
-	}
+	};
 		
 	$scope.newPage = function(){
 		$scope.page = new Page();
 		template.open('main', 'create-page');
-	}
+	};
 	
 	$scope.cancelCreatePage = function(selectedWiki){
 		template.open('main', 'list-wiki-pages');
-	}
+	};
 
 	$scope.page = new Page();
 	
@@ -260,8 +277,9 @@ function WikiController($scope, template, model, route){
 		template.open('main', 'view-page');
 		
 		var data = {
-				title : $scope.page.title,
-				content : $scope.page.content
+			title : $scope.page.title,
+			content : $scope.page.content,
+			isIndex : $scope.page.isindex
 		};
 		$scope.selectedWiki.createPage(data, function(result){
 			// Updates "allpageslist" for search bar
@@ -281,11 +299,11 @@ function WikiController($scope, template, model, route){
 		$scope.selectedWiki.editedPage = new Page();
 		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
 		template.open('main', 'edit-page');
-	}
+	};
 	
 	$scope.cancelEditPage = function(selectedWiki) {
         template.open('main', 'view-page');
-	}
+	};
 	
 	$scope.updatePage = function(){
 		// Check field "title"
@@ -326,7 +344,7 @@ function WikiController($scope, template, model, route){
 			);
 			
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
-			$scope.listPages($scope.selectedWiki._id);
+			$scope.viewWiki($scope.selectedWiki._id);
         });
 	};
 	

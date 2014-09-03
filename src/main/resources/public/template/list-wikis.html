@@ -28,9 +28,9 @@
 			<tbody>
 				<tr ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }">
 					<td><input type="checkbox" ng-model="wiki.selected" /></td>
-					<td ng-click="openSelectedWiki(wiki)"><a>[[wiki.title]]</a></td>
-					<td ng-click="openSelectedWiki(wiki)">[[wiki.owner.displayName]]</td>
-					<td ng-click="openSelectedWiki(wiki)">[[formatDate(wiki.modified)]]</td>
+					<td ng-click="openSelectedWiki(wiki._id)"><a>[[wiki.title]]</a></td>
+					<td ng-click="openSelectedWiki(wiki._id)">[[wiki.owner.displayName]]</td>
+					<td ng-click="openSelectedWiki(wiki._id)">[[formatDate(wiki.modified)]]</td>
 				</tr>
 			</tbody>
 		</table>
@@ -41,12 +41,12 @@
 	  <div show="display.viewWikisAs === 'icons'" class="icons-view">
 		  <article>
 				<div ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }" class="element reduce-block-six">
-				  <div ng-click="openSelectedWiki(wiki)" class="img container">
+				  <div ng-click="openSelectedWiki(wiki._id)" class="img container">
 					<div class="clip twelve cell height-twelve"><img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" /></div>
 				  </div>
 				  <input type="checkbox" data-ng-model="wiki.selected"/>
 				  <legend>
-				    <a ng-click="openSelectedWiki(wiki)" class="medium-text">[[wiki.title]]</a>
+				    <a ng-click="openSelectedWiki(wiki._id)" class="medium-text">[[wiki.title]]</a>
 					<strong class="small-text">[[wiki.owner.displayName]]</strong>
 				  </legend>
 				</div>

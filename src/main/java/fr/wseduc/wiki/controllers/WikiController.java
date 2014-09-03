@@ -27,10 +27,10 @@ import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 public class WikiController extends MongoDbControllerHelper {
 
 	private final WikiService wikiService;
-	
+
 	public WikiController(String collection) {
 		super(collection);
-		wikiService = new WikiServiceMongoImpl(collection);		
+		wikiService = new WikiServiceMongoImpl(collection);
 	}
 
 	@Get("")
@@ -66,7 +66,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 		wikiService.listPages(idWiki, handler);
 	}
-	
+
 	@Get("/listallpages")
 	@ApiDoc("List wikis, visible by current user, with all their pages' titles")
 	@SecuredAction("wiki.list")
@@ -166,6 +166,17 @@ public class WikiController extends MongoDbControllerHelper {
 				final String newPageId = ((WikiServiceMongoImpl) wikiService)
 						.newObjectId();
 
+				String idWiki = request.params().get("id");
+				boolean isIndex = data.getBoolean("isIndex", false);
+
+				String pageTitle = data.getString("title");
+				String pageContent = data.getString("content");
+				if (pageTitle == null || pageTitle.trim().isEmpty()
+						|| pageContent == null || pageContent.trim().isEmpty()) {
+					badRequest(request);
+					return;
+				}
+
 				// Return attribute _id of created page in case of success
 				Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
 					@Override
@@ -182,18 +193,8 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 				};
 
-				String idWiki = request.params().get("id");
-
-				String pageTitle = data.getString("title");
-				String pageContent = data.getString("content");
-				if (pageTitle == null || pageTitle.trim().isEmpty()
-						|| pageContent == null || pageContent.trim().isEmpty()) {
-					badRequest(request);
-					return;
-				}
-
 				wikiService.createPage(idWiki, newPageId, pageTitle,
-						pageContent, handler);
+						pageContent, isIndex, handler);
 			}
 		});
 
@@ -236,21 +237,21 @@ public class WikiController extends MongoDbControllerHelper {
 
 		wikiService.deletePage(idWiki, idPage, handler);
 	}
-		
+
 	@Get("/share/json/:id")
 	@ApiDoc("List rights for a given wikiId")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWiki(final HttpServerRequest request) {
 		super.shareJson(request, false);
 	}
-	
+
 	@Put("/share/json/:id")
 	@ApiDoc("Add rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiSubmit(final HttpServerRequest request) {
 		super.shareJsonSubmit(request, null, false);
 	}
-	
+
 	@Put("/share/remove/:id")
 	@ApiDoc("Remove rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)

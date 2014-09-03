@@ -33,8 +33,11 @@ Wiki.prototype.getPage = function(pageId, callback) {
 Wiki.prototype.createPage = function(data, callback) {
 	http().postJson('/wiki/' + this._id + '/page', data)
 	.done(function(result){
+		if(data.isIndex === true) {
+			this.index = result._id;
+		}
 		callback(result);
-	});
+	}.bind(this));
 }
 
 Wiki.prototype.updatePage = function(data, pageId, callback) {

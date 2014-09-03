@@ -5,14 +5,17 @@
 	"wiki.notfound" : "Le wiki n'existe pas",
 	"wiki.page.notfound" : "La page n'existe pas",
 	"wiki.page.empty" : "La page demandée n'existe pas",
+	"wiki.page.displaylist.label": "Afficher la liste des pages",
 	
 	"wiki.page.createform.save": "Enregistrer",
 	"wiki.page.createform.input.placeholder": "Entrez le titre de la page",
 	"wiki.page.createform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.createform.cancel": "Annuler",
+	"wiki.page.createform.set.as.index": "Définir comme page d'accueil du wiki",
 	"wiki.page.editform.save": "Enregistrer",
 	"wiki.page.editform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.editform.cancel": "Annuler",
+	"wiki.page.editform.set.as.index": "Définir comme page d'accueil du wiki",
 	"wiki.page.edit": "Modifier",
 	"wiki.page.delete": "Supprimer",
 	

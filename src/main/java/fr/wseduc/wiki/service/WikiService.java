@@ -15,7 +15,7 @@ public interface WikiService {
 			Handler<Either<String, JsonObject>> handler);
 
 	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler);
-	
+
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler);
 
@@ -29,7 +29,7 @@ public interface WikiService {
 			Handler<Either<String, JsonObject>> handler);
 
 	public void createPage(String idWiki, String newPageId, String pageTitle,
-			String pageContent, Handler<Either<String, JsonObject>> handler);
+			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(String idWiki, String idPage, String pageTitle,
 			String pageContent, Handler<Either<String, JsonObject>> handler);
