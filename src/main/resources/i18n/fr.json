@@ -6,7 +6,9 @@
 	"wiki.page.notfound" : "La page n'existe pas",
 	"wiki.page.empty" : "La page demandée n'existe pas",
 	"wiki.page.displaylist.label": "Afficher la liste des pages",
+	"wiki.homepage.label" : "[Page d'accueil]",
 	
+	"wiki.form.title.is.empty": "Vous devez renseigner le titre",
 	"wiki.page.createform.save": "Enregistrer",
 	"wiki.page.createform.input.placeholder": "Entrez le titre de la page",
 	"wiki.page.createform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",

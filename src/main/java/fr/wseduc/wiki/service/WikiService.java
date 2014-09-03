@@ -32,9 +32,11 @@ public interface WikiService {
 			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(String idWiki, String idPage, String pageTitle,
-			String pageContent, Handler<Either<String, JsonObject>> handler);
+			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
+	public void unsetIndex(String idWiki, String idPage,
+			Handler<Either<String, JsonObject>> handler);
 }

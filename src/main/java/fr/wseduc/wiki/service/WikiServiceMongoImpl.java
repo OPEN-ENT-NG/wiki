@@ -193,7 +193,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void updatePage(String idWiki, String idPage, String pageTitle,
-			String pageContent, Handler<Either<String, JsonObject>> handler) {
+			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
@@ -205,6 +205,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		modifier.set("pages.$.title", pageTitle)
 				.set("pages.$.content", pageContent)
 				.set("modified", MongoDb.now());
+		if (isIndex) { // Set updated page as index
+			modifier.set("index", idPage);
+		}
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),
@@ -226,6 +229,23 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.pull("pages", idPageJO);
 		modifier.set("modified", MongoDb.now());
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(),
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	/**
+	 * Unset field "index" if "idPage" is the index
+	 */
+	@Override
+	public void unsetIndex(String idWiki, String idPage,
+			Handler<Either<String, JsonObject>> handler) {
+
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("index").is(idPage);
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.unset("index");
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(),

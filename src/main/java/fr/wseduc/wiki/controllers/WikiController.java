@@ -211,6 +211,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 				String idWiki = request.params().get("id");
 				String idPage = request.params().get("idpage");
+				boolean isIndex = data.getBoolean("isIndex", false);
 
 				String pageTitle = data.getString("title");
 				String pageContent = data.getString("content");
@@ -221,7 +222,7 @@ public class WikiController extends MongoDbControllerHelper {
 				}
 
 				wikiService.updatePage(idWiki, idPage, pageTitle, pageContent,
-						handler);
+						isIndex, handler);
 			}
 		});
 	}
@@ -230,10 +231,21 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Delete page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void deletePage(final HttpServerRequest request) {
-		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+		final String idWiki = request.params().get("id");
+		final String idPage = request.params().get("idpage");
 
-		String idWiki = request.params().get("id");
-		String idPage = request.params().get("idpage");
+		Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
+			@Override
+			public void handle(Either<String, JsonObject> event) {
+				if (event.isRight()) {
+					wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
+				} else {
+					JsonObject error = new JsonObject()
+							.putString("error", event.left().getValue());
+					renderJson(request, error, 400);
+				}
+			}
+		};
 
 		wikiService.deletePage(idWiki, idPage, handler);
 	}
