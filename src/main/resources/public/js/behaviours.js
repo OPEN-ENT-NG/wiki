@@ -75,7 +75,7 @@ Behaviours.register('wiki', {
 				var pages = _.map(wiki.pages, function(page) {
 					var wikiIcon;
 					if (typeof (wiki.thumbnail) === 'undefined' || wiki.thumbnail === '' ) {
-						wikiIcon = '/img/icons/unknown-large.png';
+						wikiIcon = '/img/icons/glyphicons_036_file.png';
 					}
 					else {
 						wikiIcon = wiki.thumbnail + '?thumbnail=48x48';
