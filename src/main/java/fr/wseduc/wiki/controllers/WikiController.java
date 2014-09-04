@@ -4,6 +4,11 @@ import static org.entcore.common.http.response.DefaultResponseHandler.arrayRespo
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -27,6 +32,9 @@ import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 public class WikiController extends MongoDbControllerHelper {
 
 	private final WikiService wikiService;
+
+	private final static String WIKI_NAME = "WIKI";
+	private static final String WIKI_PAGE_CREATED_EVENT_TYPE = WIKI_NAME + "_PAGE_CREATED";
 
 	public WikiController(String collection) {
 		super(collection);
@@ -160,44 +168,113 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Add page to wiki")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void createPage(final HttpServerRequest request) {
-		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
-			public void handle(JsonObject data) {
-				final String newPageId = ((WikiServiceMongoImpl) wikiService)
-						.newObjectId();
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							final String newPageId = ((WikiServiceMongoImpl) wikiService)
+									.newObjectId();
 
-				String idWiki = request.params().get("id");
-				boolean isIndex = data.getBoolean("isIndex", false);
+							final String idWiki = request.params().get("id");
+							boolean isIndex = data.getBoolean("isIndex", false);
 
-				String pageTitle = data.getString("title");
-				String pageContent = data.getString("content");
-				if (pageTitle == null || pageTitle.trim().isEmpty()
-						|| pageContent == null || pageContent.trim().isEmpty()) {
-					badRequest(request);
-					return;
-				}
+							final String pageTitle = data.getString("title");
+							String pageContent = data.getString("content");
+							if (pageTitle == null || pageTitle.trim().isEmpty()
+									|| pageContent == null || pageContent.trim().isEmpty()) {
+								badRequest(request);
+								return;
+							}
 
-				// Return attribute _id of created page in case of success
-				Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-					@Override
-					public void handle(Either<String, JsonObject> event) {
-						if (event.isRight()) {
-							JsonObject result = new JsonObject();
-							result.putString("_id", newPageId);
-							renderJson(request, result);
-						} else {
-							JsonObject error = new JsonObject().putString(
-									"error", event.left().getValue());
-							renderJson(request, error, 400);
+							// Return attribute _id of created page in case of success
+							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
+								@Override
+								public void handle(Either<String, JsonObject> event) {
+									if (event.isRight()) {
+										JsonObject result = new JsonObject();
+										result.putString("_id", newPageId);
+										notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
+										renderJson(request, result);
+									} else {
+										JsonObject error = new JsonObject().putString(
+												"error", event.left().getValue());
+										renderJson(request, error, 400);
+									}
+								}
+							};
+
+							wikiService.createPage(idWiki, newPageId, pageTitle,
+									pageContent, isIndex, handler);
 						}
-					}
-				};
-
-				wikiService.createPage(idWiki, newPageId, pageTitle,
-						pageContent, isIndex, handler);
+					});
+				}
 			}
 		});
 
+	}
+
+	private void notifyPageCreated(final HttpServerRequest request, final UserInfos user,
+			final String idWiki, final String idPage, final String pageTitle) {
+
+		try {
+			wikiService.getDataForNotification(idWiki, new Handler<Either<String,JsonObject>>() {
+				@Override
+				public void handle(Either<String, JsonObject> event) {
+					if(event.isRight() && event.right().getValue()!=null) {
+						JsonObject wiki = event.right().getValue();
+						List<String> recipients = extractRecipientsFromWiki(wiki, user.getUserId());
+
+						if(!recipients.isEmpty()){
+							JsonObject params = new JsonObject();
+							params.putString("uri", container.config().getString("userbook-host") +
+									"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+							params.putString("username", user.getUsername())
+								.putString("pageTitle", pageTitle)
+								.putString("wikiTitle", wiki.getString("title"))
+								.putString("pageUri", container.config().getString("host") +
+									"/wiki?wiki=" + idWiki + "&page=" + idPage);
+
+							notification.notifyTimeline(request, user, WIKI_NAME, WIKI_PAGE_CREATED_EVENT_TYPE,
+									recipients, idPage, "notify-page-created.html", params);
+						}
+					}
+					else {
+						log.error("Error in service getDataForNotification. Unable to send timeline "+ WIKI_PAGE_CREATED_EVENT_TYPE + " notification.");
+					}
+
+				}
+			});
+		} catch (Exception e) {
+			log.error("Unable to send timeline "+ WIKI_PAGE_CREATED_EVENT_TYPE + " notification.", e);
+		}
+
+	}
+
+	private List<String> extractRecipientsFromWiki(JsonObject wiki, String pageCreatorId){
+		Set<String> recipientSet = new HashSet<>();
+
+		String wikiOwner = wiki.getObject("owner").getString("userId");
+		if(!wikiOwner.equals(pageCreatorId)) {
+			recipientSet.add(wikiOwner);
+		}
+
+		for (Object element : wiki.getArray("shared")) {
+			JsonObject jo = (JsonObject) element;
+			String uId = jo.getString("userId", null);
+			String gId = jo.getString("groupId", null);
+			if(uId != null && !uId.isEmpty() && !uId.equals(pageCreatorId)) {
+				recipientSet.add(uId);
+			}
+			else if(gId!=null && !gId.isEmpty()) {
+				recipientSet.add(gId);
+			}
+		}
+
+		return new ArrayList<>(recipientSet);
 	}
 
 	@Put("/:id/page/:idpage")

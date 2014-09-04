@@ -39,4 +39,6 @@ public interface WikiService {
 
 	public void unsetIndex(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
+
+	public void getDataForNotification(String idWiki, Handler<Either<String, JsonObject>> handler);
 }

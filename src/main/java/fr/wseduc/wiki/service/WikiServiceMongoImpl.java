@@ -255,4 +255,23 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				MongoDbResult.validActionResultHandler(handler));
 	}
 
+	/**
+	 * Get title, owner, userIds and groupIds of wiki
+	 */
+	@Override
+	public void getDataForNotification(String idWiki, Handler<Either<String, JsonObject>> handler) {
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+
+		// Projection
+		JsonObject projection = new JsonObject();
+		projection.putNumber("owner", 1)
+			.putNumber("shared.userId", 1)
+			.putNumber("shared.groupId", 1)
+			.putNumber("title", 1);
+
+		// Send query to event bus
+		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
+				MongoDbResult.validResultHandler(handler));
+	}
+
 }
