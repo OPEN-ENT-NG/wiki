@@ -311,6 +311,7 @@ function WikiController($scope, template, model, route){
 		$scope.selectedWiki.editedPage = new Page();
 		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
 		$scope.selectedWiki.editedPage.isIndex = ($scope.selectedWiki.editedPage._id === $scope.selectedWiki.index)
+		$scope.selectedWiki.editedPage.wasIndex = (selectedWiki.page._id === $scope.selectedWiki.index)
 		template.open('main', 'edit-page');
 	};
 	
@@ -336,7 +337,8 @@ function WikiController($scope, template, model, route){
 		var data = {
 				title : $scope.selectedWiki.editedPage.title,
 				content : $scope.selectedWiki.editedPage.content,
-				isIndex : $scope.selectedWiki.editedPage.isIndex
+				isIndex : $scope.selectedWiki.editedPage.isIndex,
+				wasIndex : $scope.selectedWiki.editedPage.wasIndex
 		};
 		$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
 		template.open('main', 'view-page');
@@ -347,6 +349,7 @@ function WikiController($scope, template, model, route){
 					$scope.allpageslist = pagesArray;
 				}
 			);
+			$scope.$apply();
         });
 	};
 	

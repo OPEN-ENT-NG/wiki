@@ -212,6 +212,7 @@ public class WikiController extends MongoDbControllerHelper {
 				String idWiki = request.params().get("id");
 				String idPage = request.params().get("idpage");
 				boolean isIndex = data.getBoolean("isIndex", false);
+				boolean wasIndex = data.getBoolean("wasIndex", false);
 
 				String pageTitle = data.getString("title");
 				String pageContent = data.getString("content");
@@ -222,7 +223,7 @@ public class WikiController extends MongoDbControllerHelper {
 				}
 
 				wikiService.updatePage(idWiki, idPage, pageTitle, pageContent,
-						isIndex, handler);
+						isIndex, wasIndex, handler);
 			}
 		});
 	}

@@ -192,8 +192,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(String idWiki, String idPage, String pageTitle,
-			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler) {
+	public void updatePage(String idWiki, String idPage, String pageTitle, String pageContent,
+			boolean isIndex, boolean wasIndex, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
@@ -207,6 +207,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.set("modified", MongoDb.now());
 		if (isIndex) { // Set updated page as index
 			modifier.set("index", idPage);
+		}
+		else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
+			modifier.unset("index");
 		}
 
 		mongo.update(collection, MongoQueryBuilder.build(query),

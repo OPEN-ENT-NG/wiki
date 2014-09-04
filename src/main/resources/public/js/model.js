@@ -41,9 +41,16 @@ Wiki.prototype.createPage = function(data, callback) {
 }
 
 Wiki.prototype.updatePage = function(data, pageId, callback) {
-	http().putJson('/wiki/' + this._id + '/page/' + pageId, data).done(function(result){
+	http().putJson('/wiki/' + this._id + '/page/' + pageId, data)
+	.done(function(result){
+		if(data.isIndex === true) {
+			this.index = pageId;
+		}
+		else if (data.wasIndex === true) {
+			delete this.index;
+		}
 		callback(result);
-	});
+	}.bind(this));
 }
 
 Wiki.prototype.deletePage = function(wikiId, pageId, callback) {

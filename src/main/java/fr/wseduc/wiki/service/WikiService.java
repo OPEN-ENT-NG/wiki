@@ -31,8 +31,8 @@ public interface WikiService {
 	public void createPage(String idWiki, String newPageId, String pageTitle,
 			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
 
-	public void updatePage(String idWiki, String idPage, String pageTitle,
-			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
+	public void updatePage(String idWiki, String idPage, String pageTitle, String pageContent,
+			boolean isIndex, boolean wasIndex, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
