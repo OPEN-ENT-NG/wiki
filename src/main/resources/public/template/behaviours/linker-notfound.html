@@ -1,3 +1,24 @@
-<p>Votre recherche ne retourne aucun résultat.</p>
+<p>Votre recherche ne retourne aucune page. Vous pouvez créer une page vide dans un wiki de votre choix :</p><!-- TODO i18n -->
 
-<!-- TODO : formulaire permettant de créer une nouvelle page -->
+<div class="twelve cell select-file input-block vertical-spacing-twice">
+	<article>
+		<form class="row">
+			<div class="row">
+					<li ng-repeat="wiki in wikis">
+						<a class="name">[[wiki.title]]</a>
+					</li>
+			</div>
+			<div class="row">
+			[[selectedWiki.editedPage.title]]
+			</div>
+			<div class="row">
+				<input type="text" ng-model="resource.title" required 
+				translate-attr="placeholder" placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
+			</div>
+			<div class="row">
+				<button class="right-magnet" ng-click="createResource()" translate content="wiki.page.createform.save"></button>
+			</div>
+			<div class="clear"></div>
+		</form>
+	</article>
+</div>
