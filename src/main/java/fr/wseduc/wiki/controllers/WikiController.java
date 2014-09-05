@@ -236,7 +236,7 @@ public class WikiController extends MongoDbControllerHelper {
 								.putString("pageTitle", pageTitle)
 								.putString("wikiTitle", wiki.getString("title"))
 								.putString("pageUri", container.config().getString("host") +
-									"/wiki?wiki=" + idWiki + "&page=" + idPage);
+									"/wiki#/view/" + idWiki + "/" + idPage);
 
 							notification.notifyTimeline(request, user, WIKI_NAME, WIKI_PAGE_CREATED_EVENT_TYPE,
 									recipients, idPage, "notify-page-created.html", params);
@@ -339,7 +339,28 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Add rights for a given wikiId.")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiSubmit(final HttpServerRequest request) {
-		super.shareJsonSubmit(request, null, false);
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+			        final String id = request.params().get("id");
+			        if(id == null || id.trim().isEmpty()) {
+			            badRequest(request);
+			            return;
+			        }
+
+					JsonObject params = new JsonObject();
+					params.putString("uri", container.config().getString("userbook-host") +
+							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+					.putString("username", user.getUsername())
+					.putString("wikiUri", container.config().getString("host") + "/wiki#/view/" + id);
+
+					shareJsonSubmit(request, "notify-wiki-shared.html", false, params, "title");
+				}
+			}
+		});
+
+
 	}
 
 	@Put("/share/remove/:id")
