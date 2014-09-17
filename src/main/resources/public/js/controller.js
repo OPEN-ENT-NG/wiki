@@ -195,7 +195,7 @@ function WikiController($scope, template, model, route){
 	
 	$scope.getWikiThumbnail = function(wiki){
 		if(!wiki.thumbnail || wiki.thumbnail === ''){
-			return '/img/illustrations/blog.png';
+			return '/img/illustrations/wiki-default.png';
 		}
 		return wiki.thumbnail + '?thumbnail=120x120';
 	};
