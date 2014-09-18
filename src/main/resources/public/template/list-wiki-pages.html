@@ -1,22 +1,32 @@
-<nav class="vertical">
-	<div class="row">
-		<div class="display-buttons">
-			<behaviour name="createPage" resource="selectedWiki">
-				<button ng-click="newPage()" translate content="wiki.create.new.page"></button>
-			</behaviour>
-		</div>
-	</div>
-	
-	<div class="row">
-		<h2 translate content="wiki.pagelist.label"></h2>
-	</div>
-	<ul>
-	  <li ng-repeat="page in selectedWiki.pages.all">
-	  	<a ng-if="page._id === selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">
-	  		[[page.title]] 
-	  		<em><i18n>wiki.homepage.label</i18n></em>
-	  	</a>
-		<a ng-if="page._id !== selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
-	  </li>
-	</ul>
-</nav>
+<div class="three cell">
+	<nav class="vertical">
+		<h2>Wikis</h2>
+		<ul>
+			<li>
+				<a data-reload>
+					Parcourir les wikis
+				</a>
+			</li>
+			<li>
+				<a ng-click="listPages(selectedWiki._id)">
+					Liste des pages
+				</a>
+			</li>
+			<li ng-if="selectedWiki.index.length > 0">
+				<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">Page d'accueil</a>
+			</li>
+		</ul>
+	</nav>
+</div>
+<ul class="nine cell toc">
+	<alphabetical list="page in selectedWiki.pages.all">
+		<li>
+			<a ng-if="page._id === selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">
+				[[page.title]]
+				<em><i18n>wiki.homepage.label</i18n></em>
+			</a>
+			<a ng-if="page._id !== selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
+		</li>
+	</alphabetical>
+	<li ng-if="selectedWiki.pages.all.length === 0">Ce wiki est vide !</li>
+</ul>

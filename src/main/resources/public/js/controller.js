@@ -13,7 +13,6 @@ routes.define(function($routeProvider){
 
 
 function WikiController($scope, template, model, route){
-
 	var parseQueryString = function(queryString) {
 	    var params = {}, temp, i;
 	    var queries = queryString.split("&");
@@ -79,7 +78,7 @@ function WikiController($scope, template, model, route){
 	template.open('main', 'list-wikis');
 	
     $scope.formatDate = function(dateObject){
-    	return moment(dateObject.$date).lang('fr').format('dddd DD MMM YYYY, HH:mm:ss');
+    	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY');
     };	
 	
 	$scope.deleteWikiSelection = function(){

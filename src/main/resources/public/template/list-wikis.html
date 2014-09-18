@@ -1,58 +1,26 @@
-<nav class="contextual-buttons row">
-	<div class="action-buttons">
-		<button ng-click="displayCreateWikiForm()" workflow="wiki.create" translate content="wiki.create"></button>
-	</div>
-
-	<div class="display-buttons">
-		<i class="show-list"
-		   ng-class="{ selected: display.viewWikisAs === 'list' }"
-		   ng-click="display.viewWikisAs = 'list'"></i>
-		<i class="show-icons"
-			ng-class="{ selected: display.viewWikisAs === 'icons' }"
-			ng-click="display.viewWikisAs = 'icons'"></i>
-	</div>
-</nav>
-
 <div class="twelve cell" workflow="wiki.list">
-	<!-- Display wikis as a list -->
-	<div ng-if="display.viewWikisAs === 'list'">
-		<table show="display.viewWikisAs === 'list'" class="twelve">
-			<thead>
-				<tr>
-					<th><input type="checkbox" ng-model="display.selectWikis" ng-change="switchAllWikis()" /></th>
-					<th><i18n>wiki.table.head.title</i18n></th>
-					<th><i18n>wiki.table.head.author</i18n></th>
-					<th><i18n>wiki.table.head.modificationDate</i18n></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }">
-					<td><input type="checkbox" ng-model="wiki.selected" /></td>
-					<td ng-click="openSelectedWiki(wiki._id)"><a>[[wiki.title]]</a></td>
-					<td ng-click="openSelectedWiki(wiki._id)">[[wiki.owner.displayName]]</td>
-					<td ng-click="openSelectedWiki(wiki._id)">[[formatDate(wiki.modified)]]</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	
-	<!-- Display wikis as icons -->
-	<div ng-if="display.viewWikisAs === 'icons'">
-	  <div show="display.viewWikisAs === 'icons'" class="icons-view">
-		  <article>
-				<div ng-repeat="wiki in wikis.all" ng-class="{ checked: wiki.selected }" class="element reduce-block-six">
-				  <div ng-click="openSelectedWiki(wiki._id)" class="img container">
-					<div class="clip twelve cell height-twelve"><img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" /></div>
-				  </div>
-				  <input type="checkbox" data-ng-model="wiki.selected"/>
-				  <legend>
-				    <a ng-click="openSelectedWiki(wiki._id)" class="medium-text">[[wiki.title]]</a>
-					<strong class="small-text">[[wiki.owner.displayName]]</strong>
-				  </legend>
-				</div>
-				<div class="clear"></div>
-			</article>
-	  </div>
+	<div class="fallen dominos">
+		<alphabetical list="wiki in wikis.all">
+			<div class="item">
+				<section class="domino cyan">
+					<div class="top" ng-click="openSelectedWiki(wiki._id)">
+						<img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" />
+					</div>
+					<div class="bottom">
+						<div class="content">
+							<div class="cell" ng-click="openSelectedWiki(wiki._id)">
+								<strong>[[wiki.title]]</strong>
+								<br />[[wiki.owner.displayName]]
+								<br />[[formatDate(wiki.modified)]]
+							</div>
+							<div class="bottom-locked eleven vertical-spacing-twice">
+								<input type="checkbox" data-ng-model="wiki.selected" class="right-magnet cell" />
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+		</alphabetical>
 	</div>
 		
 	<!-- Lightbox to share wikis -->

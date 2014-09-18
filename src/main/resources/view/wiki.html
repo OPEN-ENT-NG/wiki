@@ -12,28 +12,35 @@
 <body ng-controller="WikiController">
 	<portal>
 		<div class="row">
-			<div class="nine cell">
-			<h1 ng-if="selectedWiki.title && selectedWiki.title!==''">
-				<a ng-click="displayWikiList()">[[applicationName]]</a> : 
-				<a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
-			</h1>
-			<h1 ng-if="!(selectedWiki.title && selectedWiki.title!=='')">
-				<a ng-click="displayWikiList()">[[applicationName]]</a>
-			</h1>
-					
-			</div>
-			<div class="three cell">
-				<autocomplete
-					workflow="wiki.listAllPages"
-					options="allpageslist"
-					ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
-					ng-model="selectedPage"
-					ng-if="!isCreatingOrEditing()">
-				</autocomplete>
+			<div class="twelve cell">
+				<h1 ng-if="selectedWiki.title && selectedWiki.title!==''" class="three cell">
+					<a ng-click="displayWikiList()">[[applicationName]]</a> :
+					<a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
+				</h1>
+				<h1 ng-if="!(selectedWiki.title && selectedWiki.title!=='')" class="three cell">
+					<a ng-click="displayWikiList()">[[applicationName]]</a>
+				</h1>
+				<div class="contextual-buttons nine cell">
+						<button ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet"><i18n>wiki.create</i18n></button>
+						<behaviour name="createPage" resource="selectedWiki" class="cell right-magnet">
+							<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
+						</behaviour>
+				</div>
 			</div>
 			<div class="clear"></div>
 		</div>
 		<section>
+			<div class="row">
+				<div class="twelve cell">
+					<autocomplete
+							workflow="wiki.listAllPages"
+							options="allpageslist"
+							ng-change="openSelectedPage(selectedPage.wiki_id, selectedPage._id)"
+							ng-model="selectedPage"
+							ng-if="!isCreatingOrEditing()">
+					</autocomplete>
+				</div>
+			</div>
 			<container template="main"></container>
 			<div class="row">
 				<hr />
