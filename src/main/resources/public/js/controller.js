@@ -3,6 +3,9 @@ routes.define(function($routeProvider){
       .when('/view/:wikiId', {
         action: 'viewWiki'
       })
+		.when('/view/:wikiId/list-pages', {
+			action: 'listPages'
+		})
       .when('/view/:wikiId/:pageId', {
         action: 'viewPage'
       })
@@ -12,7 +15,7 @@ routes.define(function($routeProvider){
 });
 
 
-function WikiController($scope, template, model, route){
+function WikiController($scope, template, model, route, $location){
 	var parseQueryString = function(queryString) {
 	    var params = {}, temp, i;
 	    var queries = queryString.split("&");
@@ -72,7 +75,18 @@ function WikiController($scope, template, model, route){
 		    	$scope.openSelectedPage(params.wikiId, params.pageId);
 			});
 			model.wikis.sync();
-	    }
+	    },
+		listPages: function(params){
+			model.wikis.one('sync', function(){
+				$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
+					return wiki._id === params.wikiId;
+				});
+				$scope.selectedWiki.pages.sync(function(){
+					template.open('main', 'list-wiki-pages');
+				});
+			});
+			model.wikis.sync();
+		}
 	});
 	
 	template.open('main', 'list-wikis');
@@ -224,16 +238,7 @@ function WikiController($scope, template, model, route){
 	};
 	
 	$scope.listPages = function(wikiId){
-        model.wikis.one('sync', function(){
-            $scope.selectedWiki = _.find(model.wikis.all, function(wiki){
-                return wiki._id === wikiId;
-            });
-			$scope.selectedWiki.pages.sync(function(){
-				template.open('main', 'list-wiki-pages');
-				window.location.hash = '/view/' + $scope.selectedWiki._id;
-	        });
-        });
-        model.wikis.sync();
+		$location.path('/view/' + $scope.selectedWiki._id + '/list-pages');
 	};
 
 	$scope.openSelectedPage = function(wikiId, pageId){
