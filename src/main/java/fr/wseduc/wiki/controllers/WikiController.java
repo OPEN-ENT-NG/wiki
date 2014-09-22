@@ -262,15 +262,17 @@ public class WikiController extends MongoDbControllerHelper {
 			recipientSet.add(wikiOwner);
 		}
 
-		for (Object element : wiki.getArray("shared")) {
-			JsonObject jo = (JsonObject) element;
-			String uId = jo.getString("userId", null);
-			String gId = jo.getString("groupId", null);
-			if(uId != null && !uId.isEmpty() && !uId.equals(pageCreatorId)) {
-				recipientSet.add(uId);
-			}
-			else if(gId!=null && !gId.isEmpty()) {
-				recipientSet.add(gId);
+		if(wiki.getArray("shared") != null) {
+			for (Object element : wiki.getArray("shared")) {
+				JsonObject jo = (JsonObject) element;
+				String uId = jo.getString("userId", null);
+				String gId = jo.getString("groupId", null);
+				if(uId != null && !uId.isEmpty() && !uId.equals(pageCreatorId)) {
+					recipientSet.add(uId);
+				}
+				else if(gId!=null && !gId.isEmpty()) {
+					recipientSet.add(gId);
+				}
 			}
 		}
 
