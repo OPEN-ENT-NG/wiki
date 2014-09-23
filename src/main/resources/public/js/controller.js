@@ -42,6 +42,10 @@ function WikiController($scope, template, model, route, $location){
 				template.contains('main', 'edit-page'));
 	};
 	
+	$scope.canCreatePage = function(wiki){
+	    return wiki.myRights.createPage !== undefined;
+	};
+	
 	// Used to feed search bar
 	$scope.wiki.listAllPages( function(pagesArray) {
 			$scope.allpageslist = pagesArray;

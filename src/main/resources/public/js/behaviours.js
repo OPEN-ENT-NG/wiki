@@ -103,14 +103,16 @@ Behaviours.register('wiki', {
 	
 	// Used by component "linker" to create a new page
 	create: function(page, callback){
+		page.loading = true;
 		var data = {
 				title : page.title,
-				content : "<p></p>" // TODO
+				content : ''
 		};
 		
-		// TODO get wiki_id
 		http().postJson('/wiki/' + page.wiki_id + '/page', data).done(function(){
 			this.loadResources(callback);
-		}.bind(this));		
+			page.loading = false;
+		}.bind(this));
+		
 	}
 });

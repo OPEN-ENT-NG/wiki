@@ -1,22 +1,25 @@
-<p>Votre recherche ne retourne aucune page. Vous pouvez créer une page vide dans un wiki de votre choix :</p><!-- TODO i18n -->
+<p ng-if="!wikis">Votre recherche ne retourne aucune page.</p>
 
-<div class="twelve cell select-file input-block vertical-spacing-twice">
+<p ng-if="wikis"><i18n>wiki.search.returns.no.page</i18n></p>
+
+<div ng-if="wikis" class="twelve cell">
 	<article>
 		<form class="row">
 			<div class="row">
-					<li ng-repeat="wiki in wikis.all">
-						<a class="name">[[wiki.title]]</a>
-					</li>
+				<label class="three cell"><i18n>wiki.linkerform.pagetitle.label</i18n></label>
+				<input type="text" class="nine cell" ng-model="linker.resource.title" required 
+				translate-attr="placeholder" placeholder="wiki.page.createform.input.placeholder" />
 			</div>
 			<div class="row">
-			[[selectedWiki.editedPage.title]]
+				<label class="three cell"><i18n>wiki.linkerform.wiki.label</i18n></label>
+				<select class="nine cell" ng-model="linker.resource.wiki_id" 
+				ng-init="linker.resource.wiki_id = selectedWiki._id" 
+				ng-options="wiki._id as wiki.title for wiki in wikis.all.filter(canCreatePage)" required>
+				</select>
 			</div>
 			<div class="row">
-				<input type="text" ng-model="resource.title" required 
-				translate-attr="placeholder" placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
-			</div>
-			<div class="row">
-				<button class="right-magnet" ng-click="createResource()" translate content="wiki.page.createform.save"></button>
+				<input type="button" class="right-magnet" ng-click="linker.createResource()" 
+				i18n-value="wiki.linkerform.create.page" ng-if="!linker.resource.loading"/>
 			</div>
 			<div class="clear"></div>
 		</form>
