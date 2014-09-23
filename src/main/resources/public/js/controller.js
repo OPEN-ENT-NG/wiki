@@ -34,6 +34,8 @@ function WikiController($scope, template, model, route, $location){
 	$scope.display = {showPanel: false, viewWikisAs: 'list'};
 	$scope.wiki = new Wiki();
 	$scope.applicationName = lang.translate('wiki.title');
+	$scope.notFound = false;
+	$scope.me = model.me;
 	
 	$scope.isCreatingOrEditing = function(){
 		return (template.contains('main', 'create-wiki') || 
@@ -229,6 +231,10 @@ function WikiController($scope, template, model, route, $location){
 		$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 			return wiki._id === wikiId;
 		});
+    	if(!$scope.selectedWiki) {
+    		$scope.notFound = true;
+    		return;
+    	}
 		if($scope.selectedWiki.index && $scope.selectedWiki.index.length > 0) {
 			// Open index if it exists
 			$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.index);
@@ -246,18 +252,25 @@ function WikiController($scope, template, model, route, $location){
 	};
 
 	$scope.openSelectedPage = function(wikiId, pageId){
-		template.open('main', 'view-page');
     	$scope.selectedWiki = _.find(model.wikis.all, function(wiki){
 			return wiki._id === wikiId;
 		});
     	if(!$scope.selectedWiki) {
-    		notify.error('wiki.notfound');
+    		$scope.notFound = true;
     		return;
     	}
-    	$scope.selectedWiki.getPage(pageId, function(result){
-            window.location.hash = '/view/' + wikiId + '/' + pageId;
-            $scope.$apply();
-        });
+    	
+    	template.open('main', 'view-page');
+    	$scope.selectedWiki.getPage(
+    		pageId, 
+	    	function(result){
+	            window.location.hash = '/view/' + wikiId + '/' + pageId;
+	            $scope.$apply();
+	        },
+	        function(){
+	        	$scope.notFound=true;
+	        }
+    	);
 	};
 		
 	$scope.newPage = function(){

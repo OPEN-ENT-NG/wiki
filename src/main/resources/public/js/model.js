@@ -17,7 +17,7 @@ function Wiki() {
 	
 }
 
-Wiki.prototype.getPage = function(pageId, callback) {
+Wiki.prototype.getPage = function(pageId, callback, errorCallback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			this.page = new Page( wiki.pages[0] );
@@ -26,7 +26,7 @@ Wiki.prototype.getPage = function(pageId, callback) {
 			callback(wiki);
 		}.bind(this))
 		.e404(function(e){
-			notify.error('wiki.page.notfound');
+			errorCallback();
 		});
 }
 
