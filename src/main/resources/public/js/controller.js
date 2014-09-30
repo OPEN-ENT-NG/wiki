@@ -9,26 +9,10 @@ routes.define(function($routeProvider){
       .when('/view/:wikiId/:pageId', {
         action: 'viewPage'
       })
-      .otherwise({
-        action: 'defaultView'
-      });
 });
 
 
 function WikiController($scope, template, model, route, $location){
-	var parseQueryString = function(queryString) {
-	    var params = {}, temp, i;
-	    var queries = queryString.split("&");
-	 
-	    for (i=0; i<queries.length; i++) {
-	    	 // Split into key/value pairs
-	        temp = queries[i].split('=');
-	        params[temp[0]] = temp[1];
-	    }
-	 
-	    return params;
-	};
-	
 	
 	$scope.template = template;
 	$scope.display = {showPanel: false, viewWikisAs: 'list'};
@@ -58,24 +42,6 @@ function WikiController($scope, template, model, route, $location){
 		viewWiki: function(params){
 			$scope.viewWiki(params.wikiId);
 		},
-		defaultView: function(){
-			// Linker case - when accessing a page via URL ?wiki=wikiId&page=pageId
-			var queryString = window.location.search;
-			if(typeof (queryString) !== undefined) {
-				queryString = queryString.substring(1); // remove character '?'
-				var parameters = parseQueryString(queryString);
-				if(parameters.wiki && parameters.page) {
-					model.wikis.one('sync', function(){
-				    	$scope.openSelectedPage(parameters.wiki, parameters.page);
-					});
-					model.wikis.sync();
-					return;
-				}
-			}
-			
-			// Default case
-	    	$scope.displayWikiList();
-	    },
 	    viewPage: function(params){
 			model.wikis.one('sync', function(){
 		    	$scope.openSelectedPage(params.wikiId, params.pageId);
