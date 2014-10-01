@@ -168,15 +168,19 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createPage(String idWiki, String newPageId, String pageTitle,
+	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
 			String pageContent, boolean isIndex,  Handler<Either<String, JsonObject>> handler) {
 
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		// Add new page to array "pages"
 		JsonObject newPage = new JsonObject();
-		newPage.putString("_id", newPageId).putString("title", pageTitle)
-				.putString("content", pageContent);
+		newPage.putString("_id", newPageId)
+				.putString("title", pageTitle)
+				.putString("content", pageContent)
+				.putString("author", user.getUserId())
+				.putString("authorName", user.getUsername())
+				.putObject("modified", MongoDb.now());
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.push("pages", newPage);
@@ -192,7 +196,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(String idWiki, String idPage, String pageTitle, String pageContent,
+	public void updatePage(UserInfos user, String idWiki, String idPage, String pageTitle, String pageContent,
 			boolean isIndex, boolean wasIndex, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
@@ -202,9 +206,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Update
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		JsonObject now = MongoDb.now();
 		modifier.set("pages.$.title", pageTitle)
 				.set("pages.$.content", pageContent)
-				.set("modified", MongoDb.now());
+				.set("pages.$.author", user.getUserId())
+				.set("pages.$.authorName", user.getUsername())
+				.set("pages.$.modified", now)
+				.set("modified", now);
 		if (isIndex) { // Set updated page as index
 			modifier.set("index", idPage);
 		}

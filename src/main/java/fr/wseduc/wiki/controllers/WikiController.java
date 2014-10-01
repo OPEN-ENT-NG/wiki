@@ -206,7 +206,7 @@ public class WikiController extends MongoDbControllerHelper {
 								}
 							};
 
-							wikiService.createPage(idWiki, newPageId, pageTitle,
+							wikiService.createPage(user, idWiki, newPageId, pageTitle,
 									pageContent, isIndex, handler);
 						}
 					});
@@ -282,28 +282,37 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Update page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
-		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			@Override
-			public void handle(JsonObject data) {
-				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-				String idWiki = request.params().get("id");
-				String idPage = request.params().get("idpage");
-				boolean isIndex = data.getBoolean("isIndex", false);
-				boolean wasIndex = data.getBoolean("wasIndex", false);
+							String idWiki = request.params().get("id");
+							String idPage = request.params().get("idpage");
+							boolean isIndex = data.getBoolean("isIndex", false);
+							boolean wasIndex = data.getBoolean("wasIndex", false);
 
-				String pageTitle = data.getString("title");
-				String pageContent = data.getString("content");
-				if (pageTitle == null || pageTitle.trim().isEmpty()
-						|| pageContent == null || pageContent.trim().isEmpty()) {
-					badRequest(request);
-					return;
+							String pageTitle = data.getString("title");
+							String pageContent = data.getString("content");
+							if (pageTitle == null || pageTitle.trim().isEmpty()
+									|| pageContent == null || pageContent.trim().isEmpty()) {
+								badRequest(request);
+								return;
+							}
+
+							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent,
+									isIndex, wasIndex, handler);
+						}
+					});
 				}
-
-				wikiService.updatePage(idWiki, idPage, pageTitle, pageContent,
-						isIndex, wasIndex, handler);
 			}
 		});
+
 	}
 
 	@Delete("/:id/page/:idpage")
