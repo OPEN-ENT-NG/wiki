@@ -15,7 +15,7 @@ routes.define(function($routeProvider){
 function WikiController($scope, template, model, route, $location){
 	
 	$scope.template = template;
-	$scope.display = {showPanel: false, viewWikisAs: 'list'};
+	$scope.display = {showPanel: false, showPanelForCurrentWiki: false};
 	$scope.wiki = new Wiki();
 	$scope.applicationName = lang.translate('wiki.title');
 	$scope.notFound = false;

@@ -46,6 +46,7 @@
 	"wiki.update": "Modifier",
 	"wiki.delete": "Supprimer",
 	"wiki.share": "Partager",
+	"wiki.share.current.wiki": "Partager le wiki",
 	
 	"wiki.confirmdeleteform.title": "Supprimer un (des) wiki(s)",
 	"wiki.confirmdeleteform.message": "Voulez-vous vraiment supprimer le(s) wiki(s) sélectionné(s) ?",
