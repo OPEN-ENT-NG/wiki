@@ -1,0 +1,30 @@
+<nav class="vertical">
+	<h2>
+		<i18n>wikis</i18n>
+	</h2>
+	<ul>
+		<li>
+			<a data-reload href="/wiki">
+				<i18n>wiki.browse</i18n>
+			</a>
+		</li>
+		<li>
+			<a ng-click="listPages(selectedWiki._id)">
+				<i18n>wiki.pagelist</i18n>
+			</a>
+		</li>
+		<li ng-if="selectedWiki.index.length > 0">
+			<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">Page d'accueil</a>
+		</li>
+	</ul>
+</nav>
+<nav ng-if="selectedWiki.lastPages" class="vertical">
+	<h2>
+		<i18n>wiki.last.modified.pages</i18n>
+	</h2>
+	<div ng-repeat="page in selectedWiki.lastPages">
+	   <a ng-click="openSelectedPage(selectedWiki._id, page._id)">
+	           [[page.title]] 
+	   </a> - [[getRelativeTimeFromDate(page.modified)]]
+	</div>
+</nav>

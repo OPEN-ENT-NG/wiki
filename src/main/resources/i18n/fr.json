@@ -2,6 +2,13 @@
 	"wiki.head.title": "Wiki",
 	"wiki.title": "Wiki",
 	
+	"wikis" : "Wikis",
+	"wiki.browse" : "Parcourir les wikis",
+	"wiki.pagelist": "Liste des pages",
+	"wiki.last.modified.pages" : "Dernières pages modifiées",
+	"wiki.last.modification.by" : "Dernière modification par",
+	"wiki.on" : "le",
+	
 	"wiki.notfound" : "Le wiki n'existe pas",
 	"wiki.page.notfound" : "La page n'existe pas",
 	"wiki.page.empty" : "La page demandée n'existe pas",
@@ -33,7 +40,6 @@
 	"wiki.editform.cancel": "Annuler",
 	"wiki.editform.change.picture": "Changer l'image",
 
-	"wiki.pagelist.label": "Liste des pages",
 	"wiki.create.new.page": "Nouvelle Page",
 
 	"wiki.create": "Créer un wiki",

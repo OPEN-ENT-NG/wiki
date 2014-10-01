@@ -1,23 +1,5 @@
-<div class="three cell">
-	<nav class="vertical">
-		<h2>Wikis</h2>
-		<ul>
-			<li>
-				<a data-reload href="/wiki">
-					Parcourir les wikis
-				</a>
-			</li>
-			<li>
-				<a ng-click="listPages(selectedWiki._id)">
-					Liste des pages
-				</a>
-			</li>
-			<li ng-if="selectedWiki.index.length > 0">
-				<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">Page d'accueil</a>
-			</li>
-		</ul>
-	</nav>
-</div>
+<div class="three cell" ng-include="template.containers.sideMenu"></div>
+
 <article class="nine cell">
 	<form class="row">
 		<div class="row">

@@ -21,6 +21,19 @@ function WikiController($scope, template, model, route, $location){
 	$scope.notFound = false;
 	$scope.me = model.me;
 	
+	var setLastPages = function(wiki) {
+		var dateArray = _.chain(wiki.pages.all).pluck("modified").compact().value();
+		if(dateArray && dateArray.length > 0) {
+			// get the last 5 modified pages
+			wiki.lastPages = _.chain(wiki.pages.all)
+								.filter(function(page){ return page.modified && page.modified.$date })
+								.sortBy(function(page){ return page.modified.$date; })
+								.last(5)
+								.reverse()
+								.value();
+		}
+	}
+	
 	$scope.isCreatingOrEditing = function(){
 		return (template.contains('main', 'create-wiki') || 
 				template.contains('main', 'edit-wiki') || 
@@ -54,6 +67,7 @@ function WikiController($scope, template, model, route, $location){
 					return wiki._id === params.wikiId;
 				});
 				$scope.selectedWiki.pages.sync(function(){
+					setLastPages($scope.selectedWiki);
 					template.open('main', 'list-wiki-pages');
 				});
 			});
@@ -61,12 +75,24 @@ function WikiController($scope, template, model, route, $location){
 		}
 	});
 	
+    // View initialization
+	template.open('sideMenu', 'side-menu');
 	template.open('main', 'list-wikis');
 	
+	// Date functions
     $scope.formatDate = function(dateObject){
     	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY');
-    };	
+    };
+    
+    $scope.getDateAndTime = function(dateObject){
+    	return moment(dateObject.$date).lang('fr').format('LLLL');
+    };
+    
+    $scope.getRelativeTimeFromDate = function(dateObject){
+    	return moment(dateObject.$date).lang('fr').fromNow();
+    };
 	
+    
 	$scope.deleteWikiSelection = function(){
 		_.map($scope.wikis.selection(), function(wikiToRemove){
 			wikiToRemove.deleteWiki( function(){
@@ -207,6 +233,7 @@ function WikiController($scope, template, model, route, $location){
 		}
 		else { // List pages
 			$scope.selectedWiki.pages.sync(function(){
+				setLastPages($scope.selectedWiki);
 				template.open('main', 'list-wiki-pages');
 				window.location.hash = '/view/' + $scope.selectedWiki._id;
 	        });
@@ -226,19 +253,23 @@ function WikiController($scope, template, model, route, $location){
     		return;
     	}
     	
-    	template.open('main', 'view-page');
-    	$scope.selectedWiki.getPage(
-    		pageId, 
-	    	function(result){
-	            window.location.hash = '/view/' + wikiId + '/' + pageId;
-	            $scope.$apply();
-	        },
-	        function(){
-	        	$scope.notFound=true;
-	        }
-    	);
+		$scope.selectedWiki.pages.sync(function(){
+			setLastPages($scope.selectedWiki);
+			template.open('main', 'view-page');
+			$scope.selectedWiki.getPage(
+				pageId, 
+				function(result){
+					window.location.hash = '/view/' + wikiId + '/' + pageId;
+					$scope.$apply();
+				},
+				function(){
+					$scope.notFound=true;
+				}
+			);
+		});
+
 	};
-		
+
 	$scope.newPage = function(){
 		$scope.page = new Page();
 		template.open('main', 'create-page');
@@ -287,10 +318,12 @@ function WikiController($scope, template, model, route, $location){
 				}
 			);
 			
-	        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
-				window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-	        });
-
+			$scope.selectedWiki.pages.sync(function(){
+				setLastPages($scope.selectedWiki);
+		        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
+					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+		        });
+			});
         });
 	};
 	
@@ -336,7 +369,15 @@ function WikiController($scope, template, model, route, $location){
 					$scope.allpageslist = pagesArray;
 				}
 			);
-			$scope.$apply();
+			
+			$scope.selectedWiki.pages.sync(function(){
+				setLastPages($scope.selectedWiki);
+		        $scope.selectedWiki.getPage($scope.selectedWiki.page._id, function(returnedWiki){
+					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
+					$scope.$apply();
+		        });
+			});
+
         });
 	};
 	
