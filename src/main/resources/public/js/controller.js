@@ -41,10 +41,18 @@ function WikiController($scope, template, model, route, $location){
 				template.contains('main', 'edit-page'));
 	};
 	
+	// Functions to check rights
 	$scope.canCreatePage = function(wiki){
 	    return wiki.myRights.createPage !== undefined;
 	};
 	
+	$scope.canManageWiki = function(wiki){
+		return (wiki.myRights.edit !== undefined || 
+				wiki.myRights.deleteWiki !== undefined || 
+				wiki.myRights.share !== undefined)
+	};
+
+
 	// Used to feed search bar
 	$scope.wiki.listAllPages( function(pagesArray) {
 			$scope.allpageslist = pagesArray;
@@ -193,15 +201,6 @@ function WikiController($scope, template, model, route, $location){
 			template.open('main', 'list-wikis');
     	});
     	model.wikis.sync();
-	};
-	
-	$scope.switchAllWikis = function(){
-		if($scope.display.selectWikis){
-			$scope.wikis.selectAll();
-		}
-		else{
-			$scope.wikis.deselectAll();
-		}
 	};
 	
 	$scope.getWikiThumbnail = function(wiki){

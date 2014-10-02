@@ -13,7 +13,7 @@
 								<br />[[wiki.owner.displayName]]
 								<br />[[formatDate(wiki.modified)]]
 							</div>
-							<div class="bottom-locked eleven vertical-spacing-twice">
+							<div ng-show="canManageWiki(wiki)" class="bottom-locked eleven vertical-spacing-twice">
 								<input type="checkbox" data-ng-model="wiki.selected" class="right-magnet cell" />
 							</div>
 						</div>
