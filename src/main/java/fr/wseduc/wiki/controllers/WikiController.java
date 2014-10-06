@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
@@ -224,21 +225,52 @@ public class WikiController extends MongoDbControllerHelper {
 				@Override
 				public void handle(Either<String, JsonObject> event) {
 					if(event.isRight() && event.right().getValue()!=null) {
-						JsonObject wiki = event.right().getValue();
-						List<String> recipients = extractRecipientsFromWiki(wiki, user.getUserId());
+						final JsonObject wiki = event.right().getValue();
+						String pageCreatorId = user.getUserId();
+						final Set<String> recipientSet = new HashSet<>();
 
-						if(!recipients.isEmpty()){
-							JsonObject params = new JsonObject();
-							params.putString("uri", container.config().getString("userbook-host") +
-									"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
-							params.putString("username", user.getUsername())
-								.putString("pageTitle", pageTitle)
-								.putString("wikiTitle", wiki.getString("title"))
-								.putString("pageUri", container.config().getString("host") +
-									"/wiki#/view/" + idWiki + "/" + idPage);
+						if(wiki.getArray("shared") != null) {
+							String wikiOwner = wiki.getObject("owner").getString("userId");
+							if(!wikiOwner.equals(pageCreatorId)) {
+								recipientSet.add(wikiOwner);
+							}
 
-							notification.notifyTimeline(request, user, WIKI_NAME, WIKI_PAGE_CREATED_EVENT_TYPE,
-									recipients, idPage, "notify-page-created.html", params);
+							final AtomicInteger remaining = new AtomicInteger(wiki.getArray("shared").size());
+
+							for (Object element : wiki.getArray("shared")) {
+								if (!(element instanceof JsonObject)) continue;
+								JsonObject jo = (JsonObject) element;
+								String uId = jo.getString("userId", null);
+								String gId = jo.getString("groupId", null);
+								if(uId != null && !uId.isEmpty()) {
+									if(!uId.equals(pageCreatorId)){
+										recipientSet.add(uId);
+									}
+									remaining.getAndDecrement();
+								}
+								else if(gId!=null && !gId.isEmpty()) {
+									UserUtils.findUsersInProfilsGroups(gId, eb, pageCreatorId, false, new Handler<JsonArray>() {
+										@Override
+										public void handle(JsonArray event) {
+											if (event != null) {
+												for (Object o : event) {
+													if (!(o instanceof JsonObject)) continue;
+													JsonObject j = (JsonObject) o;
+													String id = j.getString("id");
+													recipientSet.add(id);
+												}
+											}
+											if (remaining.decrementAndGet() < 1) {
+												sendNotification(request, user, recipientSet, pageTitle, wiki, idWiki, idPage);
+											}
+										}
+									});
+								}
+							}
+
+							if (remaining.get() < 1) {
+								sendNotification(request, user, recipientSet, pageTitle, wiki, idWiki, idPage);
+							}
 						}
 					}
 					else {
@@ -253,29 +285,25 @@ public class WikiController extends MongoDbControllerHelper {
 
 	}
 
-	private List<String> extractRecipientsFromWiki(JsonObject wiki, String pageCreatorId){
-		Set<String> recipientSet = new HashSet<>();
+	private void sendNotification(final HttpServerRequest request, final UserInfos user, final Set<String> recipientSet,
+			final String pageTitle, final JsonObject wiki, final String idWiki, final String idPage) {
 
-		String wikiOwner = wiki.getObject("owner").getString("userId");
-		if(!wikiOwner.equals(pageCreatorId)) {
-			recipientSet.add(wikiOwner);
+		if(recipientSet!=null && !recipientSet.isEmpty()){
+			List<String> recipients = new ArrayList<>(recipientSet);
+
+			JsonObject params = new JsonObject();
+			params.putString("uri", container.config().getString("userbook-host") +
+					"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+			params.putString("username", user.getUsername())
+				.putString("pageTitle", pageTitle)
+				.putString("wikiTitle", wiki.getString("title"))
+				.putString("pageUri", container.config().getString("host") +
+					"/wiki#/view/" + idWiki + "/" + idPage);
+
+			notification.notifyTimeline(request, user, WIKI_NAME, WIKI_PAGE_CREATED_EVENT_TYPE,
+					recipients, idPage, "notify-page-created.html", params);
 		}
 
-		if(wiki.getArray("shared") != null) {
-			for (Object element : wiki.getArray("shared")) {
-				JsonObject jo = (JsonObject) element;
-				String uId = jo.getString("userId", null);
-				String gId = jo.getString("groupId", null);
-				if(uId != null && !uId.isEmpty() && !uId.equals(pageCreatorId)) {
-					recipientSet.add(uId);
-				}
-				else if(gId!=null && !gId.isEmpty()) {
-					recipientSet.add(gId);
-				}
-			}
-		}
-
-		return new ArrayList<>(recipientSet);
 	}
 
 	@Put("/:id/page/:idpage")
