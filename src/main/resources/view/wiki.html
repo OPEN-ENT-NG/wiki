@@ -13,14 +13,15 @@
 	<portal ng-if="!notFound">
 		<div class="row">
 			<div class="twelve cell">
-				<h1 ng-if="selectedWiki.title && selectedWiki.title!==''" class="three cell">
-					<a ng-click="displayWikiList()">[[applicationName]]</a> :
-					<a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
-				</h1>
-				<h1 ng-if="!(selectedWiki.title && selectedWiki.title!=='')" class="three cell">
-					<a ng-click="displayWikiList()">[[applicationName]]</a>
-				</h1>
-				<div class="contextual-buttons nine cell">
+				<div class="eight cell">
+					<h1>
+						<a ng-click="displayWikiList()">[[applicationName]]</a>
+						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
+							: <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
+						</span>
+					</h1>
+				</div>
+				<div class="contextual-buttons four cell">
 						<button ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
 							<i18n>wiki.create</i18n>
 						</button>
