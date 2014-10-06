@@ -1,20 +1,14 @@
 <nav class="vertical">
-	<h2>
-		<i18n>wikis</i18n>
-	</h2>
 	<ul>
-		<li>
-			<a data-reload href="/wiki">
-				<i18n>wiki.browse</i18n>
-			</a>
-		</li>
 		<li>
 			<a ng-click="listPages(selectedWiki._id)">
 				<i18n>wiki.pagelist</i18n>
 			</a>
 		</li>
 		<li ng-if="selectedWiki.index.length > 0">
-			<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">Page d'accueil</a>
+			<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">
+				<i18n>wiki.homepage.label</i18n>
+			</a>
 		</li>
 	</ul>
 </nav>

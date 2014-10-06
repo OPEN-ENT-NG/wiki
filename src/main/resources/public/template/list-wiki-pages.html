@@ -5,7 +5,7 @@
 		<li>
 			<a ng-if="page._id === selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">
 				[[page.title]]
-				<em><i18n>wiki.homepage.label</i18n></em>
+				<em>[<i18n>wiki.homepage.label</i18n>]</em>
 			</a>
 			<a ng-if="page._id !== selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
 		</li>

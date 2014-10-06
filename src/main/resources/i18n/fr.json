@@ -2,8 +2,6 @@
 	"wiki.head.title": "Wiki",
 	"wiki.title": "Wiki",
 	
-	"wikis" : "Wikis",
-	"wiki.browse" : "Parcourir les wikis",
 	"wiki.pagelist": "Liste des pages",
 	"wiki.last.modified.pages" : "Dernières pages modifiées",
 	"wiki.last.modification.by" : "Dernière modification par",
@@ -14,7 +12,7 @@
 	"wiki.page.empty" : "La page demandée n'existe pas",
 	"wiki.or.page.notfound.or.unauthorized" : "Le wiki ou la page demandé(e) n'existe pas, a été supprimé(e), ou vous n'avez pas les droits pour y accéder.",
 	"wiki.page.displaylist.label": "Afficher la liste des pages",
-	"wiki.homepage.label" : "[Page d'accueil]",
+	"wiki.homepage.label" : "Page d'accueil",
 	
 	"wiki.form.title.is.empty": "Vous devez renseigner le titre",
 	"wiki.page.createform.save": "Enregistrer",
