@@ -105,7 +105,7 @@ Description des champs d'un document de la collection "wiki" :
 	{
 		"_id" : "identifiant du wiki",
 		"created" : "date de création",
-		"index" : "identifiant de la page d'accueil du wiki (facultatif)",
+		"index" : "identifiant de la page d'accueil du wiki. Ce champ est facultatif",
 		"modified" : "date de dernière modification",
 		"owner" : {
 			"userId" : "identifiant du créateur du wiki",
@@ -113,15 +113,15 @@ Description des champs d'un document de la collection "wiki" :
 		},
 		"pages" : "tableau de pages. Chaque page comporte les champs suivants :
 			{
-				"_id" : "54329007b760276d0a26ffe1",
-				"title" : "Page principale",
-				"content" : "<div class=\"ng-scope\">Bienvenue sur mon wiki</div>",
-				"author" : "1e402506-0ab8-420b-a77c-dc887ed6791d",
-				"authorName" : "Rachelle PIRES",
-				"modified" : ISODate("2014-10-06T12:50:15.657Z")
+				"_id" : "identifiant de la page. Il est unique dans toute la base",
+				"title" : "titre de la page",
+				"content" : "contenu de la page, en HTML",
+				"author" : "identifiant de l'utilisateur qui a fait la dernière modification",
+				"authorName" : "prénom et nom de l'utilisateur qui a fait la dernière modification",
+				"modified" : "date de dernière modification de la page"
 			}",
 		"shared" : "tableau contenant les méthodes partagées avec les autres utilisateurs et/ou groupes",
-		"thumbnail" : "chemin vers une miniature du wiki, stockée dans l'application workspace",
+		"thumbnail" : "chemin vers une miniature du wiki, stockée dans l'application workspace. Ce champ est facultatif",
 		"title" : "titre du wiki"
 	}
 
