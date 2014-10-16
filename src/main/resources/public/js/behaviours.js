@@ -29,7 +29,8 @@ var wikiBehaviours = {
 		create: 'fr.wseduc.wiki.controllers.WikiController|createWiki',
 		list: 'fr.wseduc.wiki.controllers.WikiController|listWikis',
 		view: 'fr.wseduc.wiki.controllers.WikiController|view',
-		listAllPages: 'fr.wseduc.wiki.controllers.WikiController|listAllPages'
+		listAllPages: 'fr.wseduc.wiki.controllers.WikiController|listAllPages',
+		print: 'fr.wseduc.wiki.controllers.WikiController|print'
 	}
 };
 

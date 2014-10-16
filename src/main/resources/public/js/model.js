@@ -10,11 +10,23 @@ function Wiki() {
 		sync : function(callback) {
 			http().get('/wiki/' + wiki._id + '/listpages').done(function(returnedWiki) {
 				this.load(returnedWiki.pages);
-				callback();
+				if(typeof callback === 'function'){
+					callback();
+				}
 			}.bind(this));			
 		}
 	})
 	
+}
+
+Wiki.prototype.getWholeWiki = function(callback) {
+	http().get('/wiki/' + this._id + '/whole')
+		.done(function(wiki){
+			this.updateData(wiki);
+			if(typeof callback === 'function'){
+				callback();
+			}
+		}.bind(this));
 }
 
 Wiki.prototype.getPage = function(pageId, callback, errorCallback) {

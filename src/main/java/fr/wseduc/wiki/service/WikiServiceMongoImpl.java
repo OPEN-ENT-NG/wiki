@@ -282,4 +282,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				MongoDbResult.validResultHandler(handler));
 	}
 
+	@Override
+	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler) {
+		super.retrieve(id, handler);
+	}
+
 }

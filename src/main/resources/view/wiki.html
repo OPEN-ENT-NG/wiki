@@ -13,7 +13,7 @@
 	<portal ng-if="!notFound">
 		<div class="row">
 			<div class="twelve cell">
-				<div class="eight cell">
+				<div class="seven cell">
 					<h1>
 						<a ng-click="displayWikiList()">[[applicationName]]</a>
 						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
@@ -21,18 +21,21 @@
 						</span>
 					</h1>
 				</div>
-				<div class="contextual-buttons four cell">
-						<button ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
-							<i18n>wiki.create</i18n>
+				<div class="contextual-buttons five cell">
+					<button ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
+						<i18n>wiki.create</i18n>
+					</button>
+					<a workflow="wiki.print" ng-if="selectedWiki._id" ng-href="/wiki/print?wiki=[[selectedWiki._id]]" target="_blank" class="button cell right-magnet">
+						<i18n>wiki.print</i18n>
+					</a>
+					<behaviour name="share" resource="selectedWiki" class="cell right-magnet">
+						<button ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
+							<i18n>wiki.share.current.wiki</i18n>
 						</button>
-						<behaviour name="share" resource="selectedWiki" class="cell right-magnet">
-							<button ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
-								<i18n>wiki.share.current.wiki</i18n>
-							</button>
-						</behaviour>
-						<behaviour name="createPage" resource="selectedWiki" class="cell right-magnet">
-							<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
-						</behaviour>
+					</behaviour>
+					<behaviour name="createPage" resource="selectedWiki" class="cell right-magnet">
+						<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
+					</behaviour>
 				</div>
 			</div>
 			<div class="clear"></div>

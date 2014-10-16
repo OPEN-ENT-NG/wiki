@@ -9,10 +9,26 @@ routes.define(function($routeProvider){
       .when('/view/:wikiId/:pageId', {
         action: 'viewPage'
       })
+      .otherwise({
+    	  action: 'defaultView'
+      });
 });
 
 
 function WikiController($scope, template, model, route, $location){
+	
+    var parseQueryString = function(queryString) {
+        var params = {}, temp, i;
+        var queries = queryString.split("&");
+     
+        for (i=0; i<queries.length; i++) {
+             // Split into key/value pairs
+            temp = queries[i].split('=');
+            params[temp[0]] = temp[1];
+        }
+     
+        return params;
+    };
 	
 	$scope.template = template;
 	$scope.display = {showPanel: false, showPanelForCurrentWiki: false};
@@ -80,7 +96,30 @@ function WikiController($scope, template, model, route, $location){
 				});
 			});
 			model.wikis.sync();
-		}
+		},
+        defaultView: function(){
+            // Print case : when accessing a page via URL /wiki/print?wiki=wikiId
+			if(window.location.href.indexOf('print') !== -1){
+	            var queryString = window.location.search;
+	            if(typeof (queryString) !== undefined) {
+	                queryString = queryString.substring(1); // remove character '?'
+	                var parameters = parseQueryString(queryString);
+	                if(parameters.wiki) {
+	                	$scope.selectedWiki = new Wiki({_id: parameters.wiki});
+	                	$scope.selectedWiki.getWholeWiki(function() {
+	                		$scope.selectedWiki.pages.all = _.sortBy($scope.selectedWiki.pages.all, function(page) {
+	            				return page.title.toLowerCase();
+	            			});
+	                		setTimeout(function(){window.print();}, 1000);
+	                	});
+	                    return;
+	                }
+	            }
+			}
+            
+            // Default case
+		    $scope.displayWikiList();
+        }
 	});
 	
     // View initialization

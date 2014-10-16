@@ -16,6 +16,8 @@ public interface WikiService {
 
 	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
+	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler);
+
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler);
 

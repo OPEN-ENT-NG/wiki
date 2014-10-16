@@ -49,6 +49,12 @@ public class WikiController extends MongoDbControllerHelper {
 		renderView(request);
 	}
 
+	@Get("/print")
+	@SecuredAction("wiki.print")
+	public void print(HttpServerRequest request) {
+		renderView(request);
+	}
+
 	@Get("/list")
 	@ApiDoc("List wikis")
 	@SecuredAction("wiki.list")
@@ -58,7 +64,6 @@ public class WikiController extends MongoDbControllerHelper {
 			public void handle(final UserInfos user) {
 				if (user != null) {
 					Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
-
 					wikiService.listWikis(user, handler);
 				}
 			}
@@ -70,9 +75,7 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void listPages(final HttpServerRequest request) {
 		Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
-
 		String idWiki = request.params().get("id");
-
 		wikiService.listPages(idWiki, handler);
 	}
 
@@ -85,11 +88,18 @@ public class WikiController extends MongoDbControllerHelper {
 			public void handle(final UserInfos user) {
 				if (user != null) {
 					Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
-
 					wikiService.listAllPages(user, handler);
 				}
 			}
 		});
+	}
+
+	@Get("/:id/whole")
+	@ApiDoc("Get a wiki with all its pages. Used to print a wiki")
+	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
+	public void getWholeWiki(final HttpServerRequest request) {
+		String idWiki = request.params().get("id");
+		wikiService.getWholeWiki(idWiki, notEmptyResponseHandler(request));
 	}
 
 	@Post("")
