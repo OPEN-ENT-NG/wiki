@@ -2,7 +2,7 @@
 
 <article ng-if="selectedWiki.page !== undefined" class="nine cell vertical-spacing">
 	<div class="row">
-		<div class="nine cell">
+		<div class="eight cell">
 			<h2>[[selectedWiki.page.title]]</h2>
 			<em ng-if="selectedWiki.page.modified">
 				<i18n>wiki.last.modification.by</i18n> 
@@ -10,8 +10,11 @@
 				<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
 			</em>
 		</div>
-		<div class="three cell">
+		<div class="four cell">
 			<div class="display-buttons">
+				<behaviour name="comment" resource="selectedWiki" class="cell">
+					<button ng-click="showCommentForm()" translate content="wiki.comment.add"></button>
+				</behaviour>
 				<behaviour name="editPage" resource="selectedWiki" class="cell">
 					<button ng-click="editPage(selectedWiki)" translate content="wiki.page.edit"></button>
 				</behaviour>
@@ -26,6 +29,38 @@
 	</div>
 	
 	<div bind-html="selectedWiki.page.content" />
+
+	<div class="row content-line">
+		<div class="five cell right-magnet">
+			<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
+				<span ng-if="!selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
+					<i18n>wiki.comment.display</i18n> ([[selectedWiki.page.comments.length]])
+				</span>
+				<span ng-if="selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
+					<i18n>wiki.comment.hide</i18n> ([[selectedWiki.page.comments.length]])
+				</span>
+			</a>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="row" ng-if="selectedWiki.page.showCommentForm === true">
+		<div ng-include="template.containers.commentForm"></div>
+	</div>
+
+	<div class="row" ng-if="selectedWiki.page.showComments">
+		<div class="row" ng-repeat="comment in selectedWiki.page.comments">
+			<article class="comment reduce-block-eight">
+				<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
+				<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
+				<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
+				   ng-if="(comment.author === me.userId || selectedWiki.myRights.deleteWiki)">
+					<i18n>wiki.comment.delete</i18n>
+				</a>
+				<p>[[comment.comment]]</p>
+			</article>
+		</div>
+	</div>
 </article>
 
 <!-- Lightbox to confirm page deletion -->

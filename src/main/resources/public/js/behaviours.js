@@ -23,6 +23,9 @@ var wikiBehaviours = {
 		},
 		deletePage: {
 			right: 'fr-wseduc-wiki-controllers-WikiController|deletePage'
+		},
+		comment: {
+			right: 'fr-wseduc-wiki-controllers-WikiController|comment'
 		}
 	},
 	workflow: {

@@ -2,6 +2,26 @@ function Page() {
 
 }
 
+Page.prototype.comment = function(commentText, wikiId, callback) {
+	http().postJson('/wiki/' + wikiId + '/page/' + this._id, { comment: commentText })
+	.done(function(response){
+		if(typeof callback === 'function'){
+			callback();
+		}
+	}.bind(this));
+};
+
+Page.prototype.deleteComment = function(wikiId, commentId, commentIndex, callback) {
+	http().delete('/wiki/' + wikiId + '/page/' + this._id + '/comment/' + commentId)
+	.done(function(){
+		this.comments.splice(commentIndex, 1);
+		if(typeof callback === 'function'){
+			callback();
+		}
+	}.bind(this));
+};
+
+
 function Wiki() {
 
 	var wiki = this;
@@ -15,7 +35,7 @@ function Wiki() {
 				}
 			}.bind(this));			
 		}
-	})
+	});
 	
 }
 
@@ -27,7 +47,7 @@ Wiki.prototype.getWholeWiki = function(callback) {
 				callback();
 			}
 		}.bind(this));
-}
+};
 
 Wiki.prototype.getPage = function(pageId, callback, errorCallback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
@@ -37,10 +57,10 @@ Wiki.prototype.getPage = function(pageId, callback, errorCallback) {
 			this.owner = wiki.owner;
 			callback(wiki);
 		}.bind(this))
-		.e404(function(e){
+		.e404(function(){
 			errorCallback();
 		});
-}
+};
 
 Wiki.prototype.createPage = function(data, callback) {
 	http().postJson('/wiki/' + this._id + '/page', data)
@@ -50,7 +70,7 @@ Wiki.prototype.createPage = function(data, callback) {
 		}
 		callback(result);
 	}.bind(this));
-}
+};
 
 Wiki.prototype.updatePage = function(data, pageId, callback) {
 	http().putJson('/wiki/' + this._id + '/page/' + pageId, data)
@@ -63,32 +83,32 @@ Wiki.prototype.updatePage = function(data, pageId, callback) {
 		}
 		callback(result);
 	}.bind(this));
-}
+};
 
 Wiki.prototype.deletePage = function(wikiId, pageId, callback) {
 	http().delete('/wiki/' + wikiId + '/page/' + pageId).done(function(result){
 		callback(result);
 	});
-}
+};
 
 Wiki.prototype.createWiki = function(data, callback) {
 	http().postJson('/wiki', data).done(function(result){
 		callback(result);
 	});
-}
+};
 
 Wiki.prototype.updateWiki = function(data, callback) {
 	http().putJson('/wiki/' + this._id, data).done(function(){
 		callback();
 	});
-}
+};
 
 Wiki.prototype.deleteWiki = function(callback) {
 	http().delete('/wiki/' + this._id).done(function(){
 		model.wikis.remove(this);
 		callback();
 	}.bind(this));
-}
+};
 
 Wiki.prototype.listAllPages = function(callback) {
 	http().get('/wiki/listallpages').done(
@@ -105,7 +125,7 @@ Wiki.prototype.listAllPages = function(callback) {
 									toString : function() {
 										return this.title;
 									}
-								}
+								};
 							});
 							
 							return pages;
@@ -115,7 +135,7 @@ Wiki.prototype.listAllPages = function(callback) {
 				pagesArray = _.flatten(pagesArray);
 				callback(pagesArray);
 			});
-}
+};
 
 
 model.build = function() {
@@ -130,6 +150,6 @@ model.build = function() {
 		},
 		behaviours: 'wiki'
 
-	})
+	});
 };
 

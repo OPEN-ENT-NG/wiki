@@ -57,6 +57,14 @@
 	"wiki.page.confirmdeleteform.title.cancel": "Annuler",
 	"wiki.page.confirmdeleteform.title.delete": "Supprimer",
 	
+	"wiki.label.write.your.comment": "Saisissez votre commentaire",
+	"wiki.comment.add": "Commenter",
+	"wiki.comment.cancel": "Annuler",
+	"wiki.comment.save": "Enregistrer",
+	"wiki.comment.delete": "Supprimer",
+	"wiki.comment.display": "Afficher les commentaires",
+	"wiki.comment.hide": "Masquer les commentaires",
+	
 	"wiki.table.head.title": "Titre",
 	"wiki.table.head.author": "Auteur",
 	"wiki.table.head.modificationDate": "Modifié le",

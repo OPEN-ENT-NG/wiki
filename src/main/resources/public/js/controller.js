@@ -124,11 +124,12 @@ function WikiController($scope, template, model, route, $location){
 	
     // View initialization
 	template.open('sideMenu', 'side-menu');
+	template.open('commentForm', 'comment-page');
 	template.open('main', 'list-wikis');
 	
 	// Date functions
     $scope.formatDate = function(dateObject){
-    	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY');
+    	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY H:mm');
     };
     
     $scope.getDateAndTime = function(dateObject){
@@ -431,6 +432,48 @@ function WikiController($scope, template, model, route, $location){
 			$scope.listPages($scope.selectedWiki._id);
         });
 	};
+
+	$scope.showCommentForm = function() {
+		$scope.selectedWiki.page.newComment = "";
+		$scope.selectedWiki.page.showCommentForm = true;
+		$scope.selectedWiki.page.showComments = true;
+	};
+	
+	$scope.hideCommentForm = function() {
+		$scope.selectedWiki.page.showCommentForm = false;
+	};
+	
+	$scope.switchCommentsDisplay = function() {
+		if(!$scope.selectedWiki.page.showComments) {
+			$scope.selectedWiki.page.showComments = true;
+		}
+		else {
+			$scope.selectedWiki.page.showComments = false;
+		}
+	};
+	
+	$scope.commentPage = function() {
+		$scope.selectedWiki.page.comment($scope.selectedWiki.page.newComment, $scope.selectedWiki._id, function() {
+			$scope.hideCommentForm();
+			$scope.selectedWiki.getPage(
+				$scope.selectedWiki.page._id, 
+				function(result){
+					$scope.selectedWiki.page.showComments = true;
+					$scope.$apply();
+				},
+				function(){
+					$scope.notFound=true;
+				}
+			);
+		});
+	};
+	
+	$scope.removeComment = function(commentId, commentIndex) {
+		$scope.selectedWiki.page.deleteComment($scope.selectedWiki._id, commentId, commentIndex, function(){
+			$scope.$apply();
+		});
+	};
+	
 	
 	$scope.wikis = model.wikis;
 	$scope.selectedWiki = "";
