@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -27,6 +28,7 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
+import fr.wseduc.wiki.filters.OwnerAuthorOrShared;
 import fr.wseduc.wiki.service.WikiService;
 import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 
@@ -375,6 +377,64 @@ public class WikiController extends MongoDbControllerHelper {
 
 		wikiService.deletePage(idWiki, idPage, handler);
 	}
+
+	@Post("/:id/page/:idpage")
+	@ApiDoc("Add comment to a page")
+	@SecuredAction(value = "wiki.comment", type = ActionType.RESOURCE)
+	public void comment(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
+						@Override
+						public void handle(JsonObject data) {
+							final String newCommentId = ((WikiServiceMongoImpl) wikiService).newObjectId();
+
+							String idWiki = request.params().get("id");
+							String idPage = request.params().get("idpage");
+							String comment = data.getString("comment", null);
+							if(comment == null || comment.trim().isEmpty()) {
+								badRequest(request);
+								return;
+							}
+
+							// Return attribute _id of created comment in case of success
+							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
+								@Override
+								public void handle(Either<String, JsonObject> event) {
+									if (event.isRight()) {
+										JsonObject result = new JsonObject();
+										result.putString("_id", newCommentId);
+										renderJson(request, result);
+									} else {
+										JsonObject error = new JsonObject().putString(
+												"error", event.left().getValue());
+										renderJson(request, error, 400);
+									}
+								}
+							};
+
+							wikiService.comment(user, idWiki, idPage, newCommentId, comment, handler);
+						}
+					});
+				}
+			}
+		});
+	}
+
+	@Delete("/:id/page/:idpage/comment/:idcomment")
+	@ApiDoc("Delete a comment")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	@ResourceFilter(OwnerAuthorOrShared.class)
+	public void deleteComment(final HttpServerRequest request) {
+		final String idWiki = request.params().get("id");
+		final String idPage = request.params().get("idpage");
+		final String idComment = request.params().get("idcomment");
+
+		wikiService.deleteComment(idWiki, idPage, idComment, notEmptyResponseHandler(request));
+	}
+
 
 	@Get("/share/json/:id")
 	@ApiDoc("List rights for a given wikiId")

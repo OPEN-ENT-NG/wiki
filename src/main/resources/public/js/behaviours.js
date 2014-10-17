@@ -66,7 +66,7 @@ Behaviours.register('wiki', {
 		return workflow;
 	},
 	resourceRights: function(){
-		return ['read', 'contrib', 'manager', 'comment'];
+		return ['read', 'comment', 'contrib', 'manager'];
 	},
 	
 	// Used by component "linker" to load wiki pages

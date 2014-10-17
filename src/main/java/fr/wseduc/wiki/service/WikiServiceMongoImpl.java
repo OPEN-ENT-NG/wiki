@@ -287,4 +287,48 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		super.retrieve(id, handler);
 	}
 
+	@Override
+	public void comment(UserInfos user, String idWiki, String idPage, String newCommentId,
+			String comment, Handler<Either<String, JsonObject>> handler) {
+
+		// Query
+		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
+				.elemMatch(idPageDBO);
+
+		// Add new comment to array "comments"
+		JsonObject newComment = new JsonObject();
+		newComment.putString("_id", newCommentId)
+				.putString("comment", comment)
+				.putString("author", user.getUserId())
+				.putString("authorName", user.getUsername())
+				.putObject("created", MongoDb.now());
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.push("pages.$.comments", newComment);
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(), MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
+	public void deleteComment(String idWiki, String idPage, String idComment,
+			Handler<Either<String, JsonObject>> handler){
+
+		// Query
+		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
+				.elemMatch(idPageDBO);
+
+		// Delete comment from array "comments"
+		JsonObject commentToDelete = new JsonObject();
+		commentToDelete.putString("_id", idComment);
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.pull("pages.$.comments", commentToDelete);
+
+		mongo.update(collection, MongoQueryBuilder.build(query),
+				modifier.build(), MongoDbResult.validActionResultHandler(handler));
+	}
+
 }

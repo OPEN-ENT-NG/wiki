@@ -43,4 +43,10 @@ public interface WikiService {
 			Handler<Either<String, JsonObject>> handler);
 
 	public void getDataForNotification(String idWiki, Handler<Either<String, JsonObject>> handler);
+
+	public void comment(UserInfos user, String idWiki, String idPage, String newCommentId,
+			String comment, Handler<Either<String, JsonObject>> handler);
+
+	public void deleteComment(String idWiki, String idPage, String idComment,
+			Handler<Either<String, JsonObject>> handler);
 }

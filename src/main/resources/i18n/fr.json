@@ -61,9 +61,10 @@
 	"wiki.table.head.author": "Auteur",
 	"wiki.table.head.modificationDate": "Modifié le",
 	
-	"wiki.read": "Lecture",
-	"wiki.contrib": "Contribution",
-	"wiki.manager": "Gestion",
+	"wiki.read": "Lire",
+	"wiki.contrib": "Contribuer",
+	"wiki.manager": "Gérer",
+	"wiki.comment": "Commenter",
 	
 	"wiki.search.returns.no.page": "Votre recherche ne retourne aucune page. Vous pouvez créer une page vide dans un wiki de votre choix :",
 	"wiki.linkerform.pagetitle.label" : "Titre de la page",
