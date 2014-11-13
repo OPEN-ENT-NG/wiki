@@ -1,8 +1,8 @@
-package fr.wseduc.wiki;
+package net.atos.entng.wiki;
+
+import net.atos.entng.wiki.controllers.WikiController;
 
 import org.entcore.common.http.BaseServer;
-
-import fr.wseduc.wiki.controllers.WikiController;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
 

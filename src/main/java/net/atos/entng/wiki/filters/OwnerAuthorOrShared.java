@@ -1,4 +1,4 @@
-package fr.wseduc.wiki.filters;
+package net.atos.entng.wiki.filters;
 
 import java.util.ArrayList;
 import java.util.List;

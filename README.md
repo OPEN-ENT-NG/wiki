@@ -12,9 +12,9 @@ Dans le fichier 'ent-core.json.template' du projet ong :
 Déclarer l'application wiki dans `"external-modules"` :
 <pre>
     {
-      "name": "fr.wseduc~wiki~0.1-SNAPSHOT",
+      "name": "net.atos~wiki~0.1-SNAPSHOT",
       "config": {
-        "main" : "fr.wseduc.wiki.Wiki",
+        "main" : "net.atos.entng.wiki.Wiki",
         "port" : 8030,
         "app-name" : "Wiki",
         "app-address" : "/wiki",
@@ -85,16 +85,16 @@ Exemple de document "wiki" :
 		"shared" : [
 			{
 				"userId" : "212e9b3c-91cc-47ca-a441-c6e32b1bf04b",
-				"fr-wseduc-wiki-controllers-WikiController|getPage" : true,
-				"fr-wseduc-wiki-controllers-WikiController|listPages" : true,
-				"fr-wseduc-wiki-controllers-WikiController|updatePage" : true,
-				"fr-wseduc-wiki-controllers-WikiController|createPage" : true,
-				"fr-wseduc-wiki-controllers-WikiController|deletePage" : true
+				"net-atos-entng-wiki-controllers-WikiController|getPage" : true,
+				"net-atos-entng-wiki-controllers-WikiController|listPages" : true,
+				"net-atos-entng-wiki-controllers-WikiController|updatePage" : true,
+				"net-atos-entng-wiki-controllers-WikiController|createPage" : true,
+				"net-atos-entng-wiki-controllers-WikiController|deletePage" : true
 			},
 			{
 				"groupId" : "170-1404727939536",
-				"fr-wseduc-wiki-controllers-WikiController|getPage" : true,
-				"fr-wseduc-wiki-controllers-WikiController|listPages" : true
+				"net-atos-entng-wiki-controllers-WikiController|getPage" : true,
+				"net-atos-entng-wiki-controllers-WikiController|listPages" : true
 			}
 		],
 		"thumbnail" : "/workspace/document/4c42f847-d5ea-4f4a-90cf-5228947520ff",

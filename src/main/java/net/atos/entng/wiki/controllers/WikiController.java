@@ -1,4 +1,4 @@
-package fr.wseduc.wiki.controllers;
+package net.atos.entng.wiki.controllers;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
 import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
@@ -9,6 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
+import net.atos.entng.wiki.service.WikiService;
+import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
@@ -28,9 +32,6 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
-import fr.wseduc.wiki.filters.OwnerAuthorOrShared;
-import fr.wseduc.wiki.service.WikiService;
-import fr.wseduc.wiki.service.WikiServiceMongoImpl;
 
 public class WikiController extends MongoDbControllerHelper {
 

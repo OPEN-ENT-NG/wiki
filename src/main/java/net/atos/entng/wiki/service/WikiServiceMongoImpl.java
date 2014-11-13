@@ -1,4 +1,4 @@
-package fr.wseduc.wiki.service;
+package net.atos.entng.wiki.service;
 
 import java.util.ArrayList;
 import java.util.List;

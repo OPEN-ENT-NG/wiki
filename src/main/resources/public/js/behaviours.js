@@ -1,39 +1,39 @@
 var wikiBehaviours = {
 	resources: {
 		edit: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|updateWiki'
+			right: 'net-atos-entng-wiki-controllers-WikiController|updateWiki'
 		},
 		deleteWiki: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|deleteWiki'
+			right: 'net-atos-entng-wiki-controllers-WikiController|deleteWiki'
 		},
 		share: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|shareWiki'
+			right: 'net-atos-entng-wiki-controllers-WikiController|shareWiki'
 		},
 		listPages: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|listPages'
+			right: 'net-atos-entng-wiki-controllers-WikiController|listPages'
 		},
 		getPage: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|getPage'
+			right: 'net-atos-entng-wiki-controllers-WikiController|getPage'
 		},
 		createPage: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|createPage'
+			right: 'net-atos-entng-wiki-controllers-WikiController|createPage'
 		},
 		editPage: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|updatePage'
+			right: 'net-atos-entng-wiki-controllers-WikiController|updatePage'
 		},
 		deletePage: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|deletePage'
+			right: 'net-atos-entng-wiki-controllers-WikiController|deletePage'
 		},
 		comment: {
-			right: 'fr-wseduc-wiki-controllers-WikiController|comment'
+			right: 'net-atos-entng-wiki-controllers-WikiController|comment'
 		}
 	},
 	workflow: {
-		create: 'fr.wseduc.wiki.controllers.WikiController|createWiki',
-		list: 'fr.wseduc.wiki.controllers.WikiController|listWikis',
-		view: 'fr.wseduc.wiki.controllers.WikiController|view',
-		listAllPages: 'fr.wseduc.wiki.controllers.WikiController|listAllPages',
-		print: 'fr.wseduc.wiki.controllers.WikiController|print'
+		create: 'net.atos.entng.wiki.controllers.WikiController|createWiki',
+		list: 'net.atos.entng.wiki.controllers.WikiController|listWikis',
+		view: 'net.atos.entng.wiki.controllers.WikiController|view',
+		listAllPages: 'net.atos.entng.wiki.controllers.WikiController|listAllPages',
+		print: 'net.atos.entng.wiki.controllers.WikiController|print'
 	}
 };
 

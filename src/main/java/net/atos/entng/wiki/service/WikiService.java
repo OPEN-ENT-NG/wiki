@@ -1,4 +1,4 @@
-package fr.wseduc.wiki.service;
+package net.atos.entng.wiki.service;
 
 import org.entcore.common.user.UserInfos;
 import org.vertx.java.core.Handler;

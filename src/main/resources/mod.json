@@ -1,5 +1,5 @@
 {
-	"main" : "fr.wseduc.wiki.Wiki",
+	"main" : "net.atos.entng.wiki.Wiki",
 	"port" : 8030,
 	"app-name" : "Wiki",
 	"app-address" : "/wiki",
