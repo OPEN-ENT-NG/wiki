@@ -15,17 +15,17 @@
 	"wiki.homepage.label" : "Page d'accueil",
 	
 	"wiki.form.title.is.empty": "Vous devez renseigner le titre",
+	"wiki.page.form.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.createform.save": "Enregistrer",
 	"wiki.page.createform.input.placeholder": "Entrez le titre de la page",
-	"wiki.page.createform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.createform.cancel": "Annuler",
 	"wiki.page.createform.set.as.index": "Définir comme page d'accueil du wiki",
 	"wiki.page.editform.save": "Enregistrer",
-	"wiki.page.editform.titlealreadyexist.error" : "Le wiki contient déjà une page avec ce titre",
 	"wiki.page.editform.cancel": "Annuler",
 	"wiki.page.editform.set.as.index": "Définir comme page d'accueil du wiki",
 	"wiki.page.edit": "Modifier",
 	"wiki.page.delete": "Supprimer",
+	"wiki.page.duplicate": "Dupliquer",
 	
 	"wiki.createform.input.placeholder": "Entrez le titre de votre wiki",
 	"wiki.createform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",
@@ -56,6 +56,12 @@
 	"wiki.page.confirmdeleteform.message": "Voulez-vous vraiment supprimer la page ?",
 	"wiki.page.confirmdeleteform.title.cancel": "Annuler",
 	"wiki.page.confirmdeleteform.title.delete": "Supprimer",
+	
+	"wiki.page.duplicateform.duplicate.page" : "Dupliquer la page",
+	"wiki.page.duplicateform.in.a.wiki.of.your.choice" : "dans un wiki de votre choix",
+	"wiki.page.duplicateform.save": "Dupliquer",
+	"wiki.page.duplicateform.cancel": "Annuler",
+	"wiki.page.duplicateform.title.input.placeholder": "Entrez le titre de la page",
 	
 	"wiki.label.write.your.comment": "Saisissez votre commentaire",
 	"wiki.comment.add": "Commenter",

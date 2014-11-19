@@ -1,0 +1,32 @@
+<div class="three cell" ng-include="template.containers.sideMenu"></div>
+
+<article class="nine cell">
+	<div class="row">
+		<h2>
+			<i18n>wiki.page.duplicateform.duplicate.page</i18n>
+			<em>[[selectedWiki.page.title]]</em>
+			<i18n>wiki.page.duplicateform.in.a.wiki.of.your.choice</i18n>
+		</h2>
+	</div>
+	<hr class="row"/>
+	<form class="row">
+		<div class="row">
+			<input type="text" ng-model="duplicate.page.title" class="twelve cell" 
+			translate-attr="placeholder" placeholder="wiki.page.duplicateform.title.input.placeholder"/>
+		</div>
+		<hr class="row"/>
+		<div class="row">
+			<select class="twelve cell" ng-model="duplicate.targetWikiId" 
+			ng-init="canCreatePage(selectedWiki) ? (duplicate.targetWikiId = selectedWiki._id) : (duplicate.targetWikiId = wikis.all.filter(canCreatePage)[0]._id)" 
+			ng-options="wiki._id as wiki.title for wiki in wikis.all.filter(canCreatePage)" required>
+			</select>
+		</div>
+		<hr class="row"/>
+		
+		<div class="row">
+			<button class="right-magnet" ng-click="duplicatePage()" translate content="wiki.page.duplicateform.save"></button>
+			<button class="right-magnet cancel" ng-click="cancelDuplicatePage()" translate content="wiki.page.duplicateform.cancel"></button>
+		</div>
+		<div class="clear"></div>
+	</form>
+</article>
