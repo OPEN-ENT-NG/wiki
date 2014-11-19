@@ -23,7 +23,7 @@
 					</h1>
 				</div>
 				<div class="contextual-buttons six cell">
-					<button ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
+					<button ng-if="!selectedWiki || !selectedWiki._id" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
 						<i18n>wiki.create</i18n>
 					</button>
 					<a workflow="wiki.print" ng-if="selectedWiki._id" ng-href="/wiki/print?wiki=[[selectedWiki._id]]" target="_blank" class="button cell right-magnet">
