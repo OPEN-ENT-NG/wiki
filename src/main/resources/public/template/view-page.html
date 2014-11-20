@@ -2,7 +2,7 @@
 
 <article ng-if="selectedWiki.page !== undefined" class="nine cell vertical-spacing">
 	<div class="row">
-		<div class="six cell">
+		<div class="five cell">
 			<h2>[[selectedWiki.page.title]]</h2>
 			<em ng-if="selectedWiki.page.modified">
 				<i18n>wiki.last.modification.by</i18n> 
@@ -10,7 +10,7 @@
 				<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
 			</em>
 		</div>
-		<div class="six cell">
+		<div class="seven cell">
 			<div class="display-buttons">
 				<behaviour name="comment" resource="selectedWiki" class="cell">
 					<button ng-click="showCommentForm()" translate content="wiki.comment.add"></button>
