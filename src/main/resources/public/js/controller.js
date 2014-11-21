@@ -69,6 +69,12 @@ function WikiController($scope, template, model, route, $location){
 	    return wiki.myRights.createPage !== undefined;
 	};
 	
+	$scope.canCreatePageInAtLeastOneWiki = function(){
+		return _.some(model.wikis.all, function(wiki){
+			return $scope.canCreatePage(wiki);
+		});
+	};
+	
 	$scope.canManageWiki = function(wiki){
 		return (wiki.myRights.edit !== undefined || 
 				wiki.myRights.deleteWiki !== undefined || 
@@ -505,7 +511,6 @@ function WikiController($scope, template, model, route, $location){
 	$scope.showCommentForm = function() {
 		$scope.selectedWiki.page.newComment = "";
 		$scope.selectedWiki.page.showCommentForm = true;
-		$scope.selectedWiki.page.showComments = true;
 	};
 	
 	$scope.hideCommentForm = function() {
@@ -514,21 +519,24 @@ function WikiController($scope, template, model, route, $location){
 	
 	$scope.switchCommentsDisplay = function() {
 		if(!$scope.selectedWiki.page.showComments) {
+			$scope.showCommentForm();
 			$scope.selectedWiki.page.showComments = true;
 		}
 		else {
+			$scope.hideCommentForm();
 			$scope.selectedWiki.page.showComments = false;
 		}
 	};
 	
 	$scope.commentPage = function() {
 		$scope.selectedWiki.page.comment($scope.selectedWiki.page.newComment, $scope.selectedWiki._id, function() {
-			$scope.hideCommentForm();
 			$scope.selectedWiki.getPage(
 				$scope.selectedWiki.page._id, 
 				function(result){
 					$scope.selectedWiki.page.showComments = true;
+					$scope.showCommentForm();
 					$scope.$apply();
+					notify.info('wiki.your.comment.has.been.saved');
 				},
 				function(){
 					$scope.notFound=true;

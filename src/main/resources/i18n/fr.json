@@ -57,7 +57,7 @@
 	"wiki.page.confirmdeleteform.title.cancel": "Annuler",
 	"wiki.page.confirmdeleteform.title.delete": "Supprimer",
 	
-	"wiki.page.duplicateform.duplicate.page" : "Dupliquer la page",
+	"wiki.page.duplicateform.duplicate.page" : "Dupliquez la page",
 	"wiki.page.duplicateform.in.a.wiki.of.your.choice" : "dans un wiki de votre choix",
 	"wiki.page.duplicateform.save": "Dupliquer",
 	"wiki.page.duplicateform.cancel": "Annuler",
@@ -65,11 +65,11 @@
 	
 	"wiki.label.write.your.comment": "Saisissez votre commentaire",
 	"wiki.comment.add": "Commenter",
-	"wiki.comment.cancel": "Annuler",
 	"wiki.comment.save": "Enregistrer",
 	"wiki.comment.delete": "Supprimer",
 	"wiki.comment.display": "Afficher les commentaires",
 	"wiki.comment.hide": "Masquer les commentaires",
+	"wiki.your.comment.has.been.saved": "Votre commentaire a été enregistré.",
 	
 	"wiki.table.head.title": "Titre",
 	"wiki.table.head.author": "Auteur",
