@@ -30,21 +30,21 @@ repositories {
 
 def configurePom(def pom) {
 	pom.project {
-		description 'Template (ent-core)'
+		description 'Wiki'
 		inceptionYear '2014'
 		packaging 'zip'
-		url 'http://code.web-education.net/wse/template'
+		url 'http://code.web-education.net/ong/wiki'
 
 		developers {
 			developer {
-				id 'cwin'
-				name 'Camille Wintz'
-				email 'camille.wintz@web-education.net'
+				id 'dmtran'
+				name 'Duy-Minh TRAN'
+				email 'duy-minh.tran@atos.net'
 			}
 		}
 
 		scm {
-			url 'git@code.web-education.net:wse/template.git'
+			url 'git@code.web-education.net:ong/wiki.git'
 		}
 
 		properties {
