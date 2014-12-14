@@ -1,0 +1,16 @@
+    {
+      "name": "net.atos~wiki~0.4-SNAPSHOT",
+      "config": {
+        "main" : "net.atos.entng.wiki.Wiki",
+        "port" : 8030,
+        "app-name" : "Wiki",
+        "app-address" : "/wiki",
+        "app-icon" : "wiki-large",
+        "host": "${host}",
+        "ssl" : $ssl,
+        "auto-redeploy": false,
+        "userbook-host": "${host}",
+        "integration-mode" : "HTTP",
+        "mode" : "${mode}"
+      }
+    }
