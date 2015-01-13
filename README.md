@@ -1,3 +1,10 @@
+# À propos de l'application Wiki
+
+* licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt)
+* financeur : Région Picardie, Conseil général  91, Région Poitou Charente
+* description : Application de publication de wikis internes
+
+# Documentation technique
 ## Construction
 
 <pre>
