@@ -2,7 +2,7 @@
 	<div class="three cell" ng-include="template.containers.sideMenu"></div>
 
 	<ul class="margin-three toc">
-		<alphabetical list="page in selectedWiki.pages.all">
+		<alphabetical list="page in selectedWiki.pages.all" class="twelve cell">
 			<li>
 				<a ng-if="page._id === selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">
 					[[page.title]]
