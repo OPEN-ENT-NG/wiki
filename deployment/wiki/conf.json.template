@@ -11,6 +11,7 @@
         "auto-redeploy": false,
         "userbook-host": "${host}",
         "integration-mode" : "HTTP",
-        "mode" : "${mode}"
+        "mode" : "${mode}",
+        "share-old-groups-to-users" : false
       }
     }

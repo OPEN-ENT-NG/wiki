@@ -14,7 +14,6 @@ import fr.wseduc.webutils.Either;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.user.RepositoryEvents;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
@@ -38,15 +37,13 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 
 	@Override
 	public void deleteGroups(JsonArray groups) {
-		// TODO
-
-		// 1) Clean array "shared" in wikis
-
-
 		if(shareOldGroupsToUsers) {
-			// 2) Transmit shares from deleted groups to users
+			// 1) Transmit shares from deleted groups to users
 
 		}
+
+		// 2) Remove deleted groups from array "shared"
+
 	}
 
 	@Override
@@ -70,10 +67,15 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 					@Override
 					public void handle(Either<String, JsonObject> event) {
 						if(event.isLeft()) {
-							log.error("Error when removing users from array 'shared in wikis' :"+ event.left());
+							log.error("Error when removing users from array 'shared' in wikis : "+ event.left());
 						}
 						else {
-							log.info("Remove deleted users from array 'shared' successful" + event.right().getValue().toString());
+							String message = "Remove deleted users from array 'shared' in wikis successful : ";
+							if(event.right().getValue() != null) {
+								message += event.right().getValue().toString();
+							}
+							log.info(message);
+
 							// 2) remove wikis who have no manager and no owner
 							WikiRepositoryEvents.this.removeWikis(userIds);
 						}
@@ -85,56 +87,60 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 	 * Remove wikis who have no manager and no owner
 	 */
 	private void removeWikis(final String [] userIds) {
-		// TODO WIP
-		/*
-		 *   db.wiki.remove(
-				 {
-				 	$or : [{
-							"owner.userId": {$in: ["622807a5-81e6-4463-aa62-ea3673c3955a", "1e402506-0ab8-420b-a77c-dc887ed6791d", "3ab0192c-7ce8-4f36-8dbf-a06b73c7eb2c"]},
-							"shared": {
-								$elemMatch: { "userId": {$nin: ["622807a5-81e6-4463-aa62-ea3673c3955a", "1e402506-0ab8-420b-a77c-dc887ed6791d", "3ab0192c-7ce8-4f36-8dbf-a06b73c7eb2c"]}
-								}
-						 	}
-					 	},
-					 	{
-					 	"owner.deleted":true
-					 	}
-				 	],
-				 	"shared.net-atos-entng-wiki-controllers-WikiController|shareWiki" : {$ne: true}
-				 })
-		 */
 		DBObject deletedUsers = new BasicDBObject();
 		deletedUsers.put("owner.userId", new BasicDBObject("$in", userIds));
 
 		DBObject ownerIsDeleted = new BasicDBObject("owner.deleted", true);
 
+		// Match wikis who have no manager and no owner (owner is deleted during current transition, or has been deleted in a previous transition)
 		JsonObject matcher = MongoQueryBuilder.build(
 				QueryBuilder.start("shared.net-atos-entng-wiki-controllers-WikiController|shareWiki").notEquals(true)
 				.or(deletedUsers, ownerIsDeleted));
-
 
 		mongo.delete(WIKI_COLLECTION, matcher,
 				MongoDbResult.validActionResultHandler(new Handler<Either<String,JsonObject>>() {
 					@Override
 					public void handle(Either<String, JsonObject> event) {
 						if(event.isLeft()) {
-							log.error("Error when removing wikis who have no manager and no owner :"+ event.left());
+							log.error("Error when removing wikis who have no manager and no owner : "+ event.left());
 						}
 						else {
-							log.info("Remove wikis who have no manager and no owner successful" + event.right().getValue().toString());
-							// 3) update remaining wikis (i.e wikis who have a manager)
-							// TODO
-							/*
-							 * db.wiki.update(
-								"owner.userId": {$in: ["622807a5-81e6-4463-aa62-ea3673c3955a", "1e402506-0ab8-420b-a77c-dc887ed6791d", "3ab0192c-7ce8-4f36-8dbf-a06b73c7eb2c"]},
-								{
-									$set: { "owner.deleted": true }
-								},
-								{ multi: true }
-							)
-							 */
+							String message = "Remove wikis who have no manager and no owner successful : ";
+							if(event.right().getValue() != null) {
+								message += event.right().getValue().toString();
+							}
+							log.info(message);
+							// 3) update remaining wikis
+							WikiRepositoryEvents.this.updateWikis(userIds);
+						}
+					}
+				}));
+	}
 
-							// TODO : anonymiser le nom du owner
+	/*
+	 * Mark owners of remaining wikis (i.e wikis who have a manager and whose owner is deleted in current transition) as deleted
+	 */
+	private void updateWikis(final String [] userIds) {
+		// TODO : anonymiser le nom du owner
+
+		final JsonObject criteria = MongoQueryBuilder.build(QueryBuilder.start("owner.userId").in(userIds));
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("owner.deleted", true);
+
+		mongo.update(WIKI_COLLECTION, criteria, modifier.build(), false, true,
+				MongoDbResult.validActionResultHandler(new Handler<Either<String,JsonObject>>() {
+					@Override
+					public void handle(Either<String, JsonObject> event) {
+						if(event.isLeft()) {
+							log.error("Error when updating wikis : "+ event.left());
+						}
+						else {
+							String message = "Update wikis successful : ";
+							if(event.right().getValue() != null) {
+								message += event.right().getValue().toString();
+							}
+							log.info(message);
 						}
 					}
 				}));
