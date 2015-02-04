@@ -18,8 +18,7 @@ public class Wiki extends BaseServer {
 
 		// Subscribe to events published for transition
 		vertx.eventBus().registerHandler("user.repository",
-				new RepositoryHandler(new WikiRepositoryEvents(
-						config.getBoolean("share-old-groups-to-users", false))));
+				new RepositoryHandler(new WikiRepositoryEvents()));
 
 		addController(new WikiController(WIKI_COLLECTION));
 		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);

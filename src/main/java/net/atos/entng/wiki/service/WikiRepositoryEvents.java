@@ -23,11 +23,6 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 
 	private static final Logger log = LoggerFactory.getLogger(WikiRepositoryEvents.class);
 	private final MongoDb mongo = MongoDb.getInstance();
-	private final boolean shareOldGroupsToUsers;
-
-	public WikiRepositoryEvents(boolean shareOldGroupsToUsers) {
-		this.shareOldGroupsToUsers = shareOldGroupsToUsers;
-	}
 
 	@Override
 	public void exportResources(String exportId, String userId,
@@ -35,19 +30,53 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 		// TODO
 	}
 
+	/**
+	 * Remove deleted groups from array "shared" in wikis
+	 */
 	@Override
 	public void deleteGroups(JsonArray groups) {
-		if(shareOldGroupsToUsers) {
-			// 1) Transmit shares from deleted groups to users
 
+		if(groups == null || groups.size() == 0) {
+			log.warn("JsonArray groups is null or empty");
+			return;
 		}
 
-		// 2) Remove deleted groups from array "shared"
+		final String [] groupIds = new String[groups.size()];
+		for (int i = 0; i < groups.size(); i++) {
+			JsonObject j = groups.get(i);
+			groupIds[i] = j.getString("group");
+		}
 
+		final JsonObject matcher = MongoQueryBuilder.build(QueryBuilder.start("shared.groupId").in(groupIds));
+
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.pull("shared", MongoQueryBuilder.build(QueryBuilder.start("groupId").in(groupIds)));
+
+		mongo.update(WIKI_COLLECTION, matcher, modifier.build(), false, true,
+				MongoDbResult.validActionResultHandler(new Handler<Either<String,JsonObject>>() {
+					@Override
+					public void handle(Either<String, JsonObject> event) {
+						if(event.isLeft()) {
+							log.error("Error when removing groups from array 'shared' in wikis : "+ event.left());
+						}
+						else {
+							String message = "Remove deleted groups from array 'shared' in wikis successful : ";
+							if(event.right().getValue() != null) {
+								message += event.right().getValue().toString();
+							}
+							log.info(message);
+						}
+					}
+				}));
 	}
 
 	@Override
 	public void deleteUsers(JsonArray users) {
+
+		if(users == null || users.size() == 0) {
+			log.warn("JsonArray users is null or empty");
+			return;
+		}
 
 		final String [] userIds = new String[users.size()];
 		for (int i = 0; i < users.size(); i++) {
