@@ -24,6 +24,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final String collection;
 	private final MongoDb mongo;
+	private static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	public WikiServiceMongoImpl(final String collection) {
 		super(collection);
@@ -329,6 +330,37 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		mongo.update(collection, MongoQueryBuilder.build(query),
 				modifier.build(), MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
+	public void createRevision(String wikiId, String pageId, UserInfos user,
+							   String pageTitle, String pageContent, Handler<Either<String, JsonObject>> handler) {
+		JsonObject document = new JsonObject()
+				.putString("wikiId", wikiId)
+				.putString("pageId", pageId)
+				.putString("userId", user.getUserId())
+				.putString("username", user.getUsername())
+				.putString("title", pageTitle)
+				.putString("content", pageContent)
+				.putObject("date", MongoDb.now());
+		mongo.save(REVISIONS_COLLECTION, document, MongoDbResult.validResultHandler(handler));
+	}
+
+	@Override
+	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler) {
+		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId).put("pageId").is(pageId);
+		JsonObject sort = new JsonObject().putNumber("date", -1);
+		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, null,
+				MongoDbResult.validResultsHandler(handler));
+	}
+
+	@Override
+	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler) {
+		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId);
+		if (pageId != null && !pageId.trim().isEmpty()) {
+			query.put("pageId").is(pageId);
+		}
+		mongo.delete(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), MongoDbResult.validResultHandler(handler));
 	}
 
 }

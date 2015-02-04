@@ -1,9 +1,5 @@
 package net.atos.entng.wiki.controllers;
 
-import static org.entcore.common.http.response.DefaultResponseHandler.arrayResponseHandler;
-import static org.entcore.common.http.response.DefaultResponseHandler.defaultResponseHandler;
-import static org.entcore.common.http.response.DefaultResponseHandler.notEmptyResponseHandler;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +28,8 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
+
+import static org.entcore.common.http.response.DefaultResponseHandler.*;
 
 public class WikiController extends MongoDbControllerHelper {
 
@@ -160,10 +158,19 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Delete wiki by id")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void deleteWiki(final HttpServerRequest request) {
-		String idWiki = request.params().get("id");
-		Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+		final String idWiki = request.params().get("id");
 
-		wikiService.deleteWiki(idWiki, handler);
+		wikiService.deleteWiki(idWiki, new Handler<Either<String, JsonObject>>() {
+			@Override
+			public void handle(Either<String, JsonObject> r) {
+				if (r.isRight()) {
+					deleteRevisions(idWiki, null);
+					renderJson(request, r.right().getValue());
+				} else {
+					leftToResponse(request, r.left());
+				}
+			}
+		});
 	}
 
 	@Get("/:id/page/:idpage")
@@ -197,7 +204,7 @@ public class WikiController extends MongoDbControllerHelper {
 							boolean isIndex = data.getBoolean("isIndex", false);
 
 							final String pageTitle = data.getString("title");
-							String pageContent = data.getString("content");
+							final String pageContent = data.getString("content");
 							if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null) {
 								badRequest(request);
 								return;
@@ -208,6 +215,7 @@ public class WikiController extends MongoDbControllerHelper {
 								@Override
 								public void handle(Either<String, JsonObject> event) {
 									if (event.isRight()) {
+										createRevision(idWiki, newPageId, user, pageTitle, pageContent);
 										JsonObject result = new JsonObject();
 										result.putString("_id", newPageId);
 										notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
@@ -331,23 +339,32 @@ public class WikiController extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
 
-							String idWiki = request.params().get("id");
-							String idPage = request.params().get("idpage");
+							final String idWiki = request.params().get("id");
+							final String idPage = request.params().get("idpage");
 							boolean isIndex = data.getBoolean("isIndex", false);
 							boolean wasIndex = data.getBoolean("wasIndex", false);
 
-							String pageTitle = data.getString("title");
-							String pageContent = data.getString("content");
+							final String pageTitle = data.getString("title");
+							final String pageContent = data.getString("content");
 							if (pageTitle == null || pageTitle.trim().isEmpty()
 									|| pageContent == null || pageContent.trim().isEmpty()) {
 								badRequest(request);
 								return;
 							}
 
-							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent,
-									isIndex, wasIndex, handler);
+							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, isIndex, wasIndex,
+									new Handler<Either<String, JsonObject>>() {
+										@Override
+										public void handle(Either<String, JsonObject> r) {
+											if (r.isRight()) {
+												createRevision(idWiki, idPage, user, pageTitle, pageContent);
+												renderJson(request, r.right().getValue());
+											} else {
+												leftToResponse(request, r.left());
+											}
+										}
+									});
 						}
 					});
 				}
@@ -367,6 +384,7 @@ public class WikiController extends MongoDbControllerHelper {
 			@Override
 			public void handle(Either<String, JsonObject> event) {
 				if (event.isRight()) {
+					deleteRevisions(idWiki, idPage);
 					wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
 				} else {
 					JsonObject error = new JsonObject()
@@ -452,17 +470,17 @@ public class WikiController extends MongoDbControllerHelper {
 			@Override
 			public void handle(final UserInfos user) {
 				if (user != null) {
-			        final String id = request.params().get("id");
-			        if(id == null || id.trim().isEmpty()) {
-			            badRequest(request);
-			            return;
-			        }
+					final String id = request.params().get("id");
+					if (id == null || id.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
 
 					JsonObject params = new JsonObject();
 					params.putString("uri", container.config().getString("userbook-host") +
 							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-					.putString("username", user.getUsername())
-					.putString("wikiUri", container.config().getString("host") + "/wiki#/view/" + id);
+							.putString("username", user.getUsername())
+							.putString("wikiUri", container.config().getString("host") + "/wiki#/view/" + id);
 
 					shareJsonSubmit(request, "notify-wiki-shared.html", false, params, "title");
 				}
@@ -477,6 +495,42 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void shareWikiRemove(final HttpServerRequest request) {
 		super.removeShare(request, false);
+	}
+
+	@Get("/revisions/:id/:idpage")
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
+	public void listRevisions(HttpServerRequest request) {
+		String id = request.params().get("id");
+		String pageId = request.params().get("idpage");
+		if (id == null || pageId == null || id.trim().isEmpty() || pageId.trim().isEmpty()) {
+			badRequest(request, "invalid.params");
+			return;
+		}
+		wikiService.listRevisions(id, pageId, arrayResponseHandler(request));
+	}
+
+	private void createRevision(final String idWiki, final String pageId,
+								UserInfos user, String pageTitle, String pageContent) {
+		wikiService.createRevision(idWiki, pageId, user, pageTitle, pageContent,
+				new Handler<Either<String, JsonObject>>() {
+					@Override
+					public void handle(Either<String, JsonObject> r) {
+						if (r.isLeft()) {
+							log.error("Error creating revision " + idWiki + "/" + pageId + " - " + r.left().getValue());
+						}
+					}
+				});
+	}
+
+	private void deleteRevisions(final String idWiki, final String idPage) {
+		wikiService.deleteRevisions(idWiki, idPage, new Handler<Either<String, JsonObject>>() {
+			@Override
+			public void handle(Either<String, JsonObject> r) {
+				if (r.isLeft()) {
+					log.error("Error creating revision " + idWiki + "/" + idPage + " - " + r.left().getValue());
+				}
+			}
+		});
 	}
 
 }

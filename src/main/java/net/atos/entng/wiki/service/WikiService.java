@@ -49,4 +49,12 @@ public interface WikiService {
 
 	public void deleteComment(String idWiki, String idPage, String idComment,
 			Handler<Either<String, JsonObject>> handler);
+
+	public void createRevision(String wikiId, String pageId, UserInfos user,
+			String pageTitle, String pageContent, Handler<Either<String, JsonObject>> handler);
+
+	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler);
+
+	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler);
+
 }
