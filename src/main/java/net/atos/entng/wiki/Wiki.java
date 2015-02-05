@@ -17,8 +17,7 @@ public class Wiki extends BaseServer {
 		super.start();
 
 		// Subscribe to events published for transition
-		vertx.eventBus().registerHandler("user.repository",
-				new RepositoryHandler(new WikiRepositoryEvents()));
+		setRepositoryEvents(new WikiRepositoryEvents());
 
 		addController(new WikiController(WIKI_COLLECTION));
 		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
