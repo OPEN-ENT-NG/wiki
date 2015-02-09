@@ -1,0 +1,31 @@
+<h2 class="cell">Comparer</h2>
+
+<div class="ten cell display-buttons">
+	<button ng-click="template.open('main', 'versions')" class="cancel"><i18n>back</i18n></button>
+</div>
+<table class="twelve compare">
+	<thead>
+		<tr>
+			<th class="six">
+				Version du [[moment(leftCompare.date.$date).format('HH:MM DD/MM/YYYY')]] par [[leftCompare.username]]
+			</th>
+			<th class="six">
+				Version du [[moment(rightCompare.date.$date).format('HH:MM DD/MM/YYYY')]] par [[rightCompare.username]]
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><button ng-click="restoreVersion(leftCompare)"><i18n>apply</i18n></button></td>
+			<td><button ng-click="restoreVersion(rightCompare)"><i18n>apply</i18n></button></td>
+		</tr>
+		<tr>
+			<td>
+				<div bind-html="display.comparison.left"></div>
+			</td>
+			<td>
+				<div bind-html="display.comparison.right"></div>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -1,9 +1,197 @@
-function Page() {
+function Version(){}
 
+Version.prototype.toJSON = function(){
+	return {
+		content: this.content,
+		title: this.title
+	};
+};
+
+function findSequence(x,y){
+	var s, i, j,
+		lcs = [], row = [], c = [],
+		left, diag, latch;
+
+	if(x.length < y.length){
+		s = x;
+		x = y;
+		y = s;
+	}
+
+	for(j = 0; j < y.length; row[j++] = 0);
+	for(i = 0; i < x.length; i++){
+		c[i] = row = row.slice();
+		for(diag = 0, j = 0; j < y.length; j++, diag = latch){
+			latch = row[j];
+			if(x[i].innerText === y[j].innerText){
+				row[j] = diag + 1;
+			}
+			else{
+				left = row[j-1] || 0;
+				if(left>row[j]){
+					row[j] = left;
+				}
+			}
+		}
+	}
+	i--; j--;
+
+	while(i>-1&&j>-1){
+		switch(c[i][j]){
+			default: j--;
+				lcs.unshift(x[i]);
+			case (i&&c[i-1][j]): i--;
+				continue;
+			case (j&&c[i][j-1]): j--;
+		}
+	}
+	return lcs;
 }
 
-Page.prototype.comment = function(commentText, wikiId, callback) {
-	http().postJson('/wiki/' + wikiId + '/page/' + this._id, { comment: commentText })
+function findTextSequence(x,y){
+	var s,i,j,
+		lcs = [], row = [], c = [],
+		left, diag, latch;
+
+	if(x.length < y.length){
+		s = x;
+		x = y;
+		y = s;
+	}
+
+	for(j = 0; j < y.length; row[j++] = 0);
+	for(i = 0; i < x.length; i++){
+		c[i] = row = row.slice();
+		for(diag = 0, j = 0; j < y.length; j++, diag = latch){
+			latch = row[j];
+			if(x[i] === y[j]){
+				row[j] = diag+1;
+			}
+			else{
+				left = row[j-1]||0;
+				if(left>row[j]){
+					row[j] = left;
+				}
+			}
+		}
+	}
+	i--; j--;
+	while(i > -1 && j > -1){
+		switch(c[i][j]){
+			default: j--;
+				lcs.unshift(x[i]);
+			case (i&&c[i-1][j]): i--;
+				continue;
+			case (j&&c[i][j-1]): j--;
+		}
+	}
+	return lcs;
+}
+
+function similar(a, b){
+	return findTextSequence(a.innerText.split(' '), b.innerText.split(' ')).length > a.innerText.split(' ').length / 4;
+}
+
+function compare(a, b){
+	var aIndex = 0;
+	var bIndex = 0;
+	var bVariations = {};
+	var sequence = findSequence(a, b);
+	sequence.forEach(function(child, index){
+		bVariations[index] = [];
+		while(bIndex < b.length && child.innerText !== b[bIndex].innerText){
+			bVariations[index].push(b[bIndex]);
+			bIndex ++;
+		}
+		bIndex ++;
+	});
+	bVariations[sequence.length-1] = [];
+	for(var i = bIndex; i < b.length; i++){
+		bVariations[sequence.length-1].push(b[i]);
+	}
+
+	sequence.forEach(function(child, index){
+		while(aIndex < a.length && child.innerText !== a[aIndex].innerText){
+			var noEquivalent = true;
+			for(var n = 0; n < bVariations[index].length; n++){
+				if(similar(a[aIndex], bVariations[index][n])){
+					$(a[aIndex]).addClass('diff');
+					noEquivalent = false;
+				}
+			}
+
+			if(noEquivalent){
+				$(a[aIndex]).addClass('added');
+			}
+			aIndex ++;
+		}
+		aIndex ++;
+	});
+
+	for(var j = aIndex; j < a.length; j++){
+		var noEquivalent = true;
+		for(var n = 0; n < bVariations[sequence.length - 1].length; n++){
+			if(similar(a[j], bVariations[sequence.length - 1][n])){
+				$(a[j]).addClass('diff');
+				noEquivalent = false;
+			}
+		}
+
+		if(noEquivalent){
+			$(a[j]).addClass('added');
+		}
+	}
+}
+
+Version.prototype.comparison = function(left, right){
+	var leftRoot = $(left.content);
+	var rightRoot = $(right.content);
+	compare(leftRoot, rightRoot);
+	compare(rightRoot, leftRoot);
+
+	var strippedLeft = $(leftRoot, ':not(.added)');
+	var strippedRight = $(rightRoot, ':not(.added)');
+	var added = 0;
+	rightRoot.each(function(index, item){
+		if($(item).hasClass('added')){
+			$(strippedLeft[index - added]).prepend($(item.outerHTML).addClass('removed'));
+			added ++;
+		}
+	});
+
+	added = 0;
+	leftRoot.each(function(index, item){
+		if($(item).hasClass('added')){
+			$(strippedRight[index - added]).prepend($(item.outerHTML).addClass('removed'));
+			added ++;
+		}
+	});
+
+	return {
+		left: _.map(leftRoot, function(el){ return el.outerHTML }).join(''),
+		right: _.map(rightRoot, function(el){ return el.outerHTML }).join('')
+	}
+};
+
+Version.prototype.rightComparison = function(left){
+	return this.content;
+};
+
+function Page() {
+	var page = this;
+	this.collection(Version, {
+		sync: '/wiki/revisions/' + page.wiki_id + '/' + page._id
+	});
+}
+
+Page.prototype.restoreVersion = function(version){
+	this.content = version.content;
+	this.title = version.title;
+	this.save();
+};
+
+Page.prototype.comment = function(commentText, callback) {
+	http().postJson('/wiki/' + this.wiki_id + '/page/' + this._id, { comment: commentText })
 	.done(function(response){
 		if(typeof callback === 'function'){
 			callback();
@@ -11,8 +199,8 @@ Page.prototype.comment = function(commentText, wikiId, callback) {
 	}.bind(this));
 };
 
-Page.prototype.deleteComment = function(wikiId, commentId, commentIndex, callback) {
-	http().delete('/wiki/' + wikiId + '/page/' + this._id + '/comment/' + commentId)
+Page.prototype.deleteComment = function(commentId, commentIndex, callback) {
+	http().delete('/wiki/' + this.wiki_id + '/page/' + this._id + '/comment/' + commentId)
 	.done(function(){
 		this.comments.splice(commentIndex, 1);
 		if(typeof callback === 'function'){
@@ -21,6 +209,27 @@ Page.prototype.deleteComment = function(wikiId, commentId, commentIndex, callbac
 	}.bind(this));
 };
 
+Page.prototype.save = function(callback){
+	http().putJson('/wiki/' + this.wiki_id + '/page/' + this._id, this)
+		.done(function(result){
+			if(this.isIndex === true) {
+				this.index = this._id;
+			}
+			else if (this.wasIndex === true) {
+				delete this.index;
+			}
+			callback(result);
+		}.bind(this));
+};
+
+Page.prototype.toJSON = function(){
+	return {
+		title: this.title,
+		content: this.content,
+		isIndex: this.isIndex,
+		wasIndex: this.wasIndex
+	};
+};
 
 function Wiki() {
 
@@ -29,6 +238,10 @@ function Wiki() {
 	this.collection(Page, {
 		sync : function(callback) {
 			http().get('/wiki/' + wiki._id + '/listpages').done(function(returnedWiki) {
+				returnedWiki.pages = _.map(returnedWiki.pages, function(page){
+					page.wiki_id = wiki._id;
+					return page;
+				});
 				this.load(returnedWiki.pages);
 				if(typeof callback === 'function'){
 					callback();
@@ -52,6 +265,7 @@ Wiki.prototype.getWholeWiki = function(callback) {
 Wiki.prototype.getPage = function(pageId, callback, errorCallback) {
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
+			wiki.pages[0].wiki_id = this._id;
 			this.page = new Page( wiki.pages[0] );
 			this.title = wiki.title;
 			this.owner = wiki.owner;
@@ -67,19 +281,6 @@ Wiki.prototype.createPage = function(data, callback) {
 	.done(function(result){
 		if(data.isIndex === true) {
 			this.index = result._id;
-		}
-		callback(result);
-	}.bind(this));
-};
-
-Wiki.prototype.updatePage = function(data, pageId, callback) {
-	http().putJson('/wiki/' + this._id + '/page/' + pageId, data)
-	.done(function(result){
-		if(data.isIndex === true) {
-			this.index = pageId;
-		}
-		else if (data.wasIndex === true) {
-			delete this.index;
 		}
 		callback(result);
 	}.bind(this));
@@ -140,16 +341,11 @@ Wiki.prototype.listAllPages = function(callback) {
 
 model.build = function() {
 	model.me.workflow.load(['wiki']);
-	this.makeModels([ Wiki, Page ]);
+	this.makeModels([ Wiki, Page, Version ]);
 
 	this.collection(Wiki, {
-		sync : function() {
-			http().get('/wiki/list').done(function(wikilist) {
-				this.load(wikilist);
-			}.bind(this));
-		},
+		sync : '/wiki/list',
 		behaviours: 'wiki'
-
 	});
 };
 

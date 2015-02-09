@@ -26,14 +26,21 @@
 					<button ng-if="!selectedWiki || !selectedWiki._id" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
 						<i18n>wiki.create</i18n>
 					</button>
-					<a workflow="wiki.print" ng-if="selectedWiki._id" ng-href="/wiki/print?wiki=[[selectedWiki._id]]" target="_blank" class="button cell right-magnet">
-						<i18n>wiki.print</i18n>
-					</a>
-					<behaviour name="share" resource="selectedWiki" class="cell right-magnet">
-						<button ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
-							<i18n>wiki.share.current.wiki</i18n>
-						</button>
-					</behaviour>
+					<drop-down-button class="cell right-magnet" ng-if="selectedWiki && selectedWiki._id">
+						<label class="opener"><i18n>plus</i18n></label>
+						<opts>
+							<li>
+								<a workflow="wiki.print" ng-if="selectedWiki._id" ng-href="/wiki/print?wiki=[[selectedWiki._id]]" target="_blank">
+									<i18n>wiki.print</i18n>
+								</a>
+							</li>
+							<behaviour name="share" resource="selectedWiki">
+								<li ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
+									<i18n>wiki.share.current.wiki</i18n>
+								</li>
+							</behaviour>
+						</opts>
+					</drop-down-button>
 					<behaviour name="createPage" resource="selectedWiki" class="cell right-magnet">
 						<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
 					</behaviour>

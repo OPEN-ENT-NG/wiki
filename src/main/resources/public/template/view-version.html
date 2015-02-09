@@ -1,0 +1,51 @@
+<div class="row rigid-grid">
+	<div class="three cell" ng-include="template.containers.sideMenu"></div>
+
+	<article class="margin-three">
+		<div class="twelve cell">
+			<div class="row">
+				<div class="seven cell">
+					<h2>[[selectedWiki.page.title]]</h2>
+					<em ng-if="selectedWiki.page.modified">
+						<i18n>Version du </i18n> [[getDateAndTime(selectedWiki.page.modified)]]
+						<i18n>par</i18n>
+						<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
+
+					</em>
+				</div>
+				<div class="five cell">
+					<div class="display-buttons">
+						<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
+							<button ng-click="restoreVersion(version)">
+								<i18n>wiki.version.restore</i18n>
+							</button>
+						</resource-right>
+						<button class="cancel right-magnet" ng-click="template.open('main', 'versions')">
+							<i18n>back</i18n>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<hr />
+			</div>
+
+			<div bind-html="version.content" />
+		</div>
+	</article>
+</div>
+
+
+<!-- Lightbox to confirm page restoration -->
+<lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">
+	<h2><i18n>wiki.page.confirmdeleteform.title</i18n></h2>
+	<p><i18n>wiki.page.confirmdeleteform.message</i18n></p>
+	<div class="row">
+		<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">
+			<i18n>wiki.page.confirmdeleteform.title.delete</i18n>
+		</button>
+		<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">
+			<i18n>wiki.page.confirmdeleteform.title.cancel</i18n>
+		</button>
+	</div>
+</lightbox>

@@ -26,6 +26,9 @@
 	"wiki.page.edit": "Modifier",
 	"wiki.page.delete": "Supprimer",
 	"wiki.page.duplicate": "Dupliquer",
+  	"wiki.page.versions": "Versions",
+  "wiki.version.restore": "Restaurer",
+  "apply": "Appliquer",
 	
 	"wiki.createform.input.placeholder": "Entrez le titre de votre wiki",
 	"wiki.createform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",

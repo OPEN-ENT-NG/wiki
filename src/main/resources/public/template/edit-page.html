@@ -1,21 +1,23 @@
-<div class="three cell" ng-include="template.containers.sideMenu"></div>
+<div class="row rigid-grid">
+	<div class="three cell" ng-include="template.containers.sideMenu"></div>
 
-<article class="nine cell">
-	<form class="row">
-		<div class="row">
-			<input type="text" ng-model="selectedWiki.editedPage.title" class="twelve cell" />
-		</div>
-		<div class="row">
-			<input type="checkbox" ng-model="selectedWiki.editedPage.isIndex"/>
-			<i18n>wiki.page.editform.set.as.index</i18n>
-		</div>
-		<div>
-			<html-editor ng-model="selectedWiki.editedPage.content"></html-editor>
-		</div>
-		<div class="row">
-			<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
-			<button  class="right-magnet cancel" ng-click="cancelEditPage(selectedWiki)" translate content="wiki.page.editform.cancel"></button>
-		</div>
-		<div class="clear"></div>
-	</form>
-</article>
+	<article class="margin-three">
+		<form class="twelve cell">
+			<div class="row">
+				<input type="text" ng-model="selectedWiki.editedPage.title" class="twelve cell" />
+			</div>
+			<div class="row">
+				<input type="checkbox" ng-model="selectedWiki.editedPage.isIndex"/>
+				<i18n>wiki.page.editform.set.as.index</i18n>
+			</div>
+			<div>
+				<html-editor ng-model="selectedWiki.editedPage.content"></html-editor>
+			</div>
+			<div class="row">
+				<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+				<button  class="right-magnet cancel" ng-click="cancelEditPage(selectedWiki)" translate content="wiki.page.editform.cancel"></button>
+			</div>
+			<div class="clear"></div>
+		</form>
+	</article>
+</div>
