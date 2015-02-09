@@ -1,5 +1,7 @@
 package net.atos.entng.wiki.service;
 
+import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final String collection;
 	private final MongoDb mongo;
-	private static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	public WikiServiceMongoImpl(final String collection) {
 		super(collection);
