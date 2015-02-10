@@ -29,7 +29,7 @@ public class WikiRepositoryEvents implements RepositoryEvents {
 	public void exportResources(String exportId, String userId,
 			JsonArray groups, String exportPath, String locale) {
 		// TODO
-		throw new UnsupportedOperationException();
+		log.warn("Method exportResources is not implemented in WikiRepositoryEvents");
 	}
 
 	/**
