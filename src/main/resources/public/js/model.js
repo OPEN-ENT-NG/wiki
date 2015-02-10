@@ -154,7 +154,7 @@ Version.prototype.comparison = function(left, right){
 	var added = 0;
 	rightRoot.each(function(index, item){
 		if($(item).hasClass('added')){
-			$(strippedLeft[index - added]).prepend($(item.outerHTML).addClass('removed'));
+			$(strippedLeft[index - added]).prepend($(item.outerHTML).removeClass('added').addClass('removed'));
 			added ++;
 		}
 	});
@@ -162,7 +162,7 @@ Version.prototype.comparison = function(left, right){
 	added = 0;
 	leftRoot.each(function(index, item){
 		if($(item).hasClass('added')){
-			$(strippedRight[index - added]).prepend($(item.outerHTML).addClass('removed'));
+			$(strippedRight[index - added]).prepend($(item.outerHTML).removeClass('added').addClass('removed'));
 			added ++;
 		}
 	});
