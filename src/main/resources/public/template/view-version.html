@@ -1,38 +1,40 @@
 <div class="row rigid-grid">
 	<div class="three cell" ng-include="template.containers.sideMenu"></div>
+	<div class="margin-three">
+		<article class="twelve cell">
+			<div class="twelve cell">
+				<div class="row">
+					<div class="seven cell">
+						<h2>[[selectedWiki.page.title]]</h2>
+						<em ng-if="selectedWiki.page.modified">
+							<i18n>Version du </i18n> [[getDateAndTime(selectedWiki.page.modified)]]
+							<i18n>par</i18n>
+							<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
 
-	<article class="margin-three">
-		<div class="twelve cell">
-			<div class="row">
-				<div class="seven cell">
-					<h2>[[selectedWiki.page.title]]</h2>
-					<em ng-if="selectedWiki.page.modified">
-						<i18n>Version du </i18n> [[getDateAndTime(selectedWiki.page.modified)]]
-						<i18n>par</i18n>
-						<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
-
-					</em>
-				</div>
-				<div class="five cell">
-					<div class="display-buttons">
-						<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
-							<button ng-click="restoreVersion(version)">
-								<i18n>wiki.version.restore</i18n>
+						</em>
+					</div>
+					<div class="five cell">
+						<div class="display-buttons">
+							<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
+								<button ng-click="restoreVersion(version)">
+									<i18n>wiki.version.restore</i18n>
+								</button>
+							</resource-right>
+							<button class="cancel right-magnet" ng-click="template.open('main', 'versions')">
+								<i18n>back</i18n>
 							</button>
-						</resource-right>
-						<button class="cancel right-magnet" ng-click="template.open('main', 'versions')">
-							<i18n>back</i18n>
-						</button>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-				<hr />
-			</div>
+				<div class="row">
+					<hr />
+				</div>
 
-			<div bind-html="version.content" />
-		</div>
-	</article>
+				<div bind-html="version.content" />
+			</div>
+		</article>
+	</div>
+
 </div>
 
 

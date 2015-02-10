@@ -1,89 +1,92 @@
 <div class="row rigid-grid">
 	<div class="three cell" ng-include="template.containers.sideMenu"></div>
 
-	<article ng-if="selectedWiki.page !== undefined" class="margin-three vertical-spacing">
-		<div class="twelve cell">
-			<div class="row">
-				<div class="seven cell">
-					<h2>[[selectedWiki.page.title]]</h2>
-					<em ng-if="selectedWiki.page.modified">
-						<i18n>wiki.last.modification.by</i18n>
-						<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
-						<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
-					</em>
-				</div>
-				<div class="five cell">
-					<div class="display-buttons">
-						<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
-							<drop-down-button class="cell">
-								<label class="opener"><i18n>plus</i18n></label>
-								<opts>
-									<behaviour name="deletePage" resource="selectedWiki">
-										<li ng-click="display.showConfirmDeletePage = true;">
-											<i18n>wiki.page.delete</i18n>
+	<div class="margin-three">
+		<article ng-if="selectedWiki.page !== undefined" class="twelve cell">
+			<div class="twelve cell">
+				<div class="row">
+					<div class="seven cell">
+						<h2>[[selectedWiki.page.title]]</h2>
+						<em ng-if="selectedWiki.page.modified">
+							<i18n>wiki.last.modification.by</i18n>
+							<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
+							<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
+						</em>
+					</div>
+					<div class="five cell">
+						<div class="display-buttons">
+							<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
+								<drop-down-button class="cell">
+									<label class="opener"><i18n>plus</i18n></label>
+									<opts>
+										<behaviour name="deletePage" resource="selectedWiki">
+											<li ng-click="display.showConfirmDeletePage = true;">
+												<i18n>wiki.page.delete</i18n>
+											</li>
+										</behaviour>
+										<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
+											<i18n>wiki.page.duplicate</i18n>
 										</li>
-									</behaviour>
-									<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
-										<i18n>wiki.page.duplicate</i18n>
-									</li>
-									<li ng-click="listVersions()">
-										<i18n>wiki.page.versions</i18n>
-									</li>
-								</opts>
-							</drop-down-button>
-						</behaviour>
-						<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
-							<button ng-click="editPage(selectedWiki)">
-								<i18n>wiki.page.edit</i18n>
-							</button>
-						</behaviour>
+										<li ng-click="listVersions()">
+											<i18n>wiki.page.versions</i18n>
+										</li>
+									</opts>
+								</drop-down-button>
+							</behaviour>
+							<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
+								<button ng-click="editPage(selectedWiki)">
+									<i18n>wiki.page.edit</i18n>
+								</button>
+							</behaviour>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-				<hr />
-			</div>
+				<div class="row">
+					<hr />
+				</div>
 
-			<div bind-html="selectedWiki.page.content" />
+				<div bind-html="selectedWiki.page.content" />
 
-			<div class="row content-line">
-				<div class="five cell right-magnet">
-					<behaviour name="comment" resource="selectedWiki">
-						<a ng-click="showCommentForm()" ng-if="!selectedWiki.page.comments || selectedWiki.page.comments.length === 0" class="medium-text right-magnet">
-							<i18n>wiki.comment.add</i18n>
-						</a>
-					</behaviour>
-					<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
+				<div class="row content-line">
+					<div class="five cell right-magnet">
+						<behaviour name="comment" resource="selectedWiki">
+							<a ng-click="showCommentForm()" ng-if="!selectedWiki.page.comments || selectedWiki.page.comments.length === 0" class="medium-text right-magnet">
+								<i18n>wiki.comment.add</i18n>
+							</a>
+						</behaviour>
+						<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
 				<span ng-if="!selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
 					<i18n>wiki.comment.display</i18n> ([[selectedWiki.page.comments.length]])
 				</span>
 				<span ng-if="selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
 					<i18n>wiki.comment.hide</i18n> ([[selectedWiki.page.comments.length]])
 				</span>
-					</a>
-				</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="row" ng-if="selectedWiki.page.showCommentForm === true">
-				<div ng-include="template.containers.commentForm"></div>
-			</div>
-
-			<div class="row" ng-if="selectedWiki.page.showComments">
-				<div class="row" ng-repeat="comment in selectedWiki.page.comments">
-					<article class="comment reduce-block-eight">
-						<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
-						<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
-						<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
-						   ng-if="(comment.author === me.userId || selectedWiki.myRights.deleteWiki)">
-							<i18n>wiki.comment.delete</i18n>
 						</a>
-						<p>[[comment.comment]]</p>
-					</article>
+					</div>
+					<div class="clear"></div>
+				</div>
+
+				<div class="row" ng-if="selectedWiki.page.showCommentForm === true">
+					<div ng-include="template.containers.commentForm"></div>
+				</div>
+
+				<div class="row" ng-if="selectedWiki.page.showComments">
+					<div class="row" ng-repeat="comment in selectedWiki.page.comments">
+						<article class="comment reduce-block-eight">
+							<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
+							<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
+							<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
+							   ng-if="(comment.author === me.userId || selectedWiki.myRights.deleteWiki)">
+								<i18n>wiki.comment.delete</i18n>
+							</a>
+							<p>[[comment.comment]]</p>
+						</article>
+					</div>
 				</div>
 			</div>
-		</div>
-	</article>
+		</article>
+	</div>
+
 </div>
 
 
