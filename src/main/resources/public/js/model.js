@@ -89,7 +89,8 @@ function findTextSequence(x,y){
 }
 
 function similar(a, b){
-	return findTextSequence(a.innerText.split(' '), b.innerText.split(' ')).length > a.innerText.split(' ').length / 4;
+	var textSequence = findTextSequence(a.innerText.split(' '), b.innerText.split(' '));
+	return textSequence.length > a.innerText.split(' ').length / 4 || textSequence.length > b.innerText.split(' ').length / 4;
 }
 
 function compare(a, b){
@@ -111,6 +112,7 @@ function compare(a, b){
 	}
 
 	sequence.forEach(function(child, index){
+		var aVariations = 0;
 		while(aIndex < a.length && child.innerText !== a[aIndex].innerText){
 			var noEquivalent = true;
 			for(var n = 0; n < bVariations[index].length; n++){
@@ -124,6 +126,10 @@ function compare(a, b){
 				$(a[aIndex]).addClass('added');
 			}
 			aIndex ++;
+			aVariations ++;
+		}
+		if(aVariations === 1 && bVariations[index].length === 1){
+			$(a[aIndex]).removeClass('added').addClass('diff');
 		}
 		aIndex ++;
 	});
@@ -141,6 +147,9 @@ function compare(a, b){
 			$(a[j]).addClass('added');
 		}
 	}
+	if(j === aIndex + 1 && bVariations[sequence.length - 1].length === 1){
+		$(a[j]).removeClass('added').addClass('diff');
+	}
 }
 
 Version.prototype.comparison = function(left, right){
@@ -157,21 +166,19 @@ Version.prototype.comparison = function(left, right){
 	compare(leftRoot, rightRoot);
 	compare(rightRoot, leftRoot);
 
-	var strippedLeft = $(leftRoot, ':not(.added)');
-	var strippedRight = $(rightRoot, ':not(.added)');
 	var added = 0;
-	rightRoot.each(function(index, item){
+	leftRoot.each(function(index, item){
 		if($(item).hasClass('added')){
-			$(strippedLeft[index - added]).prepend($(item.outerHTML).removeClass('added').addClass('removed'));
-			added ++;
+			rightRoot.splice(index + added, 0, $(item.outerHTML).removeClass('added').addClass('removed')[0]);
+		}
+		if($(rightRoot[index]).hasClass('added')){
+			added++;
 		}
 	});
 
-	added = 0;
-	leftRoot.each(function(index, item){
+	rightRoot.each(function(index, item){
 		if($(item).hasClass('added')){
-			$(strippedRight[index - added]).prepend($(item.outerHTML).removeClass('added').addClass('removed'));
-			added ++;
+			leftRoot.splice(index, 0, $(item.outerHTML).removeClass('added').addClass('removed')[0]);
 		}
 	});
 
