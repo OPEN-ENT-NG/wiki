@@ -146,6 +146,14 @@ function compare(a, b){
 Version.prototype.comparison = function(left, right){
 	var leftRoot = $(left.content);
 	var rightRoot = $(right.content);
+	//fix for empty div content
+	while(leftRoot.length === 1 && leftRoot.children().length > 0 && leftRoot[0].nodeName === 'DIV'){
+		leftRoot = leftRoot.children();
+	}
+	while(rightRoot.length === 1 && rightRoot.children().length > 0 && rightRoot[0].nodeName === 'DIV'){
+		rightRoot = rightRoot.children();
+	}
+
 	compare(leftRoot, rightRoot);
 	compare(rightRoot, leftRoot);
 
