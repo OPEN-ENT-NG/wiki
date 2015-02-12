@@ -5,7 +5,7 @@
 		<div class="twelve cell">
 			<alphabetical list="page in selectedWiki.pages.all" class="twelve cell">
 				<li>
-					<a ng-if="page._id === selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">
+					<a ng-if="page._id === selectedWiki.index" ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">
 						[[page.title]]
 						<em>[<i18n>wiki.homepage.label</i18n>]</em>
 					</a>

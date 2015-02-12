@@ -333,7 +333,6 @@ function WikiController($scope, template, model, route, $location){
 			$scope.selectedWiki.getPage(
 				pageId, 
 				function(result){
-					window.location.hash = '/view/' + wikiId + '/' + pageId;
 					$scope.$apply();
 				},
 				function(){

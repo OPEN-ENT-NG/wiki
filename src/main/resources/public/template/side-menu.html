@@ -17,7 +17,7 @@
 		<i18n>wiki.last.modified.pages</i18n>
 	</h2>
 	<div ng-repeat="page in selectedWiki.lastPages">
-	   <a ng-click="openSelectedPage(selectedWiki._id, page._id)">
+	   <a ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">
 	           [[page.title]] 
 	   </a> - [[getRelativeTimeFromDate(page.modified)]]
 	</div>
