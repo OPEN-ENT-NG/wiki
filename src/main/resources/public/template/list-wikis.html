@@ -53,23 +53,23 @@
 <section class="toggle-buttons" ng-class="{ hide: wikis.selection().length === 0 }">
 	<div class="toggle">
 		<div class="row">
-			<behaviour name="edit" resource="wikis.selection()" class="cell">
+			<resource-right name="edit" resource="wikis.selection()" class="cell">
 				<button ng-if="wikis.selection().length === 1"
 					ng-click="displayEditWikiForm(wikis.selection()[0])"
 				>
 					<i18n>wiki.update</i18n>
 				</button>
-			</behaviour>
-			<behaviour name="deleteWiki" resource="wikis.selection()" class="cell">
+			</resource-right>
+			<resource-right name="deleteWiki" resource="wikis.selection()" class="cell">
 				<button ng-click="display.showConfirmDelete = true">
 					<i18n>wiki.delete</i18n>
 				</button>
-			</behaviour>
-			<behaviour name="share" resource="wikis.selection()" class="cell">
+			</resource-right>
+			<resource-right name="share" resource="wikis.selection()" class="cell">
 				<button ng-click="display.showPanel = true">
 					<i18n>wiki.share</i18n>
 				</button>
-			</behaviour>
+			</resource-right>
 		</div>
 	</div>
 </section>

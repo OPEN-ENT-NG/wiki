@@ -34,16 +34,16 @@
 									<i18n>wiki.print</i18n>
 								</a>
 							</li>
-							<behaviour name="share" resource="selectedWiki">
+							<resource-right name="share" resource="selectedWiki">
 								<li ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
 									<i18n>wiki.share.current.wiki</i18n>
 								</li>
-							</behaviour>
+							</resource-right>
 						</opts>
 					</drop-down-button>
-					<behaviour name="createPage" resource="selectedWiki" class="cell right-magnet">
+					<resource-right name="createPage" resource="selectedWiki" class="cell right-magnet">
 						<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
-					</behaviour>
+					</resource-right>
 				</div>
 			</div>
 			<div class="clear"></div>

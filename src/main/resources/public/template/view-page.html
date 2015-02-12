@@ -15,15 +15,15 @@
 					</div>
 					<div class="five cell">
 						<div class="display-buttons">
-							<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
+							<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
 								<drop-down-button class="cell">
 									<label class="opener"><i18n>plus</i18n></label>
 									<opts>
-										<behaviour name="deletePage" resource="selectedWiki">
+										<resource-right name="deletePage" resource="selectedWiki">
 											<li ng-click="display.showConfirmDeletePage = true;">
 												<i18n>wiki.page.delete</i18n>
 											</li>
-										</behaviour>
+										</resource-right>
 										<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
 											<i18n>wiki.page.duplicate</i18n>
 										</li>
@@ -32,12 +32,12 @@
 										</li>
 									</opts>
 								</drop-down-button>
-							</behaviour>
-							<behaviour name="editPage" resource="selectedWiki" class="cell right-magnet">
+							</resource-right>
+							<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
 								<button ng-click="editPage(selectedWiki)">
 									<i18n>wiki.page.edit</i18n>
 								</button>
-							</behaviour>
+							</resource-right>
 						</div>
 					</div>
 				</div>
@@ -49,11 +49,11 @@
 
 				<div class="row content-line">
 					<div class="five cell right-magnet">
-						<behaviour name="comment" resource="selectedWiki">
+						<resource-right name="comment" resource="selectedWiki">
 							<a ng-click="showCommentForm()" ng-if="!selectedWiki.page.comments || selectedWiki.page.comments.length === 0" class="medium-text right-magnet">
 								<i18n>wiki.comment.add</i18n>
 							</a>
-						</behaviour>
+						</resource-right>
 						<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
 				<span ng-if="!selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
 					<i18n>wiki.comment.display</i18n> ([[selectedWiki.page.comments.length]])
