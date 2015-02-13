@@ -5,14 +5,14 @@ var wikiNamespace = {
 	},
 	Page: function() {
 		var page = this;
-		this.collection(Behaviours.applicationsBehaviours.wiki.wikiNamespace.Version, {
+		this.collection(Behaviours.applicationsBehaviours.wiki.namespace.Version, {
 			sync: '/wiki/revisions/' + page.wiki_id + '/' + page._id
 		});
 	},
 	Wiki: function() {
 		var wiki = this;
 		
-		this.collection(Behaviours.applicationsBehaviours.wiki.wikiNamespace.Page, {
+		this.collection(Behaviours.applicationsBehaviours.wiki.namespace.Page, {
 			sync : function(callback) {
 				http().get('/wiki/' + wiki._id + '/listpages').done(function(returnedWiki) {
 					returnedWiki.pages = _.map(returnedWiki.pages, function(page){

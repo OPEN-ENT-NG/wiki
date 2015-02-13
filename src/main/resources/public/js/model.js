@@ -1,7 +1,8 @@
-var namespace = Behaviours.applicationsBehaviours.wiki.namespace;
-
 model.build = function() {
 	model.me.workflow.load(['wiki']);
+	
+	// variable "namespace", stored in behaviours, contains the model objects
+	var namespace = Behaviours.applicationsBehaviours.wiki.namespace; 
 	
 	this.makeModels([ namespace.Wiki, namespace.Page, namespace.Version ]);
 
