@@ -23,10 +23,15 @@ var wikiNamespace = {
 					if(typeof callback === 'function'){
 						callback();
 					}
-				}.bind(this));			
+				}.bind(this));
 			}
 		});
 	}
+};
+
+// Utility functions shared by wiki sniplet and wiki application
+wikiNamespace.getDateAndTime = function(dateObject){
+	return moment(dateObject.$date).lang('fr').format('LLLL');
 };
 
 // Versions (i.e. revisions of a wiki page)
@@ -481,7 +486,181 @@ Behaviours.register('wiki', {
 		http().postJson('/wiki/' + page.wiki_id + '/page', data).done(function(){
 			this.loadResources(callback);
 			page.loading = false;
-		}.bind(this));
-		
-	}
+		}.bind(this));		
+	},
+	
+    sniplets: {
+        wiki: {
+        		// TODO i18n
+                title: 'Wiki', 
+                description: 'Permet d\'intégrer un wiki à votre site web ou à votre communauté', 
+                controller: {
+                        // Load wikis that can be selected when initializing a wiki sniplet
+                        initSource: function() {
+                                http().get('/wiki/list').done(function(pWikis) {
+                                        this.wikis = pWikis;
+                                        this.$apply('wikis');
+                                }.bind(this));
+                        },
+                        
+                        // Get data to display selected wiki
+                        init: function() {
+                        	var scope = this;
+                        	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
+                        	
+                        	// Get pages list
+                    		wiki.pages.sync(function(){
+                    			// TODO : setLastPages(wiki);
+                    			
+                                if(wiki.index && wiki.index.length > 0) {
+                                    // Get index if it exists
+                        			wiki.getPage(
+                        				wiki.index, 
+                        				function(result){
+                        					scope.source = wiki;
+                        					if(scope.display) {
+                        						scope.display.action = 'viewPage';
+                        					}
+                        					else {
+                            					scope.display = {action: 'viewPage'};
+                        					}
+                        					scope.$apply();
+                        				},
+                        				function(){ } // TODO : scope.notFound=true;
+                            		);
+                                }
+                                else {
+                                	scope.source = wiki;
+                					if(scope.display) {
+                						scope.display.action = 'pagesList';
+                					}
+                					else {
+                    					scope.display = {action: 'pagesList'};
+                					}
+                					scope.$apply();
+                                }
+                    		});
+                        },
+                        
+                        /*viewWiki: function(wiki){
+                        	var scope = this;
+                        	
+                    		wiki.pages.sync(function(){
+                    			// TODO : setLastPages(wiki);
+                    			
+                                if(wiki.index && wiki.index.length > 0) {
+                                    // Get index if it exists
+                        			wiki.getPage(
+                        				wiki.index, 
+                        				function(result){ 
+                        					scope.source = wiki;
+                        					if(scope.display) {
+                        						scope.display.action = 'viewPage';
+                        					}
+                        					else {
+                            					scope.display = {action: 'viewPage'};
+                        					}
+                        					scope.$apply();
+                        				},
+                        				function(){ } // TODO : scope.notFound=true;
+                            		);
+                                }
+                                else { // List pages
+                                	scope.source = wiki;
+                					if(scope.display) {
+                						scope.display.action = 'pagesList';
+                					}
+                					else {
+                    					scope.display = {action: 'pagesList'};
+                					}
+                					scope.$apply();
+                                }
+                    		});
+                        },*/
+                        
+                        getDateAndTime: function(dateObject) {
+                        	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
+                        },
+                        	
+                        openPage: function(pageId) {
+                        	var scope = this;
+                        	var wiki = this.source;
+                        	
+                    		wiki.pages.sync(function(){
+                    			// TODO : setLastPages(wiki);
+                    			
+                    			wiki.getPage(
+                    				pageId, 
+                    				function(result){
+                    					if(scope.display) {
+                    						scope.display.action = 'viewPage';
+                    					}
+                    					else {
+                        					scope.display = {action: 'viewPage'};
+                    					}
+                    					scope.source = wiki;
+                    					scope.$apply();
+                    				},
+                    				function(){ } // TODO : scope.notFound=true;
+                        		);
+
+                    		});
+                        },
+                        
+                		listPages: function(){
+                        	var scope = this;
+                        	var wiki = this.source;
+                        	
+                    		wiki.pages.sync(function(){
+                    			// TODO : setLastPages(wiki);
+            					if(scope.display) {
+            						scope.display.action = 'pagesList';
+            					}
+            					else {
+                					scope.display = {action: 'pagesList'};
+            					}
+                    		});
+                		}
+
+                		/* TODO WIP
+                		,
+                		newPage: function(){
+                			var scope = this;
+                			
+                			scope.page = new Behaviours.applicationsBehaviours.wiki.namespace.Page();
+        					if(scope.display) {
+        						scope.display.action = 'createPage';
+        					}
+        					else {
+        						scope.display = {action: 'createPage'};
+        					}
+                		},
+                		
+                		createPage: function(){
+                			// TODO : vérifier si le titre de la page est vide ou s'il existe
+                			var data = {
+                				title : this.page.title,
+                				content : this.page.content,
+                				isIndex : this.page.isIndex
+                    		};
+                			
+                			var wiki = this.source;
+                			wiki.createPage(data, function(createdPage){
+                				return Behaviours.applicationsBehaviours.wiki.sniplets.wiki.controller.openPage(createdPage._id);
+                	        });
+                		},
+                		
+                		cancelCreatePage: function(){
+                			return Behaviours.applicationsBehaviours.wiki.sniplets.wiki.controller.viewWiki(this.source);
+                		}*/
+                        
+                        /* TODO :
+                        getReferencedResources: function(source){
+                                if(source._id){
+                                        return [source._id];
+                                }
+                        }*/
+                }
+        }
+    }
 });

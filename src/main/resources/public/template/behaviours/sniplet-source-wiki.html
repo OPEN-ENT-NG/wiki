@@ -1,0 +1,14 @@
+<!-- TODO : i18n -->
+<div ng-if="!wikis" class="twelve cell">
+	<span>Aucun wiki trouvé</span>
+</div>
+
+<div ng-if="wikis" class="twelve cell">
+	<h2>Sélectionnez un wiki</h2>
+	
+	<ul class="thought-out-actions">
+		<li ng-repeat="wiki in wikis">
+			<a ng-click="setSnipletSource(wiki)">[[wiki.title]]</a> - [[wiki.owner.displayName]]
+		</li>
+	</ul>
+</div>

@@ -146,8 +146,8 @@ function WikiController($scope, template, model, route, $location){
     	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY H:mm');
     };
     
-    $scope.getDateAndTime = function(dateObject){
-    	return moment(dateObject.$date).lang('fr').format('LLLL');
+    $scope.getDateAndTime = function(dateObject) {
+    	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
     };
     
     $scope.getRelativeTimeFromDate = function(dateObject){
