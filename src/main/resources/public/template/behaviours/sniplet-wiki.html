@@ -1,13 +1,15 @@
-<div class="nine cell">
-	<h2>
-		<i class="wiki"></i>
-		<span>[[source.title]]</span>
-	</h2>
-</div>
-<div class="contextual-buttons three cell">
-<!-- TODO :	<resource-right name="createPage" resource="source" class="cell right-magnet"> -->
-		<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="source"></button>
-<!-- 	</resource-right> -->
+<div class="twelve cell">
+	<div class="nine cell">
+		<h2>
+			<i class="wiki"></i>
+			<span>[[wiki.title]]</span>
+		</h2>
+	</div>
+	<div class="contextual-buttons three cell">
+		<resource-right name="createPage" resource="wiki" class="cell right-magnet">
+			<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="wiki"></button>
+		</resource-right>
+	</div>
 </div>
 
 <!-- TODO : i18n -->
@@ -15,65 +17,64 @@
 <div>
 	<a ng-click="listPages()">Liste des pages</a>
 	<br/>
-	<a ng-if="source.index && source.index.length > 0" ng-click="openPage(source.index)">Page d'accueil</a>
+	<a ng-if="wiki.index && wiki.index.length > 0" ng-click="openPage(wiki.index)">Page d'accueil</a>
 </div>
 
-<div ng-if="display.action === 'pagesList'" class="row rigid-grid">
+<div ng-if="display.action === 'pagesList'" class="twelve cell">
 	<ul class="twelve cell" >
 <!-- TODO : adapt CSS, so that it properly displays directive 'alphabetical' -->
-<!-- 			<alphabetical list="page in source.pages.all" class="twelve cell"> -->
-				<li ng-repeat="page in source.pages.all">
-					<a ng-if="page._id === source.index" ng-click="openPage(page._id)"> 
+<!-- 			<alphabetical list="page in wiki.pages.all" class="twelve cell"> -->
+				<li ng-repeat="page in wiki.pages.all">
+					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
 						[[page.title]]
 						<em>[<i18n>wiki.homepage.label</i18n>]</em>
 					</a>
-					<a ng-if="page._id !== source.index" ng-click="openPage(page._id)">[[page.title]]</a>
+					<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
 				</li>
 <!-- 			</alphabetical> -->
-			<li ng-if="source.pages.all.length === 0">Ce wiki est vide !</li>
+			<li ng-if="wiki.pages.all.length === 0">Ce wiki est vide !</li>
 	</ul>
 </div>
 
-<div ng-if="display.action === 'viewPage' && source.page !== undefined" class="row rigid-grid">
+<div ng-if="display.action === 'viewPage' && wiki.page !== undefined" class="twelve cell">
 	<div>
 		<article class="twelve cell">
 			<div class="twelve cell">
-				<div class="row">
+				<div class="twelve cell">
 					<div class="twelve cell">
-						<h2>[[source.page.title]]</h2>
-						<em ng-if="source.page.modified">
+						<h2>[[wiki.page.title]]</h2>
+						<em ng-if="wiki.page.modified">
 							<i18n>wiki.last.modification.by</i18n>
-							<a href="/userbook/annuaire#/[[source.page.author]]">[[source.page.authorName]]</a>
-							<i18n>wiki.on</i18n> [[getDateAndTime(source.page.modified)]]
+							<a href="/userbook/annuaire#/[[wiki.page.author]]">[[wiki.page.authorName]]</a>
+							<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
 						</em>
 					</div>
 				</div>
 
-				<div bind-html="source.page.content" />
+				<div bind-html="wiki.page.content" />
 			</div>
 		</article>
 	</div>
 </div>
 
-<!-- TODO WIP -->
-<!-- <div ng-if="display.action === 'createPage'"> -->
-<!-- 	<article class="twelve cell"> -->
-<!-- 		<form class="row"> -->
-<!-- 			<div class="row"> -->
-<!-- 				<input type="text" ng-model="page.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" /> -->
-<!-- 			</div> -->
-<!-- 			<div class="row"> -->
-<!-- 				<input type="checkbox" ng-model="page.isIndex" /> -->
-<!-- 				<i18n>wiki.page.createform.set.as.index</i18n> -->
-<!-- 			</div> -->
-<!-- 			<div class="row"> -->
-<!-- 				<html-editor ng-model="page.content"></html-editor> -->
-<!-- 			</div> -->
-<!-- 			<div class="row"> -->
-<!-- 				<button class="right-magnet" ng-click="createPage()" translate content="wiki.page.createform.save"></button> -->
-<!-- 				<button class="right-magnet cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button> -->
-<!-- 			</div> -->
-<!-- 			<div class="clear"></div> -->
-<!-- 		</form> -->
-<!-- 	</article> -->
-<!-- </div> -->
+<div ng-if="display.action === 'createPage'">
+	<article class="twelve cell">
+		<form class="twelve cell">
+			<div class="twelve cell">
+				<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
+			</div>
+			<div class="twelve cell">
+				<input type="checkbox" ng-model="wiki.newPage.isIndex" />
+				<i18n>wiki.page.createform.set.as.index</i18n>
+			</div>
+			<div class="twelve cell">
+				<html-editor ng-model="wiki.newPage.content"></html-editor>
+			</div>
+			<div class="twelve cell">
+				<button class="right-magnet" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+				<button class="right-magnet cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
+			</div>
+			<div class="clear"></div>
+		</form>
+	</article>
+</div>

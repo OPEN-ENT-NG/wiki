@@ -366,7 +366,7 @@ model.makeModels(wikiNamespace);
 
 
 // 2) Behaviours
-var wikiBehaviours = {
+var wikiRights = {
 	resources: {
 		edit: {
 			right: 'net-atos-entng-wiki-controllers-WikiController|updateWiki'
@@ -407,29 +407,30 @@ var wikiBehaviours = {
 
 Behaviours.register('wiki', {
 	namespace: wikiNamespace,
+	rights: wikiRights,
 	
-	behaviours: wikiBehaviours,
 	resource: function(resource){
 		var rightsContainer = resource;
 		if(!resource.myRights){
 			resource.myRights = {};
 		}
 		
-		for(var behaviour in wikiBehaviours.resources){
-			if(model.me.hasRight(rightsContainer, wikiBehaviours.resources[behaviour]) || model.me.userId === resource.owner.userId){
-				if(resource.myRights[behaviour] !== undefined){
-					resource.myRights[behaviour] = resource.myRights[behaviour] && wikiBehaviours.resources[behaviour];
+		for(var right in wikiRights.resources){
+			if(model.me.hasRight(rightsContainer, wikiRights.resources[right]) || model.me.userId === resource.owner.userId){
+				if(resource.myRights[right] !== undefined){
+					resource.myRights[right] = resource.myRights[right] && wikiRights.resources[right];
 				}
 				else{
-					resource.myRights[behaviour] = wikiBehaviours.resources[behaviour];
+					resource.myRights[right] = wikiRights.resources[right];
 				}
 			}
 		}
 		return resource;
 	},
+	
 	workflow: function(){
 		var workflow = { };
-		var wikiWorkflow = wikiBehaviours.workflow;
+		var wikiWorkflow = wikiRights.workflow;
 		for(var prop in wikiWorkflow){
 			if(model.me.hasWorkflow(wikiWorkflow[prop])){
 				workflow[prop] = true;
@@ -438,6 +439,7 @@ Behaviours.register('wiki', {
 
 		return workflow;
 	},
+	
 	resourceRights: function(){
 		return ['read', 'comment', 'contrib', 'manager'];
 	},
@@ -495,172 +497,145 @@ Behaviours.register('wiki', {
                 title: 'Wiki', 
                 description: 'Permet d\'intégrer un wiki à votre site web ou à votre communauté', 
                 controller: {
-                        // Load wikis that can be selected when initializing a wiki sniplet
-                        initSource: function() {
-                                http().get('/wiki/list').done(function(pWikis) {
-                                        this.wikis = pWikis;
-                                        this.$apply('wikis');
-                                }.bind(this));
-                        },
-                        
-                        // Get data to display selected wiki
-                        init: function() {
-                        	var scope = this;
-                        	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
-                        	
-                        	// Get pages list
-                    		wiki.pages.sync(function(){
-                    			// TODO : setLastPages(wiki);
-                    			
-                                if(wiki.index && wiki.index.length > 0) {
-                                    // Get index if it exists
-                        			wiki.getPage(
-                        				wiki.index, 
-                        				function(result){
-                        					scope.source = wiki;
-                        					if(scope.display) {
-                        						scope.display.action = 'viewPage';
-                        					}
-                        					else {
-                            					scope.display = {action: 'viewPage'};
-                        					}
-                        					scope.$apply();
-                        				},
-                        				function(){ } // TODO : scope.notFound=true;
-                            		);
-                                }
-                                else {
-                                	scope.source = wiki;
-                					if(scope.display) {
-                						scope.display.action = 'pagesList';
-                					}
-                					else {
-                    					scope.display = {action: 'pagesList'};
-                					}
-                					scope.$apply();
-                                }
-                    		});
-                        },
-                        
-                        /*viewWiki: function(wiki){
-                        	var scope = this;
-                        	
-                    		wiki.pages.sync(function(){
-                    			// TODO : setLastPages(wiki);
-                    			
-                                if(wiki.index && wiki.index.length > 0) {
-                                    // Get index if it exists
-                        			wiki.getPage(
-                        				wiki.index, 
-                        				function(result){ 
-                        					scope.source = wiki;
-                        					if(scope.display) {
-                        						scope.display.action = 'viewPage';
-                        					}
-                        					else {
-                            					scope.display = {action: 'viewPage'};
-                        					}
-                        					scope.$apply();
-                        				},
-                        				function(){ } // TODO : scope.notFound=true;
-                            		);
-                                }
-                                else { // List pages
-                                	scope.source = wiki;
-                					if(scope.display) {
-                						scope.display.action = 'pagesList';
-                					}
-                					else {
-                    					scope.display = {action: 'pagesList'};
-                					}
-                					scope.$apply();
-                                }
-                    		});
-                        },*/
-                        
-                        getDateAndTime: function(dateObject) {
-                        	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
-                        },
-                        	
-                        openPage: function(pageId) {
-                        	var scope = this;
-                        	var wiki = this.source;
-                        	
-                    		wiki.pages.sync(function(){
-                    			// TODO : setLastPages(wiki);
-                    			
-                    			wiki.getPage(
-                    				pageId, 
-                    				function(result){
-                    					if(scope.display) {
-                    						scope.display.action = 'viewPage';
-                    					}
-                    					else {
-                        					scope.display = {action: 'viewPage'};
-                    					}
-                    					scope.source = wiki;
-                    					scope.$apply();
-                    				},
-                    				function(){ } // TODO : scope.notFound=true;
-                        		);
-
-                    		});
-                        },
-                        
-                		listPages: function(){
-                        	var scope = this;
-                        	var wiki = this.source;
-                        	
-                    		wiki.pages.sync(function(){
-                    			// TODO : setLastPages(wiki);
-            					if(scope.display) {
-            						scope.display.action = 'pagesList';
-            					}
-            					else {
-                					scope.display = {action: 'pagesList'};
-            					}
-                    		});
-                		}
-
-                		/* TODO WIP
-                		,
-                		newPage: function(){
-                			var scope = this;
-                			
-                			scope.page = new Behaviours.applicationsBehaviours.wiki.namespace.Page();
+                    // Load wikis that can be selected when initializing a wiki sniplet
+                    initSource: function() {
+                        http().get('/wiki/list').done(function(pWikis) {
+                                this.wikis = pWikis;
+                                this.$apply('wikis');
+                        }.bind(this));
+                    },
+                    
+                    // Get data to display selected wiki
+                    init: function() {
+                    	var scope = this;
+                    	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
+                    	viewWiki(scope, wiki);
+                    },
+                    
+                    getDateAndTime: function(dateObject) {
+                    	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
+                    },
+                    	
+                    openPage: function(pageId) {
+                    	var scope = this;
+                        var wiki = this.wiki;
+                        getPage(scope, wiki, pageId);
+                    },
+                    
+            		listPages: function(){
+                    	var scope = this;
+                    	var wiki = this.wiki;
+                    	
+                		wiki.pages.sync(function(){
+                			// TODO : setLastPages(wiki);
         					if(scope.display) {
-        						scope.display.action = 'createPage';
+        						scope.display.action = 'pagesList';
         					}
         					else {
-        						scope.display = {action: 'createPage'};
+            					scope.display = {action: 'pagesList'};
         					}
-                		},
-                		
-                		createPage: function(){
-                			// TODO : vérifier si le titre de la page est vide ou s'il existe
-                			var data = {
-                				title : this.page.title,
-                				content : this.page.content,
-                				isIndex : this.page.isIndex
-                    		};
-                			
-                			var wiki = this.source;
-                			wiki.createPage(data, function(createdPage){
-                				return Behaviours.applicationsBehaviours.wiki.sniplets.wiki.controller.openPage(createdPage._id);
-                	        });
-                		},
-                		
-                		cancelCreatePage: function(){
-                			return Behaviours.applicationsBehaviours.wiki.sniplets.wiki.controller.viewWiki(this.source);
-                		}*/
-                        
-                        /* TODO :
-                        getReferencedResources: function(source){
-                                if(source._id){
-                                        return [source._id];
-                                }
-                        }*/
+                		});
+            		},
+
+            		newPage: function(){
+            			var scope = this;
+            			scope.wiki.newPage = new Behaviours.applicationsBehaviours.wiki.namespace.Page();
+            			
+    					if(scope.display) {
+    						scope.display.action = 'createPage';
+    					}
+    					else {
+    						scope.display = {action: 'createPage'};
+    					}
+            		},
+            		
+            		createPage: function(){
+            			// TODO : vérifier si le titre de la page est vide ou s'il existe
+            			
+            			var scope = this;
+            			var wiki = scope.wiki;
+            			var data = {
+            				title : wiki.newPage.title,
+            				content : wiki.newPage.content,
+            				isIndex : wiki.newPage.isIndex
+                		};
+
+            			wiki.createPage(data, function(createdPage){
+            				getPage(scope, wiki, createdPage._id);
+            	        });
+            		},
+            		
+            		cancelCreatePage: function(){
+                    	viewWiki(this, this.wiki);
+            		},
+                    
+                    getReferencedResources: function(source){
+                        if(source._id){
+                            return [source._id];
+                        }
+                    }
                 }
         }
     }
 });
+
+
+// Functions used in sniplet's controller
+function viewWiki(scope, wiki){
+	wiki.pages.sync(function(){
+		// TODO : setLastPages(wiki);
+		
+        if(wiki.index && wiki.index.length > 0) {
+            // Get index if it exists
+			wiki.getPage(
+				wiki.index, 
+				function(result){ 
+					scope.wiki = wiki;
+					scope.wiki.behaviours('wiki');
+					if(scope.display) {
+						scope.display.action = 'viewPage';
+					}
+					else {
+    					scope.display = {action: 'viewPage'};
+					}
+					scope.$apply();
+				},
+				function(){ } // TODO : scope.notFound=true;
+    		);
+        }
+        else { // List pages
+        	scope.wiki = wiki;
+			scope.wiki.behaviours('wiki');
+			if(scope.display) {
+				scope.display.action = 'pagesList';
+			}
+			else {
+				scope.display = {action: 'pagesList'};
+			}
+			scope.$apply();
+        }
+	});
+}
+
+function getPage(scope, wiki, pageId){
+	wiki.pages.sync(function(){
+		// TODO : setLastPages(wiki);
+		
+		wiki.getPage(
+			pageId, 
+			function(result){
+				if(scope.display) {
+					scope.display.action = 'viewPage';
+				}
+				else {
+					scope.display = {action: 'viewPage'};
+				}
+				scope.wiki = wiki;
+				scope.$apply();
+			},
+			function(){ } // TODO : scope.notFound=true;
+		);
+
+	});	
+}
+
