@@ -320,6 +320,10 @@ function WikiController($scope, template, model, route, $location){
 		$location.path('/view/' + $scope.selectedWiki._id + '/list-pages');
 	};
 
+	$scope.openPageFromSearchbar = function(wikiId, pageId) {
+		window.location.hash = '/view/' + wikiId + '/' + pageId;
+	};
+	
 	$scope.openSelectedPage = function(wikiId, pageId){
     	$scope.selectedWiki = getWikiById(wikiId);
     	if(!$scope.selectedWiki) {
@@ -429,7 +433,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 	
 	$scope.deletePage = function(){
-		$scope.selectedWiki.deletePage($scope.selectedWiki._id, $scope.selectedWiki.page._id, function(result){
+		$scope.selectedWiki.deletePage($scope.selectedWiki.page._id, function(result){
 			updateSearchBar();
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
 			$scope.listPages($scope.selectedWiki._id);

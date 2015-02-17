@@ -310,8 +310,8 @@ wikiNamespace.Wiki.prototype.createPage = function(data, callback) {
 	}.bind(this));
 };
 
-wikiNamespace.Wiki.prototype.deletePage = function(wikiId, pageId, callback) {
-	http().delete('/wiki/' + wikiId + '/page/' + pageId).done(function(result){
+wikiNamespace.Wiki.prototype.deletePage = function(pageId, callback) {
+	http().delete('/wiki/' + this._id + '/page/' + pageId).done(function(result){
 		callback(result);
 	});
 };
@@ -507,8 +507,11 @@ Behaviours.register('wiki', {
                     
                     // Get data to display selected wiki
                     init: function() {
+                    	console.log('Wiki - init function');
                     	var scope = this;
+                    	console.log(scope.source);
                     	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
+                    	console.log(wiki);
                     	viewWiki(scope, wiki);
                     },
                     
@@ -525,16 +528,7 @@ Behaviours.register('wiki', {
             		listPages: function(){
                     	var scope = this;
                     	var wiki = this.wiki;
-                    	
-                		wiki.pages.sync(function(){
-                			// TODO : setLastPages(wiki);
-        					if(scope.display) {
-        						scope.display.action = 'pagesList';
-        					}
-        					else {
-            					scope.display = {action: 'pagesList'};
-        					}
-                		});
+                    	listPages(scope, wiki);
             		},
 
             		newPage: function(){
@@ -568,7 +562,15 @@ Behaviours.register('wiki', {
             		cancelCreatePage: function(){
                     	viewWiki(this, this.wiki);
             		},
-                    
+            		
+            		deletePage: function(){
+                    	var scope = this;
+                    	var wiki = scope.wiki;
+                    	wiki.deletePage(wiki.page._id, function() {
+                        	listPages(scope, wiki);	
+                    	});
+            		},
+            		
                     getReferencedResources: function(source){
                         if(source._id){
                             return [source._id];
@@ -639,3 +641,15 @@ function getPage(scope, wiki, pageId){
 	});	
 }
 
+
+function listPages(scope, wiki){
+	wiki.pages.sync(function(){
+		// TODO : setLastPages(wiki);
+		if(scope.display) {
+			scope.display.action = 'pagesList';
+		}
+		else {
+			scope.display = {action: 'pagesList'};
+		}
+	});
+}

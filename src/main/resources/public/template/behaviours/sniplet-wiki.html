@@ -43,7 +43,7 @@
 		<article class="twelve cell">
 			<div class="twelve cell">
 				<div class="twelve cell">
-					<div class="twelve cell">
+					<div class="seven cell">
 						<h2>[[wiki.page.title]]</h2>
 						<em ng-if="wiki.page.modified">
 							<i18n>wiki.last.modification.by</i18n>
@@ -51,6 +51,25 @@
 							<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
 						</em>
 					</div>
+
+					<div class="five cell">
+						<div class="display-buttons">
+							<resource-right name="deletePage" resource="wiki">
+								<button ng-click="display.showConfirmDeletePage = true;">
+									<i18n>wiki.page.delete</i18n>
+								</button>
+							</resource-right>
+<!-- 							<resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
+<!-- 								<button ng-click="editPage(wiki)"> -->
+<!-- 									<i18n>wiki.page.edit</i18n> -->
+<!-- 								</button> -->
+<!-- 							</resource-right> -->
+						</div>
+					</div>
+					
+				</div>
+				<div class="twelve cell">
+					<hr />
 				</div>
 
 				<div bind-html="wiki.page.content" />
@@ -78,3 +97,17 @@
 	</div>
 </div>
 
+
+<!-- Lightbox to confirm page deletion -->
+<lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">
+	<h2><i18n>wiki.page.confirmdeleteform.title</i18n></h2>
+	<p><i18n>wiki.page.confirmdeleteform.message</i18n></p>
+	<div class="row">
+		<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">
+			<i18n>wiki.page.confirmdeleteform.title.delete</i18n>
+		</button>
+		<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">
+			<i18n>wiki.page.confirmdeleteform.title.cancel</i18n>
+		</button>
+	</div>
+</lightbox>

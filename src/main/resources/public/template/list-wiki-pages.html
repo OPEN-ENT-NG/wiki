@@ -9,7 +9,7 @@
 						[[page.title]]
 						<em>[<i18n>wiki.homepage.label</i18n>]</em>
 					</a>
-					<a ng-if="page._id !== selectedWiki.index" ng-click="openSelectedPage(selectedWiki._id, page._id)">[[page.title]]</a>
+					<a ng-if="page._id !== selectedWiki.index" ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">[[page.title]]</a>
 				</li>
 			</alphabetical>
 			<li ng-if="selectedWiki.pages.all.length === 0">Ce wiki est vide !</li>

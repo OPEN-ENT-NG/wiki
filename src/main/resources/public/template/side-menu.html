@@ -6,7 +6,7 @@
 			</a>
 		</li>
 		<li ng-if="selectedWiki.index.length > 0">
-			<a ng-click="openSelectedPage(selectedWiki._id, selectedWiki.index)">
+			<a ng-href="#/view/[[selectedWiki._id]]/[[selectedWiki.index]]">
 				<i18n>wiki.homepage.label</i18n>
 			</a>
 		</li>
