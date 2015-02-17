@@ -548,6 +548,8 @@ Behaviours.register('wiki', {
             			
             			var scope = this;
             			var wiki = scope.wiki;
+            			wiki.processing = true;
+            			
             			var data = {
             				title : wiki.newPage.title,
             				content : wiki.newPage.content,
@@ -555,12 +557,49 @@ Behaviours.register('wiki', {
                 		};
 
             			wiki.createPage(data, function(createdPage){
+            				notify.info('wiki.page.has.been.created');
+            				wiki.processing = false;
             				getPage(scope, wiki, createdPage._id);
             	        });
             		},
             		
             		cancelCreatePage: function(){
                     	viewWiki(this, this.wiki);
+            		},
+            		
+            		editPage: function(){
+            			var scope = this;
+            			var wiki = scope.wiki;
+            			
+                    	wiki.editedPage = new Behaviours.applicationsBehaviours.wiki.namespace.Page(wiki.page);
+                    	wiki.editedPage.isIndex = (wiki.editedPage._id === wiki.index);
+                    	wiki.editedPage.wasIndex = (wiki.page._id === wiki.index);
+
+            			if(scope.display) {
+            				scope.display.action = 'editPage';
+            			}
+            			else {
+            				scope.display = {action: 'editPage'};
+            			}
+            		},
+            		
+            		cancelEditPage: function(){
+        				this.display.action = 'viewPage';
+            		},
+            		
+            		updatePage: function(){
+            			// TODO : vérifier si le titre de la page est vide ou s'il existe
+
+            			var scope = this;
+            			var wiki = scope.wiki;
+            			wiki.processing = true;
+
+            			wiki.page = wiki.editedPage;
+            			wiki.page.save(function(result){
+            				notify.info('wiki.page.has.been.updated');
+            				wiki.processing = false;
+            				getPage(scope, wiki, wiki.page._id);
+            			});
             		},
             		
             		deletePage: function(){

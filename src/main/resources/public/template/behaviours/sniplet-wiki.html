@@ -54,16 +54,16 @@
 
 					<div class="five cell">
 						<div class="display-buttons">
-							<resource-right name="deletePage" resource="wiki">
+							<resource-right name="deletePage" resource="wiki" class="cell right-magnet">
 								<button ng-click="display.showConfirmDeletePage = true;">
 									<i18n>wiki.page.delete</i18n>
 								</button>
 							</resource-right>
-<!-- 							<resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
-<!-- 								<button ng-click="editPage(wiki)"> -->
-<!-- 									<i18n>wiki.page.edit</i18n> -->
-<!-- 								</button> -->
-<!-- 							</resource-right> -->
+							<resource-right name="editPage" resource="wiki" class="cell right-magnet">
+								<button ng-click="editPage()">
+									<i18n>wiki.page.edit</i18n>
+								</button>
+							</resource-right>
 						</div>
 					</div>
 					
@@ -92,8 +92,37 @@
 			</div>
 	</div>
 	<div class="twelve cell">
-		<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
-		<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
+		<div ng-if="!wiki.processing">
+			<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+			<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
+		</div>
+		<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
+			<i18n>wiki.processing</i18n>
+		</button>
+	</div>
+</div>
+
+<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
+	<div class="twelve cell">
+		<div class="twelve cell">
+			<input type="text" ng-model="wiki.editedPage.title" class="twelve cell" />
+		</div>
+		<div class="twelve cell">
+			<input type="checkbox" ng-model="wiki.editedPage.isIndex"/>
+			<i18n>wiki.page.editform.set.as.index</i18n>
+		</div>
+		<div class="twelve cell">
+			<html-editor ng-model="wiki.editedPage.content"></html-editor>
+		</div>
+	</div>
+	<div class="twelve cell">
+		<div ng-if="!wiki.processing">
+			<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+			<button class="right-magnet cancel" ng-click="cancelEditPage()" translate content="wiki.page.editform.cancel"></button>
+		</div>
+		<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
+			<i18n>wiki.processing</i18n>
+		</button>
 	</div>
 </div>
 

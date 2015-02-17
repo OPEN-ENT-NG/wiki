@@ -89,5 +89,8 @@
     "wiki.title": "Wiki",
     "wiki.update": "Modifier",
     "wiki.version.restore": "Restaurer",
-    "wiki.your.comment.has.been.saved": "Votre commentaire a été enregistré."
+    "wiki.your.comment.has.been.saved": "Votre commentaire a été enregistré.",
+    "wiki.page.has.been.created" : "La page a été créée.",
+    "wiki.page.has.been.updated": "La page a été mise à jour.",
+    "wiki.processing": "Enregistrement en cours"
 }
