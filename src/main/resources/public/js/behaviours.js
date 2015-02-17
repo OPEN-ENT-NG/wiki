@@ -34,6 +34,27 @@ wikiNamespace.getDateAndTime = function(dateObject){
 	return moment(dateObject.$date).lang('fr').format('LLLL');
 };
 
+wikiNamespace.titleIsEmpty = function(title) {
+	return (!title || title.trim().length === 0);
+};
+
+wikiNamespace.pageTitleExists = function(pTitle, pWiki, pPageId) {
+	if(!pPageId) {
+		// when creating a page
+		return _.find(pWiki.pages.all, function(page){
+			return page.title.trim() === pTitle.trim();
+		});
+	}
+	else {
+		// when updating a page
+		return _.find(pWiki.pages.all, function(page){
+			return page.title.trim() === pTitle.trim() && 
+					page._id !== pPageId;
+		});
+	}
+};
+
+
 // Versions (i.e. revisions of a wiki page)
 wikiNamespace.Version.prototype.toJSON = function(){
 	return {
@@ -544,11 +565,20 @@ Behaviours.register('wiki', {
             		},
             		
             		createPage: function(){
-            			// TODO : vérifier si le titre de la page est vide ou s'il existe
-            			
             			var scope = this;
             			var wiki = scope.wiki;
             			wiki.processing = true;
+            			
+            			if (Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(wiki.newPage.title)){
+            				notify.error('wiki.form.title.is.empty');
+            				wiki.processing = false;
+            				return;
+            			}
+            			if(Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(wiki.newPage.title, wiki)){
+            				notify.error('wiki.page.form.titlealreadyexist.error');
+            				wiki.processing = false;
+            				return;
+            			}
             			
             			var data = {
             				title : wiki.newPage.title,
@@ -571,6 +601,8 @@ Behaviours.register('wiki', {
             			var scope = this;
             			var wiki = scope.wiki;
             			
+            			
+            			
                     	wiki.editedPage = new Behaviours.applicationsBehaviours.wiki.namespace.Page(wiki.page);
                     	wiki.editedPage.isIndex = (wiki.editedPage._id === wiki.index);
                     	wiki.editedPage.wasIndex = (wiki.page._id === wiki.index);
@@ -588,11 +620,20 @@ Behaviours.register('wiki', {
             		},
             		
             		updatePage: function(){
-            			// TODO : vérifier si le titre de la page est vide ou s'il existe
-
             			var scope = this;
             			var wiki = scope.wiki;
             			wiki.processing = true;
+            			
+            			if (Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(wiki.editedPage.title)){
+            				notify.error('wiki.form.title.is.empty');
+            				wiki.processing = false;
+            				return;
+            			}
+            			if(Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(wiki.editedPage.title, wiki)){
+            				notify.error('wiki.page.form.titlealreadyexist.error');
+            				wiki.processing = false;
+            				return;
+            			}
 
             			wiki.page = wiki.editedPage;
             			wiki.page.save(function(result){

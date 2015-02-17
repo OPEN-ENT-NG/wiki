@@ -156,7 +156,7 @@ function WikiController($scope, template, model, route, $location){
 	
 	// Functions to check field "title"
 	var titleIsEmpty = function(title) {
-		return (!title || title.trim().length === 0);
+		return Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(title);
 	};
 	
 	var wikiTitleExists = function(pTitle, pWikiId) {
@@ -178,19 +178,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 	
 	var pageTitleExists = function(pTitle, pWiki, pPageId) {
-		if(!pPageId) {
-			// when creating a page
-			return _.find(pWiki.pages.all, function(page){
-				return page.title.trim() === pTitle.trim();
-			});
-		}
-		else {
-			// when updating a page
-			return _.find(pWiki.pages.all, function(page){
-						return page.title.trim() === pTitle.trim() && 
-								page._id !== pPageId;
-			});
-		}
+		return Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(pTitle, pWiki, pPageId);
 	};
     
     
@@ -548,6 +536,8 @@ function WikiController($scope, template, model, route, $location){
 		});
 	};
 
+	
+	// Functions on versions (revisions) of a wiki page
 	$scope.listVersions = function(){
 		$scope.selectedWiki.page.versions.sync();
 		template.open('main', 'versions');
