@@ -1,0 +1,7 @@
+.wiki-sniplet {
+  margin-top: 20px;
+}
+
+.media .wiki-sniplet [contenteditable] {
+  position: relative;
+}
