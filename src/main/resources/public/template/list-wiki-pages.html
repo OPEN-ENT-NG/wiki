@@ -12,7 +12,7 @@
 					<a ng-if="page._id !== selectedWiki.index" ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">[[page.title]]</a>
 				</li>
 			</alphabetical>
-			<li ng-if="selectedWiki.pages.all.length === 0">Ce wiki est vide !</li>
+			<li ng-if="selectedWiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
 		</div>
 	</ul>
 </div>

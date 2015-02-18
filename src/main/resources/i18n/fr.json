@@ -92,5 +92,10 @@
     "wiki.your.comment.has.been.saved": "Votre commentaire a été enregistré.",
     "wiki.page.has.been.created" : "La page a été créée.",
     "wiki.page.has.been.updated": "La page a été mise à jour.",
-    "wiki.processing": "Enregistrement en cours"
+    "wiki.processing": "Enregistrement en cours",
+    "wiki.no.wiki.found": "Aucun wiki trouvé",
+    "wiki.select.a.wiki": "Sélectionnez un wiki",
+    "wiki.sniplet.title": "Wiki",
+    "wiki.sniplet.description": "Permet d'intégrer un wiki à une page de votre site ou de votre communauté",
+    "wiki.contains.no.page": "Le wiki ne contient aucune page"
 }

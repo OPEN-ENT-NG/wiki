@@ -34,6 +34,10 @@ wikiNamespace.getDateAndTime = function(dateObject){
 	return moment(dateObject.$date).lang('fr').format('LLLL');
 };
 
+wikiNamespace.getRelativeTimeFromDate = function(dateObject){
+	return moment(dateObject.$date).lang('fr').fromNow();
+};
+
 wikiNamespace.titleIsEmpty = function(title) {
 	return (!title || title.trim().length === 0);
 };
@@ -383,6 +387,20 @@ wikiNamespace.Wiki.prototype.listAllPages = function(callback) {
 			});
 };
 
+wikiNamespace.Wiki.prototype.setLastPages = function() {
+	var dateArray = _.chain(this.pages.all).pluck("modified").compact().value();
+	if(dateArray && dateArray.length > 0) {
+		// get the last 5 modified pages
+		this.lastPages = _.chain(this.pages.all)
+							.filter(function(page){ return page.modified && page.modified.$date; })
+							.sortBy(function(page){ return page.modified.$date; })
+							.last(5)
+							.reverse()
+							.value();
+	}
+};
+
+
 model.makeModels(wikiNamespace);
 
 
@@ -514,9 +532,9 @@ Behaviours.register('wiki', {
 	
     sniplets: {
         wiki: {
-        		// TODO i18n
-                title: 'Wiki', 
-                description: 'Permet d\'intégrer un wiki à votre site web ou à votre communauté', 
+        		// TODO i18n : lang.translate('wiki.title');
+                title: lang.translate('wiki.sniplet.title'), 
+                description: lang.translate('wiki.sniplet.description'), 
                 controller: {
                     // Load wikis that can be selected when initializing a wiki sniplet
                     initSource: function() {
@@ -539,17 +557,36 @@ Behaviours.register('wiki', {
                     getDateAndTime: function(dateObject) {
                     	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
                     },
+                    
+                    getRelativeTimeFromDate: function(dateObject) {
+                    	return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
+                    },
+                    
+                    toggleAccordion: function() {
+                    	if(!this.accordionOp) {
+                    		this.accordionOp = {value: 1};
+                    	}
+                    	else {
+                    		this.accordionOp.value = (this.accordionOp.value === 1) ? -1 : 1;
+                    	}
+                    },
                     	
                     openPage: function(pageId) {
                     	var scope = this;
                         var wiki = this.wiki;
                         getPage(scope, wiki, pageId);
+                        if(scope.accordionOp && scope.accordionOp.value === 1) {
+                            scope.accordionOp.value = -1; // close accordion
+                        }
                     },
                     
             		listPages: function(){
                     	var scope = this;
                     	var wiki = this.wiki;
                     	listPages(scope, wiki);
+                        if(scope.accordionOp && scope.accordionOp.value === 1) {
+                            scope.accordionOp.value = -1; // close accordion
+                        }
             		},
 
             		newPage: function(){
@@ -601,8 +638,6 @@ Behaviours.register('wiki', {
             			var scope = this;
             			var wiki = scope.wiki;
             			
-            			
-            			
                     	wiki.editedPage = new Behaviours.applicationsBehaviours.wiki.namespace.Page(wiki.page);
                     	wiki.editedPage.isIndex = (wiki.editedPage._id === wiki.index);
                     	wiki.editedPage.wasIndex = (wiki.page._id === wiki.index);
@@ -629,7 +664,7 @@ Behaviours.register('wiki', {
             				wiki.processing = false;
             				return;
             			}
-            			if(Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(wiki.editedPage.title, wiki)){
+            			if(Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(wiki.editedPage.title, wiki, wiki.editedPage._id)){
             				notify.error('wiki.page.form.titlealreadyexist.error');
             				wiki.processing = false;
             				return;
@@ -665,7 +700,7 @@ Behaviours.register('wiki', {
 // Functions used in sniplet's controller
 function viewWiki(scope, wiki){
 	wiki.pages.sync(function(){
-		// TODO : setLastPages(wiki);
+		wiki.setLastPages();
 		
         if(wiki.index && wiki.index.length > 0) {
             // Get index if it exists
@@ -701,7 +736,7 @@ function viewWiki(scope, wiki){
 
 function getPage(scope, wiki, pageId){
 	wiki.pages.sync(function(){
-		// TODO : setLastPages(wiki);
+		wiki.setLastPages();
 		
 		wiki.getPage(
 			pageId, 
@@ -721,10 +756,9 @@ function getPage(scope, wiki, pageId){
 	});	
 }
 
-
 function listPages(scope, wiki){
 	wiki.pages.sync(function(){
-		// TODO : setLastPages(wiki);
+		wiki.setLastPages();
 		if(scope.display) {
 			scope.display.action = 'pagesList';
 		}

@@ -1,10 +1,9 @@
-<!-- TODO : i18n -->
 <div ng-if="!wikis" class="twelve cell">
-	<span>Aucun wiki trouvé</span>
+	<i18n>wiki.no.wiki.found</i18n>
 </div>
 
 <div ng-if="wikis" class="twelve cell">
-	<h2>Sélectionnez un wiki</h2>
+	<h2><i18n>wiki.select.a.wiki</i18n></h2>
 	
 	<ul class="thought-out-actions">
 		<li ng-repeat="wiki in wikis">

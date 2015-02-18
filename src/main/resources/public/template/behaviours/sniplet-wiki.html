@@ -14,13 +14,40 @@
 	</div>
 </div>
 
-<!-- TODO : i18n -->
+
 <br>
-<div>
-	<a ng-click="listPages()">Liste des pages</a>
-	<br/>
-	<a ng-if="wiki.index && wiki.index.length > 0" ng-click="openPage(wiki.index)">Page d'accueil</a>
+<div class="wiki-sniplet accordions">
+	<article class="accordion" ng-class="{opened: accordionOp && accordionOp.value === 1}">
+		<a ng-click="toggleAccordion()">Naviguer au sein du wiki</a> <!-- TODO i18n -->
+		<div class="toggle">
+			<div class="content">
+				<div ng-if="display.action !== 'pagesList'">
+					<a ng-click="listPages()"><i18n>wiki.pagelist</i18n></a>
+					<br>
+				</div>
+				<div ng-if="wiki.index && wiki.index.length > 0 && (wiki.page === undefined || wiki.page._id !== wiki.index)">
+					<a ng-click="openPage(wiki.index)">
+						<i18n>wiki.homepage.label</i18n>
+					</a>
+					<br>
+				</div>
+				<div ng-if="wiki.lastPages" class="vertical">
+					<span>
+						<i18n>wiki.last.modified.pages</i18n>
+					</span>
+					<ul>
+						<li ng-repeat="page in wiki.lastPages">
+						   <a ng-click="openPage(page._id)">
+						           [[page.title]] 
+						   </a> - [[getRelativeTimeFromDate(page.modified)]]
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</article>
 </div>
+
 
 <div ng-if="display.action === 'pagesList'" class="twelve cell">
 	<ul class="twelve cell" >
@@ -34,7 +61,7 @@
 					<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
 				</li>
 <!-- 			</alphabetical> -->
-			<li ng-if="wiki.pages.all.length === 0">Ce wiki est vide !</li>
+			<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
 	</ul>
 </div>
 

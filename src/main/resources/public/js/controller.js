@@ -45,19 +45,6 @@ function WikiController($scope, template, model, route, $location){
 		});
 	};
 	
-	var setLastPages = function(wiki) {
-		var dateArray = _.chain(wiki.pages.all).pluck("modified").compact().value();
-		if(dateArray && dateArray.length > 0) {
-			// get the last 5 modified pages
-			wiki.lastPages = _.chain(wiki.pages.all)
-								.filter(function(page){ return page.modified && page.modified.$date; })
-								.sortBy(function(page){ return page.modified.$date; })
-								.last(5)
-								.reverse()
-								.value();
-		}
-	};
-	
 	$scope.isCreatingOrEditing = function(){
 		return (template.contains('main', 'create-wiki') || 
 				template.contains('main', 'edit-wiki') || 
@@ -105,7 +92,7 @@ function WikiController($scope, template, model, route, $location){
 			model.wikis.one('sync', function(){
 				$scope.selectedWiki = getWikiById(params.wikiId);
 				$scope.selectedWiki.pages.sync(function(){
-					setLastPages($scope.selectedWiki);
+					$scope.selectedWiki.setLastPages();
 					template.open('main', 'list-wiki-pages');
 				});
 			});
@@ -151,7 +138,7 @@ function WikiController($scope, template, model, route, $location){
     };
     
     $scope.getRelativeTimeFromDate = function(dateObject){
-    	return moment(dateObject.$date).lang('fr').fromNow();
+    	return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
     };
 	
 	// Functions to check field "title"
@@ -295,7 +282,7 @@ function WikiController($scope, template, model, route, $location){
 		}
 		else { // List pages
 			$scope.selectedWiki.pages.sync(function(){
-				setLastPages($scope.selectedWiki);
+				$scope.selectedWiki.setLastPages();
 				template.open('main', 'list-wiki-pages');
 				window.location.hash = '/view/' + $scope.selectedWiki._id;
 	        });
@@ -320,7 +307,7 @@ function WikiController($scope, template, model, route, $location){
     	}
     	
 		$scope.selectedWiki.pages.sync(function(){
-			setLastPages($scope.selectedWiki);
+			$scope.selectedWiki.setLastPages();
 			template.open('main', 'view-page');
 			$scope.selectedWiki.getPage(
 				pageId, 
@@ -373,7 +360,7 @@ function WikiController($scope, template, model, route, $location){
 			updateSearchBar();
 			
 			$scope.selectedWiki.pages.sync(function(){
-				setLastPages($scope.selectedWiki);
+				$scope.selectedWiki.setLastPages();
 		        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
 					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
 		        });
@@ -411,7 +398,7 @@ function WikiController($scope, template, model, route, $location){
 			updateSearchBar();
 
 			$scope.selectedWiki.pages.sync(function(){
-				setLastPages($scope.selectedWiki);
+				$scope.selectedWiki.setLastPages();
 				$scope.selectedWiki.getPage($scope.selectedWiki.page._id, function(returnedWiki){
 					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
 					$scope.$apply();
@@ -460,7 +447,7 @@ function WikiController($scope, template, model, route, $location){
 				updateSearchBar();
 				
 				$scope.selectedWiki.pages.sync(function(){
-					setLastPages($scope.selectedWiki);
+					$scope.selectedWiki.setLastPages();
 			        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
 						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
 			        });
