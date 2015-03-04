@@ -771,39 +771,53 @@ Behaviours.register('wiki', {
 
 // Functions used in sniplet's controller
 function viewWiki(scope, wiki){
-	wiki.pages.sync(function(){
-		wiki.setLastPages();
+	http().get('/wiki/list').done(function(pWikis) {
+		var returnedWiki = _.find(pWikis, function(pWiki) {
+			return pWiki._id = wiki._id;
+		});
 		
-        if(wiki.index && wiki.index.length > 0) {
-            // Get index if it exists
-			wiki.getPage(
-				wiki.index, 
-				function(result){ 
-					scope.wiki = wiki;
-					scope.wiki.behaviours('wiki');
-					if(scope.display) {
-						scope.display.action = 'viewPage';
-					}
-					else {
-    					scope.display = {action: 'viewPage'};
-					}
-					scope.$apply();
-				},
-				function(){ } // TODO : scope.notFound=true;
-    		);
-        }
-        else { // List pages
-        	scope.wiki = wiki;
-			scope.wiki.behaviours('wiki');
-			if(scope.display) {
-				scope.display.action = 'pagesList';
-			}
-			else {
-				scope.display = {action: 'pagesList'};
-			}
-			scope.$apply();
-        }
+		// Copy properties from object "returnedWiki" into object "wiki"
+		for (var prop in returnedWiki) {
+		    if (returnedWiki.hasOwnProperty(prop)) {
+		    	wiki[prop] = returnedWiki[prop];
+		    }
+		}
+		
+		wiki.pages.sync(function(){
+			wiki.setLastPages();
+			
+	        if(wiki.index && wiki.index.length > 0) {
+	            // Show index if it exists
+				wiki.getPage(
+					wiki.index, 
+					function(result){ 
+						scope.wiki = wiki;
+						scope.wiki.behaviours('wiki');
+						if(scope.display) {
+							scope.display.action = 'viewPage';
+						}
+						else {
+	    					scope.display = {action: 'viewPage'};
+						}
+						scope.$apply();
+					},
+					function(){ } // TODO : scope.notFound=true;
+	    		);
+	        }
+	        else { // Show pages list
+	        	scope.wiki = wiki;
+				scope.wiki.behaviours('wiki');
+				if(scope.display) {
+					scope.display.action = 'pagesList';
+				}
+				else {
+					scope.display = {action: 'pagesList'};
+				}
+				scope.$apply();
+	        }
+		});
 	});
+	
 }
 
 function getPage(scope, wiki, pageId){
