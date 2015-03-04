@@ -29,7 +29,11 @@ var wikiNamespace = {
 	}
 };
 
-// Utility functions shared by wiki sniplet and wiki application
+// Functions shared by wiki sniplet and wiki application
+wikiNamespace.formatDate = function(dateObject){
+	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY H:mm');
+};
+
 wikiNamespace.getDateAndTime = function(dateObject){
 	return moment(dateObject.$date).lang('fr').format('LLLL');
 };
@@ -56,6 +60,49 @@ wikiNamespace.pageTitleExists = function(pTitle, pWiki, pPageId) {
 					page._id !== pPageId;
 		});
 	}
+};
+
+wikiNamespace.showCommentForm = function(wiki) {
+	wiki.page.newComment = "";
+	wiki.page.showCommentForm = true;
+};
+
+wikiNamespace.hideCommentForm = function(wiki) {
+	wiki.page.showCommentForm = false;
+};
+
+wikiNamespace.switchCommentsDisplay = function(wiki) {
+	if(!wiki.page.showComments) {
+		wikiNamespace.showCommentForm(wiki);
+		wiki.page.showComments = true;
+	}
+	else {
+		wikiNamespace.hideCommentForm(wiki);
+		wiki.page.showComments = false;
+	}
+};
+
+wikiNamespace.commentPage = function(wiki, scope) {
+	wiki.page.comment(wiki.page.newComment, function() {
+		wiki.getPage(
+			wiki.page._id, 
+			function(result){
+				wiki.page.showComments = true;
+				scope.showCommentForm();
+				scope.$apply();
+				notify.info('wiki.your.comment.has.been.saved');
+			},
+			function(){
+				scope.notFound = true;
+			}
+		);
+	});
+};
+
+wikiNamespace.removeComment = function(wiki, commentId, commentIndex, scope) {
+	wiki.page.deleteComment(commentId, commentIndex, function(){
+		scope.$apply();
+	});
 };
 
 
@@ -315,7 +362,7 @@ wikiNamespace.Wiki.prototype.getPage = function(pageId, callback, errorCallback)
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			wiki.pages[0].wiki_id = this._id;
-			this.page = new Page( wiki.pages[0] );
+			this.page = new Behaviours.applicationsBehaviours.wiki.namespace.Page( wiki.pages[0] );
 			this.title = wiki.title;
 			this.owner = wiki.owner;
 			callback(wiki);
@@ -532,7 +579,6 @@ Behaviours.register('wiki', {
 	
     sniplets: {
         wiki: {
-        		// TODO i18n : lang.translate('wiki.title');
                 title: lang.translate('wiki.sniplet.title'), 
                 description: lang.translate('wiki.sniplet.description'), 
                 controller: {
@@ -546,12 +592,22 @@ Behaviours.register('wiki', {
                     
                     // Get data to display selected wiki
                     init: function() {
-                    	console.log('Wiki - init function');
                     	var scope = this;
-                    	console.log(scope.source);
                     	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
-                    	console.log(wiki);
                     	viewWiki(scope, wiki);
+                    },
+                    
+                    /* Function used by application "Pages", to copy rights from "Pages" to current sniplet. 
+                     * It returns an array containing all resources' ids which are concerned by the rights copy.
+                     * For sniplet "wiki", it simply returns the wikiId */
+                    getReferencedResources: function(source){
+                        if(source._id){
+                            return [source._id];
+                        }
+                    },
+                    
+                    formatDate: function(dateObject){
+                    	return Behaviours.applicationsBehaviours.wiki.namespace.formatDate(dateObject);
                     },
                     
                     getDateAndTime: function(dateObject) {
@@ -571,6 +627,7 @@ Behaviours.register('wiki', {
                     	}
                     },
                     	
+                    // Functions on wiki pages
                     openPage: function(pageId) {
                     	var scope = this;
                         var wiki = this.wiki;
@@ -686,11 +743,26 @@ Behaviours.register('wiki', {
                     	});
             		},
             		
-                    getReferencedResources: function(source){
-                        if(source._id){
-                            return [source._id];
-                        }
-                    }
+            		// Functions on comments
+            		showCommentForm: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.showCommentForm(this.wiki);
+            		},
+            		
+            		hideCommentForm: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.hideCommentForm(this.wiki);
+            		},
+
+            		switchCommentsDisplay: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.switchCommentsDisplay(this.wiki);
+            		},
+
+            		commentPage: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.commentPage(this.wiki, this);
+            		},
+            		
+            		removeComment: function(commentId, commentIndex) {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.removeComment(this.wiki, commentId, commentIndex, this);
+            		}
                 }
         }
     }

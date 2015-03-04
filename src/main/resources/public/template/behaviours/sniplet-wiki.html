@@ -1,13 +1,31 @@
 <link href="/wiki/public/css/additional.css" rel="stylesheet">
 
 <div class="twelve cell">
-	<div class="nine cell">
+	<div class="twelve cell">
 		<h2>
 			<i class="wiki"></i>
 			<span>[[wiki.title]]</span>
 		</h2>
 	</div>
-	<div class="contextual-buttons three cell">
+	<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
+<!-- TODO <resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
+			<drop-down-button class="cell right-magnet">
+				<label class="opener"><i18n>plus</i18n></label>
+				<opts>
+					<resource-right name="deletePage" resource="wiki">
+						<li ng-click="display.showConfirmDeletePage = true;">
+							<i18n>wiki.page.delete</i18n>
+						</li>
+					</resource-right>
+				</opts>
+			</drop-down-button>
+<!-- </resource-right> -->
+
+		<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
+			<button ng-click="editPage()">
+				<i18n>wiki.page.edit</i18n>
+			</button>
+		</resource-right>
 		<resource-right name="createPage" resource="wiki" class="cell right-magnet">
 			<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="wiki"></button>
 		</resource-right>
@@ -18,7 +36,7 @@
 <br>
 <div class="wiki-sniplet accordions">
 	<article class="accordion" ng-class="{opened: accordionOp && accordionOp.value === 1}">
-		<a ng-click="toggleAccordion()">Naviguer au sein du wiki</a> <!-- TODO i18n -->
+		<a ng-click="toggleAccordion()">&rsaquo;</a>
 		<div class="toggle">
 			<div class="content">
 				<div ng-if="display.action !== 'pagesList'">
@@ -70,36 +88,67 @@
 		<article class="twelve cell">
 			<div class="twelve cell">
 				<div class="twelve cell">
-					<div class="seven cell">
-						<h2>[[wiki.page.title]]</h2>
-						<em ng-if="wiki.page.modified">
-							<i18n>wiki.last.modification.by</i18n>
-							<a href="/userbook/annuaire#/[[wiki.page.author]]">[[wiki.page.authorName]]</a>
-							<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
-						</em>
-					</div>
-
-					<div class="five cell">
-						<div class="display-buttons">
-							<resource-right name="deletePage" resource="wiki" class="cell right-magnet">
-								<button ng-click="display.showConfirmDeletePage = true;">
-									<i18n>wiki.page.delete</i18n>
-								</button>
-							</resource-right>
-							<resource-right name="editPage" resource="wiki" class="cell right-magnet">
-								<button ng-click="editPage()">
-									<i18n>wiki.page.edit</i18n>
-								</button>
-							</resource-right>
-						</div>
-					</div>
-					
+					<h2>[[wiki.page.title]]</h2>
+					<em ng-if="wiki.page.modified">
+						<i18n>wiki.last.modification.by</i18n>
+						<a href="/userbook/annuaire#/[[wiki.page.author]]">[[wiki.page.authorName]]</a>
+						<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
+					</em>
 				</div>
 				<div class="twelve cell">
 					<hr />
 				</div>
 
 				<div bind-html="wiki.page.content" />
+				
+				<!-- comments -->
+				<div>
+					<div class="twelve cell content-line">
+						<div class="right-magnet">
+							<resource-right name="comment" resource="wiki">
+								<a ng-click="showCommentForm()" ng-if="!wiki.page.comments || wiki.page.comments.length === 0" class="medium-text right-magnet">
+									<i18n>wiki.comment.add</i18n>
+								</a>
+							</resource-right>
+							<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
+							<span ng-if="!wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
+								<i18n>wiki.comment.display</i18n> ([[wiki.page.comments.length]])
+							</span>
+							<span ng-if="wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
+								<i18n>wiki.comment.hide</i18n> ([[wiki.page.comments.length]])
+							</span>
+							</a>
+						</div>
+						<div class="clear"></div>
+					</div>
+	
+					<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
+						<resource-right name="comment" resource="wiki">
+							<form>
+								<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
+								<div>
+									<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
+								</div>
+								<div class="clear"></div>
+							</form>
+						</resource-right>
+					</div>
+	
+					<div class="twelve cell" ng-if="wiki.page.showComments">
+						<div class="row" ng-repeat="comment in wiki.page.comments">
+							<article class="comment reduce-block-eight">
+								<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
+								<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
+								<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
+								   ng-if="(comment.author === me.userId || wiki.myRights.deleteWiki)">
+									<i18n>wiki.comment.delete</i18n>
+								</a>
+								<p>[[comment.comment]]</p>
+							</article>
+						</div>
+					</div>
+				</div>
+				
 			</div>
 		</article>
 	</div>

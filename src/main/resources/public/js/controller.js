@@ -130,7 +130,7 @@ function WikiController($scope, template, model, route, $location){
 	
 	// Date functions
     $scope.formatDate = function(dateObject){
-    	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY H:mm');
+    	return Behaviours.applicationsBehaviours.wiki.namespace.formatDate(dateObject);
     };
     
     $scope.getDateAndTime = function(dateObject) {
@@ -481,46 +481,23 @@ function WikiController($scope, template, model, route, $location){
 	
 	
 	$scope.showCommentForm = function() {
-		$scope.selectedWiki.page.newComment = "";
-		$scope.selectedWiki.page.showCommentForm = true;
+		return Behaviours.applicationsBehaviours.wiki.namespace.showCommentForm($scope.selectedWiki);
 	};
 	
 	$scope.hideCommentForm = function() {
-		$scope.selectedWiki.page.showCommentForm = false;
+		return Behaviours.applicationsBehaviours.wiki.namespace.hideCommentForm($scope.selectedWiki);
 	};
 	
 	$scope.switchCommentsDisplay = function() {
-		if(!$scope.selectedWiki.page.showComments) {
-			$scope.showCommentForm();
-			$scope.selectedWiki.page.showComments = true;
-		}
-		else {
-			$scope.hideCommentForm();
-			$scope.selectedWiki.page.showComments = false;
-		}
+		return Behaviours.applicationsBehaviours.wiki.namespace.switchCommentsDisplay($scope.selectedWiki);
 	};
 	
 	$scope.commentPage = function() {
-		$scope.selectedWiki.page.comment($scope.selectedWiki.page.newComment, function() {
-			$scope.selectedWiki.getPage(
-				$scope.selectedWiki.page._id, 
-				function(result){
-					$scope.selectedWiki.page.showComments = true;
-					$scope.showCommentForm();
-					$scope.$apply();
-					notify.info('wiki.your.comment.has.been.saved');
-				},
-				function(){
-					$scope.notFound = true;
-				}
-			);
-		});
+		return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
 	};
 	
 	$scope.removeComment = function(commentId, commentIndex) {
-		$scope.selectedWiki.page.deleteComment(commentId, commentIndex, function(){
-			$scope.$apply();
-		});
+		return Behaviours.applicationsBehaviours.wiki.namespace.removeComment($scope.selectedWiki, commentId, commentIndex, $scope);
 	};
 
 	
