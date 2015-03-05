@@ -71,9 +71,7 @@ function WikiController($scope, template, model, route, $location){
 
 
 	var updateSearchBar = function() {
-		$scope.wiki.listAllPages(function(pagesArray) {
-			$scope.allpageslist = pagesArray;
-		});
+		return Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar($scope);
 	};
 	updateSearchBar();
 

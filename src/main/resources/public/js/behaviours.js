@@ -62,6 +62,12 @@ wikiNamespace.pageTitleExists = function(pTitle, pWiki, pPageId) {
 	}
 };
 
+wikiNamespace.updateSearchBar = function(scope) {
+	scope.wiki.listAllPages(function(pagesArray) {
+		scope.allpageslist = pagesArray;
+	});
+};
+
 wikiNamespace.showCommentForm = function(wiki) {
 	wiki.page.newComment = "";
 	wiki.page.showCommentForm = true;
@@ -594,7 +600,9 @@ Behaviours.register('wiki', {
                     init: function() {
                     	var scope = this;
                     	var wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki(scope.source);
-                    	viewWiki(scope, wiki);
+                    	viewWiki(scope, wiki, function() {
+                        	Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+                    	});
                     },
                     
                     /* Function used by application "Pages", to copy rights from "Pages" to current sniplet. 
@@ -628,13 +636,12 @@ Behaviours.register('wiki', {
                     },
                     	
                     // Functions on wiki pages
+                    openPageFromSearchbar: function(wikiId, pageId) {
+                    	openPageFromSearchbar(wikiId, pageId, this);
+                    },
+                    
                     openPage: function(pageId) {
-                    	var scope = this;
-                        var wiki = this.wiki;
-                        getPage(scope, wiki, pageId);
-                        if(scope.accordionOp && scope.accordionOp.value === 1) {
-                            scope.accordionOp.value = -1; // close accordion
-                        }
+                        openPage(pageId, this);
                     },
                     
             		listPages: function(){
@@ -684,6 +691,7 @@ Behaviours.register('wiki', {
             				notify.info('wiki.page.has.been.created');
             				wiki.processing = false;
             				getPage(scope, wiki, createdPage._id);
+            				Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
             	        });
             		},
             		
@@ -732,6 +740,7 @@ Behaviours.register('wiki', {
             				notify.info('wiki.page.has.been.updated');
             				wiki.processing = false;
             				getPage(scope, wiki, wiki.page._id);
+            				Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
             			});
             		},
             		
@@ -739,7 +748,8 @@ Behaviours.register('wiki', {
                     	var scope = this;
                     	var wiki = scope.wiki;
                     	wiki.deletePage(wiki.page._id, function() {
-                        	listPages(scope, wiki);	
+                        	listPages(scope, wiki);
+                        	Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
                     	});
             		},
             		
@@ -768,12 +778,15 @@ Behaviours.register('wiki', {
     }
 });
 
+// Load workfow rights, so that they can be used in wiki sniplet and in wiki application
+model.me.workflow.load(['wiki']);
+
 
 // Functions used in sniplet's controller
-function viewWiki(scope, wiki){
+function viewWiki(scope, wiki, callback){
 	http().get('/wiki/list').done(function(pWikis) {
 		var returnedWiki = _.find(pWikis, function(pWiki) {
-			return pWiki._id = wiki._id;
+			return pWiki._id === wiki._id;
 		});
 		
 		// Copy properties from object "returnedWiki" into object "wiki"
@@ -800,6 +813,10 @@ function viewWiki(scope, wiki){
 	    					scope.display = {action: 'viewPage'};
 						}
 						scope.$apply();
+						
+						if(typeof callback === 'function'){
+							callback();
+						}
 					},
 					function(){ } // TODO : scope.notFound=true;
 	    		);
@@ -814,10 +831,34 @@ function viewWiki(scope, wiki){
 					scope.display = {action: 'pagesList'};
 				}
 				scope.$apply();
+				
+				if(typeof callback === 'function'){
+					callback();
+				}
 	        }
 		});
 	});
 	
+}
+
+function openPageFromSearchbar(wikiId, pageId, scope) {
+	var currentWikiId = scope.wiki._id;
+	console.log('wikiId: '+ wikiId);
+	console.log('currentWikiId: '+ currentWikiId);
+	
+	if(currentWikiId === wikiId) {
+		openPage(pageId, scope);
+	}
+	else { // Open page in application Wiki if the page does not belong to current wiki
+		window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
+	}
+}
+
+function openPage(pageId, scope) {
+    getPage(scope, scope.wiki, pageId);
+    if(scope.accordionOp && scope.accordionOp.value === 1) {
+        scope.accordionOp.value = -1; // close accordion
+    }
 }
 
 function getPage(scope, wiki, pageId){
