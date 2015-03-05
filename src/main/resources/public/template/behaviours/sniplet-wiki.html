@@ -12,11 +12,16 @@
 			<drop-down-button class="cell right-magnet">
 				<label class="opener"><i18n>plus</i18n></label>
 				<opts>
-					<resource-right name="deletePage" resource="wiki">
-						<li ng-click="display.showConfirmDeletePage = true;">
-							<i18n>wiki.page.delete</i18n>
+					<div ng-if="display.action === 'viewPage'">
+						<resource-right name="deletePage" resource="wiki">
+							<li ng-click="display.showConfirmDeletePage = true;">
+								<i18n>wiki.page.delete</i18n>
+							</li>
+						</resource-right>
+						<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
+							<i18n>wiki.page.duplicate</i18n>
 						</li>
-					</resource-right>
+					</div>
 				</opts>
 			</drop-down-button>
 <!-- </resource-right> -->
@@ -208,6 +213,35 @@
 	</div>
 </div>
 
+<div ng-if="display.action === 'duplicatePage'" class="wiki-sniplet">
+	<div class="twelve cell">
+		<h2>
+			<i18n>wiki.page.duplicateform.duplicate.page</i18n>
+			<em>[[wiki.page.title]]</em>
+			<i18n>wiki.page.duplicateform.in.a.wiki.of.your.choice</i18n>
+		</h2>
+	</div>
+	<hr class="twelve cell"/>
+	<form class="twelve cell">
+		<div class="twelve cell">
+			<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell" 
+			i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
+		</div>
+		<hr class="twelve cell"/>
+		<div class="twelve cell">
+			<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId" 
+			ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)" 
+			ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
+			</select>
+		</div>
+		<hr class="twelve cell"/>
+		
+		<div class="twelve cell">
+			<button class="right-magnet" ng-click="duplicatePage()" translate content="wiki.page.duplicateform.save"></button>
+			<button class="right-magnet cancel" ng-click="cancelDuplicatePage()" translate content="wiki.page.duplicateform.cancel"></button>
+		</div>
+	</form>
+</div>
 
 <!-- Lightbox to confirm page deletion -->
 <lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">

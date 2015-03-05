@@ -39,7 +39,7 @@ function WikiController($scope, template, model, route, $location){
 	$scope.notFound = false;
 	$scope.me = model.me;
 	
-	var getWikiById = function(pWikiId) {
+	$scope.getWikiById = function(pWikiId) {
 		return _.find(model.wikis.all, function(wiki){
 			return wiki._id === pWikiId;
 		});
@@ -54,7 +54,7 @@ function WikiController($scope, template, model, route, $location){
 	
 	// Functions to check rights
 	$scope.canCreatePage = function(wiki){
-	    return wiki.myRights.createPage !== undefined;
+	    return Behaviours.applicationsBehaviours.wiki.namespace.canCreatePage(wiki);
 	};
 	
 	$scope.canCreatePageInAtLeastOneWiki = function(){
@@ -88,7 +88,7 @@ function WikiController($scope, template, model, route, $location){
 	    },
 		listPages: function(params){
 			model.wikis.one('sync', function(){
-				$scope.selectedWiki = getWikiById(params.wikiId);
+				$scope.selectedWiki = $scope.getWikiById(params.wikiId);
 				$scope.selectedWiki.pages.sync(function(){
 					$scope.selectedWiki.setLastPages();
 					template.open('main', 'list-wiki-pages');
@@ -269,7 +269,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 
 	$scope.openSelectedWiki = function(wikiId){
-		$scope.selectedWiki = getWikiById(wikiId);
+		$scope.selectedWiki = $scope.getWikiById(wikiId);
     	if(!$scope.selectedWiki) {
     		$scope.notFound = true;
     		return;
@@ -298,7 +298,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 	
 	$scope.openSelectedPage = function(wikiId, pageId){
-    	$scope.selectedWiki = getWikiById(wikiId);
+    	$scope.selectedWiki = $scope.getWikiById(wikiId);
     	if(!$scope.selectedWiki) {
     		$scope.notFound = true;
     		return;
@@ -325,7 +325,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 	
 	$scope.cancelCreatePage = function(pWiki){
-		$scope.selectedWiki = getWikiById(pWiki._id);
+		$scope.selectedWiki = $scope.getWikiById(pWiki._id);
 		if($scope.selectedWiki.index && pWiki.page && pWiki.index === pWiki.page._id) {
 			// Open index if it exists
 			template.open('main', 'view-page');
@@ -414,8 +414,8 @@ function WikiController($scope, template, model, route, $location){
 	};
 
 	$scope.showDuplicatePageForm = function() {
-		$scope.duplicate = new Object({});
-		$scope.duplicate.page = new Page({
+		$scope.wikiDuplicate = new Object({});
+		$scope.wikiDuplicate.page = new Page({
 			title : '',
 			content : $scope.selectedWiki.page.content,
 			isIndex : false
@@ -424,53 +424,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 	
 	$scope.duplicatePage = function() {
-		if (titleIsEmpty($scope.duplicate.page.title)){
-			notify.error('wiki.form.title.is.empty');
-			return;
-		}
-		
-		var targetWiki;
-		var callback;
-		
-		if($scope.duplicate.targetWikiId === $scope.selectedWiki._id) {
-			// When target wiki is current wiki
-			targetWiki = $scope.selectedWiki;
-			
-			if(pageTitleExists($scope.duplicate.page.title, targetWiki)){
-				notify.error('wiki.page.form.titlealreadyexist.error');
-				return;
-			}
-			
-			callback = function(result){
-				updateSearchBar();
-				
-				$scope.selectedWiki.pages.sync(function(){
-					$scope.selectedWiki.setLastPages();
-			        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
-						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-			        });
-				});
-	        };
-	        
-	        targetWiki.createPage($scope.duplicate.page, callback);
-		}
-		else { 	// When target wiki is another wiki
-			targetWiki = getWikiById($scope.duplicate.targetWikiId);
-			
-			targetWiki.pages.sync(function(){
-				if(pageTitleExists($scope.duplicate.page.title, targetWiki)){
-					notify.error('wiki.page.form.titlealreadyexist.error');
-					return;
-				}
-				
-				callback = function(result){
-					updateSearchBar();
-					$scope.openSelectedPage(targetWiki._id, result._id);
-				};
-				
-				targetWiki.createPage($scope.duplicate.page, callback);
-	        });
-		}
+		return Behaviours.applicationsBehaviours.wiki.namespace.duplicatePage($scope, $scope.selectedWiki);
 	};
 	
 	$scope.cancelDuplicatePage = function() {
