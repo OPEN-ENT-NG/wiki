@@ -467,8 +467,9 @@ wikiNamespace.Wiki.prototype.deletePage = function(pageId, callback) {
 
 wikiNamespace.Wiki.prototype.createWiki = function(data, callback) {
 	http().postJson('/wiki', data).done(function(result){
+		this._id = result._id;
 		callback(result);
-	});
+	}.bind(this));
 };
 
 wikiNamespace.Wiki.prototype.updateWiki = function(data, callback) {
@@ -661,10 +662,42 @@ Behaviours.register('wiki', {
                 controller: {
                     // Load wikis that can be selected when initializing a wiki sniplet
                     initSource: function() {
+                    	this.wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki();
                         http().get('/wiki/list').done(function(pWikis) {
                                 this.wikis = pWikis;
                                 this.$apply('wikis');
                         }.bind(this));
+                    },
+                    
+                    createWiki: function() {
+                    	var scope = this;
+                    	
+                    	if(Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(scope.wiki.title)) {
+                    		notify.error('wiki.form.title.is.empty');
+                    		return;
+                    	}
+                    	
+                    	if(scope.snipletResource){
+                    		scope.wiki.thumbnail = scope.snipletResource.icon || '';
+                    	}
+                    	
+                    	scope.wiki.createWiki(scope.wiki, function(createdWiki){
+                    		scope.snipletResource.synchronizeRights();
+                    		
+                    		// Create a default homepage
+                			var page = { // TODO i18n
+                				isIndex: true,
+                				title: 'Page d\'accueil de votre wiki',
+                				content: '<p>Vous pouvez créer des pages en cliquant sur le bouton "Nouvelle page" ' +
+                						'ci-dessus, ou en accédant directement à l\'application Wiki. Vos visiteurs pourront ' +
+                						'suivre votre wiki depuis votre site web ou depuis l\'application Wiki, ' +
+                						'ils seront notifiés lorsque votre wiki sera mis à jour.</p>'
+                    		};
+
+                			scope.wiki.createPage(page, function(createdPage){
+                				scope.setSnipletSource({_id: createdWiki._id});
+                			});
+                		});
                     },
                     
                     // Get data to display selected wiki
