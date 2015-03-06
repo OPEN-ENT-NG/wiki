@@ -116,7 +116,6 @@ wikiNamespace.canCreatePage = function(wiki){
 };
 
 wikiNamespace.duplicatePage = function(scope, currentWiki) {
-	console.log('duplicatePage');
 	if (wikiNamespace.titleIsEmpty(scope.wikiDuplicate.page.title)){
 		notify.error('wiki.form.title.is.empty');
 		return;
@@ -727,8 +726,8 @@ Behaviours.register('wiki', {
             		newPage: function(){
             			var scope = this;
             			scope.wiki.newPage = new Behaviours.applicationsBehaviours.wiki.namespace.Page();
-            			
     					if(scope.display) {
+    						scope.display.previousAction = scope.display.action;
     						scope.display.action = 'createPage';
     					}
     					else {
@@ -767,7 +766,7 @@ Behaviours.register('wiki', {
             		},
             		
             		cancelCreatePage: function(){
-                    	viewWiki(this, this.wiki._id); // TODO : à revoir
+            			this.display.action = this.display.previousAction;
             		},
             		
             		editPage: function(){
@@ -826,9 +825,8 @@ Behaviours.register('wiki', {
             		
             		// Duplicate pages
             		showDuplicatePageForm: function() {
-            			console.log('showDuplicatePageForm');
             			var scope = this;
-            			scope.wikiDuplicate = new Object();
+            			scope.wikiDuplicate = {};
             			if(scope.display) {
             				scope.display.action = 'duplicatePage';
             			}
@@ -848,7 +846,6 @@ Behaviours.register('wiki', {
             		},
             		
             		duplicatePage: function() {
-            			console.log('duplicatePage - sniplet controller');
             			var scope = this;
             			var title = (scope.wikiDuplicate.page) ? scope.wikiDuplicate.page.title : '';
             			
@@ -921,6 +918,17 @@ function viewWiki(scope, wikiId, callback){
 			return pWiki._id === wikiId;
 		});
 		
+		// wiki not found
+		if(!wiki) {
+			if(scope.display) {
+				scope.display.action = 'wikiNotFound';
+			}
+			else {
+				scope.display = {action: 'wikiNotFound'};
+			}
+			return;
+		}
+		
 		wiki.pages.sync(function(){
 			wiki.setLastPages();
 			
@@ -942,7 +950,15 @@ function viewWiki(scope, wikiId, callback){
 							callback();
 						}
 					},
-					function(){ } // TODO : scope.notFound=true;
+					function(){
+						if(scope.display) {
+							scope.display.action = 'pageNotFound';
+						}
+						else {
+							scope.display = {action: 'pageNotFound'};
+						}
+						scope.$apply();
+					}
 	    		);
 	        }
 	        else { // Show pages list
@@ -998,7 +1014,15 @@ function getPage(scope, wiki, pageId){
 				scope.wiki = wiki;
 				scope.$apply();
 			},
-			function(){ } // TODO : scope.notFound=true;
+			function(){
+				if(scope.display) {
+					scope.display.action = 'pageNotFound';
+				}
+				else {
+					scope.display = {action: 'pageNotFound'};
+				}
+				scope.$apply();
+			}
 		);
 
 	});	

@@ -1,247 +1,272 @@
 <link href="/wiki/public/css/additional.css" rel="stylesheet">
 
-<div class="twelve cell">
-	<div class="twelve cell">
-		<h2>
-			<i class="wiki"></i>
-			<span>[[wiki.title]]</span>
-		</h2>
-	</div>
-	<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
-<!-- TODO <resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
-			<drop-down-button class="cell right-magnet">
-				<label class="opener"><i18n>plus</i18n></label>
-				<opts>
-					<div ng-if="display.action === 'viewPage'">
-						<resource-right name="deletePage" resource="wiki">
-							<li ng-click="display.showConfirmDeletePage = true;">
-								<i18n>wiki.page.delete</i18n>
-							</li>
-						</resource-right>
-						<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
-							<i18n>wiki.page.duplicate</i18n>
-						</li>
-					</div>
-				</opts>
-			</drop-down-button>
-<!-- </resource-right> -->
-
-		<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
-			<button ng-click="editPage()">
-				<i18n>wiki.page.edit</i18n>
-			</button>
-		</resource-right>
-		<resource-right name="createPage" resource="wiki" class="cell right-magnet">
-			<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="wiki"></button>
-		</resource-right>
-	</div>
-</div>
-
-
-<br>
-<div class="wiki-sniplet accordions">
-	<article class="accordion" ng-class="{opened: accordionOp && accordionOp.value === 1}">
-		<a ng-click="toggleAccordion()">&rsaquo;</a>
-		<div class="toggle">
-			<div class="content">
-				<div ng-if="wiki.lastPages" class="vertical">
-					<i18n>wiki.last.modified.pages</i18n>
-					<ul>
-						<li ng-repeat="page in wiki.lastPages">
-						   <a ng-click="openPage(page._id)">[[page.title]]</a> 
-						    - [[getRelativeTimeFromDate(page.modified)]]
-						</li>
-					</ul>
-				</div>
-				<div>
-					<i18n>wiki.pagelist</i18n>
-					<div>
-						<!-- search bar -->
-						<autocomplete
-							workflow="wiki.listAllPages"
-							options="allpageslist"
-							ng-model="selectedPage"
-							ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
-						</autocomplete>
-					</div>
-					<ul>
-						<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
-							<a ng-click="openPage(page._id)">[[page.title]] 
-								<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
-							</a>
-						</li>
-					</ul>
-				</div>
+<div ng-if="display.action === 'wikiNotFound'" class="twelve cell">
+	<default-styles>
+		<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+		<article>
+			<div class="row">
+				<i18n>wiki.notfound.or.unauthorized</i18n>
 			</div>
+		</article>
+	</default-styles>
+</div>
+
+<div ng-if="display.action !== 'wikiNotFound'" class="twelve cell">
+	<div class="twelve cell">
+		<div class="twelve cell">
+			<h2>
+				<i class="wiki"></i>
+				<span>[[wiki.title]]</span>
+			</h2>
 		</div>
-	</article>
-</div>
-
-
-<div ng-if="display.action === 'pagesList'" class="twelve cell">
-	<ul class="twelve cell" >
-<!-- TODO : adapt CSS, so that it properly displays directive 'alphabetical' -->
-<!-- 			<alphabetical list="page in wiki.pages.all" class="twelve cell"> -->
-				<li ng-repeat="page in wiki.pages.all">
-					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
-						[[page.title]]
-						<em>[<i18n>wiki.homepage.label</i18n>]</em>
-					</a>
-					<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
-				</li>
-<!-- 			</alphabetical> -->
-			<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
-	</ul>
-</div>
-
-<div ng-if="display.action === 'viewPage' && wiki.page !== undefined" class="twelve cell">
-	<div>
-		<article class="twelve cell">
-			<div class="twelve cell">
-				<div class="twelve cell">
-					<h2>[[wiki.page.title]]</h2>
-					<em ng-if="wiki.page.modified">
-						<i18n>wiki.last.modification.by</i18n>
-						<a href="/userbook/annuaire#/[[wiki.page.author]]">[[wiki.page.authorName]]</a>
-						<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
-					</em>
-				</div>
-				<div class="twelve cell">
-					<hr />
-				</div>
-
-				<div bind-html="wiki.page.content" />
-				
-				<!-- comments -->
-				<div>
-					<div class="twelve cell content-line">
-						<div class="right-magnet">
-							<resource-right name="comment" resource="wiki">
-								<a ng-click="showCommentForm()" ng-if="!wiki.page.comments || wiki.page.comments.length === 0" class="medium-text right-magnet">
-									<i18n>wiki.comment.add</i18n>
-								</a>
+		<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
+	<!-- TODO <resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
+				<drop-down-button class="cell right-magnet">
+					<label class="opener"><i18n>plus</i18n></label>
+					<opts>
+						<div ng-if="display.action === 'viewPage'">
+							<resource-right name="deletePage" resource="wiki">
+								<li ng-click="display.showConfirmDeletePage = true;">
+									<i18n>wiki.page.delete</i18n>
+								</li>
 							</resource-right>
-							<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
-							<span ng-if="!wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
-								<i18n>wiki.comment.display</i18n> ([[wiki.page.comments.length]])
-							</span>
-							<span ng-if="wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
-								<i18n>wiki.comment.hide</i18n> ([[wiki.page.comments.length]])
-							</span>
-							</a>
+							<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
+								<i18n>wiki.page.duplicate</i18n>
+							</li>
 						</div>
-						<div class="clear"></div>
-					</div>
+					</opts>
+				</drop-down-button>
+	<!-- </resource-right> -->
 	
-					<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
-						<resource-right name="comment" resource="wiki">
-							<form>
-								<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
-								<div>
-									<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
-								</div>
-								<div class="clear"></div>
-							</form>
-						</resource-right>
-					</div>
+			<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
+				<button ng-click="editPage()">
+					<i18n>wiki.page.edit</i18n>
+				</button>
+			</resource-right>
+			<resource-right name="createPage" resource="wiki" class="cell right-magnet">
+				<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="wiki"></button>
+			</resource-right>
+		</div>
+	</div>
 	
-					<div class="twelve cell" ng-if="wiki.page.showComments">
-						<div class="row" ng-repeat="comment in wiki.page.comments">
-							<article class="comment reduce-block-eight">
-								<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
-								<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
-								<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
-								   ng-if="(comment.author === me.userId || wiki.myRights.deleteWiki)">
-									<i18n>wiki.comment.delete</i18n>
+	
+	<br>
+	<div class="wiki-sniplet accordions">
+		<article class="accordion" ng-class="{opened: accordionOp && accordionOp.value === 1}">
+			<a ng-click="toggleAccordion()">&rsaquo;</a>
+			<div class="toggle">
+				<div class="content">
+					<div ng-if="wiki.lastPages" class="vertical">
+						<i18n>wiki.last.modified.pages</i18n>
+						<ul>
+							<li ng-repeat="page in wiki.lastPages">
+							   <a ng-click="openPage(page._id)">[[page.title]]</a> 
+							    - [[getRelativeTimeFromDate(page.modified)]]
+							</li>
+						</ul>
+					</div>
+					<div>
+						<i18n>wiki.pagelist</i18n>
+						<div>
+							<!-- search bar -->
+							<autocomplete
+								workflow="wiki.listAllPages"
+								options="allpageslist"
+								ng-model="selectedPage"
+								ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
+							</autocomplete>
+						</div>
+						<ul>
+							<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
+								<a ng-click="openPage(page._id)">[[page.title]] 
+									<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
 								</a>
-								<p>[[comment.comment]]</p>
-							</article>
-						</div>
+							</li>
+						</ul>
 					</div>
 				</div>
-				
 			</div>
 		</article>
 	</div>
-</div>
-
-<div ng-if="display.action === 'createPage'" class="wiki-sniplet">
-	<div class="twelve cell">
-			<div class="twelve cell">
-				<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
-			</div>
-			<div class="twelve cell">
-				<input type="checkbox" ng-model="wiki.newPage.isIndex" />
-				<i18n>wiki.page.createform.set.as.index</i18n>
-			</div>
-			<div class="twelve cell">
-				<html-editor ng-model="wiki.newPage.content"></html-editor>
-			</div>
+	
+	
+	<div ng-if="display.action === 'pagesList'" class="twelve cell">
+		<ul class="twelve cell" >
+	<!-- TODO : adapt CSS, so that it properly displays directive 'alphabetical' -->
+	<!-- 			<alphabetical list="page in wiki.pages.all" class="twelve cell"> -->
+					<li ng-repeat="page in wiki.pages.all">
+						<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
+							[[page.title]]
+							<em>[<i18n>wiki.homepage.label</i18n>]</em>
+						</a>
+						<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
+					</li>
+	<!-- 			</alphabetical> -->
+				<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
+		</ul>
 	</div>
-	<div class="twelve cell">
-		<div ng-if="!wiki.processing">
-			<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
-			<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
-		</div>
-		<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
-			<i18n>wiki.processing</i18n>
-		</button>
-	</div>
-</div>
-
-<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
-	<div class="twelve cell">
-		<div class="twelve cell">
-			<input type="text" ng-model="wiki.editedPage.title" class="twelve cell" />
-		</div>
-		<div class="twelve cell">
-			<input type="checkbox" ng-model="wiki.editedPage.isIndex"/>
-			<i18n>wiki.page.editform.set.as.index</i18n>
-		</div>
-		<div class="twelve cell">
-			<html-editor ng-model="wiki.editedPage.content"></html-editor>
-		</div>
-	</div>
-	<div class="twelve cell">
-		<div ng-if="!wiki.processing">
-			<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
-			<button class="right-magnet cancel" ng-click="cancelEditPage()" translate content="wiki.page.editform.cancel"></button>
-		</div>
-		<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
-			<i18n>wiki.processing</i18n>
-		</button>
-	</div>
-</div>
-
-<div ng-if="display.action === 'duplicatePage'" class="wiki-sniplet">
-	<div class="twelve cell">
-		<h2>
-			<i18n>wiki.page.duplicateform.duplicate.page</i18n>
-			<em>[[wiki.page.title]]</em>
-			<i18n>wiki.page.duplicateform.in.a.wiki.of.your.choice</i18n>
-		</h2>
-	</div>
-	<hr class="twelve cell"/>
-	<form class="twelve cell">
-		<div class="twelve cell">
-			<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell" 
-			i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
-		</div>
-		<hr class="twelve cell"/>
-		<div class="twelve cell">
-			<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId" 
-			ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)" 
-			ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
-			</select>
-		</div>
-		<hr class="twelve cell"/>
+	
+	<div ng-if="display.action === 'viewPage' && wiki.page !== undefined" class="twelve cell">
+		<div>
+			<article class="twelve cell">
+				<div class="twelve cell">
+					<div class="twelve cell">
+						<h2>[[wiki.page.title]]</h2>
+						<em ng-if="wiki.page.modified">
+							<i18n>wiki.last.modification.by</i18n>
+							<a href="/userbook/annuaire#/[[wiki.page.author]]">[[wiki.page.authorName]]</a>
+							<i18n>wiki.on</i18n> [[getDateAndTime(wiki.page.modified)]]
+						</em>
+					</div>
+					<div class="twelve cell">
+						<hr />
+					</div>
+	
+					<div bind-html="wiki.page.content" />
+					
+					<!-- comments -->
+					<div>
+						<div class="twelve cell content-line">
+							<div class="right-magnet">
+								<resource-right name="comment" resource="wiki">
+									<a ng-click="showCommentForm()" ng-if="!wiki.page.comments || wiki.page.comments.length === 0" class="medium-text right-magnet">
+										<i18n>wiki.comment.add</i18n>
+									</a>
+								</resource-right>
+								<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
+								<span ng-if="!wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
+									<i18n>wiki.comment.display</i18n> ([[wiki.page.comments.length]])
+								</span>
+								<span ng-if="wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
+									<i18n>wiki.comment.hide</i18n> ([[wiki.page.comments.length]])
+								</span>
+								</a>
+							</div>
+							<div class="clear"></div>
+						</div>
 		
-		<div class="twelve cell">
-			<button class="right-magnet" ng-click="duplicatePage()" translate content="wiki.page.duplicateform.save"></button>
-			<button class="right-magnet cancel" ng-click="cancelDuplicatePage()" translate content="wiki.page.duplicateform.cancel"></button>
+						<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
+							<resource-right name="comment" resource="wiki">
+								<form>
+									<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
+									<div>
+										<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
+									</div>
+									<div class="clear"></div>
+								</form>
+							</resource-right>
+						</div>
+		
+						<div class="twelve cell" ng-if="wiki.page.showComments">
+							<div class="row" ng-repeat="comment in wiki.page.comments">
+								<article class="comment reduce-block-eight">
+									<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
+									<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
+									<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
+									   ng-if="(comment.author === me.userId || wiki.myRights.deleteWiki)">
+										<i18n>wiki.comment.delete</i18n>
+									</a>
+									<p>[[comment.comment]]</p>
+								</article>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</article>
 		</div>
-	</form>
+	</div>
+	
+	<div ng-if="display.action === 'pageNotFound'" class="twelve cell">
+		<default-styles>
+			<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+			<article>
+				<div class="row">
+					<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
+				</div>
+			</article>
+		</default-styles>
+	</div>
+	
+	<div ng-if="display.action === 'createPage'" class="wiki-sniplet">
+		<div class="twelve cell">
+				<div class="twelve cell">
+					<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
+				</div>
+				<div class="twelve cell">
+					<input type="checkbox" ng-model="wiki.newPage.isIndex" />
+					<i18n>wiki.page.createform.set.as.index</i18n>
+				</div>
+				<div class="twelve cell">
+					<html-editor ng-model="wiki.newPage.content"></html-editor>
+				</div>
+		</div>
+		<div class="twelve cell">
+			<div ng-if="!wiki.processing">
+				<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+				<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
+			</div>
+			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
+				<i18n>wiki.processing</i18n>
+			</button>
+		</div>
+	</div>
+	
+	<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
+		<div class="twelve cell">
+			<div class="twelve cell">
+				<input type="text" ng-model="wiki.editedPage.title" class="twelve cell" />
+			</div>
+			<div class="twelve cell">
+				<input type="checkbox" ng-model="wiki.editedPage.isIndex"/>
+				<i18n>wiki.page.editform.set.as.index</i18n>
+			</div>
+			<div class="twelve cell">
+				<html-editor ng-model="wiki.editedPage.content"></html-editor>
+			</div>
+		</div>
+		<div class="twelve cell">
+			<div ng-if="!wiki.processing">
+				<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+				<button class="right-magnet cancel" ng-click="cancelEditPage()" translate content="wiki.page.editform.cancel"></button>
+			</div>
+			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
+				<i18n>wiki.processing</i18n>
+			</button>
+		</div>
+	</div>
+	
+	<div ng-if="display.action === 'duplicatePage'" class="wiki-sniplet">
+		<div class="twelve cell">
+			<h2>
+				<i18n>wiki.page.duplicateform.duplicate.page</i18n>
+				<em>[[wiki.page.title]]</em>
+				<i18n>wiki.page.duplicateform.in.a.wiki.of.your.choice</i18n>
+			</h2>
+		</div>
+		<hr class="twelve cell"/>
+		<form class="twelve cell">
+			<div class="twelve cell">
+				<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell" 
+				i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
+			</div>
+			<hr class="twelve cell"/>
+			<div class="twelve cell">
+				<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId" 
+				ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)" 
+				ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
+				</select>
+			</div>
+			<hr class="twelve cell"/>
+			
+			<div class="twelve cell">
+				<button class="right-magnet" ng-click="duplicatePage()" translate content="wiki.page.duplicateform.save"></button>
+				<button class="right-magnet cancel" ng-click="cancelDuplicatePage()" translate content="wiki.page.duplicateform.cancel"></button>
+			</div>
+		</form>
+	</div>
 </div>
+
 
 <!-- Lightbox to confirm page deletion -->
 <lightbox show="display.showConfirmDeletePage" on-close="display.showConfirmDeletePage = false">
