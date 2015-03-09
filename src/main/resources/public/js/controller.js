@@ -416,7 +416,7 @@ function WikiController($scope, template, model, route, $location){
 	};
 
 	$scope.showDuplicatePageForm = function() {
-		$scope.wikiDuplicate = new Object({});
+		$scope.wikiDuplicate = {};
 		$scope.wikiDuplicate.page = new Page({
 			title : '',
 			content : $scope.selectedWiki.page.content,

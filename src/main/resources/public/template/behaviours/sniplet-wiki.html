@@ -49,60 +49,18 @@
 		</div>
 	</div>
 	
-	
-	<br>
-	<div class="wiki-sniplet accordions">
-		<article class="accordion" ng-class="{opened: accordionOp && accordionOp.value === 1}">
-			<a ng-click="toggleAccordion()">&rsaquo;</a>
-			<div class="toggle">
-				<div class="content">
-					<div ng-if="wiki.lastPages" class="vertical">
-						<i18n>wiki.last.modified.pages</i18n>
-						<ul>
-							<li ng-repeat="page in wiki.lastPages">
-							   <a ng-click="openPage(page._id)">[[page.title]]</a> 
-							    - [[getRelativeTimeFromDate(page.modified)]]
-							</li>
-						</ul>
-					</div>
-					<div>
-						<i18n>wiki.pagelist</i18n>
-						<div>
-							<!-- search bar -->
-							<autocomplete
-								workflow="wiki.listAllPages"
-								options="allpageslist"
-								ng-model="selectedPage"
-								ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
-							</autocomplete>
-						</div>
-						<ul>
-							<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
-								<a ng-click="openPage(page._id)">[[page.title]] 
-									<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</article>
-	</div>
-	
-	
 	<div ng-if="display.action === 'pagesList'" class="twelve cell">
-		<ul class="twelve cell" >
-	<!-- TODO : adapt CSS, so that it properly displays directive 'alphabetical' -->
-	<!-- 			<alphabetical list="page in wiki.pages.all" class="twelve cell"> -->
-					<li ng-repeat="page in wiki.pages.all">
-						<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
-							[[page.title]]
-							<em>[<i18n>wiki.homepage.label</i18n>]</em>
-						</a>
-						<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
-					</li>
-	<!-- 			</alphabetical> -->
-				<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
+		<ul class="twelve cell wiki-sniplet">
+			<alphabetical list="page in wiki.pages.all" class="twelve cell">
+				<li>
+					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
+						[[page.title]]
+						<em>[<i18n>wiki.homepage.label</i18n>]</em>
+					</a>
+					<a ng-if="page._id !== wiki.index" ng-click="openPage(page._id)">[[page.title]]</a>
+				</li>
+			</alphabetical>
+			<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
 		</ul>
 	</div>
 	
@@ -283,21 +241,21 @@
 </lightbox>
 
 <!-- Side panel -->
-<div ng-class="{ 'toggle-panel': true, hide: !display.showPanel }">
+<div ng-class="{ 'toggle-panel sniplet': true, hide: !display.showPanel }">
 	<div class="toggle cell">
 		<div class="content">
 			<div ng-if="wiki.lastPages" class="vertical">
 				<h2><i18n>wiki.last.modified.pages</i18n></h2>
 				<ul>
 					<li ng-repeat="page in wiki.lastPages">
-					   <a ng-click="openPage(page._id)">[[page.title]]</a> 
+					   <a ng-click="openPageFromSidepanel(page._id)">[[page.title]]</a> 
 					    - [[getRelativeTimeFromDate(page.modified)]]
 					</li>
 				</ul>
 			</div>
 			<div>
-				<h2><i18n>wiki.pagelist</i18n></h2>
-				<div>
+				<h2><i18n>wiki.all.pages</i18n></h2>
+				<div class="wiki-sniplet">
 					<!-- search bar -->
 					<autocomplete
 						workflow="wiki.listAllPages"
@@ -308,7 +266,7 @@
 				</div>
 				<ul>
 					<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
-						<a ng-click="openPage(page._id)">[[page.title]] 
+						<a ng-click="openPageFromSidepanel(page._id)">[[page.title]] 
 							<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
 						</a>
 					</li>
@@ -317,6 +275,6 @@
 		</div>
 	</div>
 </div>
-<ul class="icons-tabs">
+<ul class="icons-tabs sniplet">
 	<li ng-click="togglePanel($event)" ng-class="{ active: display.showPanel }"><i class="chevron-right"></i></li>
 </ul>

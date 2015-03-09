@@ -79,6 +79,7 @@
     "wiki.page.notfound": "La page n'existe pas",
     "wiki.page.versions": "Versions",
     "wiki.pagelist": "Liste des pages",
+    "wiki.all.pages": "Toutes les pages",
     "wiki.print": "Imprimer le wiki",
     "wiki.read": "Lire",
     "wiki.search.returns.no.page": "Votre recherche ne retourne aucune page. Vous pouvez créer une page vide dans un wiki de votre choix :",

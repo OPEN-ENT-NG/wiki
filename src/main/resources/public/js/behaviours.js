@@ -741,6 +741,10 @@ Behaviours.register('wiki', {
                     	openPageFromSearchbar(wikiId, pageId, this);
                     },
                     
+                    openPageFromSidepanel: function(pageId) {
+                    	openPageFromSidepanel(pageId, this);
+                    },
+                    
                     openPage: function(pageId) {
                         openPage(pageId, this);
                     },
@@ -1020,9 +1024,13 @@ function openPageFromSearchbar(wikiId, pageId, scope) {
 	}
 }
 
+function openPageFromSidepanel(pageId, scope) {
+	openPage(pageId, scope);
+	toggleSidePanel(scope);
+}
+
 function openPage(pageId, scope) {
     getPage(scope, scope.wiki, pageId);
-    toggleSidePanel(scope);
 }
 
 function getPage(scope, wiki, pageId){
