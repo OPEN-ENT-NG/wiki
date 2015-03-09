@@ -207,7 +207,7 @@ function findSequence(x,y){
 		c[i] = row = row.slice();
 		for(diag = 0, j = 0; j < y.length; j++, diag = latch){
 			latch = row[j];
-			if(x[i].innerText === y[j].innerText){
+			if((x[i].innerText || x[i].textContent) === (y[j].innerText || y[j].textContent)){
 				row[j] = diag + 1;
 			}
 			else{
@@ -273,8 +273,10 @@ function findTextSequence(x,y){
 }
 
 function similar(a, b){
-	var textSequence = findTextSequence(a.innerText.split(' '), b.innerText.split(' '));
-	return textSequence.length > a.innerText.split(' ').length / 4 || textSequence.length > b.innerText.split(' ').length / 4;
+	var aText = a.innerText || a.textContent;
+	var bText = b.innerText || b.textContent;
+	var textSequence = findTextSequence(aText.split(' '), bText.split(' '));
+	return textSequence.length > aText.split(' ').length / 4 || textSequence.length > bText.split(' ').length / 4;
 }
 
 function compare(a, b){
@@ -284,7 +286,7 @@ function compare(a, b){
 	var sequence = findSequence(a, b);
 	sequence.forEach(function(child, index){
 		bVariations[index] = [];
-		while(bIndex < b.length && child.innerText !== b[bIndex].innerText){
+		while(bIndex < b.length && (child.innerText || child.textContent) !== (b[bIndex].innerText || b[bIndex].textContent)){
 			bVariations[index].push(b[bIndex]);
 			bIndex ++;
 		}
@@ -297,7 +299,7 @@ function compare(a, b){
 
 	sequence.forEach(function(child, index){
 		var aVariations = 0;
-		while(aIndex < a.length && child.innerText !== a[aIndex].innerText){
+		while(aIndex < a.length && (child.innerText || child.textContent) !== (a[aIndex].innerText || a[aIndex].textContent)){
 			var noEquivalent = true;
 			for(var n = 0; n < bVariations[index].length; n++){
 				if(similar(a[aIndex], bVariations[index][n])){
