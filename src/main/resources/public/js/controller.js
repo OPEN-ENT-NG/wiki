@@ -40,6 +40,7 @@ function WikiController($scope, template, model, route, $location){
 	$scope.applicationName = lang.translate('wiki.title');
 	$scope.notFound = false;
 	$scope.me = model.me;
+	$scope.searchbar = {};
 	
 	$scope.getWikiById = function(pWikiId) {
 		return _.find(model.wikis.all, function(wiki){
@@ -174,7 +175,7 @@ function WikiController($scope, template, model, route, $location){
 		_.map($scope.wikis.selection(), function(wikiToRemove){
 			wikiToRemove.deleteWiki( function(){
 				// Update search bar, without any server call
-				$scope.allpageslist = _.filter($scope.allpageslist, function(page){
+				$scope.searchbar.allpageslist = _.filter($scope.searchbar.allpageslist, function(page){
 					return page.wiki_id !== wikiToRemove._id;
 				});
 			});

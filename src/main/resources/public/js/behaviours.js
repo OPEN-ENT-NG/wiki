@@ -64,7 +64,12 @@ wikiNamespace.pageTitleExists = function(pTitle, pWiki, pPageId) {
 
 wikiNamespace.updateSearchBar = function(scope) {
 	scope.wiki.listAllPages(function(pagesArray) {
-		scope.allpageslist = pagesArray;
+		if(scope.searchbar) {
+			scope.searchbar.allpageslist = pagesArray;
+		}
+		else {
+			scope.searchbar = {allpageslist: pagesArray};
+		}
 	});
 };
 
@@ -1017,7 +1022,7 @@ function openPageFromSearchbar(wikiId, pageId, scope) {
 	var currentWikiId = scope.wiki._id;
 	
 	if(currentWikiId === wikiId) {
-		openPage(pageId, scope);
+		openPageFromSidepanel(pageId, scope);
 	}
 	else { // Open page in application Wiki if the page does not belong to current wiki
 		window.location.href = '/wiki#/view/' + wikiId + '/' + pageId;
