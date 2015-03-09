@@ -16,6 +16,8 @@ routes.define(function($routeProvider){
 
 
 function WikiController($scope, template, model, route, $location){
+	var Wiki = Behaviours.applicationsBehaviours.wiki.namespace.Wiki;
+	var Page = Behaviours.applicationsBehaviours.wiki.namespace.Page;
 	
 	// Parse queries, e.g. param1=value1&param2=value2&paramN=valueN
     var parseQuery = function(queryString) { 
