@@ -662,6 +662,11 @@ Behaviours.register('wiki', {
                 title: lang.translate('wiki.sniplet.title'), 
                 description: lang.translate('wiki.sniplet.description'), 
                 controller: {
+                	togglePanel: function($event){
+                		toggleSidePanel(this);
+                		$event.stopPropagation();
+                	},
+					
                     // Load wikis that can be selected when initializing a wiki sniplet
                     initSource: function() {
                     	this.wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki();
@@ -730,15 +735,6 @@ Behaviours.register('wiki', {
                     getRelativeTimeFromDate: function(dateObject) {
                     	return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
                     },
-                    
-                    toggleAccordion: function() {
-                    	if(!this.accordionOp) {
-                    		this.accordionOp = {value: 1};
-                    	}
-                    	else {
-                    		this.accordionOp.value = (this.accordionOp.value === 1) ? -1 : 1;
-                    	}
-                    },
                     	
                     // Functions on wiki pages
                     openPageFromSearchbar: function(wikiId, pageId) {
@@ -753,9 +749,7 @@ Behaviours.register('wiki', {
                     	var scope = this;
                     	var wiki = this.wiki;
                     	listPages(scope, wiki);
-                        if(scope.accordionOp && scope.accordionOp.value === 1) {
-                            scope.accordionOp.value = -1; // close accordion
-                        }
+                    	toggleSidePanel(scope);
             		},
 
             		newPage: function(){
@@ -1028,9 +1022,7 @@ function openPageFromSearchbar(wikiId, pageId, scope) {
 
 function openPage(pageId, scope) {
     getPage(scope, scope.wiki, pageId);
-    if(scope.accordionOp && scope.accordionOp.value === 1) {
-        scope.accordionOp.value = -1; // close accordion
-    }
+    toggleSidePanel(scope);
 }
 
 function getPage(scope, wiki, pageId){
@@ -1073,4 +1065,8 @@ function listPages(scope, wiki){
 			scope.display = {action: 'pagesList'};
 		}
 	});
+}
+
+function toggleSidePanel(scope){
+	scope.display.showPanel = !scope.display.showPanel;
 }
