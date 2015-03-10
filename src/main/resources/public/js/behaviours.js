@@ -491,7 +491,9 @@ wikiNamespace.Page.prototype.save = function(callback){
 			else if (this.wasIndex === true) {
 				delete this.index;
 			}
-			callback(result);
+			if(typeof callback === 'function') {
+				callback(result);
+			}
 		}.bind(this));
 };
 
@@ -744,6 +746,13 @@ Behaviours.register('wiki', {
                 		toggleSidePanel(this);
                 		$event.stopPropagation();
                 	},
+                	
+                	displayDropDownButton: function(wiki) {
+                		return model.me.hasWorkflow(Behaviours.applicationsBehaviours.wiki.rights.workflow.print) ||
+	                		model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.deletePage) ||
+	                		model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.editPage) ||
+	                		this.canCreatePageInAtLeastOneWiki();
+                	},
 					
                     // Load wikis that can be selected when initializing a wiki sniplet
                     initSource: function() {
@@ -770,13 +779,10 @@ Behaviours.register('wiki', {
                     		scope.snipletResource.synchronizeRights();
                     		
                     		// Create a default homepage
-                			var page = { // TODO i18n
+                			var page = {
                 				isIndex: true,
-                				title: 'Page d\'accueil de votre wiki',
-                				content: '<p>Vous pouvez créer des pages en cliquant sur le bouton "Nouvelle page" ' +
-                						'ci-dessus, ou en accédant directement à l\'application Wiki. Vos visiteurs pourront ' +
-                						'suivre votre wiki depuis votre site web ou depuis l\'application Wiki, ' +
-                						'ils seront notifiés lorsque votre wiki sera mis à jour.</p>'
+                				title: lang.translate('wiki.sniplet.default.homepage.title'),
+                				content: lang.translate('wiki.sniplet.default.homepage.content')
                     		};
 
                 			scope.wiki.createPage(page, function(createdPage){

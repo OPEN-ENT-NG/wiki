@@ -105,5 +105,7 @@
     "wiki.sniplet.title": "Wiki",
     "wiki.sniplet.search.existing.wiki": "Recherchez le wiki que vous souhaitez afficher",
     "wiki.sniplet.description": "Intégrez un wiki à votre site ou à votre communauté",
+    "wiki.sniplet.default.homepage.title": "Accueil",
+    "wiki.sniplet.default.homepage.content": "<p>Vous pouvez créer des pages en cliquant sur le bouton 'Nouvelle page' ci-dessus, ou en accédant directement à l'application Wiki. Vos visiteurs pourront suivre votre wiki depuis votre site web ou depuis l'application Wiki, ils seront notifiés lors des mises à jour du wiki.</p>",
     "wiki.contains.no.page": "Le wiki ne contient aucune page"
 }

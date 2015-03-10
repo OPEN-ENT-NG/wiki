@@ -20,31 +20,31 @@
 			</h2>
 		</div>
 		<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
-			<!-- TODO check rights -->
-				<drop-down-button class="cell right-magnet">
-					<label class="opener"><i18n>plus</i18n></label>
-					<opts>
-						<div>
-							<resource-right name="deletePage" resource="wiki" ng-if="display.action === 'viewPage'">
-								<li ng-click="display.showConfirmDeletePage = true;">
-									<i18n>wiki.page.delete</i18n>
-								</li>
-							</resource-right>
-							<li ng-if="canCreatePageInAtLeastOneWiki() && display.action === 'viewPage'" ng-click="showDuplicatePageForm()">
-								<i18n>wiki.page.duplicate</i18n>
+			<drop-down-button ng-if="displayDropDownButton(wiki) === true" class="cell right-magnet">
+				<label class="opener"><i18n>plus</i18n></label>
+				<opts>
+					<div>
+						<resource-right name="deletePage" resource="wiki" ng-if="display.action === 'viewPage'">
+							<li ng-click="display.showConfirmDeletePage = true;">
+								<i18n>wiki.page.delete</i18n>
 							</li>
+						</resource-right>
+						<li ng-if="canCreatePageInAtLeastOneWiki() && display.action === 'viewPage'" ng-click="showDuplicatePageForm()">
+							<i18n>wiki.page.duplicate</i18n>
+						</li>
+						<resource-right name="editPage" resource="wiki">
 							<li ng-click="listVersions()"  ng-if="display.action === 'viewPage'">
 								<i18n>wiki.page.versions</i18n>
 							</li>
-							<li>
-								<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print?wiki=[[wiki._id]]" target="_blank">
-									<i18n>wiki.print</i18n>
-								</a>
-							</li>
-						</div>
-					</opts>
-				</drop-down-button>
-
+						</resource-right>
+						<li>
+							<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print?wiki=[[wiki._id]]" target="_blank">
+								<i18n>wiki.print</i18n>
+							</a>
+						</li>
+					</div>
+				</opts>
+			</drop-down-button>
 	
 			<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
 				<button ng-click="editPage()">
