@@ -1,15 +1,14 @@
 <div class="row accordions">
-	<!-- TODO : i18n -->
 	<article class="accordion" ng-class="{ opened: !existingWiki }">
-		<h2 ng-click="existingWiki = false;"><i18n>Nouveau wiki</i18n></h2>
+		<h2 ng-click="existingWiki = false;"><i18n>wiki.new</i18n></h2>
 		<div class="toggle">
 			<div class="content">
 				<p class="info">
-					Créez un nouveau wiki.
+					<i18n>wiki.you.create</i18n>
 				</p>
 				<input type="text" ng-model="wiki.title" i18n-placeholder="wiki.createform.input.placeholder" class="twelve cell" />
 				<div class="row">
-					<input type="button" i18n-value="Créer le wiki" ng-click="createWiki()" class="cell right-magnet" />
+					<input type="button" i18n-value="create" ng-click="createWiki()" class="cell right-magnet" />
 				</div> 
 			</div>
 		</div>
@@ -24,15 +23,10 @@
 				</div>
 				
 				<div ng-if="wikis" class="twelve cell">
-					<input type="search" ng-model="searchText" />
+					<input type="search" ng-model="searchText" i18n-placeholder="wiki.sniplet.search.existing.wiki" class="twelve cell"/>
 				
 					<div class="row">
 						<article class="found-resources">
-							<div ng-if="searchText === ''" class="reduce-block-six">
-								<div class="row">
-									Recherchez le wiki que vous souhaitez afficher.
-								</div>
-							</div>
 							<ul class="illustrated-list">
 								<li ng-repeat="wiki in wikis | filter:searchText" ng-click="setSnipletSource({_id:wiki._id})">
 									<img skin-src="[[wiki.icon]]" class="illustration" />

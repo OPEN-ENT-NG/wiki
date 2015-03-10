@@ -33,6 +33,11 @@
 							<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
 								<i18n>wiki.page.duplicate</i18n>
 							</li>
+							<li>
+								<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print?wiki=[[wiki._id]]" target="_blank">
+									<i18n>wiki.print</i18n>
+								</a>
+							</li>
 						</div>
 					</opts>
 				</drop-down-button>

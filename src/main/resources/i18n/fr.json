@@ -28,7 +28,10 @@
     "wiki.confirmdeleteform.title.cancel": "Annuler",
     "wiki.confirmdeleteform.title.delete": "Supprimer",
     "wiki.contrib": "Contribuer",
+    "create": "Créer",
     "wiki.create": "Créer un wiki",
+    "wiki.you.create": "Créez un wiki",
+    "wiki.new": "Nouveau wiki",
     "wiki.create.new.page": "Nouvelle page",
     "wiki.createform.cancel": "Annuler",
     "wiki.createform.change.picture": "Changer l'image",
@@ -98,6 +101,7 @@
     "wiki.no.wiki.found": "Aucun wiki trouvé",
     "wiki.select.a.wiki": "Sélectionnez un wiki",
     "wiki.sniplet.title": "Wiki",
+    "wiki.sniplet.search.existing.wiki": "Recherchez le wiki que vous souhaitez afficher",
     "wiki.sniplet.description": "Intégrez un wiki à votre site ou à votre communauté",
     "wiki.contains.no.page": "Le wiki ne contient aucune page"
 }
