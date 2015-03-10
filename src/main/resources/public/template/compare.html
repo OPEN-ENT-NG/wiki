@@ -10,17 +10,17 @@
 	<thead>
 		<tr>
 			<th class="six">
-				Version du [[moment(leftCompare.date.$date).format('DD/MM/YYYY hh:mm')]] par [[leftCompare.username]]
+				Version du [[formatDate(display.leftCompare.date)]] par [[display.leftCompare.username]]
 			</th>
 			<th class="six">
-				Version du [[moment(rightCompare.date.$date).format('DD/MM/YYYY hh:mm')]] par [[rightCompare.username]]
+				Version du [[formatDate(display.rightCompare.date)]] par [[display.rightCompare.username]]
 			</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td><button ng-click="restoreVersion(leftCompare)"><i18n>wiki.version.restore</i18n></button></td>
-			<td><button ng-click="restoreVersion(rightCompare)"><i18n>wiki.version.restore</i18n></button></td>
+			<td><button ng-click="restoreVersion(display.leftCompare)"><i18n>wiki.version.restore</i18n></button></td>
+			<td><button ng-click="restoreVersion(display.rightCompare)"><i18n>wiki.version.restore</i18n></button></td>
 		</tr>
 		<tr>
 			<td>

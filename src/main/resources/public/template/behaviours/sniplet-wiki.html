@@ -20,18 +20,21 @@
 			</h2>
 		</div>
 		<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
-	<!-- TODO <resource-right name="editPage" resource="wiki" class="cell right-magnet"> -->
+			<!-- TODO check rights -->
 				<drop-down-button class="cell right-magnet">
 					<label class="opener"><i18n>plus</i18n></label>
 					<opts>
-						<div ng-if="display.action === 'viewPage'">
-							<resource-right name="deletePage" resource="wiki">
+						<div>
+							<resource-right name="deletePage" resource="wiki" ng-if="display.action === 'viewPage'">
 								<li ng-click="display.showConfirmDeletePage = true;">
 									<i18n>wiki.page.delete</i18n>
 								</li>
 							</resource-right>
-							<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
+							<li ng-if="canCreatePageInAtLeastOneWiki() && display.action === 'viewPage'" ng-click="showDuplicatePageForm()">
 								<i18n>wiki.page.duplicate</i18n>
+							</li>
+							<li ng-click="listVersions()"  ng-if="display.action === 'viewPage'">
+								<i18n>wiki.page.versions</i18n>
 							</li>
 							<li>
 								<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print?wiki=[[wiki._id]]" target="_blank">
@@ -41,7 +44,7 @@
 						</div>
 					</opts>
 				</drop-down-button>
-	<!-- </resource-right> -->
+
 	
 			<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
 				<button ng-click="editPage()">
@@ -228,6 +231,111 @@
 			</div>
 		</form>
 	</div>
+	
+	<div ng-if="display.action === 'versions'">
+		<article>
+			<h2 class="cell"><i18n>wiki.page.versions</i18n></h2>
+			<div class="display-buttons">
+				<button ng-click="display.action = 'viewPage'" class="cancel"><i18n>back</i18n></button>
+			</div>
+			
+			<table class="twelve list-view">
+				<thead>
+				<tr>
+					<th></th>
+					<th>
+						<i18n>wiki.by</i18n>
+					</th>
+					<th>
+						<i18n>wiki.on</i18n>
+					</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr ng-repeat="version in wiki.page.versions.all" ng-class="{ checked: version.selected }">
+					<td><input type="checkbox" ng-model="version.selected" /></td>
+					<td ng-click="showVersion(version)">
+						<a>[[version.username]]</a>
+					</td>
+					<td ng-click="showVersion(version)">
+						<a>[[formatDate(version.date)]]</a>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</article>
+	</div>
+	
+	<div ng-if="display.action === 'viewVersion'">
+		<article class="twelve cell">
+			<div class="twelve cell wiki-sniplet">
+				<div class="row">
+					<div class="seven cell">
+						<h2>[[display.version.title]]</h2>
+						<em>
+							<i18n>Version du </i18n> [[getDateAndTime(display.version.date)]]
+							<i18n>par</i18n>
+							<a href="/userbook/annuaire#/[[wiki.page.author]]">[[display.version.username]]</a>
+						</em>
+					</div>
+					<div class="five cell">
+						<div class="display-buttons">
+							<resource-right name="editPage" resource="wiki" class="cell right-magnet">
+								<button ng-click="restoreVersion(display.version)">
+									<i18n>wiki.version.restore</i18n>
+								</button>
+							</resource-right>
+							<button class="cancel right-magnet" ng-click="display.action = 'versions';">
+								<i18n>back</i18n>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<hr />
+				</div>
+
+				<div bind-html="display.version.content" />
+			</div>
+		</article>
+	</div>
+	
+	<div ng-if="display.action === 'compareVersions'" class="wiki-sniplet">
+		<div class="row">
+			<h2 class="cell">Comparer</h2>
+			<div class="ten cell display-buttons">
+				<button ng-click="display.action = 'versions';" class="cancel"><i18n>back</i18n></button>
+			</div>
+		</div>
+		
+		<table class="twelve compare list-view">
+			<thead>
+				<tr>
+					<th class="six">
+						Version du [[formatDate(display.leftCompare.date)]] par [[display.leftCompare.username]]
+					</th>
+					<th class="six">
+						Version du [[formatDate(display.rightCompare.date)]] par [[display.rightCompare.username]]
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><button ng-click="restoreVersion(display.leftCompare)"><i18n>wiki.version.restore</i18n></button></td>
+					<td><button ng-click="restoreVersion(display.rightCompare)"><i18n>wiki.version.restore</i18n></button></td>
+				</tr>
+				<tr>
+					<td>
+						<div bind-html="display.comparison.left"></div>
+					</td>
+					<td>
+						<div bind-html="display.comparison.right"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
 </div>
 
 
@@ -283,3 +391,23 @@
 <ul class="icons-tabs sniplet">
 	<li ng-click="togglePanel($event)" ng-class="{ active: display.showPanel }"><i class="chevron-right"></i></li>
 </ul>
+
+<!-- Buttons to restore or compare versions -->
+<div ng-if="display.action === 'versions'">
+	<div class="toggle-buttons" ng-class="{ hide: wiki.page.versions.selection().length === 0 }">
+		<div class="toggle">
+			<button
+					ng-if="wiki.page.versions.selection().length === 1"
+					ng-click="restoreVersion()"
+					>
+				<i18n>wiki.version.restore</i18n>
+			</button>
+			<button
+					ng-if="wiki.page.versions.selection().length === 2"
+					ng-click="compareVersions()"
+					>
+				<i18n>wiki.version.compare</i18n>
+			</button>
+		</div>
+	</div>
+</div>

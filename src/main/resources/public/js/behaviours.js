@@ -1,3 +1,17 @@
+var isWikiApplication = function() {
+	return (window.location.pathname === '/wiki');
+};
+
+var displayAction = function(scope, actionName) {
+	if(scope.display) {
+		scope.display.action = actionName;
+	}
+	else {
+		scope.display = {action: actionName};
+	}
+};
+
+
 // 1) Model - it is declared in behaviours.js, so that it can be shared by wiki application and wiki sniplet
 
 var wikiNamespace = {
@@ -31,7 +45,7 @@ var wikiNamespace = {
 
 // Functions shared by wiki sniplet and wiki application
 wikiNamespace.formatDate = function(dateObject){
-	return moment(dateObject.$date).lang('fr').format('D/MM/YYYY H:mm');
+	return moment(dateObject.$date).lang('fr').format('DD/MM/YYYY H:mm');
 };
 
 wikiNamespace.getDateAndTime = function(dateObject){
@@ -143,7 +157,7 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
 			currentWiki.pages.sync(function(){
 				currentWiki.setLastPages();
 		        currentWiki.getPage(createdPage._id, function(returnedWiki){
-		        	if (window.location.pathname === '/wiki' ) { // wiki application case
+		        	if (isWikiApplication()) {
 			        	window.location.hash = '/view/' + currentWiki._id + '/' + createdPage._id;
 		        	}
 		        	else { // wiki sniplet case
@@ -156,7 +170,7 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
         targetWiki.createPage(scope.wikiDuplicate.page, callback);
 	}
 	else { // When target wiki is another wiki
-    	if (window.location.pathname === '/wiki' ) { // wiki application case
+    	if (isWikiApplication()) {
     		targetWiki = scope.getWikiById(scope.wikiDuplicate.targetWikiId);
     	}
     	else { // wiki sniplet case
@@ -173,7 +187,7 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
 			
 			callback = function(createdPage){
 				wikiNamespace.updateSearchBar(scope);
-		    	if (window.location.pathname === '/wiki' ) { // wiki application case
+		    	if (isWikiApplication()) {
 		    		scope.openSelectedPage(targetWiki._id, createdPage._id);
 		    	}
 		    	else { // wiki sniplet case
@@ -186,6 +200,65 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
 	}
 	
 };
+
+wikiNamespace.listVersions = function(wiki, scope){
+	wiki.page.versions.sync();
+	if(isWikiApplication()) {
+		template.open('main', 'versions');
+	}
+	else {
+		displayAction(scope, 'versions');
+	}
+};
+
+wikiNamespace.showVersion = function(version, scope){
+	console.log('showVersion');
+	if(isWikiApplication()) {
+		scope.version = version;
+		template.open('main', 'view-version');
+	}
+	else {
+		scope.display.version = version;
+		displayAction(scope, 'viewVersion');
+	}
+};
+
+wikiNamespace.restoreVersion = function(version, wiki, scope){
+	if(!version){
+		version = wiki.page.versions.selection()[0];
+	}
+	wiki.page.restoreVersion(version);
+	
+	if(isWikiApplication()) {
+		template.open('main', 'view-page');
+	}
+	else {
+		displayAction(scope, 'viewPage');
+	}
+};
+
+wikiNamespace.compareVersions = function(wiki, scope){
+	console.log('compareVersions');
+	var a = wiki.page.versions.selection()[0];
+	var b = wiki.page.versions.selection()[1];
+	if(moment(a.date.$date).unix() > moment(b.date.$date).unix()){
+		scope.display.leftCompare = b;
+		scope.display.rightCompare = a;
+	}
+	else{
+		scope.display.leftCompare = a;
+		scope.display.rightCompare = b;
+	}
+
+	scope.display.comparison = wikiNamespace.Version.prototype.comparison(scope.display.leftCompare, scope.display.rightCompare);
+	if(isWikiApplication()) {
+		template.open('main', 'compare');
+	}
+	else {
+		displayAction(scope, 'compareVersions');
+	}
+};
+
 
 
 // Versions (i.e. revisions of a wiki page)
@@ -729,6 +802,7 @@ Behaviours.register('wiki', {
                         }
                     },
                     
+                    // Date functions
                     formatDate: function(dateObject){
                     	return Behaviours.applicationsBehaviours.wiki.namespace.formatDate(dateObject);
                     },
@@ -815,12 +889,7 @@ Behaviours.register('wiki', {
                     	wiki.editedPage.isIndex = (wiki.editedPage._id === wiki.index);
                     	wiki.editedPage.wasIndex = (wiki.page._id === wiki.index);
 
-            			if(scope.display) {
-            				scope.display.action = 'editPage';
-            			}
-            			else {
-            				scope.display = {action: 'editPage'};
-            			}
+                		displayAction(scope, 'editPage');
             		},
             		
             		cancelEditPage: function(){
@@ -865,12 +934,7 @@ Behaviours.register('wiki', {
             		showDuplicatePageForm: function() {
             			var scope = this;
             			scope.wikiDuplicate = {};
-            			if(scope.display) {
-            				scope.display.action = 'duplicatePage';
-            			}
-            			else {
-            				scope.display = {action: 'duplicatePage'};
-            			}
+            			displayAction(scope, 'duplicatePage');
             		},
             		
             		canCreatePage: function(pWiki){
@@ -897,12 +961,7 @@ Behaviours.register('wiki', {
             		
             		cancelDuplicatePage: function() {
             			var scope = this;
-        				if(scope.display) {
-        					scope.display.action = 'viewPage';
-        				}
-        				else {
-        					scope.display = {action: 'viewPage'};
-        				}
+            			displayAction(scope, 'viewPage');
             		},
             		
             		// Functions on comments
@@ -924,6 +983,23 @@ Behaviours.register('wiki', {
             		
             		removeComment: function(commentId, commentIndex) {
             			return Behaviours.applicationsBehaviours.wiki.namespace.removeComment(this.wiki, commentId, commentIndex, this);
+            		},
+            		
+            		// Versions
+            		listVersions: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.listVersions(this.wiki, this);
+            		},
+            		
+            		showVersion: function(version) {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.showVersion(version, this);
+            		},
+            		
+            		restoreVersion: function(version) {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.restoreVersion(version, this.wiki, this);
+            		},
+            		
+            		compareVersions: function() {
+            			return Behaviours.applicationsBehaviours.wiki.namespace.compareVersions(this.wiki, this);
             		}
                 }
         }
@@ -958,12 +1034,7 @@ function viewWiki(scope, wikiId, callback){
 		
 		// wiki not found
 		if(!wiki) {
-			if(scope.display) {
-				scope.display.action = 'wikiNotFound';
-			}
-			else {
-				scope.display = {action: 'wikiNotFound'};
-			}
+			displayAction(scope, 'wikiNotFound');
 			return;
 		}
 		
@@ -976,12 +1047,7 @@ function viewWiki(scope, wikiId, callback){
 					wiki.index, 
 					function(result){ 
 						scope.wiki = wiki;
-						if(scope.display) {
-							scope.display.action = 'viewPage';
-						}
-						else {
-	    					scope.display = {action: 'viewPage'};
-						}
+						displayAction(scope, 'viewPage');
 						scope.$apply();
 						
 						if(typeof callback === 'function'){
@@ -989,24 +1055,14 @@ function viewWiki(scope, wikiId, callback){
 						}
 					},
 					function(){
-						if(scope.display) {
-							scope.display.action = 'pageNotFound';
-						}
-						else {
-							scope.display = {action: 'pageNotFound'};
-						}
+						displayAction(scope, 'pageNotFound');
 						scope.$apply();
 					}
 	    		);
 	        }
 	        else { // Show pages list
 	        	scope.wiki = wiki;
-				if(scope.display) {
-					scope.display.action = 'pagesList';
-				}
-				else {
-					scope.display = {action: 'pagesList'};
-				}
+	        	displayAction(scope, 'pagesList');
 				scope.$apply();
 				
 				if(typeof callback === 'function'){
@@ -1045,22 +1101,12 @@ function getPage(scope, wiki, pageId){
 		wiki.getPage(
 			pageId, 
 			function(result){
-				if(scope.display) {
-					scope.display.action = 'viewPage';
-				}
-				else {
-					scope.display = {action: 'viewPage'};
-				}
+				displayAction(scope, 'viewPage');
 				scope.wiki = wiki;
 				scope.$apply();
 			},
 			function(){
-				if(scope.display) {
-					scope.display.action = 'pageNotFound';
-				}
-				else {
-					scope.display = {action: 'pageNotFound'};
-				}
+				displayAction(scope, 'pageNotFound');
 				scope.$apply();
 			}
 		);
@@ -1071,12 +1117,7 @@ function getPage(scope, wiki, pageId){
 function listPages(scope, wiki){
 	wiki.pages.sync(function(){
 		wiki.setLastPages();
-		if(scope.display) {
-			scope.display.action = 'pagesList';
-		}
-		else {
-			scope.display = {action: 'pagesList'};
-		}
+		displayAction(scope, 'pagesList');
 	});
 }
 

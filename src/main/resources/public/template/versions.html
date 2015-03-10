@@ -4,7 +4,7 @@
 	<div class="three cell" ng-include="template.containers.sideMenu"></div>
 
 	<article class="margin-three">
-		<h2 class="cell">Versions</h2>
+		<h2 class="cell"><i18n>wiki.page.versions</i18n></h2>
 
 		<div class="ten cell display-buttons">
 			<button ng-click="template.open('main', 'view-page')" class="cancel"><i18n>back</i18n></button>
@@ -14,10 +14,10 @@
 			<tr>
 				<th></th>
 				<th>
-					Par
+					<i18n>wiki.by</i18n>
 				</th>
 				<th>
-					Date
+					<i18n>wiki.on</i18n>
 				</th>
 			</tr>
 			</thead>
@@ -28,7 +28,7 @@
 					<a>[[version.username]]</a>
 				</td>
 				<td ng-click="showVersion(version)">
-					<a>[[moment(version.date.$date).format('DD/MM/YYYY hh:mm')]]</a>
+					<a>[[formatDate(version.date)]]</a>
 				</td>
 			</tr>
 			</tbody>
@@ -49,7 +49,7 @@
 				ng-if="selectedWiki.page.versions.selection().length === 2"
 				ng-click="compareVersions()"
 				>
-			Comparer
+			<i18n>wiki.version.compare</i18n>
 		</button>
 	</div>
 </div>

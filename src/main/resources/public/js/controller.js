@@ -18,6 +18,7 @@ routes.define(function($routeProvider){
 function WikiController($scope, template, model, route, $location){
 	var Wiki = Behaviours.applicationsBehaviours.wiki.namespace.Wiki;
 	var Page = Behaviours.applicationsBehaviours.wiki.namespace.Page;
+	var Version = Behaviours.applicationsBehaviours.wiki.namespace.Version;
 	
 	// Parse queries, e.g. param1=value1&param2=value2&paramN=valueN
     var parseQuery = function(queryString) { 
@@ -458,37 +459,19 @@ function WikiController($scope, template, model, route, $location){
 	
 	// Functions on versions (revisions) of a wiki page
 	$scope.listVersions = function(){
-		$scope.selectedWiki.page.versions.sync();
-		template.open('main', 'versions');
+		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
 	};
 
 	$scope.restoreVersion = function(version){
-		if(!version){
-			version = $scope.selectedWiki.page.versions.selection()[0];
-		}
-		$scope.selectedWiki.page.restoreVersion(version);
-		template.open('main', 'view-page');
+		return Behaviours.applicationsBehaviours.wiki.namespace.restoreVersion(version, $scope.selectedWiki);
 	};
 
 	$scope.showVersion = function(version){
-		$scope.version = version;
-		template.open('main', 'view-version');
+		return Behaviours.applicationsBehaviours.wiki.namespace.showVersion(version, $scope);
 	};
 
 	$scope.compareVersions = function(){
-		var a = $scope.selectedWiki.page.versions.selection()[0];
-		var b = $scope.selectedWiki.page.versions.selection()[1];
-		if(moment(a.date.$date).unix() > moment(b.date.$date).unix()){
-			$scope.leftCompare = b;
-			$scope.rightCompare = a;
-		}
-		else{
-			$scope.leftCompare = a;
-			$scope.rightCompare = b;
-		}
-
-		$scope.display.comparison = Version.prototype.comparison($scope.leftCompare, $scope.rightCompare);
-		template.open('main', 'compare');
+		return Behaviours.applicationsBehaviours.wiki.namespace.compareVersions($scope.selectedWiki, $scope);
 	};
 	
 	$scope.wikis = model.wikis;
