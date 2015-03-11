@@ -313,13 +313,11 @@ public class WikiController extends MongoDbControllerHelper {
 			List<String> recipients = new ArrayList<>(recipientSet);
 
 			JsonObject params = new JsonObject();
-			params.putString("uri", container.config().getString("userbook-host") +
-					"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+			params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
 			params.putString("username", user.getUsername())
 				.putString("pageTitle", pageTitle)
 				.putString("wikiTitle", wiki.getString("title"))
-				.putString("pageUri", container.config().getString("host") +
-					"/wiki#/view/" + idWiki + "/" + idPage);
+				.putString("pageUri", "/wiki#/view/" + idWiki + "/" + idPage);
 
 			notification.notifyTimeline(request, user, WIKI_NAME, WIKI_PAGE_CREATED_EVENT_TYPE,
 					recipients, idPage, "notify-page-created.html", params);
@@ -477,10 +475,9 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 
 					JsonObject params = new JsonObject();
-					params.putString("uri", container.config().getString("userbook-host") +
-							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+					params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 							.putString("username", user.getUsername())
-							.putString("wikiUri", container.config().getString("host") + "/wiki#/view/" + id);
+							.putString("wikiUri", "/wiki#/view/" + id);
 
 					shareJsonSubmit(request, "notify-wiki-shared.html", false, params, "title");
 				}
