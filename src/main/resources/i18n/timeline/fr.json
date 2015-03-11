@@ -1,5 +1,7 @@
 {
     "timeline.wiki.has.created.page": "a créé la page",
+    "timeline.wiki.has.commented.page": "a commenté la page",
     "timeline.wiki.has.shared": "vous a partagé le wiki",
-    "timeline.wiki.in": "dans le wiki"
+    "timeline.wiki.in": "dans le wiki",
+    "timeline.wiki.of" : "du wiki"
 }

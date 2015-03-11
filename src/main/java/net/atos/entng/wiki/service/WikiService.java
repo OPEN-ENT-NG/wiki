@@ -39,10 +39,17 @@ public interface WikiService {
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
+	/**
+	 * Unset field "index" if "idPage" is the index
+	 */
 	public void unsetIndex(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void getDataForNotification(String idWiki, Handler<Either<String, JsonObject>> handler);
+	/**
+	 * Get title, owner, userIds and groupIds of wiki.
+	 * If parameter "idPage" is supplied, also get the associated page
+	 */
+	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler);
 
 	public void comment(UserInfos user, String idWiki, String idPage, String newCommentId,
 			String comment, Handler<Either<String, JsonObject>> handler);

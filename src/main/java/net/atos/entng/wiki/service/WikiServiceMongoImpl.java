@@ -42,7 +42,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId : user.getProfilGroupsIds()) {
+		for (String gpId : user.getGroupsIds()) {
 			groups.add(QueryBuilder.start("groupId").is(gpId).get());
 		}
 
@@ -84,7 +84,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId : user.getProfilGroupsIds()) {
+		for (String gpId : user.getGroupsIds()) {
 			groups.add(QueryBuilder.start("groupId").is(gpId).get());
 		}
 
@@ -249,7 +249,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	/**
-	 * Unset field "index" if "idPage" is the index
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void unsetIndex(String idWiki, String idPage,
@@ -266,10 +266,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	/**
-	 * Get title, owner, userIds and groupIds of wiki
+	 * {@inheritDoc}
 	 */
 	@Override
-	public void getDataForNotification(String idWiki, Handler<Either<String, JsonObject>> handler) {
+	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		// Projection
@@ -278,6 +278,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			.putNumber("shared.userId", 1)
 			.putNumber("shared.groupId", 1)
 			.putNumber("title", 1);
+
+		if(idPage!= null && !idPage.trim().isEmpty()) {
+			query.put("pages._id").is(idPage);
+
+			JsonObject matchId = new JsonObject().putString("_id", idPage);
+			JsonObject elemMatch = new JsonObject().putObject("$elemMatch", matchId);
+			projection.putObject("pages", elemMatch); // returns the whole page. Projection on a field (e.g. "title") of a subdocument of an array is not supported by mongo
+		}
 
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
