@@ -4,6 +4,7 @@ import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import fr.wseduc.mongodb.MongoDb;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
+import org.vertx.java.core.Handler;
 import org.vertx.java.core.json.JsonArray;
 
 public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
@@ -17,7 +18,7 @@ public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 
 	@Override
 	public void exportResources(String exportId, String userId,
-			JsonArray groups, String exportPath, String locale) {
+			JsonArray groups, String exportPath, String locale, String host, final Handler<Boolean> handler) {
 		// TODO
 		log.warn("Method exportResources is not implemented in WikiRepositoryEvents");
 	}
