@@ -655,7 +655,7 @@ Behaviours.register('wiki', {
 	namespace: wikiNamespace,
 	rights: wikiRights,
 	
-	resource: function(resource){
+	resourceRights: function(resource){
 		var rightsContainer = resource;
 		if(!resource.myRights){
 			resource.myRights = {};
@@ -684,10 +684,6 @@ Behaviours.register('wiki', {
 		}
 
 		return workflow;
-	},
-	
-	resourceRights: function(){
-		return ['read', 'comment', 'contrib', 'manager'];
 	},
 	
 	// Used by component "linker" to load wiki pages
@@ -776,8 +772,6 @@ Behaviours.register('wiki', {
                     	}
                     	
                     	scope.wiki.createWiki(scope.wiki, function(createdWiki){
-                    		scope.snipletResource.synchronizeRights();
-                    		
                     		// Create a default homepage
                 			var page = {
                 				isIndex: true,
@@ -787,6 +781,7 @@ Behaviours.register('wiki', {
 
                 			scope.wiki.createPage(page, function(createdPage){
                 				scope.setSnipletSource({_id: createdWiki._id});
+                				scope.snipletResource.synchronizeRights(); // propagate rights from sniplet to wiki
                 			});
                 		});
                     },
@@ -799,9 +794,9 @@ Behaviours.register('wiki', {
                     	});
                     },
                     
-                    /* Function used by application "Pages", to copy rights from "Pages" to current sniplet. 
+                    /* Function used by application "Pages", to copy rights from "Pages" to resources. 
                      * It returns an array containing all resources' ids which are concerned by the rights copy.
-                     * For sniplet "wiki", it simply returns the wikiId */
+                     * For sniplet "wiki", copy rights from "Pages" to associated wiki */
                     getReferencedResources: function(source){
                         if(source._id){
                             return [source._id];
