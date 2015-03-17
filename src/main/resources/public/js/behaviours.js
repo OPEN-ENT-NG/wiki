@@ -77,14 +77,36 @@ wikiNamespace.pageTitleExists = function(pTitle, pWiki, pPageId) {
 };
 
 wikiNamespace.updateSearchBar = function(scope) {
-	scope.wiki.listAllPages(function(pagesArray) {
+	if(isWikiApplication()) {
+		scope.wiki.listAllPages(function(pagesArray) {
+			if(scope.searchbar) {
+				scope.searchbar.allpageslist = pagesArray;
+			}
+			else {
+				scope.searchbar = {allpageslist: pagesArray};
+			}
+		});
+	}
+	else {
+		// Sniplet case : only display pages of current wiki in searchbar
+		var pages = _.chain(scope.wiki.pages.all).map(function(page) {
+				return {
+					title : page.title,
+					_id : page._id,
+					wiki_id : scope.wiki._id,
+					toString : function() {
+						return this.title;
+					}
+				};
+			}).sort().value();
+		
 		if(scope.searchbar) {
-			scope.searchbar.allpageslist = pagesArray;
+			scope.searchbar.allpageslist = pages;
 		}
 		else {
-			scope.searchbar = {allpageslist: pagesArray};
+			scope.searchbar = {allpageslist: pages};
 		}
-	});
+	}
 };
 
 wikiNamespace.showCommentForm = function(wiki) {
@@ -152,9 +174,8 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
 		}
 		
 		callback = function(createdPage){
-			wikiNamespace.updateSearchBar(scope);
-			
 			currentWiki.pages.sync(function(){
+				wikiNamespace.updateSearchBar(scope);
 				currentWiki.setLastPages();
 		        currentWiki.getPage(createdPage._id, function(returnedWiki){
 		        	if (isWikiApplication()) {
@@ -832,7 +853,7 @@ Behaviours.register('wiki', {
             		listPages: function(){
                     	var scope = this;
                     	var wiki = this.wiki;
-                    	listPages(scope, wiki);
+                    	listPages(scope, wiki, null);
                     	toggleSidePanel(scope);
             		},
 
@@ -872,9 +893,10 @@ Behaviours.register('wiki', {
 
             			wiki.createPage(data, function(createdPage){
             				notify.info('wiki.page.has.been.created');
-            				Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
             				wiki.processing = false;
-            				getPage(scope, wiki, createdPage._id);
+            				getPage(scope, wiki, createdPage._id, function() {
+            					Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+            				});
             	        });
             		},
             		
@@ -916,9 +938,10 @@ Behaviours.register('wiki', {
             			wiki.page = wiki.editedPage;
             			wiki.page.save(function(result){
             				notify.info('wiki.page.has.been.updated');
-            				Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
             				wiki.processing = false;
-            				getPage(scope, wiki, wiki.page._id);
+            				getPage(scope, wiki, wiki.page._id, function() {
+            					Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+            				});
             			});
             		},
             		
@@ -926,8 +949,9 @@ Behaviours.register('wiki', {
                     	var scope = this;
                     	var wiki = scope.wiki;
                     	wiki.deletePage(wiki.page._id, function() {
-                        	Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
-                        	listPages(scope, wiki);
+                        	listPages(scope, wiki, function(){
+                        		Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+                        	});
                     	});
             		},
             		
@@ -1092,10 +1116,10 @@ function openPageFromSidepanel(pageId, scope) {
 }
 
 function openPage(pageId, scope) {
-    getPage(scope, scope.wiki, pageId);
+    getPage(scope, scope.wiki, pageId, null);
 }
 
-function getPage(scope, wiki, pageId){
+function getPage(scope, wiki, pageId, callback){
 	wiki.pages.sync(function(){
 		wiki.setLastPages();
 		
@@ -1105,6 +1129,9 @@ function getPage(scope, wiki, pageId){
 				displayAction(scope, 'viewPage');
 				scope.wiki = wiki;
 				scope.$apply();
+				if(typeof callback === 'function'){
+					callback();
+				}
 			},
 			function(){
 				displayAction(scope, 'pageNotFound');
@@ -1115,9 +1142,12 @@ function getPage(scope, wiki, pageId){
 	});	
 }
 
-function listPages(scope, wiki){
+function listPages(scope, wiki, callback){
 	wiki.pages.sync(function(){
 		wiki.setLastPages();
+		if(typeof callback === 'function'){
+			callback();
+		}
 		displayAction(scope, 'pagesList');
 	});
 }
