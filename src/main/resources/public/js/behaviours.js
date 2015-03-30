@@ -1,3 +1,5 @@
+console.log('wiki behaviours loaded');
+
 var isWikiApplication = function() {
 	return (window.location.pathname === '/wiki');
 };
@@ -539,10 +541,22 @@ wikiNamespace.Wiki.prototype.getWholeWiki = function(callback) {
 };
 
 wikiNamespace.Wiki.prototype.getPage = function(pageId, callback, errorCallback) {
+	var that = this;
 	http().get('/wiki/' + this._id + '/page/' + pageId)
 		.done(function(wiki){
 			wiki.pages[0].wiki_id = this._id;
 			this.page = new Behaviours.applicationsBehaviours.wiki.namespace.Page( wiki.pages[0] );
+			if(this.context === 'sniplet'){
+				var content = $(this.page.content);
+				content.find('a[href^="/wiki#/view/' + this._id + '"]').each(function(index, item){
+					var pageIdSplit = $(item).attr('href').split('/');
+					var pageId = pageIdSplit[pageIdSplit.length - 1];
+					$(item).removeAttr('href');
+					$(item).removeAttr('data-reload');
+					$(item).attr('ng-click', 'openPage(\'' + pageId + '\')');
+				});
+				this.page.content = _.map(content, function(el){ return el.outerHTML; }).join('');
+			}
 			this.title = wiki.title;
 			this.owner = wiki.owner;
 			callback(wiki);
@@ -756,8 +770,8 @@ Behaviours.register('wiki', {
 	
     sniplets: {
         wiki: {
-                title: lang.translate('wiki.sniplet.title'), 
-                description: lang.translate('wiki.sniplet.description'), 
+                title: 'wiki.sniplet.title',
+                description: 'wiki.sniplet.description',
                 controller: {
                 	togglePanel: function($event){
                 		toggleSidePanel(this);
@@ -812,7 +826,7 @@ Behaviours.register('wiki', {
                     	var scope = this;
                     	viewWiki(scope, scope.source._id, function() {
                         	Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
-                    	});
+                    	}, 'sniplet');
                     },
                     
                     /* Function used by application "Pages", to copy rights from "Pages" to resources. 
@@ -1036,7 +1050,7 @@ model.me.workflow.load(['wiki']);
 
 
 // Functions used in sniplet's controller
-function viewWiki(scope, wikiId, callback){
+function viewWiki(scope, wikiId, callback, context){
 	http().get('/wiki/list').done(function(pWikis) {
 		scope.wikis = [];
 		for(i = 0; i < pWikis.length; i++){
@@ -1056,6 +1070,7 @@ function viewWiki(scope, wikiId, callback){
 		var wiki = _.find(scope.wikis, function(pWiki) {
 			return pWiki._id === wikiId;
 		});
+		wiki.context = context;
 		
 		// wiki not found
 		if(!wiki) {
