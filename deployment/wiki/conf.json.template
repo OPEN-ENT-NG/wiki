@@ -1,5 +1,5 @@
     {
-      "name": "net.atos~wiki~0.5.0",
+      "name": "net.atos~wiki~0.6-SNAPSHOT",
       "config": {
         "main" : "net.atos.entng.wiki.Wiki",
         "port" : 8030,
