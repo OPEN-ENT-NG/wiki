@@ -1,24 +1,38 @@
 <nav class="vertical">
 	<ul>
-		<li>
-			<a ng-click="listPages(selectedWiki._id)">
-				<i18n>wiki.pagelist</i18n>
-			</a>
-		</li>
 		<li ng-if="selectedWiki.index.length > 0">
 			<a ng-href="#/view/[[selectedWiki._id]]/[[selectedWiki.index]]">
 				<i18n>wiki.homepage.label</i18n>
 			</a>
 		</li>
+		<li>
+			<a ng-click="newPage()">
+				<resource-right name="createPage" resource="selectedWiki">
+					<i18n>wiki.create.new.page</i18n>
+				</resource-right>
+			</a>
+		</li>
+
 	</ul>
 </nav>
+<hr class="twelve cell vertical-spacing" />
 <nav ng-if="selectedWiki.lastPages" class="vertical">
 	<h2>
 		<i18n>wiki.last.modified.pages</i18n>
 	</h2>
-	<div ng-repeat="page in selectedWiki.lastPages">
+	<div ng-repeat="page in selectedWiki.lastPages" class="small-text">
 	   <a ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">
 	           [[page.title]] 
 	   </a> - [[getRelativeTimeFromDate(page.modified)]]
 	</div>
+</nav>
+<hr class="twelve cell vertical-spacing" />
+<nav class="vertical row">
+	<ul>
+		<li>
+			<a ng-click="listPages(selectedWiki._id)">
+				<i18n>wiki.pagelist</i18n>
+			</a>
+		</li>
+	</ul>
 </nav>

@@ -15,7 +15,11 @@
 			<div class="twelve cell">
 				<div class="eight cell">
 					<h1>
-						<i class="wiki"></i>
+						<i class="wiki">
+							<side-panel ng-if="selectedWiki">
+								<container template="side-panel"></container>
+							</side-panel>
+						</i>
 						<a ng-click="displayWikiList()">[[applicationName]]</a>
 						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
 							: <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
@@ -26,41 +30,11 @@
 					<button ng-if="!selectedWiki || !selectedWiki._id" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
 						<i18n>wiki.create</i18n>
 					</button>
-					<drop-down-button class="cell right-magnet" ng-if="selectedWiki && selectedWiki._id">
-						<label class="opener"><i18n>plus</i18n></label>
-						<opts>
-							<li>
-								<a workflow="wiki.print" ng-if="selectedWiki._id" ng-href="/wiki/print?wiki=[[selectedWiki._id]]" target="_blank">
-									<i18n>wiki.print</i18n>
-								</a>
-							</li>
-							<resource-right name="share" resource="selectedWiki">
-								<li ng-click="display.showPanelForCurrentWiki = true" ng-if="selectedWiki">
-									<i18n>wiki.share.current.wiki</i18n>
-								</li>
-							</resource-right>
-						</opts>
-					</drop-down-button>
-					<resource-right name="createPage" resource="selectedWiki" class="cell right-magnet">
-						<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="selectedWiki"></button>
-					</resource-right>
 				</div>
 			</div>
 			<div class="clear"></div>
 		</div>
 		<section>
-			<div class="row">
-				<!-- search bar -->
-				<div class="twelve cell">
-					<autocomplete
-							workflow="wiki.listAllPages"
-							options="searchbar.allpageslist"
-							ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)"
-							ng-model="selectedPage"
-							ng-if="!isCreatingOrEditing()">
-					</autocomplete>
-				</div>
-			</div>
 			<container template="main"></container>
 			<div class="row">
 				<hr />

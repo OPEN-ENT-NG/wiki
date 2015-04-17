@@ -1,26 +1,37 @@
 <div class="twelve cell" workflow="wiki.list">
+	<div class="row rigid-grid">
+		<!-- search bar -->
+		<div class="four cell">
+			<autocomplete
+					workflow="wiki.listAllPages"
+					options="searchbar.allpageslist"
+					ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)"
+					ng-model="selectedPage"
+					ng-if="!isCreatingOrEditing()">
+			</autocomplete>
+		</div>
+	</div>
+
 	<div class="fallen dominos">
-		<alphabetical list="wiki in wikis.all">
-			<div class="item">
-				<section class="domino cyan">
-					<div class="top" ng-click="openSelectedWiki(wiki._id)">
-						<img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" />
-					</div>
-					<div class="bottom">
-						<div class="content">
-							<div class="cell" ng-click="openSelectedWiki(wiki._id)">
-								<strong>[[wiki.title]]</strong>
-								<br />[[wiki.owner.displayName]]
-								<br />[[formatDate(wiki.modified)]]
-							</div>
-							<div ng-show="canManageWiki(wiki)" class="bottom-locked eleven vertical-spacing-twice">
-								<input type="checkbox" data-ng-model="wiki.selected" class="right-magnet cell" />
-							</div>
+		<div class="item" ng-repeat="wiki in wikis.all">
+			<section class="domino cyan">
+				<div class="top" ng-click="openSelectedWiki(wiki._id)">
+					<img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" />
+				</div>
+				<div class="bottom">
+					<div class="content">
+						<div class="cell" ng-click="openSelectedWiki(wiki._id)">
+							<strong>[[wiki.title]]</strong>
+							<br />[[wiki.owner.displayName]]
+							<br />[[formatDate(wiki.modified)]]
+						</div>
+						<div ng-show="canManageWiki(wiki)" class="bottom-locked eleven vertical-spacing-twice">
+							<input type="checkbox" data-ng-model="wiki.selected" class="right-magnet cell" />
 						</div>
 					</div>
-				</section>
-			</div>
-		</alphabetical>
+				</div>
+			</section>
+		</div>
 	</div>
 		
 	<!-- Lightbox to share wikis -->
@@ -31,7 +42,6 @@
 	</div>
 	
 	<!-- Lightbox to confirm wiki deletion -->
-	<div ng-if="display.showConfirmDelete">
 		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
 		<h2><i18n>wiki.confirmdeleteform.title</i18n></h2>
 		<p><i18n>wiki.confirmdeleteform.message</i18n></p>
@@ -45,7 +55,6 @@
 			</button>
 		</div>
 		</lightbox>
-	</div>	
 	
 </div>
 
@@ -53,21 +62,24 @@
 <section class="toggle-buttons" ng-class="{ hide: wikis.selection().length === 0 }">
 	<div class="toggle">
 		<div class="row">
+			<a class="button cell" workflow="wiki.print" ng-if="wikis.selection().length === 1" ng-href="/wiki/print?wiki=[[wikis.selection()[0]._id]]" target="_blank">
+				<i18n>print</i18n>
+			</a>
 			<resource-right name="edit" resource="wikis.selection()" class="cell">
 				<button ng-if="wikis.selection().length === 1"
 					ng-click="displayEditWikiForm(wikis.selection()[0])"
 				>
-					<i18n>wiki.update</i18n>
-				</button>
-			</resource-right>
-			<resource-right name="deleteWiki" resource="wikis.selection()" class="cell">
-				<button ng-click="display.showConfirmDelete = true">
-					<i18n>wiki.delete</i18n>
+					<i18n>properties</i18n>
 				</button>
 			</resource-right>
 			<resource-right name="share" resource="wikis.selection()" class="cell">
 				<button ng-click="display.showPanel = true">
 					<i18n>wiki.share</i18n>
+				</button>
+			</resource-right>
+			<resource-right name="deleteWiki" resource="wikis.selection()" class="cell">
+				<button ng-click="display.showConfirmDelete = true">
+					<i18n>wiki.delete</i18n>
 				</button>
 			</resource-right>
 		</div>

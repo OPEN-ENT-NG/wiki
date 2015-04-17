@@ -1,32 +1,27 @@
-<div class="row">
-	<hr />
-</div>
-
 <article class="row">
-	<section class="row">
-		<form class="row reduce-block-six">
-			<div class="row">
-				<div class="one cell clip fixed-block height-one">
-					<div class="absolute" loading-panel="upload-wiki-thumbnail">
-						<image-select ng-model="wiki.thumbnail" default="/img/illustrations/wiki-default.png"></image-select>
-					</div>
+	<form>
+		<div class="rigid-grid row">
+			<div class="two cell clip height-two">
+				<div class="absolute" loading-panel="upload-wiki-thumbnail">
+					<image-select ng-model="wiki.thumbnail" default="/img/illustrations/wiki-default.png"></image-select>
 				</div>
-				<div class="eleven cell reduce-block-eight">
-					<input type="text" ng-model="wiki.title" class="twelve cell" />
+			</div>
+			<div class="margin-two height-two">
+				<div class="twelve cell horizontal-spacing">
+					<input type="text" ng-model="wiki.title" class="twelve cell" i18n-placeholder="wiki.title" />
 					<div class="row">
 						<hr class="row" />
 					</div>
 					<media-select ng-model="wiki.thumbnail" translate-attr="label" label="wiki.editform.change.picture" file-format="'img'"></media-select>
+
+				</div>
+				<div class="row bottom-locked">
+					<button ng-click="updateWiki()" class="right-magnet">
+						<i18n>wiki.editform.save</i18n>
+					</button>
+					<input type="button" class="button right-magnet cancel" ng-click="cancelEditWiki()" i18n-value="wiki.editform.cancel">
 				</div>
 			</div>
-			<div class="row reduce-block-eight">
-				<input type="submit" ng-click="updateWiki()" class="button right-magnet" i18n-value="wiki.editform.save">
-				<input type="button" class="button right-magnet cancel" ng-click="cancelEditWiki()" i18n-value="wiki.editform.cancel">
-				<div class="clear"></div>
-			</div>
-		</form>
-
-	</section>
+		</div>
+	</form>
 </article>
-
-<div class="clear"></div>

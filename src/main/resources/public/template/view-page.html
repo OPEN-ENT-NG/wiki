@@ -7,64 +7,56 @@
 				<div class="row">
 					<div class="seven cell">
 						<h2>[[selectedWiki.page.title]]</h2>
-						<em ng-if="selectedWiki.page.modified">
+						<em ng-if="selectedWiki.page.modified" class="cell">
 							<i18n>wiki.last.modification.by</i18n>
 							<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
 							<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
 						</em>
 					</div>
 					<div class="five cell">
-						<div class="display-buttons">
-							<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
-								<drop-down-button class="cell">
-									<label class="opener"><i18n>plus</i18n></label>
-									<opts>
-										<resource-right name="deletePage" resource="selectedWiki">
-											<li ng-click="display.showConfirmDeletePage = true;">
-												<i18n>wiki.page.delete</i18n>
-											</li>
-										</resource-right>
-										<li ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
-											<i18n>wiki.page.duplicate</i18n>
-										</li>
-										<li ng-click="listVersions()">
-											<i18n>wiki.page.versions</i18n>
-										</li>
-									</opts>
-								</drop-down-button>
+						<div class="row">
+							<plus class="right-magnet cell">
+								<resource-right name="deletePage" resource="selectedWiki">
+									<button ng-click="display.showConfirmDeletePage = true;">
+										<i18n>wiki.page.delete</i18n>
+									</button>
+								</resource-right>
+								<button class="cell" ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
+									<i18n>wiki.page.duplicate</i18n>
+								</button>
+								<button class="cell" ng-click="listVersions()">
+									<i18n>wiki.page.versions</i18n>
+								</button>
+							</plus>
+							<resource-right name="comment" resource="selectedWiki" class="cell right-magnet">
+								<button ng-click="showCommentForm()">
+									<i18n>comment</i18n>
+								</button>
 							</resource-right>
 							<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
 								<button ng-click="editPage(selectedWiki)">
-									<i18n>wiki.page.edit</i18n>
+									<i18n>edit</i18n>
 								</button>
 							</resource-right>
 						</div>
-					</div>
+						<div class="row">
+							<em class="cell right-magnet">
+								<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
+								<span ng-if="!selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
+									<i18n>wiki.comment.display</i18n> ([[selectedWiki.page.comments.length]])
+								</span>
+								<span ng-if="selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
+									<i18n>wiki.comment.hide</i18n> ([[selectedWiki.page.comments.length]])
+								</span>
+								</a>
+							</em>
+						</div>
 				</div>
 				<div class="row">
 					<hr />
 				</div>
 
 				<div bind-html="selectedWiki.page.content" />
-
-				<div class="row content-line">
-					<div class="five cell right-magnet">
-						<resource-right name="comment" resource="selectedWiki">
-							<a ng-click="showCommentForm()" ng-if="!selectedWiki.page.comments || selectedWiki.page.comments.length === 0" class="medium-text right-magnet">
-								<i18n>wiki.comment.add</i18n>
-							</a>
-						</resource-right>
-						<a ng-click="switchCommentsDisplay()" class="medium-text right-magnet">
-				<span ng-if="!selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
-					<i18n>wiki.comment.display</i18n> ([[selectedWiki.page.comments.length]])
-				</span>
-				<span ng-if="selectedWiki.page.showComments && selectedWiki.page.comments && selectedWiki.page.comments.length > 0">
-					<i18n>wiki.comment.hide</i18n> ([[selectedWiki.page.comments.length]])
-				</span>
-						</a>
-					</div>
-					<div class="clear"></div>
-				</div>
 
 				<div class="row" ng-if="selectedWiki.page.showCommentForm === true">
 					<div ng-include="template.containers.commentForm"></div>
@@ -95,10 +87,10 @@
 <h2><i18n>wiki.page.confirmdeleteform.title</i18n></h2>
 <p><i18n>wiki.page.confirmdeleteform.message</i18n></p>
 <div class="row">
-	<button ng-click="deletePage(); display.showConfirmDeletePage = false;" class="right-magnet">
+	<button ng-click="deletePage(); display.showConfirmDeletePage = false;">
 		<i18n>wiki.page.confirmdeleteform.title.delete</i18n>
 	</button>
-	<button ng-click="display.showConfirmDeletePage = false" class="cancel right-magnet">
+	<button ng-click="display.showConfirmDeletePage = false">
 		<i18n>wiki.page.confirmdeleteform.title.cancel</i18n>
 	</button>
 </div>

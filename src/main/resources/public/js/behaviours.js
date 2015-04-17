@@ -47,7 +47,7 @@ var wikiNamespace = {
 
 // Functions shared by wiki sniplet and wiki application
 wikiNamespace.formatDate = function(dateObject){
-	return moment(dateObject.$date).lang('fr').format('DD/MM/YYYY H:mm');
+	return moment(dateObject.$date).lang('fr').calendar();
 };
 
 wikiNamespace.getDateAndTime = function(dateObject){

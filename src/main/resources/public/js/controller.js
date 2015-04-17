@@ -15,7 +15,7 @@ routes.define(function($routeProvider){
 });
 
 
-function WikiController($scope, template, model, route, $location){
+function WikiController($scope, template, model, route, $location, $route){
 	var Wiki = Behaviours.applicationsBehaviours.wiki.namespace.Wiki;
 	var Page = Behaviours.applicationsBehaviours.wiki.namespace.Page;
 	var Version = Behaviours.applicationsBehaviours.wiki.namespace.Version;
@@ -127,6 +127,7 @@ function WikiController($scope, template, model, route, $location){
 	
     // View initialization
 	template.open('sideMenu', 'side-menu');
+	template.open('side-panel', 'side-panel');
 	template.open('commentForm', 'comment-page');
 	template.open('main', 'list-wikis');
 	
@@ -295,6 +296,7 @@ function WikiController($scope, template, model, route, $location){
 	// Functions on wiki pages
 	$scope.listPages = function(wikiId){
 		$location.path('/view/' + $scope.selectedWiki._id + '/list-pages');
+		$route.reload();
 	};
 
 	$scope.openPageFromSearchbar = function(wikiId, pageId) {
@@ -408,7 +410,17 @@ function WikiController($scope, template, model, route, $location){
 			});
 		});
 	};
-	
+
+	$scope.removeSelectedPages = function(){
+		$scope.selectedWiki.pages.selection().forEach(function(page){
+			$scope.selectedWiki.deletePage(page._id, function(result){
+				updateSearchBar();
+				$scope.listPages($scope.selectedWiki._id);
+			});
+		});
+		$scope.display.showConfirmDelete = false;
+	};
+
 	$scope.deletePage = function(){
 		$scope.selectedWiki.deletePage($scope.selectedWiki.page._id, function(result){
 			updateSearchBar();
@@ -417,14 +429,29 @@ function WikiController($scope, template, model, route, $location){
         });
 	};
 
-	$scope.showDuplicatePageForm = function() {
-		$scope.wikiDuplicate = {};
-		$scope.wikiDuplicate.page = new Page({
-			title : '',
-			content : $scope.selectedWiki.page.content,
-			isIndex : false
-		});
-		template.open('main', 'duplicate-page');
+	$scope.showDuplicatePageForm = function(page) {
+		var content;
+		function copyPageContent(){
+			$scope.wikiDuplicate = {};
+			$scope.wikiDuplicate.page = new Page({
+				title : '',
+				content : content,
+				isIndex : false
+			});
+			template.open('main', 'duplicate-page');
+			$scope.$apply();
+		}
+
+		if(page){
+			$scope.selectedWiki.getPage(page._id, function(result){
+				content = _.findWhere(result.pages, { _id: page._id }).content;
+				copyPageContent();
+			});
+		}
+		else{
+			content = $scope.selectedWiki.page.content;
+			copyPageContent();
+		}
 	};
 	
 	$scope.duplicatePage = function() {
@@ -458,6 +485,11 @@ function WikiController($scope, template, model, route, $location){
 
 	
 	// Functions on versions (revisions) of a wiki page
+	$scope.viewPageVersions = function(page){
+		$scope.selectedWiki.page = page;
+		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
+	};
+
 	$scope.listVersions = function(){
 		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
 	};
