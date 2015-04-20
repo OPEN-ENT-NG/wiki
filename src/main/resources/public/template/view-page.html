@@ -65,8 +65,10 @@
 				<div class="row" ng-if="selectedWiki.page.showComments">
 					<div class="row" ng-repeat="comment in selectedWiki.page.comments">
 						<article class="comment reduce-block-eight">
-							<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
-							<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
+							<em>
+								[[formatDate(comment.created)]], <i18n>wiki.by</i18n>
+								<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
+							</em>
 							<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
 							   ng-if="(comment.author === me.userId || selectedWiki.myRights.deleteWiki)">
 								<i18n>wiki.comment.delete</i18n>
