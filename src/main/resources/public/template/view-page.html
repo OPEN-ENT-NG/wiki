@@ -24,9 +24,11 @@
 								<button class="cell" ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
 									<i18n>wiki.page.duplicate</i18n>
 								</button>
-								<button class="cell" ng-click="listVersions()">
-									<i18n>wiki.page.versions</i18n>
-								</button>
+								<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
+									<button class="cell" ng-click="listVersions()">
+										<i18n>wiki.page.versions</i18n>
+									</button>
+								</resource-right>
 							</plus>
 							<resource-right name="comment" resource="selectedWiki" class="cell right-magnet">
 								<button ng-click="showCommentForm()">
@@ -78,6 +80,7 @@
 					</div>
 				</div>
 			</div>
+				</div>
 		</article>
 	</div>
 
