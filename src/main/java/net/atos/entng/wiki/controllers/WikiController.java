@@ -3,21 +3,28 @@ package net.atos.entng.wiki.controllers;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.platform.Container;
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -28,7 +35,6 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.request.RequestUtils;
-
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
 
 public class WikiController extends MongoDbControllerHelper {
@@ -40,6 +46,15 @@ public class WikiController extends MongoDbControllerHelper {
 	private static final String WIKI_COMMENT_CREATED_EVENT_TYPE = WIKI_NAME + "_COMMENT_CREATED";
 	private static final int OVERVIEW_LENGTH = 50;
 
+	private EventStore eventStore;
+	private enum WikiEvent { ACCESS }
+
+	@Override
+	public void init(Vertx vertx, Container container, RouteMatcher rm,
+			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
+		super.init(vertx, container, rm, securedActions);
+		eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
+	}
 
 	public WikiController(String collection) {
 		super(collection);
@@ -51,6 +66,9 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction("wiki.view")
 	public void view(HttpServerRequest request) {
 		renderView(request);
+
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventStore.createAndStoreEvent(WikiEvent.ACCESS.name(), request);
 	}
 
 	@Get("/print")
