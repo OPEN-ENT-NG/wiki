@@ -11,13 +11,43 @@
 
 <div ng-if="display.action !== 'wikiNotFound'" class="twelve cell">
 	<div class="twelve cell">
-		<div class="twelve cell">
+		<div class="cell">
 			<h2>
-				<i class="wiki"></i>
+				<i class="wiki">
+					<side-panel>
+						<nav ng-if="wiki.lastPages" class="vertical">
+							<h2><i18n>wiki.last.modified.pages</i18n></h2>
+							<ul>
+								<li ng-repeat="page in wiki.lastPages">
+									<a ng-click="openPageFromSidepanel(page._id)">[[page.title]] <em>- [[getRelativeTimeFromDate(page.modified)]]</em></a>
+								</li>
+							</ul>
+						</nav>
+						<nav class="vertical">
+							<h2><i18n>wiki.all.pages</i18n></h2>
+							<div class="search">
+								<!-- search bar -->
+								<autocomplete
+										workflow="wiki.listAllPages"
+										options="searchbar.allpageslist"
+										ng-model="selectedPage"
+										ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
+								</autocomplete>
+							</div>
+							<ul>
+								<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
+									<a ng-click="openPageFromSidepanel(page._id)">[[page.title]]
+										<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
+									</a>
+								</li>
+							</ul>
+						</nav>
+					</side-panel>
+				</i>
 				<span>[[wiki.title]]</span>
 			</h2>
 		</div>
-		<div class="contextual-buttons twelve cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
+		<div class="right-magnet cell" ng-if="display.action === 'viewPage' || display.action === 'pagesList'">
 			<drop-down-button ng-if="displayDropDownButton(wiki) === true" class="cell right-magnet">
 				<label class="opener"><i18n>plus</i18n></label>
 				<opts>
@@ -350,45 +380,6 @@
 		</button>
 	</div>
 </lightbox>
-
-<!-- Side panel -->
-<div ng-class="{ 'toggle-panel sniplet': true, hide: !display.showPanel }">
-	<div class="toggle cell">
-		<div class="content">
-			<div ng-if="wiki.lastPages" class="vertical">
-				<h2><i18n>wiki.last.modified.pages</i18n></h2>
-				<ul>
-					<li ng-repeat="page in wiki.lastPages">
-					   <a ng-click="openPageFromSidepanel(page._id)">[[page.title]]</a> 
-					    - [[getRelativeTimeFromDate(page.modified)]]
-					</li>
-				</ul>
-			</div>
-			<div>
-				<h2><i18n>wiki.all.pages</i18n></h2>
-				<div class="wiki-sniplet">
-					<!-- search bar -->
-					<autocomplete
-						workflow="wiki.listAllPages"
-						options="searchbar.allpageslist"
-						ng-model="selectedPage"
-						ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
-					</autocomplete>
-				</div>
-				<ul>
-					<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
-						<a ng-click="openPageFromSidepanel(page._id)">[[page.title]] 
-							<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</div>
-<ul class="icons-tabs sniplet">
-	<li ng-click="togglePanel($event)" ng-class="{ active: display.showPanel }"><i class="chevron-right"></i></li>
-</ul>
 
 <!-- Buttons to restore or compare versions -->
 <div ng-if="display.action === 'versions'">
