@@ -6,7 +6,7 @@
 		<article class="twelve cell">
 			<ul class="toc twelve cell">
 				<li ng-repeat="page in selectedWiki.pages.all">
-					<label>
+					<label resource-right name="editPage" resource="selectedWiki" class="cell">
 						<input type="checkbox" ng-model="page.selected" />
 						<span></span>
 					</label>
