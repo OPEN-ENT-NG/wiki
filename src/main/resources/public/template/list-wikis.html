@@ -15,12 +15,12 @@
 	<div class="fallen dominos">
 		<div class="item" ng-repeat="wiki in wikis.all">
 			<section class="domino cyan">
-				<div class="top" ng-click="openSelectedWiki(wiki._id)">
+				<div class="top" ng-click="redirect('/view/' + wiki._id)">
 					<img class="absolute" skin-src="[[getWikiThumbnail(wiki)]]" />
 				</div>
 				<div class="bottom">
 					<div class="content">
-						<div class="cell" ng-click="openSelectedWiki(wiki._id)">
+						<div class="cell" ng-click="redirect('/view/' + wiki._id)">
 							<strong>[[wiki.title]]</strong>
 							<br />[[wiki.owner.displayName]]
 							<br />[[formatDate(wiki.modified)]]

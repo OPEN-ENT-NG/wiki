@@ -287,7 +287,6 @@ function WikiController($scope, template, model, route, $location, $route){
 			$scope.selectedWiki.pages.sync(function(){
 				$scope.selectedWiki.setLastPages();
 				template.open('main', 'list-wiki-pages');
-				window.location.hash = '/view/' + $scope.selectedWiki._id;
 	        });
 		}
 	};
@@ -298,6 +297,10 @@ function WikiController($scope, template, model, route, $location, $route){
 		$location.path('/view/' + $scope.selectedWiki._id + '/list-pages');
 		$route.reload();
 	};
+
+	$scope.redirect = function(path){
+		$location.path(path);
+	}
 
 	$scope.openPageFromSearchbar = function(wikiId, pageId) {
 		window.location.hash = '/view/' + wikiId + '/' + pageId;
