@@ -409,8 +409,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 							final String pageTitle = data.getString("title");
 							final String pageContent = data.getString("content");
-							if (pageTitle == null || pageTitle.trim().isEmpty()
-									|| pageContent == null || pageContent.trim().isEmpty()) {
+							if (pageTitle == null || pageTitle.trim().isEmpty()) {
 								badRequest(request);
 								return;
 							}
