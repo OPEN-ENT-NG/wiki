@@ -1,10 +1,9 @@
 <hr />
 <resource-right name="comment" resource="selectedWiki">
-	<form>
-		<textarea ng-model="selectedWiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
+	<form ng-submit="commentPage()">
+		<textarea ng-model="selectedWiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment" required></textarea>
 		<div>
-			<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
+			<button class="button right-magnet" translate content="wiki.comment.save"></button>
 		</div>
-		<div class="clear"></div>
 	</form>
 </resource-right>
