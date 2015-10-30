@@ -404,7 +404,14 @@ function compare(a, b){
 			var noEquivalent = true;
 			for(var n = 0; n < bVariations[index].length; n++){
 				if(similar(a[aIndex], bVariations[index][n])){
-					$(a[aIndex]).addClass('diff');
+					if($(a[aIndex]).children().length){
+						compare($(bVariations[index][n]).children(), $(a[aIndex]).children());
+						compare($(a[aIndex]).children(), $(bVariations[index][n]).children());
+					}
+					else{
+						$(a[aIndex]).addClass('diff');
+					}
+
 					noEquivalent = false;
 				}
 			}
