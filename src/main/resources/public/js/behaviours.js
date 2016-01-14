@@ -1,3 +1,6 @@
+/// <reference path="../../../../../../ent-core/infra/src/main/resources/public/js/jquery-1.10.2.min.js" />
+/// <reference path="../../../../../../ent-core/infra/src/main/resources/public/js/lib.js" />
+
 console.log('wiki behaviours loaded');
 
 var isWikiApplication = function() {
@@ -423,7 +426,13 @@ function compare(a, b){
 			aVariations ++;
 		}
 		if(aVariations === 1 && bVariations[index].length === 1){
-			$(a[aIndex]).removeClass('added').addClass('diff');
+            if($(a[aIndex]).children().length){
+                compare($(bVariations[index][bVariations[index].length - 1]).children(), $(a[aIndex]).children());
+                compare($(a[aIndex]).children(), $(bVariations[index][bVariations[index].length - 1]).children());
+            }
+            else{
+                $(a[aIndex]).removeClass('added').addClass('diff');
+            }
 		}
 		aIndex ++;
 	});
@@ -432,7 +441,13 @@ function compare(a, b){
 		var noEquivalent = true;
 		for(var n = 0; n < bVariations[sequence.length - 1].length; n++){
 			if(similar(a[j], bVariations[sequence.length - 1][n])){
-				$(a[j]).addClass('diff');
+				if($(a[j]).children().length){
+                    compare($(bVariations[sequence.length - 1][bVariations[sequence.length - 1].length - 1]).children(), $(a[j]).children());
+                    compare($(a[j]).children(), $(bVariations[sequence.length - 1][bVariations[sequence.length - 1].length - 1]).children());
+                }
+                else{
+                    $(a[j]).addClass('diff');
+                }
 				noEquivalent = false;
 			}
 		}
@@ -442,7 +457,16 @@ function compare(a, b){
 		}
 	}
 	if(j === aIndex + 1 && bVariations[sequence.length - 1].length === 1){
-		$(a[j]).removeClass('added').addClass('diff');
+        if(!a[j]){
+            return;
+        }
+        if($(a[j]).children().length){
+            compare($(bVariations[sequence.length - 1][bVariations[sequence.length - 1].length - 1]).children(), $(a[j]).children());
+            compare($(a[j]).children(), $(bVariations[sequence.length - 1][bVariations[sequence.length - 1].length - 1]).children());
+        }
+        else{
+            $(a[j]).removeClass('added').addClass('diff');
+        }
 	}
 }
 
