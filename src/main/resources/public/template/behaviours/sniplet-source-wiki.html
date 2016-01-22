@@ -29,7 +29,7 @@
 						<article class="found-resources">
 							<ul class="illustrated-list">
 								<li ng-repeat="wiki in wikis | filter:searchText" ng-click="setSnipletSource({_id:wiki._id}); snipletResource.synchronizeRights();">
-									<img skin-src="[[wiki.icon]]" class="illustration" />
+									<img skin-src="[[wiki.thumbnail || '/img/illustrations/wiki-default.png']]" />
 									<a class="name">[[wiki.title]]</a>
 									<em class="owner">[[wiki.owner.displayName]]</em>
 								</li>
