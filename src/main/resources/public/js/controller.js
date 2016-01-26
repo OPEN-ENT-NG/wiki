@@ -322,7 +322,8 @@ function WikiController($scope, template, model, route, $location, $route){
 					$scope.$apply();
 				},
 				function(){
-					$scope.notFound=true;
+					$scope.notFound = true;
+                    $scope.$apply();
 				}
 			);
 		});
