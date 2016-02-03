@@ -12,38 +12,37 @@
 <div ng-if="display.action !== 'wikiNotFound'" class="twelve cell">
 	<div class="twelve cell">
 		<div class="cell">
+			<side-panel>
+				<nav ng-if="wiki.lastPages" class="vertical">
+					<h2><i18n>wiki.last.modified.pages</i18n></h2>
+					<ul>
+						<li ng-repeat="page in wiki.lastPages">
+							<a ng-click="openPageFromSidepanel(page._id)">[[page.title]] <em>- [[getRelativeTimeFromDate(page.modified)]]</em></a>
+						</li>
+					</ul>
+				</nav>
+				<nav class="vertical">
+					<h2><i18n>wiki.all.pages</i18n></h2>
+					<div class="search">
+						<!-- search bar -->
+						<autocomplete
+								workflow="wiki.listAllPages"
+								options="searchbar.allpageslist"
+								ng-model="selectedPage"
+								ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
+						</autocomplete>
+					</div>
+					<ul>
+						<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
+							<a ng-click="openPageFromSidepanel(page._id)">[[page.title]]
+								<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</side-panel>
 			<h2>
-				<i class="wiki">
-					<side-panel>
-						<nav ng-if="wiki.lastPages" class="vertical">
-							<h2><i18n>wiki.last.modified.pages</i18n></h2>
-							<ul>
-								<li ng-repeat="page in wiki.lastPages">
-									<a ng-click="openPageFromSidepanel(page._id)">[[page.title]] <em>- [[getRelativeTimeFromDate(page.modified)]]</em></a>
-								</li>
-							</ul>
-						</nav>
-						<nav class="vertical">
-							<h2><i18n>wiki.all.pages</i18n></h2>
-							<div class="search">
-								<!-- search bar -->
-								<autocomplete
-										workflow="wiki.listAllPages"
-										options="searchbar.allpageslist"
-										ng-model="selectedPage"
-										ng-change="openPageFromSearchbar(selectedPage.wiki_id, selectedPage._id)">
-								</autocomplete>
-							</div>
-							<ul>
-								<li ng-repeat="page in wiki.pages.all | orderBy: 'title'">
-									<a ng-click="openPageFromSidepanel(page._id)">[[page.title]]
-										<em ng-if="page._id === wiki.index">[<i18n>wiki.homepage.label</i18n>]</em>
-									</a>
-								</li>
-							</ul>
-						</nav>
-					</side-panel>
-				</i>
+				<i class="wiki"></i>
 				<span>[[wiki.title]]</span>
 			</h2>
 		</div>
@@ -73,7 +72,7 @@
 					</div>
 				</opts>
 			</drop-down-button>
-	
+
 			<resource-right name="editPage" resource="wiki" ng-if="display.action === 'viewPage'" class="cell right-magnet">
 				<button ng-click="editPage()">
 					<i18n>wiki.page.edit</i18n>
@@ -84,12 +83,12 @@
 			</resource-right>
 		</div>
 	</div>
-	
+
 	<div ng-if="display.action === 'pagesList'" class="twelve cell">
 		<ul class="twelve cell wiki-sniplet">
 			<alphabetical list="page in wiki.pages.all" class="twelve cell">
 				<li>
-					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)"> 
+					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)">
 						[[page.title]]
 						<em>[<i18n>wiki.homepage.label</i18n>]</em>
 					</a>
@@ -99,7 +98,7 @@
 			<li ng-if="wiki.pages.all.length === 0"><i18n>wiki.contains.no.page</i18n></li>
 		</ul>
 	</div>
-	
+
 	<div ng-if="display.action === 'viewPage' && wiki.page !== undefined" class="twelve cell">
 		<div>
 			<article class="twelve cell">
@@ -115,9 +114,9 @@
 					<div class="twelve cell">
 						<hr />
 					</div>
-	
+
 					<div bind-html="wiki.page.content" />
-					
+
 					<!-- comments -->
 					<div>
 						<div class="twelve cell content-line">
@@ -138,7 +137,7 @@
 							</div>
 							<div class="clear"></div>
 						</div>
-		
+
 						<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
 							<resource-right name="comment" resource="wiki">
 								<form>
@@ -150,7 +149,7 @@
 								</form>
 							</resource-right>
 						</div>
-		
+
 						<div class="twelve cell" ng-if="wiki.page.showComments">
 							<div class="row" ng-repeat="comment in wiki.page.comments">
 								<article class="comment reduce-block-eight">
@@ -165,12 +164,12 @@
 							</div>
 						</div>
 					</div>
-					
+
 				</div>
 			</article>
 		</div>
 	</div>
-	
+
 	<div ng-if="display.action === 'pageNotFound'" class="twelve cell">
 		<default-styles>
 			<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
@@ -181,7 +180,7 @@
 			</article>
 		</default-styles>
 	</div>
-	
+
 	<div ng-if="display.action === 'createPage'" class="wiki-sniplet">
 		<div class="twelve cell">
 				<div class="twelve cell">
@@ -205,7 +204,7 @@
 			</button>
 		</div>
 	</div>
-	
+
 	<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
 		<div class="twelve cell">
 			<div class="twelve cell">
@@ -229,7 +228,7 @@
 			</button>
 		</div>
 	</div>
-	
+
 	<div ng-if="display.action === 'duplicatePage'" class="wiki-sniplet">
 		<div class="twelve cell">
 			<h2>
@@ -241,32 +240,32 @@
 		<hr class="twelve cell"/>
 		<form class="twelve cell">
 			<div class="twelve cell">
-				<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell" 
+				<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell"
 				i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
 			</div>
 			<hr class="twelve cell"/>
 			<div class="twelve cell">
-				<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId" 
-				ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)" 
+				<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId"
+				ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)"
 				ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
 				</select>
 			</div>
 			<hr class="twelve cell"/>
-			
+
 			<div class="twelve cell">
 				<button class="right-magnet" ng-click="duplicatePage()" translate content="wiki.page.duplicateform.save"></button>
 				<button class="right-magnet cancel" ng-click="cancelDuplicatePage()" translate content="wiki.page.duplicateform.cancel"></button>
 			</div>
 		</form>
 	</div>
-	
+
 	<div ng-if="display.action === 'versions'">
 		<article>
 			<h2 class="cell"><i18n>wiki.page.versions</i18n></h2>
 			<div class="display-buttons">
 				<button ng-click="display.action = 'viewPage'" class="cancel"><i18n>back</i18n></button>
 			</div>
-			
+
 			<table class="twelve list-view">
 				<thead>
 				<tr>
@@ -293,7 +292,7 @@
 			</table>
 		</article>
 	</div>
-	
+
 	<div ng-if="display.action === 'viewVersion'">
 		<article class="twelve cell">
 			<div class="twelve cell wiki-sniplet">
@@ -327,7 +326,7 @@
 			</div>
 		</article>
 	</div>
-	
+
 	<div ng-if="display.action === 'compareVersions'" class="wiki-sniplet">
 		<div class="row">
 			<h2 class="cell">Comparer</h2>
@@ -335,7 +334,7 @@
 				<button ng-click="display.action = 'versions';" class="cancel"><i18n>back</i18n></button>
 			</div>
 		</div>
-		
+
 		<table class="twelve compare list-view">
 			<thead>
 				<tr>
@@ -363,7 +362,7 @@
 			</tbody>
 		</table>
 	</div>
-	
+
 </div>
 
 

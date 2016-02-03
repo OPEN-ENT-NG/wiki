@@ -14,12 +14,11 @@
 		<div class="row">
 			<div class="twelve cell">
 				<div class="eight cell">
+					<side-panel ng-if="selectedWiki">
+						<container template="side-panel"></container>
+					</side-panel>
 					<h1>
-						<i class="wiki">
-							<side-panel ng-if="selectedWiki">
-								<container template="side-panel"></container>
-							</side-panel>
-						</i>
+						<i class="wiki"></i>
 						<a ng-click="displayWikiList()">[[applicationName]]</a>
 						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
 							: <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
@@ -40,7 +39,7 @@
 				<hr />
 			</div>
 		</section>
-		
+
 		<!-- Lightbox to share wikis -->
 		<div ng-if="display.showPanelForCurrentWiki">
 			<lightbox show="display.showPanelForCurrentWiki" on-close="display.showPanelForCurrentWiki = false;">
@@ -48,33 +47,33 @@
 			</lightbox>
 		</div>
 	</portal>
-	
+
 	<div ng-if="notFound">
 		<div ng-if="!me.userId" class="absolute">
 			<default-styles>
-		
+
 				<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
 				<article>
 					<div class="row">
 						<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
 					</div>
-		
+
 					<div class="row vertical-spacing-twice">
 						<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
 					</div>
 				</article>
-		
+
 			</default-styles>
 		</div>
 		<div ng-if="me.userId" class="absolute">
 			<portal>
-		
+
 				<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
 				<article>
 					<div class="row">
 						<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
 					</div>
-		
+
 					<div class="row vertical-spacing-twice">
 						<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
 					</div>
@@ -82,6 +81,6 @@
 			</portal>
 		</div>
 	</div>
-	
+
 </body>
 </html>
