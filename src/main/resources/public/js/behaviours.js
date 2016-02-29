@@ -14,6 +14,7 @@ var displayAction = function(scope, actionName) {
 	else {
 		scope.display = {action: actionName};
 	}
+	scope.$apply();
 };
 
 
@@ -1101,7 +1102,6 @@ function viewWiki(scope, wikiId, callback, context){
 		var wiki = _.find(scope.wikis, function(pWiki) {
 			return pWiki._id === wikiId;
 		});
-		wiki.context = context;
 		
 		// wiki not found
 		if(!wiki) {
@@ -1109,6 +1109,7 @@ function viewWiki(scope, wikiId, callback, context){
 			return;
 		}
 		
+		wiki.context = context;
 		wiki.pages.sync(function(){
 			wiki.setLastPages();
 			
