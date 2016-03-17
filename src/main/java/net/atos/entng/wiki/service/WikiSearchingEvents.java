@@ -35,7 +35,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 
 	@Override
 	public void searchResource(List<String> appFilters, String userId, JsonArray groupIds, JsonArray searchWords, Integer page, Integer limit, final JsonArray columnsHeader,
-							   final Handler<Either<String, JsonArray>> handler) {
+							   final String locale, final Handler<Either<String, JsonArray>> handler) {
 		if (appFilters.contains(WikiSearchingEvents.class.getSimpleName())) {
 			final List<String> returnFields = new ArrayList<String>();
 			returnFields.add("title");
@@ -106,22 +106,22 @@ public class WikiSearchingEvents implements SearchingEvents {
 						public void handle(Message<JsonObject> event) {
 							final Either<String, JsonArray> ei = validResults(event);
 							if (ei.isRight()) {
-								final JsonArray res = formatSearchResult(ei.right().getValue(), columnsHeader, searchWordsLst);
+								final JsonArray res = formatSearchResult(ei.right().getValue(), columnsHeader, searchWordsLst, locale);
 								handler.handle(new Right<String, JsonArray>(res));
 							} else {
 								handler.handle(new Either.Left<String, JsonArray>(ei.left().getValue()));
 							}
+							if (log.isDebugEnabled()) {
+								log.debug("[WikiSearchingEvents][searchResource] The resources searched by user are finded");
+							}
 						}
 					});
-			if (log.isDebugEnabled()) {
-				log.debug("[WikiSearchingEvents][searchResource] The resources searched by user are finded");
-			}
 		} else {
 			handler.handle(new Right<String, JsonArray>(new JsonArray()));
 		}
 	}
 
-	private JsonArray formatSearchResult(final JsonArray results, final JsonArray columnsHeader, final List<String> words) {
+	private JsonArray formatSearchResult(final JsonArray results, final JsonArray columnsHeader, final List<String> words, final String locale) {
 		final List<String> aHeader = columnsHeader.toList();
 		final JsonArray traity = new JsonArray();
 
@@ -131,7 +131,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 			if (j != null) {
 				final String wikiId = j.getString("_id");
 				final Map<String, Object> map = formatDescription(j.getArray("pages", new JsonArray()),
-						words, j.getObject("modified"), wikiId);
+						words, j.getObject("modified"), wikiId, locale);
 				jr.putString(aHeader.get(0), j.getString("title"));
 				jr.putString(aHeader.get(1), map.get("description").toString());
 				jr.putObject(aHeader.get(2), (JsonObject) map.get("modified"));
@@ -144,7 +144,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 		return traity;
 	}
 
-	private Map<String, Object> formatDescription(JsonArray ja, final List<String> words, JsonObject defaultDate, String wikiId) {
+	private Map<String, Object> formatDescription(JsonArray ja, final List<String> words, JsonObject defaultDate, String wikiId, String locale) {
 		final Map<String, Object> map = new HashMap<String, Object>();
 
 		Integer countMatchPage = 0;
@@ -185,12 +185,10 @@ public class WikiSearchingEvents implements SearchingEvents {
 			map.put("description", "");
 		} else if (countMatchPage == 1) {
 			map.put("modified", modifiedRes);
-			//TODO modify core api to add local of request
-			map.put("description", i18n.translate("wiki.search.description.one", "fr", titleRes));
+			map.put("description", i18n.translate("wiki.search.description.one", locale, titleRes));
 		} else {
 			map.put("modified", modifiedRes);
-			//TODO modify core api to add local of request
-			map.put("description", i18n.translate("wiki.search.description.sereveral", "fr",
+			map.put("description", i18n.translate("wiki.search.description.several", locale,
 					countMatchPage.toString(), titleRes));
 		}
 
