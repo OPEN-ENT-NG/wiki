@@ -9,6 +9,8 @@
 	<script src="/wiki/public/js/controller.js" type="text/javascript"></script>
 	<script type="text/ng-template" id="empty"></script>
 </head>
+
+
 <body ng-controller="WikiController">
 	<portal ng-if="!notFound">
 		<div class="row">
@@ -17,13 +19,15 @@
 					<side-panel ng-if="selectedWiki">
 						<container template="side-panel"></container>
 					</side-panel>
-					<h1>
-						<i class="wiki"></i>
-						<a ng-click="displayWikiList()">[[applicationName]]</a>
-						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
-							/ <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
-						</span>
-					</h1>
+					<app-title>
+						<h1>
+							<i class="wiki"></i>
+							<a ng-click="displayWikiList()">[[applicationName]]</a>
+							<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
+								/ <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
+							</span>
+						</h1>
+					</app-title>
 				</div>
 				<div class="contextual-buttons four cell">
 					<button ng-if="!selectedWiki || !selectedWiki._id" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
