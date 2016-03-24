@@ -816,16 +816,23 @@ Behaviours.register('wiki', {
 	                		model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.editPage) ||
 	                		this.canCreatePageInAtLeastOneWiki();
                 	},
-					
-                    // Load wikis that can be selected when initializing a wiki sniplet
-                    initSource: function() {
-                    	this.wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki();
-                        http().get('/wiki/list').done(function(pWikis) {
-                                this.wikis = pWikis;
-                                this.$apply('wikis');
+                    initSource: function () {
+                        this.wiki = new Behaviours.applicationsBehaviours.wiki.namespace.Wiki();
+                        this.searchWiki = {};
+                        http().get('/wiki/list').done(function (pWikis) {
+                            var $scope = this;
+                            this.wikis = _.map(pWikis, function (wiki) {
+                                wiki.matchSearch = function () {
+                                    return this.title.toLowerCase().indexOf(($scope.searchWiki.searchText || '').toLowerCase()) !== -1
+                                }
+                                return wiki;
+                            });
+                            this.$apply('wikis');
                         }.bind(this));
                     },
-                    
+                    search: function (wiki) {
+                        return wiki.matchSearch();
+                    },
                     createWiki: function() {
                     	var scope = this;
                     	

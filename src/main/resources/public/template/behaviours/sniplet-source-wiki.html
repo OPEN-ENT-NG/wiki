@@ -23,12 +23,12 @@
 				</div>
 				
 				<div ng-if="wikis" class="twelve cell">
-					<input type="search" ng-model="searchText" i18n-placeholder="wiki.sniplet.search.existing.wiki" class="twelve cell"/>
+					<input type="search" ng-model="searchWiki.searchText" i18n-placeholder="wiki.sniplet.search.existing.wiki" class="twelve cell"/>
 				
 					<div class="row">
 						<article class="found-resources">
 							<ul class="illustrated-list">
-								<li ng-repeat="wiki in wikis | filter:searchText" ng-click="setSnipletSource({_id:wiki._id}); snipletResource.synchronizeRights();">
+								<li ng-repeat="wiki in wikis | filter:search" ng-click="setSnipletSource({_id:wiki._id}); snipletResource.synchronizeRights();">
 									<img skin-src="[[wiki.thumbnail || '/img/illustrations/wiki-default.png']]" />
 									<a class="name">[[wiki.title]]</a>
 									<em class="owner">[[wiki.owner.displayName]]</em>
