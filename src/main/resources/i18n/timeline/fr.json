@@ -1,4 +1,8 @@
 {
+    "wiki": "Wiki",
+    "wiki.comment-added": "Ajout de commentaire dans un Wiki",
+    "wiki.page-created": "Nouvelle page dans un Wiki",
+    "wiki.shared": "Partage d'un Wiki",
     "timeline.wiki.has.created.page": "a créé la page",
     "timeline.wiki.has.commented.page": "a commenté la page",
     "timeline.wiki.has.shared": "vous a partagé le wiki",

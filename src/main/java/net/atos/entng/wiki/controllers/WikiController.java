@@ -367,11 +367,13 @@ public class WikiController extends MongoDbControllerHelper {
 			List<String> recipients = new ArrayList<>(recipientSet);
 
 			JsonObject params = new JsonObject();
-			params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+			params.putString("uri", container.config().getString("host", "http://localhost:8090") +
+					"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
 			params.putString("username", user.getUsername())
 				.putString("pageTitle", pageTitle)
 				.putString("wikiTitle", wiki.getString("title"))
-				.putString("pageUri", "/wiki#/view/" + idWiki + "/" + idPage);
+				.putString("pageUri", container.config().getString("host", "http://localhost:8030") +
+						"/wiki#/view/" + idWiki + "/" + idPage);
 
 			if(!isCreatePage && comment!=null && !comment.isEmpty()) {
 				if(comment.length() > OVERVIEW_LENGTH) {
@@ -380,11 +382,9 @@ public class WikiController extends MongoDbControllerHelper {
 				params.putString("overview", comment);
 			}
 
-			String eventType = isCreatePage ? WIKI_PAGE_CREATED_EVENT_TYPE : WIKI_COMMENT_CREATED_EVENT_TYPE;
-			String template = isCreatePage ? "notify-page-created.html" : "notify-comment-added.html";
+			String notificationName = isCreatePage ? "page-created" : "comment-added";
 
-			notification.notifyTimeline(request, user, WIKI_NAME, eventType,
-					recipients, idResource, template, params);
+			notification.notifyTimeline(request, "wiki." + notificationName, user, recipients, idResource, params);
 		}
 
 	}
@@ -539,11 +539,13 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 
 					JsonObject params = new JsonObject();
-					params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+					params.putString("uri", container.config().getString("host", "http://localhost:8090") +
+							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 							.putString("username", user.getUsername())
-							.putString("wikiUri", "/wiki#/view/" + id);
+							.putString("wikiUri", container.config().getString("host", "http://localhost:8030") +
+									"/wiki#/view/" + id);
 
-					shareJsonSubmit(request, "notify-wiki-shared.html", false, params, "title");
+					shareJsonSubmit(request, "wiki.shared", false, params, "title");
 				}
 			}
 		});
