@@ -374,6 +374,7 @@ public class WikiController extends MongoDbControllerHelper {
 				.putString("wikiTitle", wiki.getString("title"))
 				.putString("pageUri", container.config().getString("host", "http://localhost:8030") +
 						"/wiki#/view/" + idWiki + "/" + idPage);
+			params.putString("resourceUri", params.getString("pageUri"));
 
 			if(!isCreatePage && comment!=null && !comment.isEmpty()) {
 				if(comment.length() > OVERVIEW_LENGTH) {
@@ -544,6 +545,7 @@ public class WikiController extends MongoDbControllerHelper {
 							.putString("username", user.getUsername())
 							.putString("wikiUri", container.config().getString("host", "http://localhost:8030") +
 									"/wiki#/view/" + id);
+					params.putString("resourceUri", params.getString("wikiUri"));
 
 					shareJsonSubmit(request, "wiki.shared", false, params, "title");
 				}
