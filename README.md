@@ -12,6 +12,13 @@
 		gradle clean copyMod
 </pre>
 
+# Présentation du module
+
+## Fonctionnalités
+
+Un Wiki est un ensemble de pages modifiables par les utilisateurs habilités afin de permettre l'écriture et l'illustration collaboratives des documents numériques qu'il contient.
+
+Il met en œuvre un comportement de recherche sur le titre du Wiki, ainsi que sur le titre et le contenu des pages.
 
 ## Configuration du module wiki dans le projet ong
 
