@@ -188,7 +188,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 			if (countMatchPage == 0 && match) {
 				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedRes = jO.getObject("modified");
-			} else if (countMatchPage > 0 && modifiedMarker.before(currentDate)) {
+			} else if (countMatchPage > 0 && match && modifiedMarker.before(currentDate)) {
 				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedMarker = currentDate;
 				modifiedRes = jO.getObject("modified");
