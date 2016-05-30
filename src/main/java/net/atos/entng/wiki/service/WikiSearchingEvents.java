@@ -28,6 +28,8 @@ import fr.wseduc.webutils.Either.Right;
 import fr.wseduc.webutils.I18n;
 import org.entcore.common.search.SearchingEvents;
 import org.entcore.common.service.VisibilityFilter;
+import org.entcore.common.service.impl.MongoDbSearchService;
+import org.entcore.common.utils.StringUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonArray;
@@ -87,7 +89,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 				final List<DBObject> elemsMatch = new ArrayList<DBObject>();
 				for (String word : searchWordsLst) {
 					final DBObject dbObject = QueryBuilder.start(field).regex(Pattern.compile(".*" +
-							word + ".*", Pattern.CASE_INSENSITIVE)).get();
+							MongoDbSearchService.accentTreating(word) + ".*", Pattern.CASE_INSENSITIVE)).get();
 					elemsMatch.add(QueryBuilder.start("pages").elemMatch(dbObject).get());
 					if (title.equals(field)) {
 						listMainTitleField.add(dbObject);
@@ -171,6 +173,11 @@ public class WikiSearchingEvents implements SearchingEvents {
 		JsonObject modifiedRes = null;
 		Date modifiedMarker = null;
 
+		final List<String> unaccentWords = new ArrayList<String>();
+		for (final String word : words) {
+			unaccentWords.add(StringUtils.stripAccentsToLowerCase(word));
+		}
+
 		//get the last modified page that match with searched words for create the description
 		for(int i=0;i<ja.size();i++) {
 			final JsonObject jO = ja.get(i);
@@ -178,9 +185,9 @@ public class WikiSearchingEvents implements SearchingEvents {
 			final String content = jO.getString("content", "");
 			final Date currentDate = MongoDb.parseIsoDate(jO.getObject("modified"));
 			boolean match = false;
-			for (final String word : words) {
-				if (title.toLowerCase().contains(word.toLowerCase()) ||
-						content.toLowerCase().contains(word.toLowerCase())) {
+			for (final String word : unaccentWords) {
+				if (StringUtils.stripAccentsToLowerCase(title).contains(word) ||
+						StringUtils.stripAccentsToLowerCase(content).contains(word)) {
 					match = true;
 					break;
 				}
