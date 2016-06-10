@@ -88,8 +88,8 @@ public class WikiSearchingEvents implements SearchingEvents {
 			for (String field : searchFieldsInPages) {
 				final List<DBObject> elemsMatch = new ArrayList<DBObject>();
 				for (String word : searchWordsLst) {
-					final DBObject dbObject = QueryBuilder.start(field).regex(Pattern.compile(".*" +
-							MongoDbSearchService.accentTreating(word) + ".*", Pattern.CASE_INSENSITIVE)).get();
+					final DBObject dbObject = QueryBuilder.start(field).regex(Pattern.compile(
+							"(>|\\G)([^<]*?)(" + MongoDbSearchService.accentTreating(word) + ")", Pattern.CASE_INSENSITIVE)).get();
 					elemsMatch.add(QueryBuilder.start("pages").elemMatch(dbObject).get());
 					if (title.equals(field)) {
 						listMainTitleField.add(dbObject);
@@ -184,14 +184,18 @@ public class WikiSearchingEvents implements SearchingEvents {
 			final String title = jO.getString("title" ,"");
 			final String content = jO.getString("content", "");
 			final Date currentDate = MongoDb.parseIsoDate(jO.getObject("modified"));
-			boolean match = false;
+
+			int matchTitle = unaccentWords.size();
+			int matchContent = unaccentWords.size();
 			for (final String word : unaccentWords) {
-				if (StringUtils.stripAccentsToLowerCase(title).contains(word) ||
-						StringUtils.stripAccentsToLowerCase(content).contains(word)) {
-					match = true;
-					break;
+				if (StringUtils.stripAccentsToLowerCase(title).contains(word)) {
+					matchTitle--;
+				}
+				if (StringUtils.stripAccentsToLowerCase(content).contains(word)) {
+					matchContent--;
 				}
 			}
+			final Boolean match = (matchTitle == 0 || matchContent == 0);
 			if (countMatchPage == 0 && match) {
 				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedRes = jO.getObject("modified");
