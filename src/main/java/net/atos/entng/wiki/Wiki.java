@@ -38,7 +38,10 @@ public class Wiki extends BaseServer {
 
 		// Set RepositoryEvents implementation used to process events published for transition
 		setRepositoryEvents(new WikiRepositoryEvents());
-		setSearchingEvents(new WikiSearchingEvents(WIKI_COLLECTION));
+
+		if (config.getBoolean("searching-event", true)) {
+			setSearchingEvents(new WikiSearchingEvents(WIKI_COLLECTION));
+		}
 
 		addController(new WikiController(WIKI_COLLECTION));
 		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
