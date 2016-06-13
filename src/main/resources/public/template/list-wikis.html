@@ -26,21 +26,22 @@
 							<br />[[formatDate(wiki.modified)]]
 						</div>
 						<div class="bottom-locked eleven vertical-spacing-twice">
-							<input type="checkbox" ng-model="wiki.selected" class="right-magnet cell" />
 						</div>
 					</div>
 				</div>
+				<check-tool ng-model="wiki.selected"></check-tool>
 			</section>
 		</div>
 	</div>
-		
+
+
 	<!-- Lightbox to share wikis -->
 	<div ng-if="display.showPanel">
 		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
 			<share-panel app-prefix="'wiki'" resources="wikis.selection()"/>
 		</lightbox>
 	</div>
-	
+
 	<!-- Lightbox to confirm wiki deletion -->
 		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
 		<h2><i18n>wiki.confirmdeleteform.title</i18n></h2>
@@ -55,7 +56,7 @@
 			</button>
 		</div>
 		</lightbox>
-	
+
 </div>
 
 <!-- Display actions for selected wikis -->
