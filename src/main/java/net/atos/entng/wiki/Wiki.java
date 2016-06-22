@@ -26,6 +26,7 @@ import net.atos.entng.wiki.service.WikiSearchingEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
+import org.entcore.common.service.impl.MongoDbSearchService;
 
 public class Wiki extends BaseServer {
 
@@ -40,7 +41,7 @@ public class Wiki extends BaseServer {
 		setRepositoryEvents(new WikiRepositoryEvents());
 
 		if (config.getBoolean("searching-event", true)) {
-			setSearchingEvents(new WikiSearchingEvents(WIKI_COLLECTION));
+			setSearchingEvents(new WikiSearchingEvents(new MongoDbSearchService(WIKI_COLLECTION)));
 		}
 
 		addController(new WikiController(WIKI_COLLECTION));

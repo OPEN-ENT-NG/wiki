@@ -19,39 +19,29 @@
 
 package net.atos.entng.wiki.service;
 
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
 import fr.wseduc.mongodb.MongoDb;
-import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.Either.Right;
 import fr.wseduc.webutils.I18n;
 import org.entcore.common.search.SearchingEvents;
-import org.entcore.common.service.VisibilityFilter;
-import org.entcore.common.service.impl.MongoDbSearchService;
+import org.entcore.common.service.SearchService;
 import org.entcore.common.utils.StringUtils;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 
 import java.util.*;
-import java.util.regex.Pattern;
-
-import static org.entcore.common.mongodb.MongoDbResult.validResults;
 
 public class WikiSearchingEvents implements SearchingEvents {
 
 	private static final Logger log = LoggerFactory.getLogger(WikiSearchingEvents.class);
-	private final MongoDb mongo;
-	private final String collection;
+	private final SearchService searchService;
 	private static final I18n i18n = I18n.getInstance();
 
-	public WikiSearchingEvents(String collection) {
-		this.collection = collection;
-		this.mongo = MongoDb.getInstance();
+	public WikiSearchingEvents(SearchService searchService) {
+		this.searchService = searchService;
 	}
 
 	@Override
@@ -65,78 +55,22 @@ public class WikiSearchingEvents implements SearchingEvents {
 			returnFields.add("owner.displayName");
 			returnFields.add("pages");
 
-			final List<String> searchFieldsInPages = new ArrayList<String>();
-			searchFieldsInPages.add("title");
-			searchFieldsInPages.add("content");
-
-			final int skip = (0 == page) ? -1 : page * limit;
-			final List<String> groupAndUserids = groupIds.toList();
 			final List<String> searchWordsLst = searchWords.toList();
-			final List<DBObject> groups = new ArrayList<DBObject>();
 
-			groups.add(QueryBuilder.start("userId").is(userId).get());
-			for (String gpId: groupAndUserids) {
-				groups.add(QueryBuilder.start("groupId").is(gpId).get());
-			}
-
-			//search on main title
-			final String title = "title";
-			final List<DBObject> listMainTitleField = new ArrayList<DBObject>();
-			//search on pages
-			final Map<String,List<DBObject>> fieldsMap = new HashMap<String, List<DBObject>>();
-
-			for (String field : searchFieldsInPages) {
-				final List<DBObject> elemsMatch = new ArrayList<DBObject>();
-				for (String word : searchWordsLst) {
-					final DBObject dbObject = QueryBuilder.start(field).regex(Pattern.compile(
-							"(>|\\G)([^<]*?)(" + MongoDbSearchService.accentTreating(word) + ")", Pattern.CASE_INSENSITIVE)).get();
-					elemsMatch.add(QueryBuilder.start("pages").elemMatch(dbObject).get());
-					if (title.equals(field)) {
-						listMainTitleField.add(dbObject);
+			searchService.search(userId, groupIds.toList(), returnFields, searchWordsLst, page, limit, new Handler<Either<String, JsonArray>>() {
+				@Override
+				public void handle(Either<String, JsonArray> event) {
+					if (event.isRight()) {
+						final JsonArray res = formatSearchResult(event.right().getValue(), columnsHeader, searchWordsLst, locale);
+						handler.handle(new Right<String, JsonArray>(res));
+					} else {
+						handler.handle(new Either.Left<String, JsonArray>(event.left().getValue()));
+					}
+					if (log.isDebugEnabled()) {
+						log.debug("[WikiSearchingEvents][searchResource] The resources searched by user are finded");
 					}
 				}
-				fieldsMap.put(field, elemsMatch);
-			}
-
-			final QueryBuilder worldsOrQuery = new QueryBuilder();
-			worldsOrQuery.or(new QueryBuilder().and(listMainTitleField.toArray(new DBObject[listMainTitleField.size()])).get());
-
-			for (final List<DBObject> field : fieldsMap.values()) {
-				worldsOrQuery.or(new QueryBuilder().and(field.toArray(new DBObject[field.size()])).get());
-			}
-
-			final QueryBuilder rightsOrQuery = new QueryBuilder().or(
-					QueryBuilder.start("visibility").is(VisibilityFilter.PUBLIC.name()).get(),
-					QueryBuilder.start("visibility").is(VisibilityFilter.PROTECTED.name()).get(),
-					QueryBuilder.start("owner.userId").is(userId).get(),
-					QueryBuilder.start("shared").elemMatch(
-							new QueryBuilder().or(groups.toArray(new DBObject[groups.size()])).get()
-					).get());
-
-			final QueryBuilder query = new QueryBuilder().and(worldsOrQuery.get(),rightsOrQuery.get());
-
-			JsonObject sort = new JsonObject().putNumber("modified", -1);
-			final JsonObject projection = new JsonObject();
-			for (String field : returnFields) {
-				projection.putNumber(field, 1);
-			}
-
-			mongo.find(collection, MongoQueryBuilder.build(query), sort,
-					projection, skip, limit, Integer.MAX_VALUE, new Handler<Message<JsonObject>>() {
-						@Override
-						public void handle(Message<JsonObject> event) {
-							final Either<String, JsonArray> ei = validResults(event);
-							if (ei.isRight()) {
-								final JsonArray res = formatSearchResult(ei.right().getValue(), columnsHeader, searchWordsLst, locale);
-								handler.handle(new Right<String, JsonArray>(res));
-							} else {
-								handler.handle(new Either.Left<String, JsonArray>(ei.left().getValue()));
-							}
-							if (log.isDebugEnabled()) {
-								log.debug("[WikiSearchingEvents][searchResource] The resources searched by user are finded");
-							}
-						}
-					});
+			});
 		} else {
 			handler.handle(new Right<String, JsonArray>(new JsonArray()));
 		}

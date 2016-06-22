@@ -28,6 +28,7 @@ import org.bson.types.ObjectId;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
+import org.entcore.common.utils.StringUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -199,6 +200,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		newPage.putString("_id", newPageId)
 				.putString("title", pageTitle)
 				.putString("content", pageContent)
+				.putString("contentPlain", StringUtils.stripHtmlTag(pageContent))
 				.putString("author", user.getUserId())
 				.putString("authorName", user.getUsername())
 				.putObject("modified", MongoDb.now());
@@ -230,6 +232,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		JsonObject now = MongoDb.now();
 		modifier.set("pages.$.title", pageTitle)
 				.set("pages.$.content", pageContent)
+				.set("pages.$.contentPlain", StringUtils.stripHtmlTag(pageContent))
 				.set("pages.$.author", user.getUserId())
 				.set("pages.$.authorName", user.getUsername())
 				.set("pages.$.modified", now)
