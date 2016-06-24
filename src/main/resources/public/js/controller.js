@@ -302,6 +302,10 @@ function WikiController($scope, template, model, route, $location, $route){
 		$location.path(path);
 	}
 
+	$scope.redirectToHome = function () {
+	    window.location.href = '/wiki';
+	}
+
 	$scope.openPageFromSearchbar = function(wikiId, pageId) {
 		window.location.hash = '/view/' + wikiId + '/' + pageId;
 	};
