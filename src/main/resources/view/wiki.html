@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<title>{{#i18n}}wiki.head.title{{/i18n}}</title>
@@ -22,7 +22,7 @@
 					<app-title>
 						<h1>
 							<i class="wiki"></i>
-							<a ng-click="displayWikiList()">[[applicationName]]</a>
+							<a ng-click="redirectToHome()">[[applicationName]]</a>
 							<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
 								/ <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
 							</span>
