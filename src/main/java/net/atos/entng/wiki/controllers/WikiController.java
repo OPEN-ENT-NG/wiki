@@ -386,12 +386,12 @@ public class WikiController extends MongoDbControllerHelper {
 			List<String> recipients = new ArrayList<>(recipientSet);
 
 			JsonObject params = new JsonObject();
-			params.putString("uri", container.config().getString("host", "http://localhost:8090") +
+			params.putString("uri", getScheme(request) + "://" + getHost(request) +
 					"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
 			params.putString("username", user.getUsername())
 				.putString("pageTitle", pageTitle)
 				.putString("wikiTitle", wiki.getString("title"))
-				.putString("pageUri", container.config().getString("host", "http://localhost:8030") +
+				.putString("pageUri", getScheme(request) + "://" + getHost(request) +
 						"/wiki#/view/" + idWiki + "/" + idPage);
 			params.putString("resourceUri", params.getString("pageUri"));
 
@@ -559,10 +559,10 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 
 					JsonObject params = new JsonObject();
-					params.putString("uri", container.config().getString("host", "http://localhost:8090") +
+					params.putString("uri", getScheme(request) + "://" + getHost(request) +
 							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 							.putString("username", user.getUsername())
-							.putString("wikiUri", container.config().getString("host", "http://localhost:8030") +
+							.putString("wikiUri", getScheme(request) + "://" + getHost(request) +
 									"/wiki#/view/" + id);
 					params.putString("resourceUri", params.getString("wikiUri"));
 
