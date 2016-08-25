@@ -15,9 +15,7 @@
 </nav>
 <hr class="twelve cell vertical-spacing" />
 <nav ng-if="selectedWiki.lastPages" class="vertical">
-	<h2>
-		<i18n>wiki.last.modified.pages</i18n>
-	</h2>
+	<i18n>wiki.last.modified.pages</i18n>
 	<div ng-repeat="page in selectedWiki.lastPages" class="small-text">
 	   <a ng-href="#/view/[[selectedWiki._id]]/[[page._id]]">
 	           [[page.title]] 
