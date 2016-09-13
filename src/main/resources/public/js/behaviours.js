@@ -51,15 +51,15 @@ var wikiNamespace = {
 
 // Functions shared by wiki sniplet and wiki application
 wikiNamespace.formatDate = function(dateObject){
-	return moment(dateObject.$date).lang('fr').calendar();
+	return moment(dateObject.$date).lang(currentLanguage).calendar();
 };
 
 wikiNamespace.getDateAndTime = function(dateObject){
-	return moment(dateObject.$date).lang('fr').format('LLLL');
+	return moment(dateObject.$date).lang(currentLanguage).format('LLLL');
 };
 
 wikiNamespace.getRelativeTimeFromDate = function(dateObject){
-	return moment(dateObject.$date).lang('fr').fromNow();
+	return moment(dateObject.$date).lang(currentLanguage).fromNow();
 };
 
 wikiNamespace.titleIsEmpty = function(title) {
