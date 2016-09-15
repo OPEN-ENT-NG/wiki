@@ -386,13 +386,11 @@ public class WikiController extends MongoDbControllerHelper {
 			List<String> recipients = new ArrayList<>(recipientSet);
 
 			JsonObject params = new JsonObject();
-			params.putString("uri", getScheme(request) + "://" + getHost(request) +
-					"/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+			params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
 			params.putString("username", user.getUsername())
 				.putString("pageTitle", pageTitle)
 				.putString("wikiTitle", wiki.getString("title"))
-				.putString("pageUri", getScheme(request) + "://" + getHost(request) +
-						"/wiki#/view/" + idWiki + "/" + idPage);
+				.putString("pageUri", "/wiki#/view/" + idWiki + "/" + idPage);
 			params.putString("resourceUri", params.getString("pageUri"));
 
 			if(!isCreatePage && comment!=null && !comment.isEmpty()) {
@@ -559,11 +557,9 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 
 					JsonObject params = new JsonObject();
-					params.putString("uri", getScheme(request) + "://" + getHost(request) +
-							"/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+					params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 							.putString("username", user.getUsername())
-							.putString("wikiUri", getScheme(request) + "://" + getHost(request) +
-									"/wiki#/view/" + id);
+							.putString("wikiUri", "/wiki#/view/" + id);
 					params.putString("resourceUri", params.getString("wikiUri"));
 
 					shareJsonSubmit(request, "wiki.shared", false, params, "title");
