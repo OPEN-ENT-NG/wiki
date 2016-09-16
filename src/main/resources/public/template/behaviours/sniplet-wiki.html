@@ -300,8 +300,8 @@
 					<div class="seven cell">
 						<h2>[[display.version.title]]</h2>
 						<em>
-							<i18n>Version du </i18n> [[getDateAndTime(display.version.date)]]
-							<i18n>par</i18n>
+							<i18n>wiki.version.time</i18n> [[getDateAndTime(display.version.date)]]
+							<i18n>wiki.by</i18n>
 							<a href="/userbook/annuaire#/[[wiki.page.author]]">[[display.version.username]]</a>
 						</em>
 					</div>
@@ -329,7 +329,7 @@
 
 	<div ng-if="display.action === 'compareVersions'" class="wiki-sniplet">
 		<div class="row">
-			<h2 class="cell">Comparer</h2>
+			<h2 class="cell"><i18n>wiki.version.compare</i18n></h2>
 			<div class="ten cell display-buttons">
 				<button ng-click="display.action = 'versions';" class="cancel"><i18n>back</i18n></button>
 			</div>
@@ -339,10 +339,10 @@
 			<thead>
 				<tr>
 					<th class="six">
-						Version du [[formatDate(display.leftCompare.date)]] par [[display.leftCompare.username]]
+						<i18n>wiki.version.time</i18n> [[formatDate(display.leftCompare.date)]] <i18n>wiki.by</i18n> [[display.leftCompare.username]]
 					</th>
 					<th class="six">
-						Version du [[formatDate(display.rightCompare.date)]] par [[display.rightCompare.username]]
+						<i18n>wiki.version.time</i18n> [[formatDate(display.rightCompare.date)]] <i18n>wiki.by</i18n> [[display.rightCompare.username]]
 					</th>
 				</tr>
 			</thead>
