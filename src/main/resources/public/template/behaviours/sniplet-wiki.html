@@ -41,7 +41,7 @@
 					</ul>
 				</nav>
 			</side-panel>
-			<h2>
+			<h2 ng-click="openPage(wiki.index)">
 				<i class="wiki"></i>
 				<span>[[wiki.title]]</span>
 			</h2>
@@ -79,7 +79,9 @@
 				</button>
 			</resource-right>
 			<resource-right name="createPage" resource="wiki" class="cell right-magnet">
-				<button ng-click="newPage()" translate content="wiki.create.new.page" ng-if="wiki"></button>
+				<button ng-click="newPage()" ng-if="wiki">
+                    <i18n>wiki.create.new.page</i18n>
+                </button>
 			</resource-right>
 		</div>
 	</div>
