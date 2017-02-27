@@ -129,7 +129,6 @@ function WikiController($scope, template, model, route, $location, $route){
 	template.open('sideMenu', 'side-menu');
 	template.open('side-panel', 'side-panel');
 	template.open('commentForm', 'comment-page');
-	template.open('main', 'list-wikis');
 
 	// Date functions
     $scope.formatDate = function(dateObject){
