@@ -155,8 +155,8 @@
 						<div class="twelve cell" ng-if="wiki.page.showComments">
 							<div class="row" ng-repeat="comment in wiki.page.comments">
 								<article class="comment reduce-block-eight">
+									[[formatDate(comment.created)]], <i18n>wiki.by</i18n>
 									<a href="/userbook/annuaire#[[comment.author]]">[[comment.authorName]]</a>
-									<em><i18n>wiki.on</i18n> [[formatDate(comment.created)]]</em>
 									<a class="cell right-magnet" ng-click="removeComment(comment._id, $index)"
 									   ng-if="(comment.author === me.userId || wiki.myRights.deleteWiki)">
 										<i18n>wiki.comment.delete</i18n>
