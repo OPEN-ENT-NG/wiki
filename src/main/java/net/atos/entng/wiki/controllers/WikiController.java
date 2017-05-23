@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
+import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
@@ -454,7 +455,8 @@ public class WikiController extends MongoDbControllerHelper {
 
 	@Delete("/:id/page/:idpage")
 	@ApiDoc("Delete page by idwiki and idpage")
-	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	@ResourceFilter(OwnerAuthorOrSharedPage.class)
 	public void deletePage(final HttpServerRequest request) {
 		final String idWiki = request.params().get("id");
 		final String idPage = request.params().get("idpage");

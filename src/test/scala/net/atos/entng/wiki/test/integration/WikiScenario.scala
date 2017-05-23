@@ -55,7 +55,7 @@ object WikiScenario {
           jsonPath("$.pages[0].content").is("Contenu de ma page"),
           jsonPath("$.pages[0]._id").is("${pageId}"),
           jsonPath("$._id").is("${wikiId}")))
-      .exec(http("Update page")
+      .exec(http("Update page 1")
         .put("/wiki/${wikiId}/page/${pageId}")
         .body(StringBody("""
             {"title" : "Ma première page v1.1", 
@@ -93,7 +93,7 @@ object WikiScenario {
       .exec(http("List pages")
         .get("/wiki/${wikiId}/listpages")
         .check(status.is(401)))
-      .exec(http("Get page")
+      .exec(http("Get page 1")
         .get("/wiki/${wikiId}/page/${pageId}")
         .check(status.is(401)))
       .exec(http("Create page")
@@ -108,7 +108,7 @@ object WikiScenario {
         .put("/wiki/${wikiId}")
         .body(StringBody("""{"title" : "Mon 1er wiki v3"}"""))
         .check(status.is(401)))
-      .exec(http("Update page")
+      .exec(http("Update page 2")
         .put("/wiki/${wikiId}/page/${pageId}")
         .body(StringBody("""
             {"title" : "Ma première page v3", 
@@ -116,9 +116,9 @@ object WikiScenario {
             """))
         .check(status.is(401)))
 
-      .exec(http("Delete page")
-        .delete("/wiki/${wikiId}/page/${pageId}")
-        .check(status.is(401)))
+//      .exec(http("Delete page")
+//        .delete("/wiki/${wikiId}/page/${pageId}")
+//        .check(status.is(401)))
       .exec(http("Delete wiki")
         .delete("/wiki/${wikiId}")
         .check(status.is(401)))
@@ -184,13 +184,13 @@ object WikiScenario {
     .exec(http("Update page")
       .put("/wiki/${wikiId}/page/${pageId}")
       .body(StringBody("""
-            {"title" : "Ma première page v3", 
+            {"title" : "Ma première page v3",
             "content" : "Contenu de ma page mis à jour v3"}
             """))
       .check(status.is(401)))
-    .exec(http("Delete page")
-      .delete("/wiki/${wikiId}/page/${pageId}")
-      .check(status.is(401)))
+//    .exec(http("Delete page")
+//      .delete("/wiki/${wikiId}/page/${pageId}")
+//      .check(status.is(401)))
     .exec(http("Delete wiki")
       .delete("/wiki/${wikiId}")
       .check(status.is(401)))
@@ -207,7 +207,6 @@ object WikiScenario {
       .put("/wiki/share/json/${wikiId}")
       .bodyPart(StringBodyPart("userId", "${studentId}"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|createPage"))
-      .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|deletePage"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|updatePage"))
       .check(status.is(200)))
     .exec(http("Logout - teacher")
@@ -227,7 +226,7 @@ object WikiScenario {
     .exec(http("List pages")
       .get("/wiki/${wikiId}/listpages")
       .check(status.is(200)))
-    .exec(http("Get page")
+    .exec(http("Get page 2")
       .get("/wiki/${wikiId}/page/${pageId}")
       .check(status.is(200)))
 
@@ -241,9 +240,9 @@ object WikiScenario {
     .exec(http("List pages after page creation")
       .get("/wiki/${wikiId}/listpages")
       .check(status.is(200)))
-    .exec(http("Delete page")
-      .delete("/wiki/${wikiId}/page/${studentPageId}")
-      .check(status.is(200)))
+//    .exec(http("Delete page")
+//      .delete("/wiki/${wikiId}/page/${studentPageId}")
+//      .check(status.is(200)))
     .exec(http("List pages after page deletion")
       .get("/wiki/${wikiId}/listpages")
       .check(status.is(200)))
@@ -279,6 +278,7 @@ object WikiScenario {
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|deleteWiki"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|updateWiki"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|shareWiki"))
+      .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|deletePage"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|shareWikiRemove"))
       .bodyPart(StringBodyPart("actions", "net-atos-entng-wiki-controllers-WikiController|shareWikiSubmit"))
       .check(status.is(200)))
@@ -298,7 +298,7 @@ object WikiScenario {
     .exec(http("List pages")
       .get("/wiki/${wikiId}/listpages")
       .check(status.is(200)))
-    .exec(http("Get page")
+    .exec(http("Get page 3")
       .get("/wiki/${wikiId}/page/${pageId}")
       .check(status.is(200)))
 
@@ -312,7 +312,7 @@ object WikiScenario {
     .exec(http("List pages after page creation")
       .get("/wiki/${wikiId}/listpages")
       .check(status.is(200)))
-    .exec(http("Delete page")
+    .exec(http("Delete page 1")
       .delete("/wiki/${wikiId}/page/${studentPageId}")
       .check(status.is(200)))
     .exec(http("List pages after page deletion")
@@ -322,7 +322,7 @@ object WikiScenario {
     .exec(http("Update page")
       .put("/wiki/${wikiId}/page/${pageId}")
       .body(StringBody("""
-            {"title" : "Ma première page v4", 
+            {"title" : "Ma première page v4",
             "content" : "Contenu de ma page mis à jour v4"}
             """))
       .check(status.is(200), jsonPath("$.number").is("1")))

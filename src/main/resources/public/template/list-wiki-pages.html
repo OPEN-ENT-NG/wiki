@@ -37,28 +37,26 @@
 </lightbox>
 
 <!-- Display actions for selected wikis -->
-<section class="toggle-buttons" ng-class="{ hide: selectedWiki.pages.selection().length === 0 }">
+<section class="toggle-buttons" ng-class="{ hide: hideToaster(selectedWiki,selectedWiki.pages.selection()) }">
 	<div class="toggle">
 		<div class="row">
-			<resource-right name="edit" resource="selectedWiki" class="cell">
+			<resource-right name="editPage" resource="selectedWiki" class="cell">
 				<button ng-if="selectedWiki.pages.selection().length === 1"
 						ng-click="viewPageVersions(selectedWiki.pages.selection()[0])"
 						>
 					<i18n>wiki.page.versions</i18n>
 				</button>
 			</resource-right>
-			<resource-right name="edit" resource="selectedWiki" class="cell">
+			<resource-right name="editPage" resource="selectedWiki" class="cell">
 				<button ng-if="selectedWiki.pages.selection().length === 1"
 						ng-click="showDuplicatePageForm(selectedWiki.pages.selection()[0])"
 						>
 					<i18n>wiki.page.duplicate</i18n>
 				</button>
 			</resource-right>
-			<resource-right name="deletePage" resource="selectedWiki" class="cell">
-				<button ng-click="display.showConfirmDelete = true">
-					<i18n>remove</i18n>
-				</button>
-			</resource-right>
+			<button ng-if="canDeletePage(selectedWiki,selectedWiki.pages.selection()[0])" ng-click="display.showConfirmDelete = true">
+				<i18n>remove</i18n>
+			</button>
 		</div>
 	</div>
 </section>

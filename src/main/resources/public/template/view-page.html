@@ -16,11 +16,9 @@
 					<div class="five cell">
 						<div class="row">
 							<plus class="right-magnet cell">
-								<resource-right name="deletePage" resource="selectedWiki">
-									<button ng-click="display.showConfirmDeletePage = true;">
-										<i18n>wiki.page.delete</i18n>
-									</button>
-								</resource-right>
+								<button ng-if="canDeletePage(selectedWiki,selectedWiki.page)" ng-click="display.showConfirmDeletePage = true;">
+									<i18n>wiki.page.delete</i18n>
+								</button>
 								<button class="cell" ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
 									<i18n>wiki.page.duplicate</i18n>
 								</button>

@@ -73,6 +73,46 @@ function WikiController($scope, template, model, route, $location, $route){
 				wiki.myRights.share !== undefined);
 	};
 
+    $scope.canDeletePage = function (wiki,page) {
+        var canDeletePage = false ;
+        if (model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.deletePage)) {
+            // The user has the right to delete it
+            canDeletePage = true ;
+        } else if (page !== undefined && model.me.userId === page.author){
+            // The owner of the page has the right to delete it.
+            canDeletePage = true ;
+        } else if (model.me.userId === wiki.owner.userId) {
+        	// The Owner of the wiki has the right to delete it
+            canDeletePage = true ;
+		}
+        return canDeletePage;
+    };
+
+    $scope.hideToaster = function (wiki,pagesSelection) {
+        var hideToaster = true ;
+        if(pagesSelection !== undefined
+			&& pagesSelection.length > 0){
+        	// On vérifie d'abord que l'utilisateur peut dupliquer ou visionner la version de la page sélectionnée
+        	if(pagesSelection.length === 1
+				&& (model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.editPage))){
+                return false;
+			}
+			// On vérifie ensuite qu'il peut supprimer au moins une page
+			var  canDeletePages = true;
+            for (var n = 0; n < pagesSelection.length; n++) {
+                canDeletePages = $scope.canDeletePage(wiki,pagesSelection[n]);
+                if(canDeletePages === false){
+                	// Si au moins une seule page ne peut pas être supprimée alors on ne peut pas supprimer les pages
+                	break;
+				}
+            }
+            if(canDeletePages === true){
+                return false;
+			}
+		}
+        return hideToaster;
+    };
+
 
 	var updateSearchBar = function() {
 		return Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar($scope);
