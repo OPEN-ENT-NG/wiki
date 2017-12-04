@@ -1,21 +1,33 @@
-routes.define(function($routeProvider){
-    $routeProvider
-      .when('/view/:wikiId', {
-        action: 'viewWiki'
-      })
-		.when('/view/:wikiId/list-pages', {
-			action: 'listPages'
-		})
-      .when('/view/:wikiId/:pageId', {
-        action: 'viewPage'
-      })
-      .otherwise({
-    	  action: 'defaultView'
-      });
-});
+import { Behaviours, model, template, moment, idiom as lang, _, notify, ng } from 'entcore';
 
+var pageTitleExists = function(pTitle, pWiki, pPageId?) {
+	return Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(pTitle, pWiki, pPageId);
+};
 
-function WikiController($scope, template, model, route, $location, $route){
+// Functions to check field "title"
+var titleIsEmpty = function(title) {
+	return Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(title);
+};
+
+var wikiTitleExists = function(pTitle, pWikiId?) {
+	if(!pWikiId) {
+		// when creating a wiki
+		return _.find(model.wikis.all, function(wiki){
+			return pTitle.trim() === wiki.title.trim() &&
+			model.me.userId === wiki.owner.userId;
+		});
+	}
+	else {
+		//when updating a wiki
+		return _.find(model.wikis.all, function(wiki){
+			return (pTitle.trim() === wiki.title.trim() &&
+					model.me.userId === wiki.owner.userId &&
+					wiki._id !== pWikiId);
+		});
+	}
+};
+
+export const controller = ng.controller('WikiController', ['$scope', 'route', '$location', '$route', ($scope, route, $location, $route) => {
 	var Wiki = Behaviours.applicationsBehaviours.wiki.namespace.Wiki;
 	var Page = Behaviours.applicationsBehaviours.wiki.namespace.Page;
 	var Version = Behaviours.applicationsBehaviours.wiki.namespace.Version;
@@ -146,7 +158,7 @@ function WikiController($scope, template, model, route, $location, $route){
 	            var queryString = window.location.search;
 	            if(typeof (queryString) !== undefined) {
 	                queryString = queryString.substring(1); // remove character '?'
-	                var parameters = parseQuery(queryString);
+	                var parameters = parseQuery(queryString) as any;
 	                if(parameters.wiki) {
 	                	$scope.selectedWiki = new Wiki({_id: parameters.wiki});
 	                	$scope.selectedWiki.getWholeWiki(function() {
@@ -182,34 +194,6 @@ function WikiController($scope, template, model, route, $location, $route){
     $scope.getRelativeTimeFromDate = function(dateObject){
     	return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
     };
-
-	// Functions to check field "title"
-	var titleIsEmpty = function(title) {
-		return Behaviours.applicationsBehaviours.wiki.namespace.titleIsEmpty(title);
-	};
-
-	var wikiTitleExists = function(pTitle, pWikiId) {
-		if(!pWikiId) {
-			// when creating a wiki
-			return _.find(model.wikis.all, function(wiki){
-				return pTitle.trim() === wiki.title.trim() &&
-				model.me.userId === wiki.owner.userId;
-			});
-		}
-		else {
-			//when updating a wiki
-			return _.find(model.wikis.all, function(wiki){
-				return (pTitle.trim() === wiki.title.trim() &&
-						model.me.userId === wiki.owner.userId &&
-						wiki._id !== pWikiId);
-			});
-		}
-	};
-
-	var pageTitleExists = function(pTitle, pWiki, pPageId) {
-		return Behaviours.applicationsBehaviours.wiki.namespace.pageTitleExists(pTitle, pWiki, pPageId);
-	};
-
 
 	// Functions on wikis
 	$scope.deleteWikiSelection = function(){
@@ -563,4 +547,4 @@ function WikiController($scope, template, model, route, $location, $route){
 		$scope.$apply("wikis");
 	});
 
-}
+}]);
