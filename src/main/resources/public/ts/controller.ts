@@ -27,7 +27,7 @@ var wikiTitleExists = function(pTitle, pWikiId?) {
 	}
 };
 
-export const controller = ng.controller('WikiController', ['$scope', 'route', '$location', '$route', ($scope, route, $location, $route) => {
+export const controller = ng.controller('WikiController', ['$scope', 'route', 'model', '$location', '$route', ($scope, route, model, $location, $route) => {
 	var Wiki = Behaviours.applicationsBehaviours.wiki.namespace.Wiki;
 	var Page = Behaviours.applicationsBehaviours.wiki.namespace.Page;
 	var Version = Behaviours.applicationsBehaviours.wiki.namespace.Version;
