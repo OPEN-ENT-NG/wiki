@@ -34,7 +34,7 @@ public class Wiki extends BaseServer {
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	@Override
-	public void start() {
+	public void start() throws Exception {
 		super.start();
 
 		// Set RepositoryEvents implementation used to process events published for transition

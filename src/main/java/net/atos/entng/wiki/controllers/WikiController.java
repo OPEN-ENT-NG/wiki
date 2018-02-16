@@ -38,13 +38,13 @@ import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.http.HttpServerRequest;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Container;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
 
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Delete;
@@ -70,9 +70,9 @@ public class WikiController extends MongoDbControllerHelper {
 	private enum WikiEvent { ACCESS }
 
 	@Override
-	public void init(Vertx vertx, Container container, RouteMatcher rm,
+	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
-		super.init(vertx, container, rm, securedActions);
+		super.init(vertx, config, rm, securedActions);
 		eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 	}
 
@@ -258,11 +258,11 @@ public class WikiController extends MongoDbControllerHelper {
 									if (event.isRight()) {
 										createRevision(idWiki, newPageId, user, pageTitle, pageContent);
 										JsonObject result = new JsonObject();
-										result.putString("_id", newPageId);
+										result.put("_id", newPageId);
 										notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
 										renderJson(request, result);
 									} else {
-										JsonObject error = new JsonObject().putString(
+										JsonObject error = new JsonObject().put(
 												"error", event.left().getValue());
 										renderJson(request, error, 400);
 									}
@@ -312,8 +312,8 @@ public class WikiController extends MongoDbControllerHelper {
 						String contentCreatorId = user.getUserId(); // author of page or comment. Will not receive a notification
 						final Set<String> recipientSet = new HashSet<>();
 
-						if(wiki.getArray("shared") != null) {
-							String wikiOwner = wiki.getObject("owner").getString("userId");
+						if(wiki.getJsonArray("shared") != null) {
+							String wikiOwner = wiki.getJsonObject("owner").getString("userId");
 							if(!wikiOwner.equals(contentCreatorId)) {
 								recipientSet.add(wikiOwner);
 							}
@@ -323,15 +323,15 @@ public class WikiController extends MongoDbControllerHelper {
 								title = pageTitle;
 							}
 							else {
-								JsonArray pages = wiki.getArray("pages");
-								JsonObject page = pages.get(0);
+								JsonArray pages = wiki.getJsonArray("pages");
+								JsonObject page = pages.getJsonObject(0);
 								title = page.getString("title");
 							}
 
-							final AtomicInteger remaining = new AtomicInteger(wiki.getArray("shared").size());
+							final AtomicInteger remaining = new AtomicInteger(wiki.getJsonArray("shared").size());
 
 							// Get userIds and members of groups, and add them to recipients
-							for (Object element : wiki.getArray("shared")) {
+							for (Object element : wiki.getJsonArray("shared")) {
 								if (!(element instanceof JsonObject)) continue;
 								JsonObject jo = (JsonObject) element;
 								String uId = jo.getString("userId", null);
@@ -387,18 +387,18 @@ public class WikiController extends MongoDbControllerHelper {
 			List<String> recipients = new ArrayList<>(recipientSet);
 
 			JsonObject params = new JsonObject();
-			params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
-			params.putString("username", user.getUsername())
-				.putString("pageTitle", pageTitle)
-				.putString("wikiTitle", wiki.getString("title"))
-				.putString("pageUri", "/wiki#/view/" + idWiki + "/" + idPage);
-			params.putString("resourceUri", params.getString("pageUri"));
+			params.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+			params.put("username", user.getUsername())
+				.put("pageTitle", pageTitle)
+				.put("wikiTitle", wiki.getString("title"))
+				.put("pageUri", "/wiki#/view/" + idWiki + "/" + idPage);
+			params.put("resourceUri", params.getString("pageUri"));
 
 			if(!isCreatePage && comment!=null && !comment.isEmpty()) {
 				if(comment.length() > OVERVIEW_LENGTH) {
 					comment = comment.substring(0, OVERVIEW_LENGTH) + " [...]";
 				}
-				params.putString("overview", comment);
+				params.put("overview", comment);
 			}
 
 			String notificationName = isCreatePage ? "page-created" : "comment-added";
@@ -469,7 +469,7 @@ public class WikiController extends MongoDbControllerHelper {
 					wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
 				} else {
 					JsonObject error = new JsonObject()
-							.putString("error", event.left().getValue());
+							.put("error", event.left().getValue());
 					renderJson(request, error, 400);
 				}
 			}
@@ -505,11 +505,11 @@ public class WikiController extends MongoDbControllerHelper {
 								public void handle(Either<String, JsonObject> event) {
 									if (event.isRight()) {
 										JsonObject result = new JsonObject();
-										result.putString("_id", newCommentId);
+										result.put("_id", newCommentId);
 										notifyCommentCreated(request, user, idWiki, idPage, newCommentId, comment);
 										renderJson(request, result);
 									} else {
-										JsonObject error = new JsonObject().putString(
+										JsonObject error = new JsonObject().put(
 												"error", event.left().getValue());
 										renderJson(request, error, 400);
 									}
@@ -559,10 +559,10 @@ public class WikiController extends MongoDbControllerHelper {
 					}
 
 					JsonObject params = new JsonObject();
-					params.putString("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-							.putString("username", user.getUsername())
-							.putString("wikiUri", "/wiki#/view/" + id);
-					params.putString("resourceUri", params.getString("wikiUri"));
+					params.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+							.put("username", user.getUsername())
+							.put("wikiUri", "/wiki#/view/" + id);
+					params.put("resourceUri", params.getString("wikiUri"));
 
 					shareJsonSubmit(request, "wiki.shared", false, params, "title");
 				}

@@ -29,9 +29,9 @@ import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -77,9 +77,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Projection
 		JsonObject projection = new JsonObject();
-		projection.putNumber("pages", 0).putNumber("created", 0);
+		projection.put("pages", 0).put("created", 0);
 
-		JsonObject sort = new JsonObject().putNumber("modified", -1);
+		JsonObject sort = new JsonObject().put("modified", -1);
 
 		mongo.find(collection, MongoQueryBuilder.build(query), sort,
 				projection, MongoDbResult.validResultsHandler(handler));
@@ -91,7 +91,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		JsonObject projection = new JsonObject();
-		projection.putNumber("pages.content", 0).putNumber("created", 0);
+		projection.put("pages.content", 0).put("created", 0);
 
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));
@@ -119,9 +119,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Projection
 		JsonObject projection = new JsonObject();
-		projection.putNumber("pages.content", 0).putNumber("created", 0);
+		projection.put("pages.content", 0).put("created", 0);
 
-		JsonObject sort = new JsonObject().putNumber("pages.title", 1);
+		JsonObject sort = new JsonObject().put("pages.title", 1);
 
 		mongo.find(collection, MongoQueryBuilder.build(query), sort,
 				projection, MongoDbResult.validResultsHandler(handler));
@@ -132,10 +132,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonObject>> handler) {
 
 		JsonObject newWiki = new JsonObject();
-		newWiki.putString("title", wikiTitle)
-				.putArray("pages", new JsonArray());
+		newWiki.put("title", wikiTitle)
+				.put("pages", new JsonArray());
 		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
-			newWiki.putString("thumbnail", thumbnail);
+			newWiki.put("thumbnail", thumbnail);
 		}
 
 		super.create(newWiki, user, handler);
@@ -146,12 +146,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonObject>> handler) {
 
 		JsonObject data = new JsonObject();
-		data.putString("title", wikiTitle);
+		data.put("title", wikiTitle);
 		if(thumbnail==null || thumbnail.trim().isEmpty()){
-			data.putString("thumbnail", "");
+			data.put("thumbnail", "");
 		}
 		else {
-			data.putString("thumbnail", thumbnail);
+			data.put("thumbnail", thumbnail);
 		}
 
 		super.update(idWiki, data, handler);
@@ -172,13 +172,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Projection
 		JsonObject matchId = new JsonObject();
-		matchId.putString("_id", idPage);
+		matchId.put("_id", idPage);
 		JsonObject elemMatch = new JsonObject();
-		elemMatch.putObject("$elemMatch", matchId);
+		elemMatch.put("$elemMatch", matchId);
 
 		JsonObject projection = new JsonObject();
-		projection.putObject("pages", elemMatch).putNumber("title", 1)
-				.putNumber("owner", 1).putNumber("shared", 1);
+		projection.put("pages", elemMatch).put("title", 1)
+				.put("owner", 1).put("shared", 1);
 
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
@@ -197,13 +197,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Add new page to array "pages"
 		JsonObject newPage = new JsonObject();
-		newPage.putString("_id", newPageId)
-				.putString("title", pageTitle)
-				.putString("content", pageContent)
-				.putString("contentPlain", StringUtils.stripHtmlTag(pageContent))
-				.putString("author", user.getUserId())
-				.putString("authorName", user.getUsername())
-				.putObject("modified", MongoDb.now());
+		newPage.put("_id", newPageId)
+				.put("title", pageTitle)
+				.put("content", pageContent)
+				.put("contentPlain", StringUtils.stripHtmlTag(pageContent))
+				.put("author", user.getUserId())
+				.put("authorName", user.getUsername())
+				.put("modified", MongoDb.now());
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.push("pages", newPage);
@@ -261,7 +261,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Update
 		JsonObject idPageJO = new JsonObject();
-		idPageJO.putString("_id", idPage);
+		idPageJO.put("_id", idPage);
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.pull("pages", idPageJO);
 		modifier.set("modified", MongoDb.now());
@@ -297,17 +297,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Projection
 		JsonObject projection = new JsonObject();
-		projection.putNumber("owner", 1)
-			.putNumber("shared.userId", 1)
-			.putNumber("shared.groupId", 1)
-			.putNumber("title", 1);
+		projection.put("owner", 1)
+			.put("shared.userId", 1)
+			.put("shared.groupId", 1)
+			.put("title", 1);
 
 		if(idPage!= null && !idPage.trim().isEmpty()) {
 			query.put("pages._id").is(idPage);
 
-			JsonObject matchId = new JsonObject().putString("_id", idPage);
-			JsonObject elemMatch = new JsonObject().putObject("$elemMatch", matchId);
-			projection.putObject("pages", elemMatch); // returns the whole page. Projection on a field (e.g. "title") of a subdocument of an array is not supported by mongo
+			JsonObject matchId = new JsonObject().put("_id", idPage);
+			JsonObject elemMatch = new JsonObject().put("$elemMatch", matchId);
+			projection.put("pages", elemMatch); // returns the whole page. Projection on a field (e.g. "title") of a subdocument of an array is not supported by mongo
 		}
 
 		// Send query to event bus
@@ -331,11 +331,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Add new comment to array "comments"
 		JsonObject newComment = new JsonObject();
-		newComment.putString("_id", newCommentId)
-				.putString("comment", comment)
-				.putString("author", user.getUserId())
-				.putString("authorName", user.getUsername())
-				.putObject("created", MongoDb.now());
+		newComment.put("_id", newCommentId)
+				.put("comment", comment)
+				.put("author", user.getUserId())
+				.put("authorName", user.getUsername())
+				.put("created", MongoDb.now());
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.push("pages.$.comments", newComment);
@@ -355,7 +355,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Delete comment from array "comments"
 		JsonObject commentToDelete = new JsonObject();
-		commentToDelete.putString("_id", idComment);
+		commentToDelete.put("_id", idComment);
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.pull("pages.$.comments", commentToDelete);
@@ -368,20 +368,20 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void createRevision(String wikiId, String pageId, UserInfos user,
 							   String pageTitle, String pageContent, Handler<Either<String, JsonObject>> handler) {
 		JsonObject document = new JsonObject()
-				.putString("wikiId", wikiId)
-				.putString("pageId", pageId)
-				.putString("userId", user.getUserId())
-				.putString("username", user.getUsername())
-				.putString("title", pageTitle)
-				.putString("content", pageContent)
-				.putObject("date", MongoDb.now());
+				.put("wikiId", wikiId)
+				.put("pageId", pageId)
+				.put("userId", user.getUserId())
+				.put("username", user.getUsername())
+				.put("title", pageTitle)
+				.put("content", pageContent)
+				.put("date", MongoDb.now());
 		mongo.save(REVISIONS_COLLECTION, document, MongoDbResult.validResultHandler(handler));
 	}
 
 	@Override
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler) {
 		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId).put("pageId").is(pageId);
-		JsonObject sort = new JsonObject().putNumber("date", -1);
+		JsonObject sort = new JsonObject().put("date", -1);
 		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, null,
 				MongoDbResult.validResultsHandler(handler));
 	}

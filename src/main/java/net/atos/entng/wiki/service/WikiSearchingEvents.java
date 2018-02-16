@@ -26,11 +26,11 @@ import fr.wseduc.webutils.I18n;
 import org.entcore.common.search.SearchingEvents;
 import org.entcore.common.service.SearchService;
 import org.entcore.common.utils.StringUtils;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.core.logging.Logger;
-import org.vertx.java.core.logging.impl.LoggerFactory;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 import java.util.*;
 
@@ -55,9 +55,9 @@ public class WikiSearchingEvents implements SearchingEvents {
 			returnFields.add("owner.displayName");
 			returnFields.add("pages");
 
-			final List<String> searchWordsLst = searchWords.toList();
+			final List<String> searchWordsLst = searchWords.getList();
 
-			searchService.search(userId, groupIds.toList(), returnFields, searchWordsLst, page, limit, new Handler<Either<String, JsonArray>>() {
+			searchService.search(userId, groupIds.getList(), returnFields, searchWordsLst, page, limit, new Handler<Either<String, JsonArray>>() {
 				@Override
 				public void handle(Either<String, JsonArray> event) {
 					if (event.isRight()) {
@@ -77,22 +77,22 @@ public class WikiSearchingEvents implements SearchingEvents {
 	}
 
 	private JsonArray formatSearchResult(final JsonArray results, final JsonArray columnsHeader, final List<String> words, final String locale) {
-		final List<String> aHeader = columnsHeader.toList();
+		final List<String> aHeader = columnsHeader.getList();
 		final JsonArray traity = new JsonArray();
 
 		for (int i=0;i<results.size();i++) {
-			final JsonObject j = results.get(i);
+			final JsonObject j = results.getJsonObject(i);
 			final JsonObject jr = new JsonObject();
 			if (j != null) {
 				final String wikiId = j.getString("_id");
-				final Map<String, Object> map = formatDescription(j.getArray("pages", new JsonArray()),
-						words, j.getObject("modified"), wikiId, locale);
-				jr.putString(aHeader.get(0), j.getString("title"));
-				jr.putString(aHeader.get(1), map.get("description").toString());
-				jr.putObject(aHeader.get(2), (JsonObject) map.get("modified"));
-				jr.putString(aHeader.get(3), j.getObject("owner").getString("displayName"));
-				jr.putString(aHeader.get(4), j.getObject("owner").getString("userId"));
-				jr.putString(aHeader.get(5), "/wiki#/view/" + wikiId);
+				final Map<String, Object> map = formatDescription(j.getJsonArray("pages", new JsonArray()),
+						words, j.getJsonObject("modified"), wikiId, locale);
+				jr.put(aHeader.get(0), j.getString("title"));
+				jr.put(aHeader.get(1), map.get("description").toString());
+				jr.put(aHeader.get(2), (JsonObject) map.get("modified"));
+				jr.put(aHeader.get(3), j.getJsonObject("owner").getString("displayName"));
+				jr.put(aHeader.get(4), j.getJsonObject("owner").getString("userId"));
+				jr.put(aHeader.get(5), "/wiki#/view/" + wikiId);
 				traity.add(jr);
 			}
 		}
@@ -114,10 +114,10 @@ public class WikiSearchingEvents implements SearchingEvents {
 
 		//get the last modified page that match with searched words for create the description
 		for(int i=0;i<ja.size();i++) {
-			final JsonObject jO = ja.get(i);
+			final JsonObject jO = ja.getJsonObject(i);
 			final String title = jO.getString("title" ,"");
 			final String content = jO.getString("content", "");
-			final Date currentDate = MongoDb.parseIsoDate(jO.getObject("modified"));
+			final Date currentDate = MongoDb.parseIsoDate(jO.getJsonObject("modified"));
 
 			int matchTitle = unaccentWords.size();
 			int matchContent = unaccentWords.size();
@@ -132,11 +132,11 @@ public class WikiSearchingEvents implements SearchingEvents {
 			final Boolean match = (matchTitle == 0 || matchContent == 0);
 			if (countMatchPage == 0 && match) {
 				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
-				modifiedRes = jO.getObject("modified");
+				modifiedRes = jO.getJsonObject("modified");
 			} else if (countMatchPage > 0 && match && modifiedMarker.before(currentDate)) {
 				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedMarker = currentDate;
-				modifiedRes = jO.getObject("modified");
+				modifiedRes = jO.getJsonObject("modified");
 			}
 			if (match) {
 				modifiedMarker = currentDate;
