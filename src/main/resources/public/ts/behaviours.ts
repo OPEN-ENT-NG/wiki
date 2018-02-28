@@ -603,6 +603,7 @@ wikiNamespace.Wiki.prototype.createPage = function(data, callback) {
 		if(data.isIndex === true) {
 			this.index = result._id;
 		}
+		this.$scope.$apply();
 		callback(result);
 	}.bind(this));
 };
