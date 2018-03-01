@@ -947,7 +947,8 @@ Behaviours.register('wiki', {
             				notify.info('wiki.page.has.been.created');
             				wiki.processing = false;
             				getPage(scope, wiki, createdPage._id, function() {
-            					Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+								Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+								scope.$apply();
             				});
             	        });
             		},
