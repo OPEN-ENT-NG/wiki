@@ -233,9 +233,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		modifier.set("pages.$.title", pageTitle)
 				.set("pages.$.content", pageContent)
 				.set("pages.$.contentPlain", StringUtils.stripHtmlTag(pageContent))
-//				Peu importe le comtributeur, l'auteur de change pas
-//				.set("pages.$.author", user.getUserId())
-//				.set("pages.$.authorName", user.getUsername())
+				.set("pages.$.lastContributer", user.getUserId())
+				.set("pages.$.lastContributerName", user.getUsername())
 				.set("pages.$.modified", now)
 				.set("modified", now);
 		if (isIndex) { // Set updated page as index
