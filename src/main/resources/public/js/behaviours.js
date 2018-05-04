@@ -882,6 +882,7 @@
 	                        wiki.processing = false;
 	                        getPage(scope, wiki, createdPage._id, function () {
 	                            entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
+	                            scope.$apply();
 	                        });
 	                    });
 	                },

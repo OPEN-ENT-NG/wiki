@@ -9,7 +9,12 @@
 						<h2>[[selectedWiki.page.title]]</h2>
 						<em ng-if="selectedWiki.page.modified" class="cell">
 							<i18n>wiki.last.modification.by</i18n>
-							<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
+							<div ng-if="selectedWiki.page.lastContributer !== undefined">
+								<a href="/userbook/annuaire#/[[selectedWiki.page.lastContributer]]">[[selectedWiki.page.lastContributerName]]</a>
+							</div>
+							<div ng-if="selectedWiki.page.lastContributer == undefined">
+								<a href="/userbook/annuaire#/[[selectedWiki.page.author]]">[[selectedWiki.page.authorName]]</a>
+							</div>
 							<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
 						</em>
 					</div>
