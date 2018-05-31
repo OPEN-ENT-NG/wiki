@@ -1,5 +1,8 @@
 {
     "apply": "Appliquer",
+    "group.HeadTeacher": "Tous les professeurs principaux de {0}.",
+    "group.Func": "Tous les personnels de fonction {0}.",
+    "group.Discipline": "Tous les enseignants de discipline {0}.",
     "group.AdminLocal": "Tous les administrateurs locaux de {0}.",
     "group.Personnel": "Tous les personnels du groupe {0}.",
     "group.Relative": "Tous les parents du groupe {0}.",
