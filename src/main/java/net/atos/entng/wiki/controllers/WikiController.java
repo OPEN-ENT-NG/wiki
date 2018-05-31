@@ -604,6 +604,33 @@ public class WikiController extends MongoDbControllerHelper {
 		super.removeShare(request, false);
 	}
 
+	@Put("/share/resource/:id")
+	@ApiDoc("Add rights for a given wikiId.")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	public void shareResource(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					final String id = request.params().get("id");
+					if(id == null || id.trim().isEmpty()) {
+						badRequest(request, "invalid.id");
+						return;
+					}
+
+					JsonObject params = new JsonObject();
+					params.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+							.put("username", user.getUsername())
+							.put("wikiUri", "/wiki#/view/" + id);
+					params.put("resourceUri", params.getString("wikiUri"));
+
+					shareResource(request, "wiki.shared", false, params, "title");
+				}
+			}
+		});
+	}
+
+
 	@Get("/revisions/:id/:idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void listRevisions(HttpServerRequest request) {
