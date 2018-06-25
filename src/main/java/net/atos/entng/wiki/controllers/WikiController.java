@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fr.wseduc.webutils.I18n;
 import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
@@ -402,7 +403,20 @@ public class WikiController extends MongoDbControllerHelper {
 			}
 
 			String notificationName = isCreatePage ? "page-created" : "comment-added";
+			String pushNotifTitle = isCreatePage ? "wiki.push.notif.page-created" : "wiki.push.notif.comment-added";
+			String pushNotifBody = isCreatePage
+                    ? I18n.getInstance().translate("wiki.push.notif.page-created",
+                    getHost(request),
+                    I18n.acceptLanguage(request),
+                    user.getUsername(),
+                    wiki.getString("title"))
+                    : I18n.getInstance().translate("wiki.push.notif.comment-added",
+                    getHost(request),
+                    I18n.acceptLanguage(request),
+                    user.getUsername(),
+                    pageTitle);
 
+			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
 			notification.notifyTimeline(request, "wiki." + notificationName, user, recipients, idResource, params);
 		}
 
@@ -563,6 +577,17 @@ public class WikiController extends MongoDbControllerHelper {
 							.put("username", user.getUsername())
 							.put("wikiUri", "/wiki#/view/" + id);
 					params.put("resourceUri", params.getString("wikiUri"));
+
+					JsonObject pushNotif = new JsonObject()
+                            .put("title", "wiki.push.notif.shared.title")
+                            .put("body", I18n.getInstance()
+                                    .translate(
+                                            "wiki.push.notif.shared.body",
+                                            getHost(request),
+                                            I18n.acceptLanguage(request),
+                                            user.getUsername()
+                                    ));
+					params.put("pushNotif", pushNotif);
 
 					shareJsonSubmit(request, "wiki.shared", false, params, "title");
 				}

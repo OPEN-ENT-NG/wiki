@@ -112,5 +112,8 @@
     "wiki.sniplet.default.homepage.content": "<p>Vous pouvez créer des pages en cliquant sur le bouton 'Nouvelle page' ci-dessus, ou en accédant directement à l'application Wiki. Vos visiteurs pourront suivre votre wiki depuis votre site web ou depuis l'application Wiki, ils seront notifiés lors des mises à jour du wiki.</p>",
     "wiki.contains.no.page": "Le wiki ne contient aucune page",
     "wiki.search.description.one": "Une page intitulée, {0}, répond à vos critères de recherche.",
-    "wiki.search.description.several" : "{0} pages répondent à vos critères de recherche, dont la plus récente intitulée, {1}."
+    "wiki.search.description.several" : "{0} pages répondent à vos critères de recherche, dont la plus récente intitulée, {1}.",
+    "wiki.push.notif.shared.body": "{0} vous a partagé un wiki",
+    "wiki.push.notif.page-created": "{0} a ajouté une page dans le wiki {1}",
+    "wiki.push.notif.comment-added": "{0} a ajouté un commentaire sur la page {1}"
 }
