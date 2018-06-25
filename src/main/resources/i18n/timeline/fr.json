@@ -7,5 +7,8 @@
     "timeline.wiki.has.commented.page": "a commenté la page",
     "timeline.wiki.has.shared": "vous a partagé le wiki",
     "timeline.wiki.in": "dans le wiki",
-    "timeline.wiki.of" : "du wiki"
+    "timeline.wiki.of" : "du wiki",
+    "wiki.push.notif.shared.title": "Wiki: Partage d'un wiki",
+    "wiki.push.notif.page-created": "Wiki: Nouvelle page dans un Wiki",
+    "wiki.push.notif.comment-added": "Wiki: Ajout de commentaire dans un Wiki"
 }
