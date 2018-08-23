@@ -21,17 +21,15 @@
 					<div class="five cell">
 						<div class="row">
 							<plus class="right-magnet cell">
-								<button ng-if="canDeletePage(selectedWiki,selectedWiki.page)" ng-click="display.showConfirmDeletePage = true;">
-									<i18n>wiki.page.delete</i18n>
-								</button>
+                                <button class="cell" ng-click="listVersions()">
+                                    <i18n>wiki.page.versions</i18n>
+                                </button>
 								<button class="cell" ng-if="canCreatePageInAtLeastOneWiki()" ng-click="showDuplicatePageForm()">
 									<i18n>wiki.page.duplicate</i18n>
 								</button>
-								<resource-right name="editPage" resource="selectedWiki" class="cell right-magnet">
-									<button class="cell" ng-click="listVersions()">
-										<i18n>wiki.page.versions</i18n>
-									</button>
-								</resource-right>
+                                <button ng-if="canDeletePage(selectedWiki,selectedWiki.page)" ng-click="display.showConfirmDeletePage = true;">
+                                    <i18n>wiki.page.delete</i18n>
+                                </button>
 							</plus>
 							<resource-right name="comment" resource="selectedWiki" class="cell right-magnet">
 								<button ng-click="showCommentForm()">
