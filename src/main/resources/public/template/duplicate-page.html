@@ -16,6 +16,7 @@
 		</div>
 		<hr class="row"/>
 		<div class="row">
+			<i18n>wiki.choose</i18n>
 			<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId" 
 			ng-init="canCreatePage(selectedWiki) ? (wikiDuplicate.targetWikiId = selectedWiki._id) : (wikiDuplicate.targetWikiId = wikis.all.filter(canCreatePage)[0]._id)" 
 			ng-options="wiki._id as wiki.title for wiki in wikis.all.filter(canCreatePage)" required>

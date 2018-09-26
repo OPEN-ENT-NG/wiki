@@ -118,5 +118,6 @@
     "wiki.search.description.several" : "{0} pages répondent à vos critères de recherche, dont la plus récente intitulée, {1}.",
     "wiki.push.notif.shared.body": "{0} vous a partagé un wiki",
     "wiki.push.notif.page-created": "{0} a ajouté une page dans le wiki {1}",
-    "wiki.push.notif.comment-added": "{0} a ajouté un commentaire sur la page {1}"
+    "wiki.push.notif.comment-added": "{0} a ajouté un commentaire sur la page {1}",
+    "wiki.choose": "Choisissez le Wiki de destination"
 }
