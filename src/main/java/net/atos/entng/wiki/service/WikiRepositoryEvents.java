@@ -20,26 +20,20 @@
 package net.atos.entng.wiki.service;
 
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
+import static net.atos.entng.wiki.Wiki.WIKI_COLLECTION;
 
 import fr.wseduc.mongodb.MongoDb;
+import io.vertx.core.Vertx;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
+import org.entcore.common.storage.Storage;
 
 public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 
-	private final MongoDb mongo = MongoDb.getInstance();
-
-	public WikiRepositoryEvents() {
-		super("net-atos-entng-wiki-controllers-WikiController|shareWiki",
+	public WikiRepositoryEvents(Vertx vertx) {
+		super(vertx,"net-atos-entng-wiki-controllers-WikiController|shareWiki",
 				REVISIONS_COLLECTION, "wikiId");
-	}
-
-	@Override
-	public void exportResources(String exportId, String userId,
-			JsonArray groups, String exportPath, String locale, String host, final Handler<Boolean> handler) {
-		// TODO
-		log.warn("Method exportResources is not implemented in WikiRepositoryEvents");
 	}
 
 }
