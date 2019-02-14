@@ -26,6 +26,7 @@ import net.atos.entng.wiki.service.WikiSearchingEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
+import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
 
 public class Wiki extends BaseServer {
@@ -38,8 +39,8 @@ public class Wiki extends BaseServer {
 		super.start();
 
 		// Set RepositoryEvents implementation used to process events published for transition
-		setRepositoryEvents(new WikiRepositoryEvents());
-
+		setRepositoryEvents(new MongoDbRepositoryEvents(vertx, "net-atos-entng-wiki-controllers-WikiController|shareWiki",
+				REVISIONS_COLLECTION, "wikiId"));
 		if (config.getBoolean("searching-event", true)) {
 			setSearchingEvents(new WikiSearchingEvents(new MongoDbSearchService(WIKI_COLLECTION)));
 		}
