@@ -6,6 +6,7 @@
         "app-name" : "Wiki",
         "app-address" : "/wiki",
         "app-icon" : "wiki-large",
+        "app-type" : "END_USER",
         "host": "${host}",
         "ssl" : $ssl,
         "auto-redeploy": false,
