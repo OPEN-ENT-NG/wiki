@@ -33,30 +33,6 @@
 			</section>
 		</div>
 	</div>
-
-
-	<!-- Lightbox to share wikis -->
-	<div ng-if="display.showPanel">
-		<lightbox show="display.showPanel" on-close="display.showPanel = false;">
-			<share-panel app-prefix="'wiki'" resources="wikis.selection()"/>
-		</lightbox>
-	</div>
-
-	<!-- Lightbox to confirm wiki deletion -->
-		<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
-		<h2><i18n>wiki.confirmdeleteform.title</i18n></h2>
-		<p><i18n>wiki.confirmdeleteform.message</i18n></p>
-		<p ng-repeat="aWiki in wikis.selection()">[[aWiki.title]]</p>
-		<div class="row">
-			<button ng-click="deleteWikiSelection()" class="right-magnet">
-				<i18n>wiki.confirmdeleteform.title.delete</i18n>
-			</button>
-			<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">
-				<i18n>wiki.confirmdeleteform.title.cancel</i18n>
-			</button>
-		</div>
-		</lightbox>
-
 </div>
 
 <!-- Display actions for selected wikis -->
@@ -86,3 +62,27 @@
 		</div>
 	</div>
 </section>
+
+
+<!-- Lightbox to share wikis -->
+<div ng-if="display.showPanel">
+	<lightbox show="display.showPanel" on-close="display.showPanel = false;">
+		<share-panel app-prefix="'wiki'" resources="wikis.selection()"/>
+	</lightbox>
+</div>
+
+<!-- Lightbox to confirm wiki deletion -->
+<lightbox show="display.showConfirmDelete" on-close="display.showConfirmDelete = false">
+	<h2><i18n>wiki.confirmdeleteform.title</i18n></h2>
+	<p><i18n>wiki.confirmdeleteform.message</i18n></p>
+	<p ng-repeat="aWiki in wikis.selection()">[[aWiki.title]]</p>
+	<div class="row">
+		<button ng-click="deleteWikiSelection()" class="right-magnet">
+			<i18n>wiki.confirmdeleteform.title.delete</i18n>
+		</button>
+		<button ng-click="display.showConfirmDelete = false" class="cancel right-magnet">
+			<i18n>wiki.confirmdeleteform.title.cancel</i18n>
+		</button>
+	</div>
+</lightbox>
+

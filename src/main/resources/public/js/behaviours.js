@@ -559,8 +559,8 @@
 	        .done(function (wiki) {
 	        wiki.pages[0].wiki_id = this._id;
 	        this.page = new entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.Page(wiki.pages[0]);
+	        var content = $(this.page.content);
 	        if (this.context === 'sniplet') {
-	            var content = $(this.page.content);
 	            content.find('a[href^="/wiki#/view/' + this._id + '"]').each(function (index, item) {
 	                var pageIdSplit = $(item).attr('href').split('/');
 	                var pageId = pageIdSplit[pageIdSplit.length - 1];
@@ -568,8 +568,17 @@
 	                $(item).removeAttr('data-reload');
 	                $(item).attr('ng-click', 'openPage(\'' + pageId + '\')');
 	            });
-	            this.page.content = entcore_1._.map(content, function (el) { return el.outerHTML; }).join('');
 	        }
+	        else {
+	            var wikiId = this._id;
+	            content.find('a[ng-click^="openPage("]').each(function (index, item) {
+	                var pageIdSplit = $(item).attr('ng-click').split("'");
+	                var pageId = pageIdSplit[1];
+	                $(item).removeAttr('ng-click');
+	                $(item).attr('href', '/wiki#/view/' + wikiId + '/' + pageId);
+	            });
+	        }
+	        this.page.content = entcore_1._.map(content, function (el) { return el.outerHTML; }).join('');
 	        this.title = wiki.title;
 	        this.owner = wiki.owner;
 	        callback(wiki);
