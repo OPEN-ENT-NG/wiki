@@ -11,13 +11,15 @@
 
 	<div class="centered container row">
 		<section class="main">
-			<h1 class="text upper-title">[[selectedWiki.title]]</h1>
-
+			<h1 class="app-title">
+				<i class="wiki"></i>
+				[[selectedWiki.title]]
+			</h1>
 			<div data-ng-repeat="page in selectedWiki.pages.all" class="row">
 				<article class="twelve cell vertical-spacing-twice">
 					<div class="row">
 						<div>
-							<h2 class="upper-title">[[page.title]]</h2>
+							<h3 class="upper-title">[[page.title]]</h3>
 							<em ng-if="page.modified" class="subtitle">
 								<i18n>wiki.last.modification.by</i18n> [[page.authorName]] <i18n>wiki.on</i18n> [[getDateAndTime(page.modified)]]
 							</em>
