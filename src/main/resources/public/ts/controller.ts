@@ -162,9 +162,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	                if(parameters.wiki) {
 	                	$scope.selectedWiki = new Wiki({_id: parameters.wiki});
 	                	$scope.selectedWiki.getWholeWiki(function() {
-	                		$scope.selectedWiki.pages.all = _.sortBy($scope.selectedWiki.pages.all, function(page) {
-	            				return page.title.toLowerCase();
-	            			});
 	                		setTimeout(function(){window.print();}, 1000);
 	                	});
 	                    return;
