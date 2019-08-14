@@ -714,6 +714,9 @@ var wikiRights = {
 		},
 		comment: {
 			right: 'net-atos-entng-wiki-controllers-WikiController|comment'
+		},
+		manager: {
+			right: 'net-atos-entng-wiki-controllers-WikiController|publishToLibrary'
 		}
 	},
 	workflow: {
@@ -721,7 +724,8 @@ var wikiRights = {
 		list: 'net.atos.entng.wiki.controllers.WikiController|listWikis',
 		view: 'net.atos.entng.wiki.controllers.WikiController|view',
 		listAllPages: 'net.atos.entng.wiki.controllers.WikiController|listAllPages',
-		print: 'net.atos.entng.wiki.controllers.WikiController|print'
+		print: 'net.atos.entng.wiki.controllers.WikiController|print',
+		publish: 'net.atos.entng.wiki.controllers.WikiController|publish'
 	}
 };
 
