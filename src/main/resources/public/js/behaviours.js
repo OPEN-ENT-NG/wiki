@@ -679,6 +679,9 @@
 	        },
 	        comment: {
 	            right: 'net-atos-entng-wiki-controllers-WikiController|comment'
+	        },
+	        manager: {
+	            right: 'net-atos-entng-wiki-controllers-WikiController|publishToLibrary'
 	        }
 	    },
 	    workflow: {
@@ -686,7 +689,8 @@
 	        list: 'net.atos.entng.wiki.controllers.WikiController|listWikis',
 	        view: 'net.atos.entng.wiki.controllers.WikiController|view',
 	        listAllPages: 'net.atos.entng.wiki.controllers.WikiController|listAllPages',
-	        print: 'net.atos.entng.wiki.controllers.WikiController|print'
+	        print: 'net.atos.entng.wiki.controllers.WikiController|print',
+	        publish: 'net.atos.entng.wiki.controllers.WikiController|publish'
 	    }
 	};
 	entcore_1.Behaviours.register('wiki', {

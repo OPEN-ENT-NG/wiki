@@ -71,9 +71,15 @@
 			</a>
 			<resource-right name="edit" resource="wikis.selection()" class="cell">
 				<button ng-if="wikis.selection().length === 1"
-					ng-click="displayEditWikiForm(wikis.selection()[0])"
+						ng-click="displayEditWikiForm(wikis.selection()[0])"
 				>
 					<i18n>properties</i18n>
+				</button>
+			</resource-right>
+			<resource-right name="manager" resource="wikis.selection()" class="cell">
+				<button ng-if="wikis.selection().length === 1"
+						library-resource="wikis.selection()[0]">
+					<i18n>bpr.publish</i18n>
 				</button>
 			</resource-right>
 			<resource-right name="share" resource="wikis.selection()" class="cell">

@@ -9,7 +9,7 @@
 </head>
 
 
-<body ng-controller="WikiController">
+<body ng-controller="WikiController" library-root>
 	<portal ng-if="!notFound">
 		<div class="row">
 			<div class="twelve cell">
@@ -83,6 +83,6 @@
 			</portal>
 		</div>
 	</div>
-
+	<library-publish></library-publish>
 </body>
 </html>
