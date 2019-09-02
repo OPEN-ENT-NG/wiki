@@ -13,6 +13,55 @@
 	</div>
 
 	<div class="fallen dominos">
+		<!-- 1D Création -->
+		<div class="emptyscreen no-2d">
+		    <h2 class="emptyscreen-header"><i18n>empty.wiki.creation.title</i18n></h2>
+		    <img class="emptyscreen-image__mini" src="/wiki/public/img/empty-wiki.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.wiki.creation</i18n>
+		    </p>
+				<a class="button" ng-if="(!selectedWiki || !selectedWiki._id) && !isCreatingOrEditing()" ng-click="displayCreateWikiForm()" workflow="wiki.create"><i18n>wiki.create</i18n></a>
+		</div>
+		<!-- 1D Consultation -->
+		<div class="emptyscreen no-2d">
+		    <h2 class="emptyscreen-header"><i18n>empty.wiki.consultation.title</i18n></h2>
+		    <img class="emptyscreen-image__mini" src="/wiki/public/img/empty-wiki.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.wiki.consultation</i18n>
+		    </p>
+		</div>
+		<!-- 2D Création -->
+		<div class="emptyscreen no-1d">
+		    <h2 class="emptyscreen-header"><i18n>empty.wiki.creation.title</i18n></h2>
+		    <img class="emptyscreen-image__mini" src="/wiki/public/img/empty-wiki.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.wiki.creation</i18n>
+		    </p>
+				<a class="button" ng-if="(!selectedWiki || !selectedWiki._id) && !isCreatingOrEditing()" ng-click="displayCreateWikiForm()" workflow="wiki.create"><i18n>wiki.create</i18n></a>
+		</div>
+		<!-- 2D Consultation -->
+		<div class="emptyscreen no-1d">
+		    <h2 class="emptyscreen-header"><i18n>empty.wiki.consultation.title</i18n></h2>
+		    <img class="emptyscreen-image__mini" src="/wiki/public/img/empty-wiki.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.wiki.consultation</i18n>
+		    </p>
+		</div>
+		<!-- Si les filtres sont tous désactivés -->
+		<div class="emptyscreen">
+		    <h2 class="emptyscreen-header"><i18n>empty.filters.title</i18n></h2>
+		    <img class="emptyscreen-image__mini" src="/assets/themes/entcore-css-lib/images/empty-filters.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.filters</i18n>
+		    </p>
+		</div>
+		<!-- Si la corbeille est vide -->
+		<div class="emptyscreen" ng-if="isTrashFolder()">
+		    <img class="emptyscreen-image" src="/assets/themes/entcore-css-lib/images/empty-trash.svg">
+		    <p class="emptyscreen-footer">
+		        <i18n>empty.trash1</i18n>
+		    </p>
+		</div>
 		<div class="item" ng-repeat="wiki in wikis.all">
 			<section class="domino cyan">
 				<div class="top" ng-click="redirect('/view/' + wiki._id)">
