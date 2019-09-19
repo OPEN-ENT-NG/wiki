@@ -17,13 +17,11 @@
 			</h1>
 			<div data-ng-repeat="page in selectedWiki.pages.all" class="row">
 				<article class="twelve cell vertical-spacing-twice">
-					<div class="row">
-						<div>
-							<h3 class="upper-title">[[page.title]]</h3>
-							<em ng-if="page.modified" class="subtitle">
-								<i18n>wiki.last.modification.by</i18n> [[page.authorName]] <i18n>wiki.on</i18n> [[getDateAndTime(page.modified)]]
-							</em>
-						</div>
+					<div class="title-background">
+						<h3 class="upper-title">[[page.title]]</h3>
+						<strong ng-if="page.modified" class="subtitle">
+							<i18n>wiki.last.modification.by</i18n> [[page.authorName]] <i18n>wiki.on</i18n> [[getDateAndTime(page.modified)]]
+						</strong>
 					</div>
 
 					<div class="row">
