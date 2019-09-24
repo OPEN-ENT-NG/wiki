@@ -33,7 +33,6 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
-import org.entcore.common.appregistry.LibraryUtils;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
@@ -549,12 +548,6 @@ public class WikiController extends MongoDbControllerHelper {
 		final String idComment = request.params().get("idcomment");
 
 		wikiService.deleteComment(idWiki, idPage, idComment, notEmptyResponseHandler(request));
-	}
-
-	@Post("/:id/library")
-	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
-	public void publishToLibrary(final HttpServerRequest request) {
-		LibraryUtils.publish("Wiki", eb, request);
 	}
 
 	@Get("/library")
