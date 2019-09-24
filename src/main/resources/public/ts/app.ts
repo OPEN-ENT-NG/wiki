@@ -10,9 +10,6 @@ interface Wiki {
 }
 
 ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Wiki>) {
-    libraryServiceProvider.setPublishUrlGetterFromId(function (id: string) {
-        return `/wiki/${id}/library`;
-    });
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
         return function (resource: Wiki): { id: string, resourceInformation: LibraryResourceInformation } {
             return {id: resource._id, resourceInformation: {title: resource.title, cover: resource.thumbnail}};
