@@ -1,7 +1,8 @@
 import { model, ng, routes } from 'entcore';
 import { build } from './model';
 import { controller } from './controller';
-import { LibraryResourceInformation, LibraryServiceProvider } from "entcore/types/src/ts/library/library.service";
+import { LibraryServiceProvider } from 'entcore/types/src/ts/library/library.service';
+import { IdAndLibraryResourceInformation } from 'entcore/types/src/ts/library/library.types';
 
 interface Wiki {
     _id: string;
@@ -9,10 +10,18 @@ interface Wiki {
     title: string;
 }
 
-ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Wiki>) {
+ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Blog>) {
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
-        return function (resource: Wiki): { id: string, resourceInformation: LibraryResourceInformation } {
-            return {id: resource._id, resourceInformation: {title: resource.title, cover: resource.thumbnail}};
+        return function (resource: Wiki): IdAndLibraryResourceInformation {
+            return {
+                id: resource._id, 
+                resourceInformation: {
+                    title: resource.title, 
+                    cover: resource.thumbnail,
+                    application: "Wiki",
+                    pdfUri: `/wiki/print?wiki=${resource._id}`
+                }
+            };
         };
     });
 }]));
