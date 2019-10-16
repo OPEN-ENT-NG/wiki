@@ -73,6 +73,13 @@
 					<i18n>properties</i18n>
 				</button>
 			</resource-right>
+			<!--<resource-right name="duplicate" workflow="wiki.create" resource="wikis.selection()" class="cell">-->
+				<button workflow="wiki.create" ng-if="wikis.selection().length === 1"
+					ng-click="duplicateWiki(wikis.selection()[0])"
+				>
+					<i18n>duplicate</i18n>
+				</button>
+			<!--</resource-right>-->
 			<resource-right name="share" resource="wikis.selection()" class="cell">
 				<button ng-click="display.showPanel = true">
 					<i18n>wiki.share</i18n>

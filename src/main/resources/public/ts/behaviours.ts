@@ -634,6 +634,20 @@ wikiNamespace.Wiki.prototype.updateWiki = function(data, callback) {
 	});
 };
 
+wikiNamespace.Wiki.prototype.duplicateWiki = function(callback)
+{
+	http().postJson("/archive/duplicate", { application: "wiki", resourceId: this._id } ).done(function()
+	{
+		notify.info("duplicate.done");
+		if(callback)
+			callback();
+	})
+	.error(function()
+	{
+		notify.error("duplicate.error");
+	});
+}
+
 wikiNamespace.Wiki.prototype.deleteWiki = function(callback) {
 	http().delete('/wiki/' + this._id).done(function(){
 		model.wikis.remove(this);

@@ -270,6 +270,16 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		});
 	};
 
+	$scope.duplicateWiki = function(wiki)
+	{
+		notify.info("duplicate.start");
+		wiki.duplicateWiki(function()
+		{
+			updateSearchBar();
+			$scope.displayWikiList();
+		});
+	};
+
 	$scope.displayWikiList = function(){
     	model.wikis.one('sync', function(){
 	    	delete $scope.selectedWiki;
