@@ -87,6 +87,7 @@
 			</resource-right>
 			<resource-right name="manager" resource="wikis.selection()" class="cell">
 				<button ng-if="wikis.selection().length === 1"
+						workflow="wiki.publish"
 						library-resource="wikis.selection()[0]">
 					<i18n>bpr.publish</i18n>
 				</button>
