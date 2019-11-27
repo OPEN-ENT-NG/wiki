@@ -381,33 +381,36 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.page = new Page();
 
-	$scope.createPage = function(){
-		if (titleIsEmpty($scope.page.title)){
-			notify.error('wiki.form.title.is.empty');
-			return;
-		}
-		if(pageTitleExists($scope.page.title, $scope.selectedWiki)){
-			notify.error('wiki.page.form.titlealreadyexist.error');
-			return;
-		}
+	$scope.createPage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			if (titleIsEmpty($scope.page.title)) {
+				notify.error('wiki.form.title.is.empty');
+				reject();
+			}
+			if (pageTitleExists($scope.page.title, $scope.selectedWiki)) {
+				notify.error('wiki.page.form.titlealreadyexist.error');
+				reject();
+			}
+			resolve();
+			var data = {
+				title: $scope.page.title,
+				content: $scope.page.content,
+				isIndex: $scope.page.isIndex
+			};
+			setTimeout(function () {
+				template.open('main', 'view-page');
+			}, 0);
+			$scope.selectedWiki.createPage(data, function (result) {
+				updateSearchBar();
 
-		template.open('main', 'view-page');
-
-		var data = {
-			title : $scope.page.title,
-			content : $scope.page.content,
-			isIndex : $scope.page.isIndex
-		};
-		$scope.selectedWiki.createPage(data, function(result){
-			updateSearchBar();
-
-			$scope.selectedWiki.pages.sync(function(){
-				$scope.selectedWiki.setLastPages();
-		        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
-					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-		        });
+				$scope.selectedWiki.pages.sync(function () {
+					$scope.selectedWiki.setLastPages();
+					$scope.selectedWiki.getPage(result._id, function (returnedWiki) {
+						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+					});
+				});
 			});
-        });
+		});
 	};
 
 	$scope.editPage = function(selectedWiki) {
@@ -422,31 +425,36 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
         template.open('main', 'view-page');
 	};
 
-	$scope.updatePage = function(){
-		// Check field "title"
-		if (titleIsEmpty($scope.selectedWiki.editedPage.title)){
-			notify.error('wiki.form.title.is.empty');
-			return;
-		}
-		if(pageTitleExists($scope.selectedWiki.editedPage.title, $scope.selectedWiki, $scope.selectedWiki.editedPage._id)){
-			notify.error('wiki.page.form.titlealreadyexist.error');
-			return;
-		}
+	$scope.updatePage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			// Check field "title"
+			if (titleIsEmpty($scope.selectedWiki.editedPage.title)) {
+				notify.error('wiki.form.title.is.empty');
+				reject();
+			}
+			if (pageTitleExists($scope.selectedWiki.editedPage.title, $scope.selectedWiki, $scope.selectedWiki.editedPage._id)) {
+				notify.error('wiki.page.form.titlealreadyexist.error');
+				reject();
+			}
+			resolve();
 
-		$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-		template.open('main', 'view-page');
+			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
+			setTimeout(function () {
+				template.open('main', 'view-page');
+			}, 0);
 
-		$scope.selectedWiki.editedPage.save(function(result){
-			updateSearchBar();
+			$scope.selectedWiki.editedPage.save(function (result) {
+				updateSearchBar();
 
-			$scope.selectedWiki.pages.sync(function(){
-				$scope.selectedWiki.setLastPages();
-				$scope.selectedWiki.getPage($scope.selectedWiki.page._id, function(returnedWiki){
-					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
-                    model.wikis.one('sync', function(){
-        		    	$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
-        			});
-        			model.wikis.sync();
+				$scope.selectedWiki.pages.sync(function () {
+					$scope.selectedWiki.setLastPages();
+					$scope.selectedWiki.getPage($scope.selectedWiki.page._id, function (returnedWiki) {
+						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
+						model.wikis.one('sync', function () {
+							$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
+						});
+						model.wikis.sync();
+					});
 				});
 			});
 		});
@@ -516,8 +524,11 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		return Behaviours.applicationsBehaviours.wiki.namespace.switchCommentsDisplay($scope.selectedWiki);
 	};
 
-	$scope.commentPage = function() {
-		return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
+	$scope.commentPage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			resolve();
+			return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
+		});
 	};
 
 	$scope.removeComment = function(commentId, commentIndex) {

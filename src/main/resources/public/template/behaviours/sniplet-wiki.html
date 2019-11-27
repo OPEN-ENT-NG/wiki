@@ -79,7 +79,7 @@
 				</button>
 			</resource-right>
 			<resource-right name="createPage" resource="wiki" class="cell right-magnet">
-				<button ng-click="newPage()" ng-if="wiki">
+				<button navigation-trigger="newPage()" ng-if="wiki">
                     <i18n>wiki.create.new.page</i18n>
                 </button>
 			</resource-right>
@@ -141,11 +141,11 @@
 						</div>
 
 						<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
-							<resource-right name="comment" resource="wiki">
+							<resource-right name="comment" resource="wiki" guard-root>
 								<form>
-									<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
+									<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment" input-guard></textarea>
 									<div>
-										<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
+										<button class="button right-magnet" reset-guard="commentPage()" translate content="wiki.comment.save"></button>
 									</div>
 									<div class="clear"></div>
 								</form>
@@ -183,7 +183,7 @@
 		</default-styles>
 	</div>
 
-	<div ng-if="display.action === 'createPage'" class="wiki-sniplet">
+	<div ng-if="display.action === 'createPage'" class="wiki-sniplet" guard-root>
 		<div class="twelve cell">
 				<div class="twelve cell">
 					<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
@@ -193,12 +193,12 @@
 					<i18n>wiki.page.createform.set.as.index</i18n>
 				</div>
 				<div class="twelve cell">
-					<editor ng-model="wiki.newPage.content"></editor>
+					<editor ng-model="wiki.newPage.content" input-guard></editor>
 				</div>
 		</div>
 		<div class="twelve cell">
 			<div ng-if="!wiki.processing">
-				<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+				<button class="right-magnet cell" reset-guard="createPage()" translate content="wiki.page.createform.save"></button>
 				<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
 			</div>
 			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
@@ -207,7 +207,7 @@
 		</div>
 	</div>
 
-	<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
+	<div ng-if="display.action === 'editPage'" class="wiki-sniplet" guard-root>
 		<div class="twelve cell">
 			<div class="twelve cell">
 				<input type="text" ng-model="wiki.editedPage.title" class="twelve cell" />
@@ -217,12 +217,12 @@
 				<i18n>wiki.page.editform.set.as.index</i18n>
 			</div>
 			<div class="twelve cell">
-				<editor ng-model="wiki.editedPage.content"></editor>
+				<editor ng-model="wiki.editedPage.content" input-guard></editor>
 			</div>
 		</div>
 		<div class="twelve cell">
 			<div ng-if="!wiki.processing">
-				<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+				<button class="right-magnet" reset-guard="updatePage()" translate content="wiki.page.editform.save"></button>
 				<button class="right-magnet cancel" ng-click="cancelEditPage()" translate content="wiki.page.editform.cancel"></button>
 			</div>
 			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>

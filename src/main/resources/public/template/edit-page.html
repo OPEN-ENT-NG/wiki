@@ -4,7 +4,7 @@
 	<div class="margin-three">
 		<article class="twelve cell">
 			<form class="twelve cell">
-				<div class="row">
+				<div class="row" guard-root>
 					<input type="text" ng-model="selectedWiki.editedPage.title" class="twelve cell" />
 				</div>
 				<div class="row">
@@ -12,10 +12,10 @@
 					<i18n>wiki.page.editform.set.as.index</i18n>
 				</div>
 				<div>
-					<editor ng-model="selectedWiki.editedPage.content"></editor>
+					<editor ng-model="selectedWiki.editedPage.content" input-guard></editor>
 				</div>
 				<div class="row">
-					<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+					<button class="right-magnet" reset-guard="updatePage()" translate content="wiki.page.editform.save"></button>
 					<button  class="right-magnet cancel" ng-click="cancelEditPage(selectedWiki)" translate content="wiki.page.editform.cancel"></button>
 				</div>
 				<div class="clear"></div>
