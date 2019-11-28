@@ -471,6 +471,9 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.deletePage = function(){
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		$scope.selectedWiki.deletePage($scope.selectedWiki.page._id, function(result){
 			updateSearchBar();
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
@@ -480,6 +483,9 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.showDuplicatePageForm = function(page) {
 		var content;
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		function copyPageContent(){
 			$scope.wikiDuplicate = {};
 			$scope.wikiDuplicate.page = new Page({
@@ -543,6 +549,9 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.listVersions = function(){
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
 	};
 
