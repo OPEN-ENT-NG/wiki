@@ -79,9 +79,9 @@
 				</button>
 			</resource-right>
 			<resource-right name="createPage" resource="wiki" class="cell right-magnet">
-				<button ng-click="newPage()" ng-if="wiki">
-                    <i18n>wiki.create.new.page</i18n>
-                </button>
+				<button navigation-trigger="newPage()" ng-if="wiki">
+					<i18n>wiki.create.new.page</i18n>
+				</button>
 			</resource-right>
 		</div>
 	</div>
@@ -132,7 +132,7 @@
 								<span ng-if="!wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
 									<i18n>wiki.comment.display</i18n> ([[wiki.page.comments.length]])
 								</span>
-								<span ng-if="wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
+									<span ng-if="wiki.page.showComments && wiki.page.comments && wiki.page.comments.length > 0">
 									<i18n>wiki.comment.hide</i18n> ([[wiki.page.comments.length]])
 								</span>
 								</a>
@@ -141,11 +141,11 @@
 						</div>
 
 						<div class="twelve cell" ng-if="wiki.page.showCommentForm === true">
-							<resource-right name="comment" resource="wiki">
+							<resource-right name="comment" resource="wiki" guard-root>
 								<form>
-									<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment"></textarea>
+									<textarea ng-model="wiki.page.newComment" i18n-placeholder="wiki.label.write.your.comment" input-guard></textarea>
 									<div>
-										<button class="button right-magnet" ng-click="commentPage()" translate content="wiki.comment.save"></button>
+										<button class="button right-magnet" reset-guard="commentPage()" translate content="wiki.comment.save"></button>
 									</div>
 									<div class="clear"></div>
 								</form>
@@ -183,22 +183,22 @@
 		</default-styles>
 	</div>
 
-	<div ng-if="display.action === 'createPage'" class="wiki-sniplet">
+	<div ng-if="display.action === 'createPage'" class="wiki-sniplet" guard-root>
 		<div class="twelve cell">
-				<div class="twelve cell">
-					<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
-				</div>
-				<div class="twelve cell">
-					<input type="checkbox" ng-model="wiki.newPage.isIndex" />
-					<i18n>wiki.page.createform.set.as.index</i18n>
-				</div>
-				<div class="twelve cell">
-					<editor ng-model="wiki.newPage.content"></editor>
-				</div>
+			<div class="twelve cell">
+				<input type="text" ng-model="wiki.newPage.title" i18n-placeholder="wiki.page.createform.input.placeholder" class="twelve cell" />
+			</div>
+			<div class="twelve cell">
+				<input type="checkbox" ng-model="wiki.newPage.isIndex" />
+				<i18n>wiki.page.createform.set.as.index</i18n>
+			</div>
+			<div class="twelve cell">
+				<editor ng-model="wiki.newPage.content" input-guard></editor>
+			</div>
 		</div>
 		<div class="twelve cell">
 			<div ng-if="!wiki.processing">
-				<button class="right-magnet cell" ng-click="createPage()" translate content="wiki.page.createform.save"></button>
+				<button class="right-magnet cell" reset-guard="createPage()" translate content="wiki.page.createform.save"></button>
 				<button class="right-magnet cell cancel" ng-click="cancelCreatePage()" translate content="wiki.page.createform.cancel"></button>
 			</div>
 			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
@@ -207,7 +207,7 @@
 		</div>
 	</div>
 
-	<div ng-if="display.action === 'editPage'" class="wiki-sniplet">
+	<div ng-if="display.action === 'editPage'" class="wiki-sniplet" guard-root>
 		<div class="twelve cell">
 			<div class="twelve cell">
 				<input type="text" ng-model="wiki.editedPage.title" class="twelve cell" />
@@ -217,12 +217,12 @@
 				<i18n>wiki.page.editform.set.as.index</i18n>
 			</div>
 			<div class="twelve cell">
-				<editor ng-model="wiki.editedPage.content"></editor>
+				<editor ng-model="wiki.editedPage.content" input-guard></editor>
 			</div>
 		</div>
 		<div class="twelve cell">
 			<div ng-if="!wiki.processing">
-				<button class="right-magnet" ng-click="updatePage()" translate content="wiki.page.editform.save"></button>
+				<button class="right-magnet" reset-guard="updatePage()" translate content="wiki.page.editform.save"></button>
 				<button class="right-magnet cancel" ng-click="cancelEditPage()" translate content="wiki.page.editform.cancel"></button>
 			</div>
 			<button ng-if="wiki.processing === true" class="right-magnet disabled" disabled>
@@ -243,13 +243,13 @@
 		<form class="twelve cell">
 			<div class="twelve cell">
 				<input type="text" ng-model="wikiDuplicate.page.title" class="twelve cell"
-				i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
+					   i18n-placeholder="wiki.page.duplicateform.title.input.placeholder"/>
 			</div>
 			<hr class="twelve cell"/>
 			<div class="twelve cell">
 				<select class="twelve cell" ng-model="wikiDuplicate.targetWikiId"
-				ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)"
-				ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
+						ng-init="canCreatePage(wiki) ? (wikiDuplicate.targetWikiId = wiki._id) : (wikiDuplicate.targetWikiId = editableWikis[0]._id)"
+						ng-options="wiki._id as wiki.title for wiki in editableWikis" required>
 				</select>
 			</div>
 			<hr class="twelve cell"/>
@@ -339,28 +339,28 @@
 
 		<table class="twelve compare list-view">
 			<thead>
-				<tr>
-					<th class="six">
-						<i18n>wiki.version.time</i18n> [[formatDate(display.leftCompare.date)]] <i18n>wiki.by</i18n> [[display.leftCompare.username]]
-					</th>
-					<th class="six">
-						<i18n>wiki.version.time</i18n> [[formatDate(display.rightCompare.date)]] <i18n>wiki.by</i18n> [[display.rightCompare.username]]
-					</th>
-				</tr>
+			<tr>
+				<th class="six">
+					<i18n>wiki.version.time</i18n> [[formatDate(display.leftCompare.date)]] <i18n>wiki.by</i18n> [[display.leftCompare.username]]
+				</th>
+				<th class="six">
+					<i18n>wiki.version.time</i18n> [[formatDate(display.rightCompare.date)]] <i18n>wiki.by</i18n> [[display.rightCompare.username]]
+				</th>
+			</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><button ng-click="restoreVersion(display.leftCompare)"><i18n>wiki.version.restore</i18n></button></td>
-					<td><button ng-click="restoreVersion(display.rightCompare)"><i18n>wiki.version.restore</i18n></button></td>
-				</tr>
-				<tr>
-					<td>
-						<div bind-html="display.comparison.left"></div>
-					</td>
-					<td>
-						<div bind-html="display.comparison.right"></div>
-					</td>
-				</tr>
+			<tr>
+				<td><button ng-click="restoreVersion(display.leftCompare)"><i18n>wiki.version.restore</i18n></button></td>
+				<td><button ng-click="restoreVersion(display.rightCompare)"><i18n>wiki.version.restore</i18n></button></td>
+			</tr>
+			<tr>
+				<td>
+					<div bind-html="display.comparison.left"></div>
+				</td>
+				<td>
+					<div bind-html="display.comparison.right"></div>
+				</td>
+			</tr>
 			</tbody>
 		</table>
 	</div>
@@ -389,13 +389,13 @@
 			<button
 					ng-if="wiki.page.versions.selection().length === 1"
 					ng-click="restoreVersion()"
-					>
+			>
 				<i18n>wiki.version.restore</i18n>
 			</button>
 			<button
 					ng-if="wiki.page.versions.selection().length === 2"
 					ng-click="compareVersions()"
-					>
+			>
 				<i18n>wiki.version.compare</i18n>
 			</button>
 		</div>

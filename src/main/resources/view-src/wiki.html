@@ -11,79 +11,79 @@
 
 
 <body ng-controller="WikiController" library-root>
-	<portal ng-if="!notFound">
-		<div class="row">
-			<div class="twelve cell">
-				<div class="eight cell">
-					<side-panel ng-if="selectedWiki">
-						<container template="side-panel"></container>
-					</side-panel>
-					<app-title>
-						<h1>
-							<i class="wiki"></i>
-							<a ng-click="redirectToHome()">[[applicationName]]</a>
-							<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
-								/ <a ng-click="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
+<portal ng-if="!notFound">
+	<div class="row">
+		<div class="twelve cell">
+			<div class="eight cell">
+				<side-panel ng-if="selectedWiki">
+					<container template="side-panel"></container>
+				</side-panel>
+				<app-title>
+					<h1>
+						<i class="wiki"></i>
+						<a ng-click="redirectToHome()">[[applicationName]]</a>
+						<span ng-if="selectedWiki.title && selectedWiki.title.trim().length > 0">
+								/ <a navigation-trigger="viewWiki(selectedWiki._id)">[[selectedWiki.title]]</a>
 							</span>
-						</h1>
-					</app-title>
-				</div>
-				<div class="contextual-buttons four cell">
-					<button ng-if="(!selectedWiki || !selectedWiki._id) && !isCreatingOrEditing() && wikis.all.length" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
-						<i18n>wiki.create</i18n>
-					</button>
-				</div>
+					</h1>
+				</app-title>
 			</div>
-			<div class="clear"></div>
-		</div>
-		<section>
-			<container template="main"></container>
-			<div class="row">
-				<hr />
+			<div class="contextual-buttons four cell">
+				<button ng-if="(!selectedWiki || !selectedWiki._id) && !isCreatingOrEditing() && wikis.all.length" ng-click="displayCreateWikiForm()" workflow="wiki.create" class="cell right-magnet">
+					<i18n>wiki.create</i18n>
+				</button>
 			</div>
-		</section>
-
-		<!-- Lightbox to share wikis -->
-		<div ng-if="display.showPanelForCurrentWiki">
-			<lightbox show="display.showPanelForCurrentWiki" on-close="display.showPanelForCurrentWiki = false;">
-				<share-panel app-prefix="'wiki'" resources="selectedWiki"/>
-			</lightbox>
 		</div>
-	</portal>
-
-	<div ng-if="notFound">
-		<div ng-if="!me.userId" class="absolute">
-			<default-styles>
-
-				<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
-				<article>
-					<div class="row">
-						<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
-					</div>
-
-					<div class="row vertical-spacing-twice">
-						<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
-					</div>
-				</article>
-
-			</default-styles>
-		</div>
-		<div ng-if="me.userId" class="absolute">
-			<portal>
-
-				<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
-				<article>
-					<div class="row">
-						<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
-					</div>
-
-					<div class="row vertical-spacing-twice">
-						<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
-					</div>
-				</article>
-			</portal>
-		</div>
+		<div class="clear"></div>
 	</div>
-	<library-publish></library-publish>
+	<section>
+		<container template="main"></container>
+		<div class="row">
+			<hr />
+		</div>
+	</section>
+
+	<!-- Lightbox to share wikis -->
+	<div ng-if="display.showPanelForCurrentWiki">
+		<lightbox show="display.showPanelForCurrentWiki" on-close="display.showPanelForCurrentWiki = false;">
+			<share-panel app-prefix="'wiki'" resources="selectedWiki"/>
+		</lightbox>
+	</div>
+</portal>
+
+<div ng-if="notFound">
+	<div ng-if="!me.userId" class="absolute">
+		<default-styles>
+
+			<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+			<article>
+				<div class="row">
+					<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
+				</div>
+
+				<div class="row vertical-spacing-twice">
+					<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
+				</div>
+			</article>
+
+		</default-styles>
+	</div>
+	<div ng-if="me.userId" class="absolute">
+		<portal>
+
+			<h1><a data-reload><i class="oops"></i><i18n>oops</i18n></a></h1>
+			<article>
+				<div class="row">
+					<i18n>wiki.or.page.notfound.or.unauthorized</i18n>
+				</div>
+
+				<div class="row vertical-spacing-twice">
+					<button data-reload onclick="history.go(-1)"><i18n>back</i18n></button>
+				</div>
+			</article>
+		</portal>
+	</div>
+</div>
+<library-publish></library-publish>
 </body>
 </html>

@@ -14,15 +14,15 @@ var wikiTitleExists = function(pTitle, pWikiId?) {
 		// when creating a wiki
 		return _.find(model.wikis.all, function(wiki){
 			return pTitle.trim() === wiki.title.trim() &&
-			model.me.userId === wiki.owner.userId;
+				model.me.userId === wiki.owner.userId;
 		});
 	}
 	else {
 		//when updating a wiki
 		return _.find(model.wikis.all, function(wiki){
 			return (pTitle.trim() === wiki.title.trim() &&
-					model.me.userId === wiki.owner.userId &&
-					wiki._id !== pWikiId);
+				model.me.userId === wiki.owner.userId &&
+				wiki._id !== pWikiId);
 		});
 	}
 };
@@ -33,18 +33,18 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	var Version = Behaviours.applicationsBehaviours.wiki.namespace.Version;
 
 	// Parse queries, e.g. param1=value1&param2=value2&paramN=valueN
-    var parseQuery = function(queryString) {
-        var params = {}, temp, i;
-        var queries = queryString.split("&");
+	var parseQuery = function(queryString) {
+		var params = {}, temp, i;
+		var queries = queryString.split("&");
 
-        for (i=0; i<queries.length; i++) {
-             // Split into key/value pairs
-            temp = queries[i].split('=');
-            params[temp[0]] = temp[1];
-        }
+		for (i=0; i<queries.length; i++) {
+			// Split into key/value pairs
+			temp = queries[i].split('=');
+			params[temp[0]] = temp[1];
+		}
 
-        return params;
-    };
+		return params;
+	};
 
 	$scope.moment = moment;
 	$scope.template = template;
@@ -63,14 +63,14 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.isCreatingOrEditing = function(){
 		return (template.contains('main', 'create-wiki') ||
-				template.contains('main', 'edit-wiki') ||
-				template.contains('main', 'create-page') ||
-				template.contains('main', 'edit-page'));
+			template.contains('main', 'edit-wiki') ||
+			template.contains('main', 'create-page') ||
+			template.contains('main', 'edit-page'));
 	};
 
 	// Functions to check rights
 	$scope.canCreatePage = function(wiki){
-	    return Behaviours.applicationsBehaviours.wiki.namespace.canCreatePage(wiki);
+		return Behaviours.applicationsBehaviours.wiki.namespace.canCreatePage(wiki);
 	};
 
 	$scope.canCreatePageInAtLeastOneWiki = function(){
@@ -81,49 +81,49 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.canManageWiki = function(wiki){
 		return (wiki.myRights.edit !== undefined ||
-				wiki.myRights.deleteWiki !== undefined ||
-				wiki.myRights.share !== undefined);
+			wiki.myRights.deleteWiki !== undefined ||
+			wiki.myRights.share !== undefined);
 	};
 
-    $scope.canDeletePage = function (wiki,page) {
-        var canDeletePage = false ;
-        if (model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.deletePage)) {
-            // The user has the right to delete it
-            canDeletePage = true ;
-        } else if (page !== undefined && model.me.userId === page.author){
-            // The owner of the page has the right to delete it.
-            canDeletePage = true ;
-        } else if (model.me.userId === wiki.owner.userId) {
-        	// The Owner of the wiki has the right to delete it
-            canDeletePage = true ;
+	$scope.canDeletePage = function (wiki,page) {
+		var canDeletePage = false ;
+		if (model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.deletePage)) {
+			// The user has the right to delete it
+			canDeletePage = true ;
+		} else if (page !== undefined && model.me.userId === page.author){
+			// The owner of the page has the right to delete it.
+			canDeletePage = true ;
+		} else if (model.me.userId === wiki.owner.userId) {
+			// The Owner of the wiki has the right to delete it
+			canDeletePage = true ;
 		}
-        return canDeletePage;
-    };
+		return canDeletePage;
+	};
 
-    $scope.hideToaster = function (wiki,pagesSelection) {
-        var hideToaster = true ;
-        if(pagesSelection !== undefined
+	$scope.hideToaster = function (wiki,pagesSelection) {
+		var hideToaster = true ;
+		if(pagesSelection !== undefined
 			&& pagesSelection.length > 0){
-        	// On vérifie d'abord que l'utilisateur peut dupliquer ou visionner la version de la page sélectionnée
-        	if(pagesSelection.length === 1
+			// On vérifie d'abord que l'utilisateur peut dupliquer ou visionner la version de la page sélectionnée
+			if(pagesSelection.length === 1
 				&& (model.me.hasRight(wiki, Behaviours.applicationsBehaviours.wiki.rights.resources.editPage))){
-                return false;
+				return false;
 			}
 			// On vérifie ensuite qu'il peut supprimer au moins une page
 			var  canDeletePages = true;
-            for (var n = 0; n < pagesSelection.length; n++) {
-                canDeletePages = $scope.canDeletePage(wiki,pagesSelection[n]);
-                if(canDeletePages === false){
-                	// Si au moins une seule page ne peut pas être supprimée alors on ne peut pas supprimer les pages
-                	break;
+			for (var n = 0; n < pagesSelection.length; n++) {
+				canDeletePages = $scope.canDeletePage(wiki,pagesSelection[n]);
+				if(canDeletePages === false){
+					// Si au moins une seule page ne peut pas être supprimée alors on ne peut pas supprimer les pages
+					break;
 				}
-            }
-            if(canDeletePages === true){
-                return false;
+			}
+			if(canDeletePages === true){
+				return false;
 			}
 		}
-        return hideToaster;
-    };
+		return hideToaster;
+	};
 
 
 	var updateSearchBar = function() {
@@ -136,12 +136,12 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		viewWiki: function(params){
 			$scope.viewWiki(params.wikiId);
 		},
-	    viewPage: function(params){
+		viewPage: function(params){
 			model.wikis.one('sync', function(){
-		    	$scope.openSelectedPage(params.wikiId, params.pageId);
+				$scope.openSelectedPage(params.wikiId, params.pageId);
 			});
 			model.wikis.sync();
-	    },
+		},
 		listPages: function(params){
 			model.wikis.one('sync', function(){
 				$scope.selectedWiki = $scope.getWikiById(params.wikiId);
@@ -152,45 +152,45 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 			});
 			model.wikis.sync();
 		},
-        defaultView: function(){
-            // Print case : when accessing a page via URL /wiki/print?wiki=wikiId
+		defaultView: function(){
+			// Print case : when accessing a page via URL /wiki/print?wiki=wikiId
 			if(window.location.href.indexOf('print') !== -1){
-	            var queryString = window.location.search;
-	            if(typeof (queryString) !== undefined) {
-	                queryString = queryString.substring(1); // remove character '?'
-	                var parameters = parseQuery(queryString) as any;
-	                if(parameters.wiki) {
-	                	$scope.selectedWiki = new Wiki({_id: parameters.wiki});
-	                	$scope.selectedWiki.getWholeWiki(function() {
-	                		setTimeout(function(){window.print();}, 1000);
-	                	});
-	                    return;
-	                }
-	            }
+				var queryString = window.location.search;
+				if(typeof (queryString) !== undefined) {
+					queryString = queryString.substring(1); // remove character '?'
+					var parameters = parseQuery(queryString) as any;
+					if(parameters.wiki) {
+						$scope.selectedWiki = new Wiki({_id: parameters.wiki});
+						$scope.selectedWiki.getWholeWiki(function() {
+							setTimeout(function(){window.print();}, 1000);
+						});
+						return;
+					}
+				}
 			}
 
-            // Default case
-		    $scope.displayWikiList();
-        }
+			// Default case
+			$scope.displayWikiList();
+		}
 	});
 
-    // View initialization
+	// View initialization
 	template.open('sideMenu', 'side-menu');
 	template.open('side-panel', 'side-panel');
 	template.open('commentForm', 'comment-page');
 
 	// Date functions
-    $scope.formatDate = function(dateObject){
-    	return Behaviours.applicationsBehaviours.wiki.namespace.formatDate(dateObject);
-    };
+	$scope.formatDate = function(dateObject){
+		return Behaviours.applicationsBehaviours.wiki.namespace.formatDate(dateObject);
+	};
 
-    $scope.getDateAndTime = function(dateObject) {
-    	return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
-    };
+	$scope.getDateAndTime = function(dateObject) {
+		return Behaviours.applicationsBehaviours.wiki.namespace.getDateAndTime(dateObject);
+	};
 
-    $scope.getRelativeTimeFromDate = function(dateObject){
-    	return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
-    };
+	$scope.getRelativeTimeFromDate = function(dateObject){
+		return Behaviours.applicationsBehaviours.wiki.namespace.getRelativeTimeFromDate(dateObject);
+	};
 
 	// Functions on wikis
 	$scope.deleteWikiSelection = function(){
@@ -241,10 +241,10 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		template.open('main', 'list-wikis');
 	};
 
-    $scope.displayEditWikiForm = function(wiki){
-    	$scope.wiki = wiki;
-    	template.open("main", "edit-wiki");
-    };
+	$scope.displayEditWikiForm = function(wiki){
+		$scope.wiki = wiki;
+		template.open("main", "edit-wiki");
+	};
 
 	$scope.cancelEditWiki = function(){
 		$scope.displayWikiList();
@@ -261,8 +261,8 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		}
 
 		var data = {
-				title : $scope.wiki.title,
-				thumbnail : $scope.wiki.thumbnail,
+			title : $scope.wiki.title,
+			thumbnail : $scope.wiki.thumbnail,
 		};
 		$scope.wiki.updateWiki(data, function(){
 			updateSearchBar();
@@ -281,12 +281,12 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.displayWikiList = function(){
-    	model.wikis.one('sync', function(){
-	    	delete $scope.selectedWiki;
-	    	window.location.hash = '';
+		model.wikis.one('sync', function(){
+			delete $scope.selectedWiki;
+			window.location.hash = '';
 			template.open('main', 'list-wikis');
-    	});
-    	model.wikis.sync();
+		});
+		model.wikis.sync();
 	};
 
 	$scope.getWikiThumbnail = function(wiki){
@@ -305,10 +305,10 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.openSelectedWiki = function(wikiId){
 		$scope.selectedWiki = $scope.getWikiById(wikiId);
-    	if(!$scope.selectedWiki) {
-    		$scope.notFound = true;
-    		return;
-    	}
+		if(!$scope.selectedWiki) {
+			$scope.notFound = true;
+			return;
+		}
 		if($scope.selectedWiki.index && $scope.selectedWiki.index.length > 0) {
 			// Open index if it exists
 			$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.index);
@@ -317,7 +317,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 			$scope.selectedWiki.pages.sync(function(){
 				$scope.selectedWiki.setLastPages();
 				template.open('main', 'list-wiki-pages');
-	        });
+			});
 		}
 	};
 
@@ -333,7 +333,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	}
 
 	$scope.redirectToHome = function () {
-	    window.location.href = '/wiki';
+		window.location.href = '/wiki';
 	}
 
 	$scope.openPageFromSearchbar = function(wikiId, pageId) {
@@ -341,11 +341,11 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.openSelectedPage = function(wikiId, pageId){
-    	$scope.selectedWiki = $scope.getWikiById(wikiId);
-    	if(!$scope.selectedWiki) {
-    		$scope.notFound = true;
-    		return;
-    	}
+		$scope.selectedWiki = $scope.getWikiById(wikiId);
+		if(!$scope.selectedWiki) {
+			$scope.notFound = true;
+			return;
+		}
 
 		$scope.selectedWiki.pages.sync(function(){
 			$scope.selectedWiki.setLastPages();
@@ -357,7 +357,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				},
 				function(){
 					$scope.notFound = true;
-                    $scope.$apply();
+					$scope.$apply();
 				}
 			);
 		});
@@ -381,33 +381,36 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.page = new Page();
 
-	$scope.createPage = function(){
-		if (titleIsEmpty($scope.page.title)){
-			notify.error('wiki.form.title.is.empty');
-			return;
-		}
-		if(pageTitleExists($scope.page.title, $scope.selectedWiki)){
-			notify.error('wiki.page.form.titlealreadyexist.error');
-			return;
-		}
+	$scope.createPage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			if (titleIsEmpty($scope.page.title)) {
+				notify.error('wiki.form.title.is.empty');
+				reject();
+			}
+			if (pageTitleExists($scope.page.title, $scope.selectedWiki)) {
+				notify.error('wiki.page.form.titlealreadyexist.error');
+				reject();
+			}
+			resolve();
+			var data = {
+				title: $scope.page.title,
+				content: $scope.page.content,
+				isIndex: $scope.page.isIndex
+			};
+			setTimeout(function () {
+				template.open('main', 'view-page');
+			}, 0);
+			$scope.selectedWiki.createPage(data, function (result) {
+				updateSearchBar();
 
-		template.open('main', 'view-page');
-
-		var data = {
-			title : $scope.page.title,
-			content : $scope.page.content,
-			isIndex : $scope.page.isIndex
-		};
-		$scope.selectedWiki.createPage(data, function(result){
-			updateSearchBar();
-
-			$scope.selectedWiki.pages.sync(function(){
-				$scope.selectedWiki.setLastPages();
-		        $scope.selectedWiki.getPage(result._id, function(returnedWiki){
-					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-		        });
+				$scope.selectedWiki.pages.sync(function () {
+					$scope.selectedWiki.setLastPages();
+					$scope.selectedWiki.getPage(result._id, function (returnedWiki) {
+						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+					});
+				});
 			});
-        });
+		});
 	};
 
 	$scope.editPage = function(selectedWiki) {
@@ -419,34 +422,39 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.cancelEditPage = function(selectedWiki) {
-        template.open('main', 'view-page');
+		template.open('main', 'view-page');
 	};
 
-	$scope.updatePage = function(){
-		// Check field "title"
-		if (titleIsEmpty($scope.selectedWiki.editedPage.title)){
-			notify.error('wiki.form.title.is.empty');
-			return;
-		}
-		if(pageTitleExists($scope.selectedWiki.editedPage.title, $scope.selectedWiki, $scope.selectedWiki.editedPage._id)){
-			notify.error('wiki.page.form.titlealreadyexist.error');
-			return;
-		}
+	$scope.updatePage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			// Check field "title"
+			if (titleIsEmpty($scope.selectedWiki.editedPage.title)) {
+				notify.error('wiki.form.title.is.empty');
+				reject();
+			}
+			if (pageTitleExists($scope.selectedWiki.editedPage.title, $scope.selectedWiki, $scope.selectedWiki.editedPage._id)) {
+				notify.error('wiki.page.form.titlealreadyexist.error');
+				reject();
+			}
+			resolve();
 
-		$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-		template.open('main', 'view-page');
+			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
+			setTimeout(function () {
+				template.open('main', 'view-page');
+			}, 0);
 
-		$scope.selectedWiki.editedPage.save(function(result){
-			updateSearchBar();
+			$scope.selectedWiki.editedPage.save(function (result) {
+				updateSearchBar();
 
-			$scope.selectedWiki.pages.sync(function(){
-				$scope.selectedWiki.setLastPages();
-				$scope.selectedWiki.getPage($scope.selectedWiki.page._id, function(returnedWiki){
-					window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
-                    model.wikis.one('sync', function(){
-        		    	$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
-        			});
-        			model.wikis.sync();
+				$scope.selectedWiki.pages.sync(function () {
+					$scope.selectedWiki.setLastPages();
+					$scope.selectedWiki.getPage($scope.selectedWiki.page._id, function (returnedWiki) {
+						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + $scope.selectedWiki.page._id;
+						model.wikis.one('sync', function () {
+							$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
+						});
+						model.wikis.sync();
+					});
 				});
 			});
 		});
@@ -463,15 +471,21 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.deletePage = function(){
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		$scope.selectedWiki.deletePage($scope.selectedWiki.page._id, function(result){
 			updateSearchBar();
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
 			$scope.listPages($scope.selectedWiki._id);
-        });
+		});
 	};
 
 	$scope.showDuplicatePageForm = function(page) {
 		var content;
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		function copyPageContent(){
 			$scope.wikiDuplicate = {};
 			$scope.wikiDuplicate.page = new Page({
@@ -516,8 +530,11 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		return Behaviours.applicationsBehaviours.wiki.namespace.switchCommentsDisplay($scope.selectedWiki);
 	};
 
-	$scope.commentPage = function() {
-		return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
+	$scope.commentPage = function(): Promise<void> {
+		return new Promise<void>(function(resolve, reject) {
+			resolve();
+			return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
+		});
 	};
 
 	$scope.removeComment = function(commentId, commentIndex) {
@@ -532,6 +549,9 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.listVersions = function(){
+		$scope.selectedWiki.page.showCommentForm = false;
+		$scope.selectedWiki.page.showComments = false;
+		$scope.$apply();
 		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
 	};
 
