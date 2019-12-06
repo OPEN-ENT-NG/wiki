@@ -54,6 +54,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	$scope.notFound = false;
 	$scope.me = model.me;
 	$scope.searchbar = {};
+	$scope.forceToClose = false;
 
 	$scope.getWikiById = function(pWikiId) {
 		return _.find(model.wikis.all, function(wiki){
@@ -353,10 +354,12 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 			$scope.selectedWiki.getPage(
 				pageId,
 				function(result){
+					$scope.forceToClose = false;
 					$scope.$apply();
 				},
 				function(){
 					$scope.notFound = true;
+					$scope.forceToClose = false;
 					$scope.$apply();
 				}
 			);
@@ -391,6 +394,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				notify.error('wiki.page.form.titlealreadyexist.error');
 				reject();
 			}
+			$scope.forceToClose = true;
 			resolve();
 			var data = {
 				title: $scope.page.title,
@@ -405,8 +409,10 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 				$scope.selectedWiki.pages.sync(function () {
 					$scope.selectedWiki.setLastPages();
-					$scope.selectedWiki.getPage(result._id, function (returnedWiki) {
-						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+					$scope.selectedWiki.getPage(result._id, async function (returnedWiki) {
+						await window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+						$scope.$apply();
+						$scope.forceToClose = false;
 					});
 				});
 			});
@@ -437,12 +443,10 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				reject();
 			}
 			resolve();
-
+			$scope.forceToClose = true;
 			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-			setTimeout(function () {
-				template.open('main', 'view-page');
-			}, 0);
-
+			$scope.$apply();
+			template.open('main', 'view-page');
 			$scope.selectedWiki.editedPage.save(function (result) {
 				updateSearchBar();
 
@@ -454,6 +458,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 							$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
 						});
 						model.wikis.sync();
+						$scope.$apply();
 					});
 				});
 			});
