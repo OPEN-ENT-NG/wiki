@@ -420,11 +420,14 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	};
 
 	$scope.editPage = function(selectedWiki) {
+		$scope.forceToClose = true;
+		$scope.$apply();
 		$scope.selectedWiki.editedPage = new Page();
 		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
 		$scope.selectedWiki.editedPage.isIndex = ($scope.selectedWiki.editedPage._id === $scope.selectedWiki.index);
 		$scope.selectedWiki.editedPage.wasIndex = (selectedWiki.page._id === $scope.selectedWiki.index);
 		template.open('main', 'edit-page');
+		$scope.forceToClose = false;
 	};
 
 	$scope.cancelEditPage = function(selectedWiki) {

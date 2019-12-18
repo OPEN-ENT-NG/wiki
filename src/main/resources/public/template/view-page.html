@@ -61,11 +61,11 @@
 
 				<div bind-html="selectedWiki.page.content" />
 
-				<div class="row" ng-if="selectedWiki.page.showCommentForm === true">
+				<div class="row" ng-if="selectedWiki.page.showCommentForm === true && !forceToClose">
 					<div ng-include="template.containers.commentForm"></div>
 				</div>
 
-				<div class="row" ng-if="selectedWiki.page.showComments">
+				<div class="row" ng-if="selectedWiki.page.showComments && !forceToClose">
 					<div class="row" ng-repeat="comment in selectedWiki.page.comments">
 						<article class="comment reduce-block-eight">
 							<em>
