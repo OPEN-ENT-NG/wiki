@@ -5,7 +5,7 @@
 		<article ng-if="selectedWiki.page !== undefined" class="twelve cell">
 			<div class="twelve cell">
 				<div class="row">
-					<div class="seven cell">
+					<div class="seven cell six-mobile">
 						<h2>[[selectedWiki.page.title]]</h2>
 						<em ng-if="selectedWiki.page.modified" class="cell">
 							<i18n>wiki.last.modification.by</i18n>
@@ -18,7 +18,7 @@
 							<i18n>wiki.on</i18n> [[getDateAndTime(selectedWiki.page.modified)]]
 						</em>
 					</div>
-					<div class="five cell">
+					<div class="five cell six-mobile">
 						<div class="row">
 							<plus class="right-magnet cell">
                                 <button class="cell" ng-click="listVersions()">
