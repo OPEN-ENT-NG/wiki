@@ -540,8 +540,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.commentPage = function(): Promise<void> {
 		return new Promise<void>(function(resolve, reject) {
-			resolve();
-			return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope);
+			return Behaviours.applicationsBehaviours.wiki.namespace.commentPage($scope.selectedWiki, $scope,resolve);
 		});
 	};
 

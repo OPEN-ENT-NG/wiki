@@ -134,7 +134,7 @@ wikiNamespace.switchCommentsDisplay = function(wiki) {
 	}
 };
 
-wikiNamespace.commentPage = function(wiki, scope) {
+wikiNamespace.commentPage = function(wiki, scope, onFinish?:()=>void) {
 	wiki.page.comment(wiki.page.newComment, function() {
 		wiki.getPage(
 			wiki.page._id, 
@@ -143,6 +143,7 @@ wikiNamespace.commentPage = function(wiki, scope) {
 				scope.showCommentForm();
 				scope.$apply();
 				notify.info('wiki.your.comment.has.been.saved');
+				onFinish && onFinish();
 			},
 			function(){
 				scope.notFound = true;
