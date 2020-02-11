@@ -12,14 +12,14 @@ var titleIsEmpty = function(title) {
 var wikiTitleExists = function(pTitle, pWikiId?) {
 	if(!pWikiId) {
 		// when creating a wiki
-		return _.find(model.wikis.all, function(wiki){
+		return _.find((model as any).wikis.all, function(wiki){
 			return pTitle.trim() === wiki.title.trim() &&
 				model.me.userId === wiki.owner.userId;
 		});
 	}
 	else {
 		//when updating a wiki
-		return _.find(model.wikis.all, function(wiki){
+		return _.find((model as any).wikis.all, function(wiki){
 			return (pTitle.trim() === wiki.title.trim() &&
 				model.me.userId === wiki.owner.userId &&
 				wiki._id !== pWikiId);

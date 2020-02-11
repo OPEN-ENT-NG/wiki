@@ -10,7 +10,7 @@ interface Wiki {
     title: string;
 }
 
-ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<Blog>) {
+ng.configs.push(ng.config(['libraryServiceProvider', function (libraryServiceProvider: LibraryServiceProvider<any>) {
     libraryServiceProvider.setInvokableResourceInformationGetterFromResource(function () {
         return function (resource: Wiki): IdAndLibraryResourceInformation {
             return {

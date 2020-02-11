@@ -651,7 +651,7 @@ wikiNamespace.Wiki.prototype.duplicateWiki = function(callback)
 
 wikiNamespace.Wiki.prototype.deleteWiki = function(callback) {
 	http().delete('/wiki/' + this._id).done(function(){
-		model.wikis.remove(this);
+		(model as any).wikis.remove(this);
 		callback();
 	}.bind(this));
 };
