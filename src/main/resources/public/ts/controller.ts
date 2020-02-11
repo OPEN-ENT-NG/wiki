@@ -410,7 +410,7 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				$scope.selectedWiki.pages.sync(function () {
 					$scope.selectedWiki.setLastPages();
 					$scope.selectedWiki.getPage(result._id, async function (returnedWiki) {
-						await window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
+						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
 						$scope.$apply();
 						$scope.forceToClose = false;
 					});
