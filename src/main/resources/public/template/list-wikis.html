@@ -92,7 +92,7 @@
 					<i18n>bpr.publish</i18n>
 				</button>
 			</resource-right>
-			<button class="cell" workflow="wiki.print" ng-if="wikis.selection().length === 1" ng-href="/wiki/print?wiki=[[wikis.selection()[0]._id]]" target="_blank">
+			<button class="cell" workflow="wiki.print" ng-if="wikis.selection().length === 1" ng-click="printWiki(wikis.selection()[0])" target="_blank">
 				<i18n>print</i18n>
 			</button>
 			<resource-right name="deleteWiki" resource="wikis.selection()" class="cell">

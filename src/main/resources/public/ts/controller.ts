@@ -581,4 +581,11 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		$scope.$apply("wikis");
 	});
 
+	$scope.printWiki = (wiki) => {
+		if(wiki){
+			window.open(`/wiki/print?wiki=${wiki._id}`, '_blank');
+		}
+	}
+
+
 }]);
