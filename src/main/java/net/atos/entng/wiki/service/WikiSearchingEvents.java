@@ -149,10 +149,10 @@ public class WikiSearchingEvents implements SearchingEvents {
 			map.put("description", "");
 		} else if (countMatchPage == 1) {
 			map.put("modified", modifiedRes);
-			map.put("description", i18n.translate("wiki.search.description.one", locale, titleRes));
+			map.put("description", i18n.translate("wiki.search.description.one", i18n.DEFAULT_DOMAIN, locale, titleRes));
 		} else {
 			map.put("modified", modifiedRes);
-			map.put("description", i18n.translate("wiki.search.description.several", locale,
+			map.put("description", i18n.translate("wiki.search.description.several", i18n.DEFAULT_DOMAIN, locale,
 					countMatchPage.toString(), titleRes));
 		}
 
