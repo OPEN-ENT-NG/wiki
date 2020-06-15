@@ -55,9 +55,10 @@
 							</em>
 						</div>
 				</div>
-				
-				<div bind-html="selectedWiki.page.content" />
-
+				<div class="row"></div>
+				<div class="row vertical-spacing">
+					<div bind-html="selectedWiki.page.content" />
+				</div>
 				<div class="row" ng-if="selectedWiki.page.showCommentForm === true && !forceToClose">
 					<div ng-include="template.containers.commentForm"></div>
 				</div>
