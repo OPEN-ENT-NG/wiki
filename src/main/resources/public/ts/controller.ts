@@ -445,12 +445,12 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				notify.error('wiki.page.form.titlealreadyexist.error');
 				reject();
 			}
-			resolve();
-			$scope.forceToClose = true;
-			$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-			$scope.$apply();
-			template.open('main', 'view-page');
 			$scope.selectedWiki.editedPage.save(function (result) {
+				resolve();
+				$scope.forceToClose = true;
+				$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
+				$scope.$apply();
+				template.open('main', 'view-page');
 				updateSearchBar();
 
 				$scope.selectedWiki.pages.sync(function () {
@@ -464,6 +464,9 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 						$scope.$apply();
 					});
 				});
+			},(e)=>{
+				reject(e);
+				notify.error(lang.translate("wiki.error.save.page"))
 			});
 		});
 	};

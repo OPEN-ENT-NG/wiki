@@ -164,13 +164,14 @@
 	        wiki.page.showComments = false;
 	    }
 	};
-	wikiNamespace.commentPage = function (wiki, scope) {
+	wikiNamespace.commentPage = function (wiki, scope, onFinish) {
 	    wiki.page.comment(wiki.page.newComment, function () {
 	        wiki.getPage(wiki.page._id, function (result) {
 	            wiki.page.showComments = true;
 	            scope.showCommentForm();
 	            scope.$apply();
 	            entcore_1.notify.info('wiki.your.comment.has.been.saved');
+	            onFinish && onFinish();
 	        }, function () {
 	            scope.notFound = true;
 	        });
@@ -521,7 +522,7 @@
 	        }
 	    }.bind(this));
 	};
-	wikiNamespace.Page.prototype.save = function (callback) {
+	wikiNamespace.Page.prototype.save = function (callback,callback2) {
 	    entcore_1.http().putJson('/wiki/' + this.wiki_id + '/page/' + this._id, this)
 	        .done(function (result) {
 	        if (this.isIndex === true) {
@@ -533,7 +534,7 @@
 	        if (typeof callback === 'function') {
 	            callback(result);
 	        }
-	    }.bind(this));
+	    }.bind(this)).error(callback2);
 	};
 	wikiNamespace.Page.prototype.toJSON = function () {
 	    return {
@@ -610,6 +611,16 @@
 	wikiNamespace.Wiki.prototype.updateWiki = function (data, callback) {
 	    entcore_1.http().putJson('/wiki/' + this._id, data).done(function () {
 	        callback();
+	    });
+	};
+	wikiNamespace.Wiki.prototype.duplicateWiki = function (callback) {
+	    entcore_1.http().postJson("/archive/duplicate", { application: "wiki", resourceId: this._id }).done(function () {
+	        entcore_1.notify.info("duplicate.done");
+	        if (callback)
+	            callback();
+	    })
+	        .error(function () {
+	        entcore_1.notify.error("duplicate.error");
 	    });
 	};
 	wikiNamespace.Wiki.prototype.deleteWiki = function (callback) {

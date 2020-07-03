@@ -537,7 +537,7 @@ wikiNamespace.Page.prototype.deleteComment = function(commentId, commentIndex, c
 	}.bind(this));
 };
 
-wikiNamespace.Page.prototype.save = function(callback){
+wikiNamespace.Page.prototype.save = function(callback,callback2){
 	http().putJson('/wiki/' + this.wiki_id + '/page/' + this._id, this)
 		.done(function(result){
 			if(this.isIndex === true) {
@@ -549,7 +549,7 @@ wikiNamespace.Page.prototype.save = function(callback){
 			if(typeof callback === 'function') {
 				callback(result);
 			}
-		}.bind(this));
+		}.bind(this)).error(callback2);
 };
 
 wikiNamespace.Page.prototype.toJSON = function(){
