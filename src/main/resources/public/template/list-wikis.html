@@ -48,8 +48,8 @@
 				<div class="bottom">
 					<div class="content">
 						<div class="cell" ng-click="redirect('/view/' + wiki._id)">
-							<strong>[[wiki.title]]</strong>
-							<br />[[wiki.owner.displayName]]
+							<strong class="cell-ellipsis">[[wiki.title]]</strong>
+							[[wiki.owner.displayName]]
 							<br />[[formatDate(wiki.modified)]]
 						</div>
 						<div class="bottom-locked eleven vertical-spacing-twice">
