@@ -494,9 +494,11 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.showDuplicatePageForm = function(page) {
 		var content;
-		$scope.selectedWiki.page.showCommentForm = false;
-		$scope.selectedWiki.page.showComments = false;
-		$scope.$apply();
+		if ($scope.selectedWiki.page) {
+			$scope.selectedWiki.page.showCommentForm = false;
+			$scope.selectedWiki.page.showComments = false;
+			$scope.$apply();
+		}
 		function copyPageContent(){
 			$scope.wikiDuplicate = {};
 			$scope.wikiDuplicate.page = new Page({
