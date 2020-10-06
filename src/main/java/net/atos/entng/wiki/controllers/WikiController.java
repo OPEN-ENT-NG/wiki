@@ -33,6 +33,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
+import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.filter.ResourceFilter;
@@ -59,6 +60,8 @@ import fr.wseduc.webutils.request.RequestUtils;
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
 
 public class WikiController extends MongoDbControllerHelper {
+	static final String PAGE_RESOURCE_NAME = "wiki_page";
+	static final String WIKI_RESOURCE_NAME = "wiki";
 
 	private final WikiService wikiService;
 
@@ -67,19 +70,19 @@ public class WikiController extends MongoDbControllerHelper {
 	private static final String WIKI_COMMENT_CREATED_EVENT_TYPE = WIKI_NAME + "_COMMENT_CREATED";
 	private static final int OVERVIEW_LENGTH = 50;
 
-	private EventStore eventStore;
-	private enum WikiEvent { ACCESS }
+	private final EventHelper eventHelper;
 
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
-		eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 	}
 
 	public WikiController(String collection) {
 		super(collection);
 		wikiService = new WikiServiceMongoImpl(collection);
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
+		this.eventHelper = new EventHelper(eventStore);
 	}
 
 	@Get("")
@@ -89,7 +92,7 @@ public class WikiController extends MongoDbControllerHelper {
 		renderView(request);
 
 		// Create event "access to application Wiki" and store it, for module "statistics"
-		eventStore.createAndStoreEvent(WikiEvent.ACCESS.name(), request);
+		eventHelper.onAccess(request);
 	}
 
 	@Get("/print")
@@ -156,7 +159,7 @@ public class WikiController extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+							Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, WIKI_RESOURCE_NAME, defaultResponseHandler(request));
 
 							String wikiTitle = data.getString("title");
 							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
@@ -262,6 +265,7 @@ public class WikiController extends MongoDbControllerHelper {
 										result.put("_id", newPageId);
 										notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
 										renderJson(request, result);
+										eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
 									} else {
 										JsonObject error = new JsonObject().put(
 												"error", event.left().getValue());
