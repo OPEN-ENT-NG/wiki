@@ -360,7 +360,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				function(){
 					$scope.notFound = true;
 					$scope.forceToClose = false;
-					$scope.$apply();
 				}
 			);
 		});
@@ -411,7 +410,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 					$scope.selectedWiki.setLastPages();
 					$scope.selectedWiki.getPage(result._id, async function (returnedWiki) {
 						window.location.hash = '/view/' + $scope.selectedWiki._id + '/' + result._id;
-						$scope.$apply();
 						$scope.forceToClose = false;
 					});
 				});
@@ -421,7 +419,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 
 	$scope.editPage = function(selectedWiki) {
 		$scope.forceToClose = true;
-		$scope.$apply();
 		$scope.selectedWiki.editedPage = new Page();
 		$scope.selectedWiki.editedPage.updateData(selectedWiki.page);
 		$scope.selectedWiki.editedPage.isIndex = ($scope.selectedWiki.editedPage._id === $scope.selectedWiki.index);
@@ -449,7 +446,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 				resolve();
 				$scope.forceToClose = true;
 				$scope.selectedWiki.page = $scope.selectedWiki.editedPage;
-				$scope.$apply();
 				template.open('main', 'view-page');
 				updateSearchBar();
 
@@ -461,7 +457,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 							$scope.openSelectedPage($scope.selectedWiki._id, $scope.selectedWiki.page._id);
 						});
 						model.wikis.sync();
-						$scope.$apply();
 					});
 				});
 			},(e)=>{
@@ -484,7 +479,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	$scope.deletePage = function(){
 		$scope.selectedWiki.page.showCommentForm = false;
 		$scope.selectedWiki.page.showComments = false;
-		$scope.$apply();
 		$scope.selectedWiki.deletePage($scope.selectedWiki.page._id, function(result){
 			updateSearchBar();
 			window.location.hash = '/view/' + $scope.selectedWiki._id;
@@ -497,17 +491,15 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 		if ($scope.selectedWiki.page) {
 			$scope.selectedWiki.page.showCommentForm = false;
 			$scope.selectedWiki.page.showComments = false;
-			$scope.$apply();
 		}
 		function copyPageContent(){
 			$scope.wikiDuplicate = {};
 			$scope.wikiDuplicate.page = new Page({
 				title : '',
-				content : content,
+				content : content == null ? "" : content,
 				isIndex : false
 			});
 			template.open('main', 'duplicate-page');
-			$scope.$apply();
 		}
 
 		if(page){
@@ -563,7 +555,6 @@ export const controller = ng.controller('WikiController', ['$scope', 'route', 'm
 	$scope.listVersions = function(){
 		$scope.selectedWiki.page.showCommentForm = false;
 		$scope.selectedWiki.page.showComments = false;
-		$scope.$apply();
 		return Behaviours.applicationsBehaviours.wiki.namespace.listVersions($scope.selectedWiki, $scope);
 	};
 
