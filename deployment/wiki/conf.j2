@@ -1,0 +1,29 @@
+{
+    "name": "{{ wikiVersion }}",
+    "config": {
+        "main": "net.atos.entng.wiki.Wiki",
+        "port": 8030,
+        {% if csrfToken %}"csrf-token": true,{% endif %}
+        "app-name": "Wiki",
+        "app-address": "/wiki",
+        "app-icon": "wiki-large",
+        "app-type" : "END_USER",
+        "host": "https://{{ host }}",
+        "ssl": true,
+        {% if overrideTheme %} "override-theme": {}, {% endif %}
+        "auto-redeploy": false,
+        "userbook-host": "https://{{ host }}",
+        "integration-mode": "HTTP",
+        "mode": "prod",
+        "publicConf": {
+            "xiti": {
+                "ID_SERVICE": {
+                    "default": 2
+                },
+                "LIBELLE_SERVICE": {
+                    "default": "PRODUCTION_COLLABORATIVE"
+                }
+            }
+        }
+    }
+}
