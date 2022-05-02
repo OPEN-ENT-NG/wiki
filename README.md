@@ -1,7 +1,7 @@
 # À propos de l'application Wiki
 
 * Licence : [AGPL v3](http://www.gnu.org/licenses/agpl.txt) - Copyright Région Hauts-de-France (ex Picardie), Département de l'Essonne, Région Nouvelle Aquitaine (ex Poitou-Charentes)
-* Développeur(s) : ATOS
+* Développeur(s) : ATOS, Open Digital Education
 * Financeur(s) : Région Hauts-de-France (ex Picardie), Département de l'Essonne, Région Nouvelle Aquitaine (ex Poitou-Charentes)
 * Description : Application d'édition, de publication et partage de wikis
 
