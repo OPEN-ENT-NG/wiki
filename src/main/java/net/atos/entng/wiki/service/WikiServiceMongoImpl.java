@@ -62,10 +62,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId : user.getGroupsIds()) {
-			groups.add(QueryBuilder.start("groupId").is(gpId).get());
+		if(user.getGroupsIds().size() > 0){
+			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
 		}
-
 		QueryBuilder query = new QueryBuilder().or(
 				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
 				QueryBuilder
@@ -80,7 +79,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		projection.put("pages", 0).put("created", 0);
 
 		JsonObject sort = new JsonObject().put("modified", -1);
-
 		mongo.find(collection, MongoQueryBuilder.build(query), sort,
 				projection, MongoDbResult.validResultsHandler(handler));
 	}
@@ -104,8 +102,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId : user.getGroupsIds()) {
-			groups.add(QueryBuilder.start("groupId").is(gpId).get());
+		if(user.getGroupsIds().size() > 0){
+			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
 		}
 
 		QueryBuilder query = new QueryBuilder().or(
