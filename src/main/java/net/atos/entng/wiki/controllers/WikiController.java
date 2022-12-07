@@ -339,6 +339,8 @@ public class WikiController extends MongoDbControllerHelper {
 							for (Object element : wiki.getJsonArray("shared")) {
 								if (!(element instanceof JsonObject)) continue;
 								JsonObject jo = (JsonObject) element;
+								// Send notifications for comments to owner and gestionnaire share only
+								if(!isCreatePage && !jo.getBoolean("net-atos-entng-wiki-controllers-WikiController|updateWiki", false)) continue;
 								String uId = jo.getString("userId", null);
 								String gId = jo.getString("groupId", null);
 								if(uId != null && !uId.isEmpty()) {

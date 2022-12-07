@@ -295,8 +295,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// Projection
 		JsonObject projection = new JsonObject();
 		projection.put("owner", 1)
-			.put("shared.userId", 1)
-			.put("shared.groupId", 1)
+			.put("shared", 1)
 			.put("title", 1);
 
 		if(idPage!= null && !idPage.trim().isEmpty()) {
