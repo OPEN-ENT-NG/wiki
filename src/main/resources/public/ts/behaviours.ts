@@ -690,7 +690,7 @@ wikiNamespace.Wiki.prototype.setLastPages = function() {
 		this.lastPages = _.chain(this.pages.all)
 							.filter(function(page){ return page.modified && page.modified.$date; })
 							.sortBy(function(page){ return page.modified.$date; })
-							.last(5)
+							.last(15)
 							.reverse()
 							.value();
 	}
