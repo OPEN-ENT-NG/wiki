@@ -1,5 +1,5 @@
     {
-      "name": "net.atos~wiki~1.14-SNAPSHOT",
+      "name": "net.atos~wiki~1.13-SNAPSHOT",
       "config": {
         "main" : "net.atos.entng.wiki.Wiki",
         "port" : 8030,
@@ -13,6 +13,7 @@
         "userbook-host": "${host}",
         "integration-mode" : "HTTP",
         "mode" : "${mode}",
+        "pagination-limit": ${wikiPaginationLimit},
         "publicConf": {
           <% if ("true".equals(xitiSwitch)) { %>
             "xiti": {

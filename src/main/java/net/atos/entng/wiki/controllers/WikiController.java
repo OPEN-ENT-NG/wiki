@@ -27,7 +27,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.wseduc.webutils.I18n;
+import io.vertx.core.json.Json;
 import net.atos.entng.wiki.Wiki;
+import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
@@ -72,15 +74,18 @@ public class WikiController extends MongoDbControllerHelper {
 
 	private final EventHelper eventHelper;
 
+	private final WikiConfig wikiConfig;
+
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
 	}
 
-	public WikiController(String collection) {
+	public WikiController(String collection, WikiConfig wikiConfig) {
 		super(collection);
 		wikiService = new WikiServiceMongoImpl(collection);
+		this.wikiConfig = wikiConfig;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 		this.eventHelper = new EventHelper(eventStore);
 	}
@@ -89,7 +94,8 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Get HTML view")
 	@SecuredAction("wiki.view")
 	public void view(HttpServerRequest request) {
-		renderView(request);
+		JsonObject params = new JsonObject().put("pagination", this.wikiConfig.wikiPaginationLimit());
+		renderView(request, params);
 
 		// Create event "access to application Wiki" and store it, for module "statistics"
 		eventHelper.onAccess(request);

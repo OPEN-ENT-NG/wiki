@@ -1,5 +1,6 @@
 import { Behaviours, http, _, moment, notify, template, model, idiom as lang } from 'entcore';
 
+declare const window: any;
 console.log('wiki behaviours loaded');
 
 var isWikiApplication = function() {
@@ -690,7 +691,7 @@ wikiNamespace.Wiki.prototype.setLastPages = function() {
 		this.lastPages = _.chain(this.pages.all)
 							.filter(function(page){ return page.modified && page.modified.$date; })
 							.sortBy(function(page){ return page.modified.$date; })
-							.last(15)
+							.last(window.pagination)
 							.reverse()
 							.value();
 	}

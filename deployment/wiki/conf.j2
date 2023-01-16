@@ -15,6 +15,7 @@
         "userbook-host": "https://{{ host }}",
         "integration-mode": "HTTP",
         "mode": "prod",
+        "pagination-limit": {{ wikiPaginationLimit | default(5) }},
         "publicConf": {
             "xiti": {
                 "ID_SERVICE": {
