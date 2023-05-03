@@ -3,6 +3,7 @@ import { Behaviours, http, _, moment, notify, template, model, idiom as lang } f
 declare const window: any;
 console.log('wiki behaviours loaded');
 
+var defaultPagination = 10;
 var isWikiApplication = function() {
 	return (window.location.pathname === '/wiki');
 };
@@ -685,13 +686,14 @@ wikiNamespace.Wiki.prototype.listAllPages = function(callback) {
 };
 
 wikiNamespace.Wiki.prototype.setLastPages = function() {
+	let pagination = window.pagination ? window.pagination : defaultPagination;
 	var dateArray = _.chain(this.pages.all).pluck("modified").compact().value();
 	if(dateArray && dateArray.length > 0) {
-		// get the last 5 modified pages
+		// get the last modified pages using pagination config or defaultpagination when sniplet.
 		this.lastPages = _.chain(this.pages.all)
 							.filter(function(page){ return page.modified && page.modified.$date; })
 							.sortBy(function(page){ return page.modified.$date; })
-							.last(window.pagination)
+							.last(pagination)
 							.reverse()
 							.value();
 	}
