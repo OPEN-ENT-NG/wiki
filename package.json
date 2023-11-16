@@ -8,10 +8,10 @@
     "awesome-typescript-loader": "3.2.1",
     "axios": "0.16.2",
     "core-js": "2.4.1",
-    "entcore": "4.7.2",
+    "entcore": "~4.8.0-develop-pedago",
     "entcore-toolkit": "1.2.0",
-    "gulp": "3.9.1",
-    "gulp-clean": "^0.3.2",
+    "gulp": "4.0.2",
+    "gulp-clean": "0.4.0",
     "merge2": "^1.1.0",
     "ts-loader": "^3.2.0",
     "typescript": "2.4.1",
@@ -35,5 +35,9 @@
   "bugs": {
     "url": "https://github.com/OPEN-ENT-NG/wiki/issues"
   },
-  "homepage": "https://github.com/OPEN-ENT-NG/wiki"
+  "homepage": "https://github.com/OPEN-ENT-NG/wiki",
+  "packageManager": "yarn@1.22.19",
+  "engines": {
+    "node": "16 || 18"
+  }
 }
