@@ -2,26 +2,28 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.edifice</groupId>
+    <artifactId>app-parent</artifactId>
+    <version>1.0</version>
+  </parent>
+
   <groupId>net.atos</groupId>
   <artifactId>wiki</artifactId>
   <version>2.0-b2school-SNAPSHOT</version>
+
+  <scm>
+    <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
+    <developerConnection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</developerConnection>
+    <url>https://github.com/OPEN-ENT-NG/wiki</url>
+  </scm>
+
   <properties>
-    <java.version>1.8</java.version>
-    <vertx.version>4.4.5</vertx.version>
     <web-utils.version>3.0-b2school-SNAPSHOT</web-utils.version>
     <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
     <entcore.version>5.0-b2school-SNAPSHOT</entcore.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
   </properties>
-  <scm>
-    <connection>scm:git:https://github.com/opendigitaleducation/mod-zip.git</connection>
-    <developerConnection>scm:git:https://github.com/opendigitaleducation/mod-zip.git</developerConnection>
-    <url>https://github.com/opendigitaleducation/mod-zip</url>
-  </scm>
-
-
 
   <repositories>
     <repository>
@@ -30,24 +32,12 @@
       <url>https://maven.opendigitaleducation.com/nexus/content/groups/public</url>
     </repository>
   </repositories>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ode-snapshots</id>
-      <name>Snapshots</name>
-      <url>https://maven.opendigitaleducation.com/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>ode-releases</id>
-      <name>Releases</name>
-      <url>https://maven.opendigitaleducation.com/nexus/content/repositories/releases/</url>
-    </repository>
-  </distributionManagement>
 
   <dependencies>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
-      <version>${vertx.version}</version>
+      <version>${vertxVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -69,102 +59,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals><goal>create</goal></goals>
-          </execution>
-        </executions>
-        <configuration>
-          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
-          <shortRevisionLength>8</shortRevisionLength>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.1</version> <!-- Use the latest version -->
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <finalName>${project.groupId}~${project.artifactId}~${project.version}-fat</finalName>
-              <!--transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>your.main.class.name</mainClass>
-                </transformer>
-              </transformers-->
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <shadedClassifierName>fat</shadedClassifierName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.2</version> <!-- Use the latest version -->
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Build-Time>${maven.build.timestamp}</Build-Time>
-              <Main-Verticle>service:mod</Main-Verticle>
-              <SCM-Commit-Id>${buildNumber}</SCM-Commit-Id>
-              <SCM-Branch>${scmBranch}</SCM-Branch>
-
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes</outputDirectory>
-              <includeEmptyDirs>true</includeEmptyDirs>
-              <resources>
-                <resource>
-                  <directory>${basedir}/deployment</directory>
-                  <filtering>false</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-compiler-plugin.version}</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-          <!-- <annotationProcessors>
-            <annotationProcessor>org.entcore.common.processor.ControllerAnnotationProcessor</annotationProcessor>
-          </annotationProcessors> -->
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-      </plugin>
-    </plugins>
-  </build>
 </project>
 
