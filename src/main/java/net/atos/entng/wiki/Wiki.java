@@ -19,6 +19,7 @@
 
 package net.atos.entng.wiki;
 
+import io.vertx.core.Promise;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 
@@ -35,8 +36,8 @@ public class Wiki extends BaseServer {
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	@Override
-	public void start() throws Exception {
-		super.start();
+	public void start(Promise<Void> startPromise) throws Exception {
+		super.start(startPromise);
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
