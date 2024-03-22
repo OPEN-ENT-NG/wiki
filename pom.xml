@@ -22,6 +22,7 @@
   <properties>
     <web-utils.version>3.0-b2school-SNAPSHOT</web-utils.version>
     <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
+    <mongodb-helper.version>3.0-b2school-SNAPSHOT</mongodb-helper.version>
     <entcore.version>5.0-b2school-SNAPSHOT</entcore.version>
   </properties>
 
@@ -42,6 +43,12 @@
     </dependency>
     <dependency>
       <groupId>fr.wseduc</groupId>
+      <artifactId>mongodb-helper</artifactId>
+      <version>${mongodb-helper.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>fr.wseduc</groupId>
       <artifactId>web-utils</artifactId>
       <version>${web-utils.version}</version>
       <scope>compile</scope>
@@ -58,6 +65,19 @@
       <version>${entcore.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.entcore</groupId>
+      <artifactId>tests</artifactId>
+      <version>${entcore.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.gatling.highcharts</groupId>
+      <artifactId>gatling-charts-highcharts</artifactId>
+      <version>${gatlingHighchartsVersion}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>
 
