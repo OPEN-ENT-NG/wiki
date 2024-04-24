@@ -41,7 +41,6 @@ public class Wiki extends BaseServer {
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
-
 		// Set RepositoryEvents implementation used to process events published for transition
 		setRepositoryEvents(new MongoDbRepositoryEvents(vertx, "net-atos-entng-wiki-controllers-WikiController|shareWiki",
 				REVISIONS_COLLECTION, "wikiId"));
@@ -52,6 +51,7 @@ public class Wiki extends BaseServer {
 		addController(new WikiController(WIKI_COLLECTION, wikiConfig));
 		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
 		setDefaultResourceFilter(new ShareAndOwner());
+		startPromise.tryComplete();
 	}
 
 }
