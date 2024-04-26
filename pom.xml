@@ -21,7 +21,6 @@
 
   <properties>
     <web-utils.version>3.0-b2school-SNAPSHOT</web-utils.version>
-    <jacksonDatabindVersion>2.15.2</jacksonDatabindVersion>
     <mongodb-helper.version>3.0-b2school-SNAPSHOT</mongodb-helper.version>
     <entcore.version>5.0-b2school-SNAPSHOT</entcore.version>
   </properties>
@@ -54,16 +53,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jacksonDatabindVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.entcore</groupId>
       <artifactId>common</artifactId>
       <version>${entcore.version}</version>
-      <classifier>fat</classifier>
       <scope>compile</scope>
     </dependency>
     <dependency>
