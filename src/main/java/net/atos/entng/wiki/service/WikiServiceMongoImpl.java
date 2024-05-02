@@ -19,11 +19,14 @@
 
 package net.atos.entng.wiki.service;
 
+import static com.mongodb.client.model.Filters.*;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mongodb.client.model.Filters;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -34,8 +37,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
@@ -60,19 +61,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonArray>> handler) {
 		// Query : return wikis visible by current user only (i.e. owner or
 		// shared)
-		List<DBObject> groups = new ArrayList<>();
-		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		if(user.getGroupsIds().size() > 0){
-			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
+		final List<Bson> groups = new ArrayList<>();
+		groups.add(eq("userId", user.getUserId()));
+		if(!user.getGroupsIds().isEmpty()){
+			groups.add(Filters.in("groupId", user.getGroupsIds()));
 		}
-		QueryBuilder query = new QueryBuilder().or(
-				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
-				QueryBuilder
-						.start("shared")
-						.elemMatch(
-								new QueryBuilder().or(
-										groups.toArray(new DBObject[groups
-												.size()])).get()).get());
+		final Bson query = or(
+			eq("owner.userId", user.getUserId()),
+			elemMatch("shared", or(groups)));
 
 		// Projection
 		JsonObject projection = new JsonObject();
@@ -86,7 +82,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void listPages(String idWiki,
 			Handler<Either<String, JsonObject>> handler) {
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		final Bson query = eq("_id", idWiki);
 
 		JsonObject projection = new JsonObject();
 		projection.put("pages.content", 0).put("created", 0);
@@ -100,20 +96,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonArray>> handler) {
 		// Query : return pages visible by current user only (i.e. owner or
 		// shared)
-		List<DBObject> groups = new ArrayList<>();
-		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
+		final List<Bson> groups = new ArrayList<>();
+		groups.add(eq("userId", user.getUserId()));
 		if(user.getGroupsIds().size() > 0){
-			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
+			groups.add(in("groupId", user.getGroupsIds()));
 		}
 
-		QueryBuilder query = new QueryBuilder().or(
-				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
-				QueryBuilder
-						.start("shared")
-						.elemMatch(
-								new QueryBuilder().or(
-										groups.toArray(new DBObject[groups
-												.size()])).get()).get());
+		final Bson query = or(
+				eq("owner.userId", user.getUserId()),
+				elemMatch("shared", or(groups)));
 
 		// Projection
 		JsonObject projection = new JsonObject();
@@ -165,8 +156,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
 
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki)
-				.put("pages._id").is(idPage);
+		final Bson query = and(
+			eq("_id", idWiki),
+			eq("pages._id", idPage));
 
 		// Projection
 		JsonObject matchId = new JsonObject();
@@ -191,7 +183,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
 			String pageContent, boolean isIndex,  Handler<Either<String, JsonObject>> handler) {
 
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		final Bson query = eq("_id", idWiki);
 
 		// Add new page to array "pages"
 		JsonObject newPage = new JsonObject();
@@ -222,8 +214,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-				.elemMatch(idPageDBO);
+		final Bson query = and(
+			eq("_id", idWiki),
+			elemMatch("pages", idPageDBO));
 
 		// Update
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
@@ -252,9 +245,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonObject>> handler) {
 
 		// Query
-		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-				.elemMatch(idPageDBO);
+		final BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+		final Bson query = and(
+			eq("_id", idWiki),
+			elemMatch("pages", idPageDBO));
 
 		// Update
 		JsonObject idPageJO = new JsonObject();
@@ -275,7 +269,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void unsetIndex(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
 
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("index").is(idPage);
+		final Bson query = and(
+			eq("_id", idWiki),
+			eq("index", idPage));
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.unset("index");
@@ -290,7 +286,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	 */
 	@Override
 	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler) {
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		Bson query = eq("_id", idWiki);
 
 		// Projection
 		JsonObject projection = new JsonObject();
@@ -299,7 +295,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			.put("title", 1);
 
 		if(idPage!= null && !idPage.trim().isEmpty()) {
-			query.put("pages._id").is(idPage);
+			query = and(query, eq("pages._id", idPage));
 
 			JsonObject matchId = new JsonObject().put("_id", idPage);
 			JsonObject elemMatch = new JsonObject().put("$elemMatch", matchId);
@@ -322,8 +318,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-				.elemMatch(idPageDBO);
+		final Bson query = and(
+			eq("_id", idWiki),
+			elemMatch("pages", idPageDBO));
 
 		// Add new comment to array "comments"
 		JsonObject newComment = new JsonObject();
@@ -346,8 +343,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-				.elemMatch(idPageDBO);
+		final Bson query = and(
+			eq("_id", idWiki),
+			elemMatch("pages", idPageDBO));
 
 		// Delete comment from array "comments"
 		JsonObject commentToDelete = new JsonObject();
@@ -376,7 +374,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler) {
-		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId).put("pageId").is(pageId);
+		final Bson query = and(eq("wikiId", wikiId), eq("pageId", pageId));
 		JsonObject sort = new JsonObject().put("date", -1);
 		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, null,
 				MongoDbResult.validResultsHandler(handler));
@@ -384,9 +382,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler) {
-		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId);
+		Bson query = eq("wikiId", wikiId);
 		if (pageId != null && !pageId.trim().isEmpty()) {
-			query.put("pageId").is(pageId);
+			query = and(query, eq("pageId", pageId));
 		}
 		mongo.delete(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), MongoDbResult.validResultHandler(handler));
 	}
