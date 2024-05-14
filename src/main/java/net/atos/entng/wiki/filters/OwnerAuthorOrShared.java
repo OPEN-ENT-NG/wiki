@@ -22,7 +22,6 @@ package net.atos.entng.wiki.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.client.model.Filters;
 import org.bson.conversions.Bson;
 import org.entcore.common.http.filter.MongoAppFilter;
 import org.entcore.common.http.filter.ResourcesProvider;
@@ -35,6 +34,8 @@ import com.mongodb.BasicDBObject;
 
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.http.Binding;
+
+import static com.mongodb.client.model.Filters.*;
 
 public class OwnerAuthorOrShared implements ResourcesProvider {
 
@@ -52,29 +53,28 @@ public class OwnerAuthorOrShared implements ResourcesProvider {
 			final List<Bson> groups = new ArrayList<>();
 			String sharedMethod = binding.getServiceMethod().replaceAll("\\.", "-");
 			groups.add(
-				Filters.and(
-					Filters.eq("userId", user.getUserId()),
-					Filters.eq(sharedMethod, true)));
+				and(
+					eq("userId", user.getUserId()),
+					eq(sharedMethod, true)));
 			for (String gpId: user.getGroupsIds()) {
 				groups.add(
-					Filters.and(
-						Filters.eq("groupId", gpId),
-						Filters.eq(sharedMethod, true)));
+					and(
+						eq("groupId", gpId),
+						eq(sharedMethod, true)));
 			}
 
 			BasicDBObject commentMatch = new BasicDBObject("_id", commentId);
 			commentMatch.put("author", user.getUserId());
-			final Bson pageMatch = Filters.and(
-				Filters.eq("_id", pageId),
-				Filters.elemMatch("comments", commentMatch));
+			final Bson pageMatch = and(
+				eq("_id", pageId),
+				elemMatch("comments", commentMatch));
 
 			// Authorize if current user is the wiki's owner, the comment's author or if the serviceMethod has been shared
-			final Bson query = Filters.or(
-				Filters.eq("_id", wikiId),
-				Filters.eq("owner.userId", user.getUserId()),
-				Filters.elemMatch("pages", pageMatch),
-				Filters.elemMatch("shared", Filters.or(groups))
-			);
+			final Bson query = and(eq("_id", wikiId), or(
+				eq("owner.userId", user.getUserId()),
+				elemMatch("pages", pageMatch),
+				elemMatch("shared", or(groups))
+			));
 			MongoAppFilter.executeCountQuery(request, conf.getCollection(), MongoQueryBuilder.build(query), 1, handler);
 		} else {
 			handler.handle(false);
