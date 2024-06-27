@@ -1,16 +1,28 @@
-## Describe your changes
+# Description
 
-## Checklist tests
+Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
-## Issue ticket number and link
+>
 
-## Checklist before requesting a review (magic string, indentation, comment/documentation...)
+## Type of change
 
-- [ ] I have detailed the tests to do in my feature/fix in order to prevent consequents regressions (must specify in **Checklist tests**)
-- [ ] I have performed a self-review of my code
+Please check options that are relevant.
+
+- [ ] Chore (PATCH)
+- [ ] Doc (PATCH)
+- [ ] Bug fix (PATCH)
+- [ ] New feature (MINOR)
+- [ ] Breaking change (MAJOR)
+
+> PATCH: refactor, internal or non-breaking change which fixes an issue
+>
+> MINOR: non-breaking change which adds functionality
+>
+> MAJOR: fix or feature that would cause existing functionality to not work as expected
+
+## Checklist:
+
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation (API Doc etc...) - (must specify in **Description** for target version)
-- [ ] If it is a consequent feature, I have added thorough tests.
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] Any dependent changes have been added to this project (must specify in **Description**)
-
+- [ ] My changes generate no new warnings
