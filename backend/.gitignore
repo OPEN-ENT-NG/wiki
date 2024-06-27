@@ -21,9 +21,16 @@ test-tmp
 mods
 */mods
 data
-node_modules
+developer.id
+/coverage/front/cobertura-coverage.xml
 rev-manifest.json
-src/main/resources/public/dist
-src/main/resources/public/template/entcore
+/build
+/bin
+node_modules/
+gradle/
+gradlew*
+# Ignore the entire "resources" folder except jsonchema
+src/main/resources/public/*.js
+src/main/resources/public/*.css
 src/main/resources/view/index.html
-gradle*
+# src/main/resources/view
