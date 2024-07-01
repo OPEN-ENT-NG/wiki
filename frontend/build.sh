@@ -55,43 +55,7 @@ clean () {
 }
 
 doInit () {
-  echo "[init] Get branch name from jenkins env..."
-  BRANCH_NAME=`echo $GIT_BRANCH | sed -e "s|origin/||g"`
-  if [ "$BRANCH_NAME" = "" ]; then
-    echo "[init] Get branch name from git..."
-    BRANCH_NAME=`git branch | sed -n -e "s/^\* \(.*\)/\1/p"`
-  fi
-
-  # if [ "BRANCH_NAME" == "main" ]
-  #   echo "[init] Generate package.json from package.json..."
-  #   NPM_VERSION_SUFFIX=`date +"%Y%m%d%H%M"`
-  #   sed -i "s/%branch%/${BRANCH_NAME}/" package.json
-  #   sed -i "s/%generateVersion%/${NPM_VERSION_SUFFIX}/" package.json
-  # fi
-
-  # Récupérer la branche courante
-  # Récupérer la version actuelle du package.json
-  CURRENT_VERSION=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
-
-  # Générer le suffixe de version
-  NPM_VERSION_SUFFIX=`date +"%Y%m%d%H%M"`
-
-  # Définir la nouvelle version
-  if [[ "$BRANCH_NAME" == "main" ]]; then
-      NEW_VERSION="${CURRENT_VERSION}"
-  elif [[ "$BRANCH_NAME" == develop-* ]]; then
-      NEW_VERSION="${CURRENT_VERSION}-${BRANCH_NAME}-${NPM_VERSION_SUFFIX}"
-  else
-      echo "Branche non supportée : ${BRANCH_NAME}"
-      exit 1
-  fi
-
-  if [ "$1" == "Dev" ]
-  then
-    sed -i "s/%packageVersion%/link:..\/..\/edifice-ts-client\//" package.json
-  else
-    sed -i "s/%packageVersion%/${BRANCH_NAME}/" package.json
-  fi
+  node ./scripts/package.cjs
 
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm install
@@ -105,56 +69,17 @@ init() {
   doInit
 }
 
-initDev() {
-  doInit "Dev"
-}
-
-# Install local dependencies as tarball (installing as folder creates symlinks which won't resolve in the docker container)
-localDep () {
-  if [ -e $PWD/../edifice-ts-client ]; then
-    rm -rf edifice-ts-client.tar edifice-ts-client.tar.gz
-    mkdir edifice-ts-client.tar && mkdir edifice-ts-client.tar/dist \
-      && cp -R $PWD/../edifice-ts-client/dist $PWD/../edifice-ts-client/package.json edifice-ts-client.tar
-    tar cfzh edifice-ts-client.tar.gz edifice-ts-client.tar
-    if [ "$NO_DOCKER" = "true" ] ; then
-      pnpm install --no-save edifice-ts-client.tar.gz
-    else
-      docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm install --no-save edifice-ts-client.tar.gz"
-    fi
-    rm -rf edifice-ts-client.tar edifice-ts-client.tar.gz
-  fi
-}
-
 build () {
   if [ "$NO_DOCKER" = "true" ] ; then
-    pnpm build
+    npx nx run-many -t lint test build
   else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm build"
+    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "npx nx run-many -t lint test build"
   fi
   status=$?
   if [ $status != 0 ];
   then
     exit $status
   fi
-}
-
-publishNPM () {
-  LOCAL_BRANCH=`echo $GIT_BRANCH | sed -e "s|origin/||g"`
-  if [ "$NO_DOCKER" = "true" ] ; then
-    pnpm publish --tag $LOCAL_BRANCH
-  else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm publish --tag $LOCAL_BRANCH"
-  fi
-}
-
-publishMavenLocal (){
-  mvn install:install-file \
-    --batch-mode \
-    -DgroupId=$MVN_MOD_GROUPID \
-    -DartifactId=$MVN_MOD_NAME \
-    -Dversion=$MVN_MOD_VERSION \
-    -Dpackaging=tar.gz \
-    -Dfile=${MVN_MOD_NAME}.tar.gz
 }
 
 for param in "$@"
@@ -166,26 +91,8 @@ do
     init)
       init
       ;;
-    initDev)
-      initDev
-      ;;
-    localDep)
-      localDep
-      ;;
     build)
       build
-      ;;
-    install)
-      build && archive && publishMavenLocal && rm -rf build
-      ;;
-    watch)
-      watch
-      ;;
-    archive)
-      archive
-      ;;
-    publishNPM)
-      publishNPM
       ;;
     *)
       echo "Invalid argument : $param"
