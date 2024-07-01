@@ -1,5 +1,5 @@
     {
-      "name": "net.atos~wiki~1.14-develop-pedago-SNAPSHOT",
+      "name": "net.atos~wiki~2.0-develop-pedago-SNAPSHOT",
       "config": {
         "main" : "net.atos.entng.wiki.Wiki",
         "port" : 8030,
