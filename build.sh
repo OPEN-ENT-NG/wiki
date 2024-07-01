@@ -12,7 +12,6 @@ rm -rf ./src/main/resources/public/*.css
 cp -R ../frontend/dist/* ./src/main/resources/
 
 # Copy Files
-mv ./src/main/resources/img/* ./src/main/resources/public/img
 mv ./src/main/resources/*.html ./src/main/resources/view
 
 # Build .
