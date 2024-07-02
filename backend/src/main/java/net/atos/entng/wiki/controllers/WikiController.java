@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.wseduc.webutils.I18n;
-import io.vertx.core.json.Json;
 import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.config.WikiConfig;
+import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
@@ -38,7 +39,9 @@ import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
+import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.http.response.DefaultResponseHandler;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.user.UserUtils;
@@ -46,6 +49,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
+
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -76,14 +80,17 @@ public class WikiController extends MongoDbControllerHelper {
 
 	private final WikiConfig wikiConfig;
 
+	private final WikiExplorerPlugin explorerPlugin;
+
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
 	}
 
-	public WikiController(String collection, WikiConfig wikiConfig) {
+	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin) {
 		super(collection);
+		this.explorerPlugin = plugin;
 		wikiService = new WikiServiceMongoImpl(collection);
 		this.wikiConfig = wikiConfig;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
@@ -94,18 +101,31 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Get HTML view")
 	@SecuredAction("wiki.view")
 	public void view(HttpServerRequest request) {
-		JsonObject params = new JsonObject().put("pagination", this.wikiConfig.wikiPaginationLimit());
-		renderView(request, params);
+		renderView(request, new JsonObject(), "index.html", null);
 
 		// Create event "access to application Wiki" and store it, for module "statistics"
 		eventHelper.onAccess(request);
 	}
 
-	@Get("/print")
-	@SecuredAction("wiki.print")
-	public void print(HttpServerRequest request) {
-		renderView(request);
-	}
+	/**
+     * Display react front view /id/:id
+     * @param request
+     */
+    @Get("/id/:id")
+    @SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+    public void viewById(HttpServerRequest request) {
+        renderView(request, new JsonObject(), "index.html", null);
+    }
+
+	/**
+     * Display react front print /print/id/:id
+     * @param request
+     */
+    @Get("/print/id/:id")
+    @SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+    public void viewPrintById(HttpServerRequest request) {
+        renderView(request, new JsonObject(), "index.html", null);
+    }
 
 	@Get("/list")
 	@ApiDoc("List wikis")
@@ -158,26 +178,45 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Create wiki")
 	@SecuredAction("wiki.create")
 	public void createWiki(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							Handler<Either<String, JsonObject>> handler = eventHelper.onCreateResource(request, WIKI_RESOURCE_NAME, defaultResponseHandler(request));
-
-							String wikiTitle = data.getString("title");
-							if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
-								badRequest(request);
-								return;
-							}
-							String thumbnail = data.getString("thumbnail");
-
-							wikiService.createWiki(user, wikiTitle, thumbnail, handler);
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, wiki -> {
+					// get data from request body
+					String wikiTitle = wiki.getString("title");
+					if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
+					String thumbnail = wiki.getString("thumbnail");
+                    final Optional<Number> folderId = Optional.ofNullable(wiki.getNumber("folder"));
+					
+					// create Wiki
+					final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
+					wikiService.createWiki(user, wikiTitle, thumbnail, (r) -> {
+						if (r.isLeft()) {
+							// if fail return error
+                            handler.handle(new Either.Left<>(r.left().getValue()));
+						} else {
+							// notify Creation Event
+							eventHelper.onCreateResource(request, WIKI_RESOURCE_NAME);
+							// notify Explorer
+							wiki.put("version", System.currentTimeMillis());
+							wiki.put("_id", r.right().getValue().getString("_id"));
+							
+							explorerPlugin.notifyUpsert(user, wiki, folderId)
+								.onSuccess(e -> {
+									// on success return 200
+									handler.handle(r);
+								})
+								.onFailure(e -> {
+									// on error return message
+									handler.handle(new Either.Left<>(e.getMessage()));
+								});
 						}
 					});
-				}
+				});
+			} else {
+				unauthorized(request);
 			}
 		});
 	}
@@ -186,21 +225,41 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Update wiki by id")
 	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
 	public void updateWiki(final HttpServerRequest request) {
-		RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-			@Override
-			public void handle(JsonObject data) {
-				Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
-
-				String idWiki = request.params().get("id");
-
-				String wikiTitle = data.getString("title");
-				if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
-					badRequest(request);
-					return;
-				}
-				String thumbnail = data.getString("thumbnail");
-
-				wikiService.updateWiki(idWiki, wikiTitle, thumbnail, handler);
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, wiki -> {
+					// get data from request body
+					final String idWiki = request.params().get("id");
+					final String wikiTitle = wiki.getString("title");
+					if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
+					String thumbnail = wiki.getString("thumbnail");
+					
+					Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
+					wikiService.updateWiki(idWiki, wikiTitle, thumbnail, r -> {
+						if (r.isLeft()) {
+							// if fail return error
+							handler.handle(new Either.Left<>(r.left().getValue()));
+						} else {
+							// notify EUR
+							wiki.put("_id", idWiki);
+							wiki.put("version", System.currentTimeMillis());
+							explorerPlugin.notifyUpsert(user, wiki)
+								.onSuccess(e -> {
+									// on success return 200
+									handler.handle(r);
+								})
+								.onFailure(e -> {
+									// on error return message
+									handler.handle(new Either.Left<>(e.getMessage()));
+								});
+						}
+					});
+				});
+			} else {
+				unauthorized(request);
 			}
 		});
 	}
@@ -211,15 +270,31 @@ public class WikiController extends MongoDbControllerHelper {
 	public void deleteWiki(final HttpServerRequest request) {
 		final String idWiki = request.params().get("id");
 
-		wikiService.deleteWiki(idWiki, new Handler<Either<String, JsonObject>>() {
-			@Override
-			public void handle(Either<String, JsonObject> r) {
-				if (r.isRight()) {
-					deleteRevisions(idWiki, null);
-					renderJson(request, r.right().getValue());
-				} else {
-					leftToResponse(request, r.left());
-				}
+		// get user
+		UserUtils.getUserInfos(eb, request, user ->	{
+			if (user != null) {
+				// delete wiki
+				final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
+				wikiService.deleteWiki(idWiki, r -> {
+					if (r.isRight()) {
+						deleteRevisions(idWiki, null);
+						// notify EUR
+						explorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
+							.onSuccess(e -> {
+								// on success return 200
+								handler.handle(r);
+							})
+							.onFailure(e -> {
+								// on error return message
+								handler.handle(new Either.Left<>(e.getMessage()));
+							});
+						renderJson(request, r.right().getValue());
+					} else {
+						leftToResponse(request, r.left());
+					}
+				});
+			} else {
+				unauthorized(request);
 			}
 		});
 	}
