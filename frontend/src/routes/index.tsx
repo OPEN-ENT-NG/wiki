@@ -32,7 +32,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
   },
 ];
 
-export const basename = import.meta.env.PROD ? '/collaborativewall' : '/';
+export const basename = import.meta.env.PROD ? '/wiki' : '/';
 
 export const router = (queryClient: QueryClient) =>
   createBrowserRouter(routes(queryClient), {
