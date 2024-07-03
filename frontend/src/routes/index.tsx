@@ -3,6 +3,8 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom';
 
 import { PageError } from '~/routes/page-error';
 import { NotFound } from './not-found';
+import { Explorer } from 'ode-explorer/lib';
+import { explorerConfig } from '~/config/explorerConfig';
 
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -15,6 +17,12 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         Component,
       };
     },
+    children: [
+      {
+        index: true,
+        element: <Explorer config={explorerConfig} />,
+      },
+    ],
   },
   /* 404 Page */
   {
@@ -24,7 +32,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
   },
 ];
 
-export const basename = import.meta.env.PROD ? '/collaborativewall' : '/';
+export const basename = import.meta.env.PROD ? '/wiki' : '/';
 
 export const router = (queryClient: QueryClient) =>
   createBrowserRouter(routes(queryClient), {

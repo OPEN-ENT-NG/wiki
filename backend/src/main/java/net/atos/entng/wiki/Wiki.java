@@ -21,8 +21,14 @@ package net.atos.entng.wiki;
 
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
-
+import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.entcore.common.explorer.IExplorerPluginClient;
+import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
@@ -30,9 +36,13 @@ import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
 
 public class Wiki extends BaseServer {
+    public static final String APPLICATION = "wiki";
+    public static final String WIKI_TYPE = "wiki";
 
 	public static final String WIKI_COLLECTION = "wiki";
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
+
+	private WikiExplorerPlugin plugin;
 
 	@Override
 	public void start() throws Exception {
@@ -40,17 +50,41 @@ public class Wiki extends BaseServer {
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
-
-		// Set RepositoryEvents implementation used to process events published for transition
-		setRepositoryEvents(new MongoDbRepositoryEvents(vertx, "net-atos-entng-wiki-controllers-WikiController|shareWiki",
-				REVISIONS_COLLECTION, "wikiId"));
-		if (config.getBoolean("searching-event", true)) {
+		// Set Explorer Plugin
+        final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, WIKI_TYPE);
+		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
+        pluginClientPerCollection.put(WIKI_COLLECTION, mainClient);
+		
+        // Set Repository Events
+        setRepositoryEvents(new ExplorerRepositoryEvents(new MongoDbRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
+		
+        // Set Searching Events
+        if (config.getBoolean("searching-event", true)) {
 			setSearchingEvents(new WikiSearchingEvents(new MongoDbSearchService(WIKI_COLLECTION)));
 		}
 
-		addController(new WikiController(WIKI_COLLECTION, wikiConfig));
-		MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
-		setDefaultResourceFilter(new ShareAndOwner());
+        // Create Explorer plugin
+		this.plugin = WikiExplorerPlugin.create(securedActions);
+
+        // Add Wiki Controller
+        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin);
+		addController(wikiController);
+		
+        // Set Mongo Collection
+        MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
+		
+        setDefaultResourceFilter(new ShareAndOwner());
+
+        // Start Explorer plugin
+		this.plugin.start();
 	}
 
+	@Override
+	public void stop() throws Exception {
+		super.stop();
+
+		if (this.plugin != null) {
+			this.plugin.stop();
+		}
+	}
 }
