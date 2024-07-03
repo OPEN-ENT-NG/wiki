@@ -12,8 +12,10 @@ export const actionsQueryOptions = (actions: IAction[]) => {
   const actionsWorkflows = new Set(workflows);
   return queryOptions({
     queryKey: [...actionsWorkflows],
-    queryFn: () =>
-      odeServices.rights().sessionHasWorkflowRights([...actionsWorkflows]),
+    queryFn: async () =>
+      await odeServices
+        .rights()
+        .sessionHasWorkflowRights([...actionsWorkflows]),
     select: (data: Record<string, boolean>) => {
       return actions
         .filter((action: IAction) => data[action.workflow])

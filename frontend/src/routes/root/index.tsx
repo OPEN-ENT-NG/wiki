@@ -1,6 +1,7 @@
 import { Layout, LoadingScreen, useOdeClient } from '@edifice-ui/react';
-import { basename } from '..';
+
 import { matchPath, Outlet } from 'react-router-dom';
+import { basename } from '..';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
