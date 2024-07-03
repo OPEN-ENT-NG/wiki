@@ -1,14 +1,10 @@
-/* eslint-disable no-restricted-globals */
 import { Layout, LoadingScreen, useOdeClient } from '@edifice-ui/react';
-
-import { matchPath } from 'react-router-dom';
-
-import App from '~/app/app';
 import { basename } from '..';
+import { matchPath, Outlet } from 'react-router-dom';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
-  const hashLocation = location.hash.substring(1);
+  const hashLocation = window.location.hash.substring(1);
 
   // Check if the URL is an old format (angular root with hash) and redirect to the new format
   if (hashLocation) {
@@ -17,8 +13,8 @@ export const loader = async () => {
     if (isPath) {
       // Redirect to the new format
       const redirectPath = `/id/${isPath?.params.id}`;
-      location.replace(
-        location.origin + basename.replace(/\/$/g, '') + redirectPath
+      window.location.replace(
+        window.location.origin + basename.replace(/\/$/g, '') + redirectPath
       );
     }
   }
@@ -31,11 +27,11 @@ export const Root = () => {
 
   if (!init) return <LoadingScreen position={false} />;
 
-  return init ? (
+  return (
     <Layout>
-      <App />
+      <Outlet />
     </Layout>
-  ) : null;
+  );
 };
 
 export default Root;
