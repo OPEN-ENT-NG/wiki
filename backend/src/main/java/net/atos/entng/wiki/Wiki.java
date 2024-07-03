@@ -38,11 +38,8 @@ import org.entcore.common.service.impl.MongoDbSearchService;
 public class Wiki extends BaseServer {
     public static final String APPLICATION = "wiki";
     public static final String WIKI_TYPE = "wiki";
-    public static final String PAGE_TYPE = "wikiPage";
-    public static final String REVISION_TYPE = "wikiRevisions";
 
 	public static final String WIKI_COLLECTION = "wiki";
-	public static final String PAGE_COLLECTION = "wikiPage";
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	private WikiExplorerPlugin plugin;
@@ -57,8 +54,6 @@ public class Wiki extends BaseServer {
         final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, WIKI_TYPE);
 		final Map<String, IExplorerPluginClient> pluginClientPerCollection = new HashMap<>();
         pluginClientPerCollection.put(WIKI_COLLECTION, mainClient);
-        pluginClientPerCollection.put(PAGE_COLLECTION, IExplorerPluginClient.withBus(vertx, APPLICATION, PAGE_TYPE));
-        // pluginClientPerCollection.put(REVISIONS_COLLECTION, IExplorerPluginClient.withBus(vertx, APPLICATION, REVISION_TYPE));
 		
         // Set Repository Events
         setRepositoryEvents(new ExplorerRepositoryEvents(new MongoDbRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
