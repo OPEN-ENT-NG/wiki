@@ -18,10 +18,7 @@ if [ "$#" -lt 1 ]; then
   echo "Usage: $0 <clean|init|localDep|build|install|watch>"
   echo "Example: $0 clean"
   echo "Example: $0 init"
-  echo "Example: $0 localDep Use this option to update the edifice-ts-client NPM dependency with a local version"
   echo "Example: $0 build"
-  echo "Example: $0 install"
-  echo "Example: $0 [--springboard=recette] watch"
   exit 1
 fi
 
@@ -46,6 +43,7 @@ esac
 done
 
 clean () {
+  rm -rf .nx
   rm -rf node_modules 
   rm -rf dist 
   rm -rf build 
@@ -54,26 +52,19 @@ clean () {
   rm -f pnpm-lock.yaml
 }
 
-doInit () {
-  node ./scripts/package.cjs
-
+init() {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm install
   else
     docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm install"
   fi
-
-}
-
-init() {
-  doInit
 }
 
 build () {
   if [ "$NO_DOCKER" = "true" ] ; then
-    npx nx run-many -t lint test build
+    pnpm run build
   else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "npx nx run-many -t lint test build"
+    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm run build"
   fi
   status=$?
   if [ $status != 0 ];

@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   gradle:
     image: opendigitaleducation/gradle:4.5.1
@@ -7,10 +6,3 @@ services:
       - ./:/home/gradle/project
       - ~/.m2:/home/gradle/.m2
       - ~/.gradle:/home/gradle/.gradle
-  node:
-    image: opendigitaleducation/node:16-alpine-pnpm
-    working_dir: /home/node/app
-    volumes:
-      - ./:/home/node/app
-      - ~/.npm:/.npm
-      - ../recette:/home/node/recette

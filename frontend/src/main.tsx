@@ -17,7 +17,7 @@ import { router } from './routes';
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
 
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.DEV) {
   // eslint-disable-next-line global-require
   import('@axe-core/react').then((axe) => {
     axe.default(React, root, 1000);

@@ -72,7 +72,7 @@ export default ({ mode }: { mode: string }) => {
     build: {
       outDir: './dist',
       emptyOutDir: true,
-      reportCompressedSize: true,
+      reportCompressedSize: false,
       commonjsOptions: {
         transformMixedEsModules: true,
       },
