@@ -8,7 +8,7 @@
     "build": "pnpm dlx vite build",
     "pre-commit": "lint-staged",
     "prepare": "cd .. && husky frontend/.husky || true",
-    "start": "nx serve",
+    "dev": "nx serve",
     "test": "nx test"
   },
   "husky": {

@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { PagePostPayload, PagePutPayload } from '~/models';
 import { wikiService } from '../api';
 import { wikiQueryOptions } from './wiki';
 
@@ -12,16 +13,16 @@ import { wikiQueryOptions } from './wiki';
  */
 export const pageQueryOptions = {
   all: ['page'] as const,
-  one: (wikiId: string, pageId: string) =>
+  one: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.all, { id: pageId }] as const,
-      queryFn: () => wikiService.getPage(wikiId, pageId),
+      queryFn: () => wikiService.getPage({ wikiId, pageId }),
       staleTime: 5000,
     }),
-  revision: (wikiId: string, pageId: string) =>
+  revision: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.all, 'revision', { id: pageId }] as const,
-      queryFn: () => wikiService.getRevisionPage(wikiId, pageId),
+      queryFn: () => wikiService.getRevisionPage({ wikiId, pageId }),
       staleTime: 5000,
     }),
 };
@@ -31,18 +32,19 @@ export const pageQueryOptions = {
  */
 
 export const useGetPage = (wikiId: string, pageId: string) => {
-  return useQuery(pageQueryOptions.one(wikiId, pageId));
+  return useQuery(pageQueryOptions.one({ wikiId, pageId }));
 };
 
 export const useGetRevisionPage = (wikiId: string, pageId: string) => {
-  return useQuery(pageQueryOptions.revision(wikiId, pageId));
+  return useQuery(pageQueryOptions.revision({ wikiId, pageId }));
 };
 
 export const useCreatePage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (wikiId: string) => wikiService.createPage(wikiId),
+    mutationFn: ({ wikiId, data }: { wikiId: string; data: PagePostPayload }) =>
+      wikiService.createPage({ wikiId, data }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.listall().queryKey,
@@ -58,15 +60,21 @@ export const useUpdatePage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
-      wikiService.updatePage(wikiId, pageId),
-    onSuccess: (_data, variables) => {
+    mutationFn: ({
+      wikiId,
+      pageId,
+      data,
+    }: {
+      wikiId: string;
+      pageId: string;
+      data: PagePutPayload;
+    }) => wikiService.updatePage({ wikiId, pageId, data }),
+    onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.listall().queryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one(variables.wikiId, variables.pageId)
-          .queryKey,
+        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.listallpages().queryKey,
@@ -79,14 +87,13 @@ export const useDeletePage = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
-      wikiService.deletePage(wikiId, pageId),
-    onSuccess: (_data, variables) => {
+      wikiService.deletePage({ wikiId, pageId }),
+    onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.listall().queryKey,
       });
       queryClient.removeQueries({
-        queryKey: pageQueryOptions.one(variables.wikiId, variables.pageId)
-          .queryKey,
+        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.listallpages().queryKey,

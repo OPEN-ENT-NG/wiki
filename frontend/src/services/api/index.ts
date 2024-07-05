@@ -1,5 +1,5 @@
 import { odeServices } from 'edifice-ts-client';
-import { Page, Wiki } from '~/models';
+import { Page, PagePostPayload, PagePutPayload, Wiki } from '~/models';
 
 /**
  *
@@ -45,7 +45,7 @@ const createWikiService = (baseURL: string) => ({
    * @param pageId string
    * @returns get a page of a wiki by id
    */
-  async getPage(wikiId: string, pageId: string) {
+  async getPage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
       .http()
       .get<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
@@ -58,7 +58,13 @@ const createWikiService = (baseURL: string) => ({
    * @param pageId
    * @returns all revisions of a page
    */
-  async getRevisionPage(wikiId: string, pageId: string) {
+  async getRevisionPage({
+    wikiId,
+    pageId,
+  }: {
+    wikiId: string;
+    pageId: string;
+  }) {
     const response = await odeServices
       .http()
       .get<Page>(`${baseURL}/revisions/${wikiId}/${pageId}`);
@@ -70,10 +76,16 @@ const createWikiService = (baseURL: string) => ({
    * @param wikiId
    * @returns a new page
    */
-  async createPage(wikiId: string) {
+  async createPage({
+    wikiId,
+    data,
+  }: {
+    wikiId: string;
+    data: PagePostPayload;
+  }) {
     const response = await odeServices
       .http()
-      .post<Page>(`${baseURL}/${wikiId}/page`);
+      .post<Page>(`${baseURL}/${wikiId}/page`, data);
     return response;
   },
 
@@ -82,10 +94,18 @@ const createWikiService = (baseURL: string) => ({
    * @param wikiId
    * @returns the updated page
    */
-  async updatePage(wikiId: string, pageId: string) {
+  async updatePage({
+    wikiId,
+    pageId,
+    data,
+  }: {
+    wikiId: string;
+    pageId: string;
+    data: PagePutPayload;
+  }) {
     const response = await odeServices
       .http()
-      .put<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
+      .put<Page>(`${baseURL}/${wikiId}/page/${pageId}`, data);
     return response;
   },
 
@@ -94,21 +114,29 @@ const createWikiService = (baseURL: string) => ({
    * @param wikiId
    * @returns ???
    */
-  async deletePage(wikiId: string, pageId: string) {
+  async deletePage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
       .http()
       .delete<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
     return response;
   },
 
-  async createComment(wikiId: string, pageId: string) {
+  async createComment({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
       .http()
       .post<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment`);
     return response;
   },
 
-  async updateComment(wikiId: string, pageId: string, commentId: string) {
+  async updateComment({
+    wikiId,
+    pageId,
+    commentId,
+  }: {
+    wikiId: string;
+    pageId: string;
+    commentId: string;
+  }) {
     const response = await odeServices
       .http()
       .post<Comment>(
@@ -117,7 +145,15 @@ const createWikiService = (baseURL: string) => ({
     return response;
   },
 
-  async deleteComment(wikiId: string, pageId: string, commentId: string) {
+  async deleteComment({
+    wikiId,
+    pageId,
+    commentId,
+  }: {
+    wikiId: string;
+    pageId: string;
+    commentId: string;
+  }) {
     const response = await odeServices
       .http()
       .delete<Comment>(

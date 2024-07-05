@@ -3,9 +3,13 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom';
 
 import { Explorer } from 'ode-explorer/lib';
 import { explorerConfig } from '~/config';
-import { PageError } from '~/routes/page-error';
-import { NotFound } from './not-found';
-import { EmptyWiki, loader } from './wiki/empty';
+import { PageError } from '~/routes/errors';
+import { NotFound } from './errors/not-found';
+import { Page, action as deleteAction, loader as pageLoader } from './page';
+import { CreatePage, action as createAction } from './page/create';
+import { EditPage, action as editAction } from './page/edit';
+import { Pages, loader as pagesLoader } from './page/list';
+import { Wiki, loader as wikiLoader } from './wiki';
 
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -18,6 +22,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
         Component,
       };
     },
+    errorElement: <PageError />,
     children: [
       {
         index: true,
@@ -25,28 +30,32 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'id/:wikiId',
-        loader: loader(queryClient),
-        errorElement: <PageError />,
         children: [
           {
             index: true,
-            element: <EmptyWiki />,
+            loader: wikiLoader(queryClient),
+            element: <Wiki />,
           },
           {
             path: 'pages',
-            element: <div>Liste de toutes les pages</div>,
+            loader: pagesLoader(queryClient),
+            element: <Pages />,
           },
           {
             path: 'page/:pageId',
-            element: <div>page par défaut du wiki (page d'accueil)</div>,
+            loader: pageLoader(queryClient),
+            action: deleteAction,
+            element: <Page />,
           },
           {
             path: 'page/create',
-            element: <div>création d'une page</div>,
+            element: <CreatePage />,
+            action: createAction,
           },
           {
             path: 'page/:pageId/edit',
-            element: <div>édition d'une page</div>,
+            action: editAction,
+            element: <EditPage />,
           },
           {
             path: 'page/:pageId/subpage/create',

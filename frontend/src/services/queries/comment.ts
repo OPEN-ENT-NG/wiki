@@ -11,11 +11,10 @@ export const useCreateComment = () => {
 
   return useMutation({
     mutationFn: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
-      wikiService.createComment(wikiId, pageId),
-    onSuccess: (_data, variables) => {
+      wikiService.createComment({ wikiId, pageId }),
+    onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one(variables.wikiId, variables.pageId)
-          .queryKey,
+        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
       });
     },
   });
@@ -33,11 +32,10 @@ export const useUpdateComment = () => {
       wikiId: string;
       pageId: string;
       commentId: string;
-    }) => wikiService.updateComment(wikiId, pageId, commentId),
-    onSuccess: (_data, variables) => {
+    }) => wikiService.updateComment({ wikiId, pageId, commentId }),
+    onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one(variables.wikiId, variables.pageId)
-          .queryKey,
+        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
       });
     },
   });
@@ -54,11 +52,10 @@ export const useDeleteComment = () => {
       wikiId: string;
       pageId: string;
       commentId: string;
-    }) => wikiService.deleteComment(wikiId, pageId, commentId),
-    onSuccess: (_data, variables) => {
+    }) => wikiService.deleteComment({ wikiId, pageId, commentId }),
+    onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one(variables.wikiId, variables.pageId)
-          .queryKey,
+        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
       });
     },
   });
