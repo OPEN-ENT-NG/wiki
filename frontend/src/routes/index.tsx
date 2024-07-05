@@ -5,6 +5,7 @@ import { Explorer } from 'ode-explorer/lib';
 import { explorerConfig } from '~/config';
 import { PageError } from '~/routes/page-error';
 import { NotFound } from './not-found';
+import { EmptyWiki, loader } from './wiki/empty';
 
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -24,38 +25,36 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'id/:wikiId',
-        element: <div>Page Wiki Empty</div>,
+        loader: loader(queryClient),
         errorElement: <PageError />,
         children: [
           {
+            index: true,
+            element: <EmptyWiki />,
+          },
+          {
             path: 'pages',
             element: <div>Liste de toutes les pages</div>,
-            errorElement: <PageError />,
           },
           {
             path: 'page/:pageId',
             element: <div>page par défaut du wiki (page d'accueil)</div>,
-            errorElement: <PageError />,
           },
           {
-            path: 'page/:pageId/create',
+            path: 'page/create',
             element: <div>création d'une page</div>,
-            errorElement: <PageError />,
           },
           {
             path: 'page/:pageId/edit',
             element: <div>édition d'une page</div>,
-            errorElement: <PageError />,
           },
           {
             path: 'page/:pageId/subpage/create',
             element: <div>création page enfant</div>,
-            errorElement: <PageError />,
           },
           {
             path: 'page/:pageId/subpage/edit',
             element: <div>édition page enfant</div>,
-            errorElement: <PageError />,
           },
         ],
       },

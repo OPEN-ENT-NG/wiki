@@ -10,7 +10,7 @@ export interface Wiki {
   modified: Modified;
   owner: Owner;
   shared?: Shared[];
-  rights: RightRole[];
+  rights?: RightRole[];
   index?: string;
 }
 

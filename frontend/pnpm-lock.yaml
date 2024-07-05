@@ -13,7 +13,7 @@ importers:
         version: 1.5.11-develop-pedago.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@edifice-ui/react':
         specifier: develop-pedago
-        version: 1.5.11-develop-pedago.4(k6ruo73ryu5k272q5cptyeymta)
+        version: 1.5.11-develop-pedago.6(k6ruo73ryu5k272q5cptyeymta)
       '@tanstack/react-query':
         specifier: 5.8.4
         version: 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -128,7 +128,7 @@ importers:
         version: 1.5.11-develop-pedago.5
       edifice-ts-client:
         specifier: develop-pedago
-        version: 1.5.11-develop-pedago.4
+        version: 1.5.11-develop-pedago.6
       eslint:
         specifier: ~8.57.0
         version: 8.57.0
@@ -874,8 +874,8 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0
 
-  '@edifice-ui/react@1.5.11-develop-pedago.4':
-    resolution: {integrity: sha512-u7fGFyKrqXJOc4IgmP25PAeGedeF6zkOzDXPhxExiyOsMOA5A8W0eAzK39GgfUuaNEyQlGD68QzP3+d2vGv+FQ==}
+  '@edifice-ui/react@1.5.11-develop-pedago.6':
+    resolution: {integrity: sha512-fWVRKh3SV52PE/KGJzkf+DbRh/zb4UFE+ap0ZfTQK4Hrb1lkCFTGovDEr2l1bhj3HmL8lHbCYsAoMBrnd/M9JQ==}
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@react-spring/web': 9.7.3
@@ -1836,8 +1836,8 @@ packages:
       react-native:
         optional: true
 
-  '@testing-library/dom@10.3.0':
-    resolution: {integrity: sha512-pT/TYB2+IyMYkkB6lqpkzD7VFbsR0JBJtflK3cS68sCNWxmOhWwRm1XvVHlseNEorsNcxkYsb4sRDV3aNIpttg==}
+  '@testing-library/dom@10.3.1':
+    resolution: {integrity: sha512-q/WL+vlXMpC0uXDyfsMtc1rmotzLV8Y0gq6q1gfrrDjQeHoeLrqHbxdPvPNAh1i+xuJl7+BezywcXArz7vLqKQ==}
     engines: {node: '>=18'}
 
   '@testing-library/react@15.0.6':
@@ -2911,8 +2911,8 @@ packages:
   edifice-bootstrap@1.5.11-develop-pedago.5:
     resolution: {integrity: sha512-Ua9CEg8JwYrqwvlpayyogysNyicCsUgPQbW/SLqsa6hPYZvbDiK5AEKnMpPA6+RuOKAHJs1j7D9aYarVkjCj5g==}
 
-  edifice-ts-client@1.5.11-develop-pedago.4:
-    resolution: {integrity: sha512-3TWGORNmrirCzF3ZbzKkw+qW0/BTnr7CN4O7TU6Cl3I3PU0xxd1NYmzxcZrj8CRwdmTAKd1cYFFXv8NngQGHbw==}
+  edifice-ts-client@1.5.11-develop-pedago.6:
+    resolution: {integrity: sha512-xVMyyq3hDhdl+Y3/wmvZ93GMjmYwIFjVdmCCLYL92IWs51UrTie69Q9wtzo2Fv+QEBGxFYrVqaeUTvkTcfmugA==}
 
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
@@ -6301,7 +6301,7 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@edifice-ui/react@1.5.11-develop-pedago.4(k6ruo73ryu5k272q5cptyeymta)':
+  '@edifice-ui/react@1.5.11-develop-pedago.6(k6ruo73ryu5k272q5cptyeymta)':
     dependencies:
       '@edifice-ui/icons': 1.5.11-develop-pedago.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@floating-ui/react': 0.26.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -7440,7 +7440,7 @@ snapshots:
     optionalDependencies:
       react-dom: 18.2.0(react@18.2.0)
 
-  '@testing-library/dom@10.3.0':
+  '@testing-library/dom@10.3.1':
     dependencies:
       '@babel/code-frame': 7.24.7
       '@babel/runtime': 7.24.7
@@ -7454,7 +7454,7 @@ snapshots:
   '@testing-library/react@15.0.6(@types/react@18.3.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.24.7
-      '@testing-library/dom': 10.3.0
+      '@testing-library/dom': 10.3.1
       '@types/react-dom': 18.3.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -8684,7 +8684,7 @@ snapshots:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  edifice-ts-client@1.5.11-develop-pedago.4:
+  edifice-ts-client@1.5.11-develop-pedago.6:
     dependencies:
       axios: 1.6.6
       core-js: 3.35.1
@@ -10132,7 +10132,7 @@ snapshots:
   ode-explorer@1.4.13-develop-pedago.202407031810(tqnpv4vpc6frluiqalz25xliiy):
     dependencies:
       '@edifice-ui/icons': 1.5.11-develop-pedago.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@edifice-ui/react': 1.5.11-develop-pedago.4(k6ruo73ryu5k272q5cptyeymta)
+      '@edifice-ui/react': 1.5.11-develop-pedago.6(k6ruo73ryu5k272q5cptyeymta)
       '@react-spring/web': 9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tanstack/react-query': 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       clsx: 2.1.0
