@@ -19,6 +19,7 @@ pipeline {
           sh 'rm -rf ./src/main/resources/public/*.js'
           sh 'rm -rf ./src/main/resources/public/*.css'
           sh 'cp -R ../frontend/dist/* ./src/main/resources/'
+          sh 'rm -f ./src/main/resources/package.json'
           sh 'mv ./src/main/resources/*.html ./src/main/resources/view'
           sh './build.sh clean build publish'
           sh 'rm -rf ../frontend/dist'
