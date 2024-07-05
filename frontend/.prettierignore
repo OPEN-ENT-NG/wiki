@@ -3,3 +3,7 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+.prettierrc
+nx.json
+package.json
+project.json
