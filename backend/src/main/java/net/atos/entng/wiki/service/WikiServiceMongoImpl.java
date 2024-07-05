@@ -23,8 +23,10 @@ import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
+import org.entcore.common.explorer.impl.ExplorerPlugin;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.user.UserInfos;
@@ -46,11 +48,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final String collection;
 	private final MongoDb mongo;
+	private final ExplorerPlugin explorerPlugin;
 
-	public WikiServiceMongoImpl(final String collection) {
+	public WikiServiceMongoImpl(final String collection, final ExplorerPlugin plugin) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
+		this.explorerPlugin = plugin;
 	}
 
 	// TODO : créer des constantes pour les noms des champs
@@ -127,6 +131,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
+	final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler) {
 
 		JsonObject newWiki = new JsonObject();
@@ -136,7 +141,22 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			newWiki.put("thumbnail", thumbnail);
 		}
 
-		super.create(newWiki, user, handler);
+		super.create(newWiki, user, r -> {
+			if(r.isRight()) {
+				// notify Explorer
+				newWiki.put("version", System.currentTimeMillis());
+				newWiki.put("_id", r.right().getValue().getString("_id"));
+				explorerPlugin.notifyUpsert(user, newWiki, folderId)
+					.onSuccess(e -> {
+						// on success return 200
+						handler.handle(r);
+					})
+					.onFailure(e -> {
+						// on error return message
+						handler.handle(new Either.Left<>(e.getMessage()));
+					});
+			}
+		});
 	}
 
 	@Override

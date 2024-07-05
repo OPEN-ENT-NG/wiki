@@ -91,7 +91,7 @@ public class WikiController extends MongoDbControllerHelper {
 	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin) {
 		super(collection);
 		this.explorerPlugin = plugin;
-		wikiService = new WikiServiceMongoImpl(collection);
+		wikiService = new WikiServiceMongoImpl(collection, explorerPlugin);
 		this.wikiConfig = wikiConfig;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 		this.eventHelper = new EventHelper(eventStore);
@@ -188,30 +188,18 @@ public class WikiController extends MongoDbControllerHelper {
 						return;
 					}
 					String thumbnail = wiki.getString("thumbnail");
-                    final Optional<Number> folderId = Optional.ofNullable(wiki.getNumber("folder"));
+					final Optional<Number> folderId = Optional.ofNullable(wiki.getNumber("folder"));
 					
 					// create Wiki
 					final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
-					wikiService.createWiki(user, wikiTitle, thumbnail, (r) -> {
+					wikiService.createWiki(user, wikiTitle, thumbnail, folderId, (r) -> {
 						if (r.isLeft()) {
 							// if fail return error
                             handler.handle(new Either.Left<>(r.left().getValue()));
 						} else {
 							// notify Creation Event
 							eventHelper.onCreateResource(request, WIKI_RESOURCE_NAME);
-							// notify Explorer
-							wiki.put("version", System.currentTimeMillis());
-							wiki.put("_id", r.right().getValue().getString("_id"));
-							
-							explorerPlugin.notifyUpsert(user, wiki, folderId)
-								.onSuccess(e -> {
-									// on success return 200
-									handler.handle(r);
-								})
-								.onFailure(e -> {
-									// on error return message
-									handler.handle(new Either.Left<>(e.getMessage()));
-								});
+							handler.handle(r);
 						}
 					});
 				});
