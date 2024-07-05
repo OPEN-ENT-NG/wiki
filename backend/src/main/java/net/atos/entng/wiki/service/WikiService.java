@@ -19,6 +19,8 @@
 
 package net.atos.entng.wiki.service;
 
+import java.util.Optional;
+
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -37,7 +39,7 @@ public interface WikiService {
 
 	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler);
 
-	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
+	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void updateWiki(String idWiki, String wikiTitle, String thumbnail,
