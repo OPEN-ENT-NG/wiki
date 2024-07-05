@@ -79,13 +79,13 @@ importers:
         specifier: 19.4.0
         version: 19.4.0(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)(typescript@5.4.5))(@swc/core@1.5.29(@swc/helpers@0.5.11))
       '@swc-node/register':
-        specifier: ~1.9.1
+        specifier: ~1.9.2
         version: 1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)(typescript@5.4.5)
       '@swc/cli':
-        specifier: ~0.3.12
+        specifier: ~0.3.14
         version: 0.3.14(@swc/core@1.5.29(@swc/helpers@0.5.11))
       '@swc/core':
-        specifier: ~1.5.7
+        specifier: ~1.5.29
         version: 1.5.29(@swc/helpers@0.5.11)
       '@swc/helpers':
         specifier: ~0.5.11
@@ -106,19 +106,19 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.0
+        specifier: ^7.15.0
         version: 7.15.0(@typescript-eslint/parser@7.15.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.0
+        specifier: ^7.15.0
         version: 7.15.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
-        specifier: ^4.2.0
+        specifier: ^4.3.1
         version: 4.3.1(vite@5.3.3(@types/node@18.16.9)(terser@5.31.1))
       '@vitest/coverage-v8':
-        specifier: ^1.0.4
+        specifier: ^1.6.0
         version: 1.6.0(vitest@1.6.0(@types/node@18.16.9)(@vitest/ui@1.6.0)(jsdom@22.1.0)(terser@5.31.1))
       '@vitest/ui':
-        specifier: ^1.3.1
+        specifier: ^1.6.0
         version: 1.6.0(vitest@1.6.0)
       cypress:
         specifier: ^13.13.0
@@ -133,10 +133,10 @@ importers:
         specifier: ~8.57.0
         version: 8.57.0
       eslint-config-prettier:
-        specifier: ^9.0.0
+        specifier: ^9.1.0
         version: 9.1.0(eslint@8.57.0)
       eslint-plugin-cypress:
-        specifier: ^2.13.4
+        specifier: ^2.15.2
         version: 2.15.2(eslint@8.57.0)
       eslint-plugin-import:
         specifier: 2.27.5
@@ -163,16 +163,16 @@ importers:
         specifier: 19.4.0
         version: 19.4.0(@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)(typescript@5.4.5))(@swc/core@1.5.29(@swc/helpers@0.5.11))
       prettier:
-        specifier: ^2.6.2
+        specifier: ^2.8.8
         version: 2.8.8
       typescript:
-        specifier: ~5.4.2
+        specifier: ~5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.0.0
+        specifier: ^5.3.3
         version: 5.3.3(@types/node@18.16.9)(terser@5.31.1)
       vitest:
-        specifier: ^1.3.1
+        specifier: ^1.6.0
         version: 1.6.0(@types/node@18.16.9)(@vitest/ui@1.6.0)(jsdom@22.1.0)(terser@5.31.1)
 
 packages:
@@ -1702,8 +1702,8 @@ packages:
     resolution: {integrity: sha512-LnhVjMWyMQV9ZmeEy26maJk+8HTIbd59cH4F2MJ439k9DqejRisfFNGAPvRYlKETuh9LrImlS8aKsBgKjMA8WA==}
     engines: {node: '>=14'}
 
-  '@swc-node/core@1.13.1':
-    resolution: {integrity: sha512-emB5l2nZsXjUEAuusqjYvWnQMLWZp6K039Mv8aq5SX1rsNM/N7DNhw1i4/DX7AyzNZ0tT+ASWyTvqEURldp5HA==}
+  '@swc-node/core@1.13.2':
+    resolution: {integrity: sha512-skceAbeKUmEK8z1nxStJTTsbIInKqW4n4+ZCYFexy6UsHjsc7MAfR2v5QqNJr/Fl/j+yLY6UkXY2VUU63nEC/Q==}
     engines: {node: '>= 10'}
     peerDependencies:
       '@swc/core': '>= 1.4.13'
@@ -1715,8 +1715,8 @@ packages:
       '@swc/core': '>= 1.4.13'
       typescript: '>= 4.3'
 
-  '@swc-node/sourcemap-support@0.5.0':
-    resolution: {integrity: sha512-fbhjL5G0YvFoWwNhWleuBUfotiX+USiA9oJqu9STFw+Hb0Cgnddn+HVS/K5fI45mn92e8V+cHD2jgFjk4w2T9Q==}
+  '@swc-node/sourcemap-support@0.5.1':
+    resolution: {integrity: sha512-JxIvIo/Hrpv0JCHSyRpetAdQ6lB27oFYhv0PKCNf1g2gUXOjpeR1exrXccRxLMuAV5WAmGFBwRnNOJqN38+qtg==}
 
   '@swc/cli@0.3.14':
     resolution: {integrity: sha512-0vGqD6FSW67PaZUZABkA+ADKsX7OUY/PwNEz1SbQdCvVk/e4Z36Gwh7mFVBQH9RIsMonTyhV1RHkwkGnEfR3zQ==}
@@ -4252,8 +4252,8 @@ packages:
   pathval@1.1.1:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
 
-  peek-readable@5.1.0:
-    resolution: {integrity: sha512-Tq2I+yoz6Xq3S09E2PyjzOy/oYuNg5v7wyjmrw7OQYSKc7QnDs63q4RXFXraMoI6LZyiEOJ/wDEYzGDPhWwNPA==}
+  peek-readable@5.1.1:
+    resolution: {integrity: sha512-4hEOSH7KeEaZpMDF/xfm1W9fS5rT7Ett3BkXWHqAEzRLLwLaHkwOL+GvvpIEh9UrvX9BDhzfkvteslgraoH69w==}
     engines: {node: '>=14.16'}
 
   pend@1.2.0:
@@ -7324,15 +7324,15 @@ snapshots:
       - supports-color
       - typescript
 
-  '@swc-node/core@1.13.1(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)':
+  '@swc-node/core@1.13.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)':
     dependencies:
       '@swc/core': 1.5.29(@swc/helpers@0.5.11)
       '@swc/types': 0.1.9
 
   '@swc-node/register@1.9.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)(typescript@5.4.5)':
     dependencies:
-      '@swc-node/core': 1.13.1(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)
-      '@swc-node/sourcemap-support': 0.5.0
+      '@swc-node/core': 1.13.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(@swc/types@0.1.9)
+      '@swc-node/sourcemap-support': 0.5.1
       '@swc/core': 1.5.29(@swc/helpers@0.5.11)
       colorette: 2.0.20
       debug: 4.3.5(supports-color@8.1.1)
@@ -7343,7 +7343,7 @@ snapshots:
       - '@swc/types'
       - supports-color
 
-  '@swc-node/sourcemap-support@0.5.0':
+  '@swc-node/sourcemap-support@0.5.1':
     dependencies:
       source-map-support: 0.5.21
       tslib: 2.6.3
@@ -10275,7 +10275,7 @@ snapshots:
 
   pathval@1.1.1: {}
 
-  peek-readable@5.1.0: {}
+  peek-readable@5.1.1: {}
 
   pend@1.2.0: {}
 
@@ -10963,7 +10963,7 @@ snapshots:
   strtok3@7.0.0:
     dependencies:
       '@tokenizer/token': 0.3.0
-      peek-readable: 5.1.0
+      peek-readable: 5.1.1
 
   supports-color@5.5.0:
     dependencies:

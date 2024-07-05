@@ -10,6 +10,7 @@ cd backend
 rm -rf ./src/main/resources/public/*.js
 rm -rf ./src/main/resources/public/*.css
 cp -R ../frontend/dist/* ./src/main/resources/
+rm -f ./src/main/resources/package.json
 
 # Copy Files
 mv ./src/main/resources/*.html ./src/main/resources/view
