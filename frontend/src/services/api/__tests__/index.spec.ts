@@ -26,7 +26,6 @@ describe('Wiki GET Methods', () => {
     expect(response).toBeDefined();
     expect(response).toHaveLength(2);
     expect(response).toStrictEqual(mockWikis);
-    expect(response).toMatchSnapshot();
   });
 
   test('makes a GET request to get all wikis with pages', async () => {
