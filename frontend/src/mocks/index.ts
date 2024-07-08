@@ -2,49 +2,49 @@ import { http, HttpResponse } from 'msw';
 import { baseURL } from '~/services/api';
 
 export const mockWiki = {
-  _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
-  title: 'Wiki Clément',
+  _id: 'f9853a14b354',
+  title: 'Wiki',
   pages: [
     {
-      _id: '6669c22b1b543d54ee3d804e',
+      _id: '001',
       title: 'ma nouvelle page',
       contentPlain: 'test modification',
-      author: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      authorName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      author: '123456789',
+      authorName: 'Author',
       modified: {
         $date: 1718207454421,
       },
-      lastContributer: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      lastContributerName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
     },
     {
-      _id: '6669c3e939d30a7f7e7ada17',
+      _id: '002',
       title: 'aaaa',
       contentPlain: 'rgrgrg aaz',
-      author: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      authorName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      author: '123456789',
+      authorName: 'Author',
       modified: {
         $date: 1718207659179,
       },
-      lastContributer: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      lastContributerName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
     },
     {
-      _id: '6688100c67c6ea0825d056b5',
+      _id: '003',
       title: 'test gras',
       contentPlain: 'ma super page',
-      author: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      authorName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      author: '123456789',
+      authorName: 'Author',
       modified: {
         $date: 1720193036074,
       },
     },
     {
-      _id: '668819aa359b28399237368f',
+      _id: '004',
       title: 'zefzefzefzef',
       contentPlain: 'zefzefzef',
-      author: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      authorName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      author: '123456789',
+      authorName: 'Author',
       modified: {
         $date: 1720195498738,
       },
@@ -54,50 +54,50 @@ export const mockWiki = {
     $date: 1718207659179,
   },
   owner: {
-    userId: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-    displayName: 'Madame isabelle POLONIO (prof arts plastiques)',
+    userId: '123456789',
+    displayName: 'Author',
   },
-  index: '668819aa359b28399237368f',
+  index: '004',
 };
 
 export const mockWikis = [
   {
-    _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
-    title: 'Wiki Clément',
+    _id: 'f9853a14b354',
+    title: 'Wiki',
     modified: {
       $date: 1718207659179,
     },
     owner: {
-      userId: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      displayName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      userId: '123456789',
+      displayName: 'Author',
     },
-    index: '668819aa359b28399237368f',
+    index: '004',
   },
   {
-    _id: '2d5bcc14-53bd-4e3a-b886-012a993f9b2b',
-    title: 'Les recettes provençales — Copie',
-    thumbnail: '/workspace/document/f0ee4441-9f40-41ce-9235-8d1ff68a54fe',
+    _id: '2d5bcc14',
+    title: 'Wiki',
+    thumbnail: '',
     modified: {
       $date: 1716383468143,
     },
     owner: {
-      userId: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      displayName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      userId: '123456789',
+      displayName: 'Author',
     },
-    index: '664c580b17cf9a1d353b97d3',
+    index: '002',
   },
 ];
 
 export const mockWikisWithPages = [
   {
-    _id: '423a3e89-d3a4-4524-97e7-f476c71d9d6e',
+    _id: '423a3e89',
     title: 'Définitions Espanol',
     pages: [
       {
         _id: '5540ede1e4b056471c495282',
         title: 'Acaparar',
-        author: 'b6db229d-6dae-4949-a405-6ea685c05998',
-        authorName: "SANDRINE BOUQUETY (Prof. d'espagnol)",
+        author: 'b6db229d',
+        authorName: 'Author',
         modified: {
           $date: 1430318586054,
         },
@@ -106,8 +106,8 @@ export const mockWikisWithPages = [
       {
         _id: '5540eec6e4b056471c495283',
         title: 'Resultar',
-        author: '13f1e9f7-7192-4f75-9a6b-c1c7eefe0280',
-        authorName: 'Patrick MOSSION',
+        author: '13f1e9f7',
+        authorName: 'Author',
         modified: {
           $date: 1501842229907,
         },
@@ -116,8 +116,8 @@ export const mockWikisWithPages = [
       {
         _id: '5540ef0fe4b056471c495284',
         title: 'Lechería',
-        author: 'b6db229d-6dae-4949-a405-6ea685c05998',
-        authorName: "SANDRINE BOUQUETY (Prof. d'espagnol)",
+        author: 'b6db229d',
+        authorName: 'Author',
         modified: {
           $date: 1430318863835,
         },
@@ -126,10 +126,9 @@ export const mockWikisWithPages = [
       {
         _id: '580f3f8ee4b07ac1b023b2db',
         title: 'Accueil',
-        contentPlain:
-          'Quelques définitions des mots vus lors de la dernière séance :&nbsp;&nbsp;- Resultar&nbsp;&nbsp;- Lecheria&nbsp;&nbsp;- Acaparar',
-        author: 'a87b39c0-9b23-42db-ade1-7675ae99e898',
-        authorName: 'CLAIRE OGOULA-NKWEMI (documentaliste)',
+        contentPlain: '',
+        author: 'a87b39c0',
+        authorName: 'Author',
         modified: {
           $date: 1478192151290,
         },
@@ -137,73 +136,72 @@ export const mockWikisWithPages = [
       {
         _id: '657974cc736a590490395b4b',
         title: 'Titre',
-        contentPlain: 'texte',
-        author: '219a1774-f581-4386-acb3-1a0b06fbd159',
-        authorName: 'DEVAULX ALAIN',
+        contentPlain: '',
+        author: '219a1774',
+        authorName: 'Author',
         modified: {
           $date: 1702458572178,
         },
       },
     ],
     owner: {
-      userId: 'b6db229d-6dae-4949-a405-6ea685c05998',
-      displayName: "SANDRINE BOUQUETY (Prof. d'espagnol)",
+      userId: 'b6db229d',
+      displayName: 'Author',
     },
     modified: {
       $date: 1501842229907,
     },
-    thumbnail: '/workspace/document/33d77b15-cba9-41c8-9f83-f4a785752f18',
+    thumbnail: '',
     shared: [],
     index: '580f3f8ee4b07ac1b023b2db',
   },
 ];
 
 export const mockPage = {
-  _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
-  title: 'Wiki Clément',
+  _id: 'f9853a14b354',
+  title: 'Wiki',
   pages: [
     {
-      _id: '6669c22b1b543d54ee3d804e',
+      _id: '001',
       title: 'ma nouvelle page',
-      content:
-        '\u003Cdiv class="ng-scope"\u003Etest modification\u003C/div\u003E',
+      content: '',
       contentPlain: 'test modification',
-      author: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      authorName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      author: '123456789',
+      authorName: 'Author',
       modified: {
         $date: 1718207454421,
       },
-      lastContributer: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-      lastContributerName: 'Madame isabelle POLONIO (prof arts plastiques)',
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
     },
   ],
   owner: {
-    userId: '91c22b66-ba1b-4fde-a3fe-95219cc18d4a',
-    displayName: 'Madame isabelle POLONIO (prof arts plastiques)',
+    userId: '123456789',
+    displayName: 'Author',
   },
 };
 
 export const mockRevision = [
   {
-    _id: '235ab109-0421-4251-8693-800740006661',
-    wikiId: '6ef1343b-e07d-4bc4-828f-20a300e22a18',
-    pageId: '6684fdce6a32ef3e1a62c92d',
-    userId: '2875315d-48a2-46fd-b21a-4b6150761730',
-    username: 'ADMC Clément',
-    title: '22ma new page',
-    content: '<div class="ng-scope">update</div>',
+    _id: '235ab109',
+    wikiId: '6ef1343b',
+    pageId: '6684fd',
+    userId: '2875315d',
+    username: 'Author',
+    title: 'title',
+    content: '',
     date: {
       $date: 1720431608339,
     },
   },
   {
-    _id: 'c7e68db2-88f6-4e1a-bbf5-cf7c8fbce895',
-    wikiId: '6ef1343b-e07d-4bc4-828f-20a300e22a18',
-    pageId: '6684fdce6a32ef3e1a62c92d',
-    userId: '2875315d-48a2-46fd-b21a-4b6150761730',
-    username: 'ADMC Clément',
-    title: '22ma new page',
-    content: '<div class="ng-scope">aaaaaaazezef 222</div>',
+    _id: 'c7e68db2',
+    wikiId: '6ef1343b',
+    pageId: '6684fd',
+    userId: '2875315d',
+    username: 'Author',
+    title: 'title',
+    content: '',
     date: {
       $date: 1720184598119,
     },
