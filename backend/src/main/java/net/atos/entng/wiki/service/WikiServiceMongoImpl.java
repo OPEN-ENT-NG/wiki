@@ -160,19 +160,32 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updateWiki(String idWiki, String wikiTitle, String thumbnail,
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail,
 			Handler<Either<String, JsonObject>> handler) {
-
 		JsonObject data = new JsonObject();
 		data.put("title", wikiTitle);
 		if(thumbnail==null || thumbnail.trim().isEmpty()){
 			data.put("thumbnail", "");
-		}
-		else {
+		} else {
 			data.put("thumbnail", thumbnail);
 		}
 
-		super.update(idWiki, data, handler);
+		super.update(idWiki, data, r -> {
+			if (r.isRight()) {
+				// notify EUR
+				data.put("_id", idWiki);
+				data.put("version", System.currentTimeMillis());
+				explorerPlugin.notifyUpsert(user, data)
+						.onSuccess(e -> {
+							// on success return 200
+							handler.handle(r);
+						})
+						.onFailure(e -> {
+							// on error return message
+							handler.handle(new Either.Left<>(e.getMessage()));
+						});
+			}
+		});
 	}
 
 	@Override

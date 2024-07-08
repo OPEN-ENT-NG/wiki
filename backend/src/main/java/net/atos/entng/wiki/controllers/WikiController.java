@@ -226,23 +226,12 @@ public class WikiController extends MongoDbControllerHelper {
 					String thumbnail = wiki.getString("thumbnail");
 					
 					Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
-					wikiService.updateWiki(idWiki, wikiTitle, thumbnail, r -> {
+					wikiService.updateWiki(user, idWiki, wikiTitle, thumbnail, r -> {
 						if (r.isLeft()) {
 							// if fail return error
 							handler.handle(new Either.Left<>(r.left().getValue()));
 						} else {
-							// notify EUR
-							wiki.put("_id", idWiki);
-							wiki.put("version", System.currentTimeMillis());
-							explorerPlugin.notifyUpsert(user, wiki)
-								.onSuccess(e -> {
-									// on success return 200
-									handler.handle(r);
-								})
-								.onFailure(e -> {
-									// on error return message
-									handler.handle(new Either.Left<>(e.getMessage()));
-								});
+							handler.handle(r);
 						}
 					});
 				});
