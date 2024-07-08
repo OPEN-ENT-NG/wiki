@@ -252,19 +252,9 @@ public class WikiController extends MongoDbControllerHelper {
 			if (user != null) {
 				// delete wiki
 				final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
-				wikiService.deleteWiki(idWiki, r -> {
+				wikiService.deleteWiki(user, idWiki, r -> {
 					if (r.isRight()) {
 						deleteRevisions(idWiki, null);
-						// notify EUR
-						explorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
-							.onSuccess(e -> {
-								// on success return 200
-								handler.handle(r);
-							})
-							.onFailure(e -> {
-								// on error return message
-								handler.handle(new Either.Left<>(e.getMessage()));
-							});
 						renderJson(request, r.right().getValue());
 					} else {
 						leftToResponse(request, r.left());

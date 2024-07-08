@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.explorer.impl.ExplorerPlugin;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -155,6 +156,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						// on error return message
 						handler.handle(new Either.Left<>(e.getMessage()));
 					});
+			} else {
+				handler.handle(r);
 			}
 		});
 	}
@@ -184,14 +187,31 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							// on error return message
 							handler.handle(new Either.Left<>(e.getMessage()));
 						});
+			} else {
+				handler.handle(r);
 			}
 		});
 	}
 
 	@Override
-	public void deleteWiki(String idWiki,
+	public void deleteWiki(UserInfos user, String idWiki,
 			Handler<Either<String, JsonObject>> handler) {
-		super.delete(idWiki, handler);
+		super.delete(idWiki, r -> {
+			if (r.isRight()) {
+				// notify EUR
+				explorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
+						.onSuccess(e -> {
+							// on success return 200
+							handler.handle(r);
+						})
+						.onFailure(e -> {
+							// on error return message
+							handler.handle(new Either.Left<>(e.getMessage()));
+						});
+			} else {
+				handler.handle(r);
+			}
+		});
 	}
 
 	@Override
