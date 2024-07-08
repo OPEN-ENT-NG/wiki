@@ -8,7 +8,7 @@ export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
     const data = await queryClient.ensureQueryData(
-      wikiQueryOptions.one(params.wikiId!)
+      wikiQueryOptions.findOne(params.wikiId!)
     );
 
     return data;
@@ -16,13 +16,15 @@ export const loader =
 
 export const Pages = () => {
   const params = useParams();
-  const query = useGetWiki(params.wikiId!);
+  const { isPending, data, error } = useGetWiki(params.wikiId!);
 
-  if (query.isLoading) return <LoadingScreen />;
+  if (isPending) return <LoadingScreen />;
+
+  if (error) return 'An error has occurred: ' + error.message;
 
   return (
     <div>
-      {query.data?.pages.map((page) => {
+      {data?.pages.map((page) => {
         return (
           <Fragment key={page._id}>
             <div>{page._id}</div>

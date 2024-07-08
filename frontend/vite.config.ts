@@ -81,10 +81,12 @@ export default ({ mode }: { mode: string }) => {
       assetsDir: 'public',
       chunkSizeWarningLimit: 2000,
       rollupOptions: {
-        external: ['edifice-ts-client'],
+        external: ['edifice-ts-client' /* 'ode-explorer/lib' */],
         output: {
           paths: {
             'edifice-ts-client': '/assets/js/edifice-ts-client/index.js',
+            /* 'ode-explorer/lib':
+              'https://cdn.jsdelivr.net/npm/ode-explorer@1.4.13-develop-pedago.202407031810/lib/+esm', */
           },
         },
       },

@@ -5,22 +5,22 @@ import { wikiService } from '../api';
  * Wiki Query Options Factory
  */
 export const wikiQueryOptions = {
-  all: ['wiki'] as const,
-  listall: () =>
+  base: ['wiki'] as const,
+  findAll: () =>
     queryOptions({
-      queryKey: [...wikiQueryOptions.all, 'listall'] as const,
+      queryKey: [...wikiQueryOptions.base, 'listall'] as const,
       queryFn: wikiService.getAllWiki,
       staleTime: 5000,
     }),
-  listallpages: () =>
+  findAllWithPages: () =>
     queryOptions({
-      queryKey: [...wikiQueryOptions.all, 'listallpages'] as const,
+      queryKey: [...wikiQueryOptions.base, 'listallpages'] as const,
       queryFn: wikiService.getAllWikiWithPages,
       staleTime: 5000,
     }),
-  one: (wikiId: string) =>
+  findOne: (wikiId: string) =>
     queryOptions({
-      queryKey: [...wikiQueryOptions.all, { id: wikiId }] as const,
+      queryKey: [...wikiQueryOptions.base, { id: wikiId }] as const,
       queryFn: () => wikiService.getWiki(wikiId),
       staleTime: 5000,
     }),
@@ -31,13 +31,13 @@ export const wikiQueryOptions = {
  */
 
 export const useGetAllWiki = () => {
-  return useQuery(wikiQueryOptions.listall());
+  return useQuery(wikiQueryOptions.findAll());
 };
 
 export const useGetAllWikiWithPages = () => {
-  return useQuery(wikiQueryOptions.listallpages());
+  return useQuery(wikiQueryOptions.findAllWithPages());
 };
 
 export const useGetWiki = (wikiId: string) => {
-  return useQuery(wikiQueryOptions.one(wikiId));
+  return useQuery(wikiQueryOptions.findOne(wikiId));
 };

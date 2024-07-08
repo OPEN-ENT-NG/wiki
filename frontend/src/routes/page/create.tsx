@@ -1,12 +1,15 @@
 import { ActionFunctionArgs, Form, redirect } from 'react-router-dom';
 import { wikiService } from '~/services/api';
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ params }: ActionFunctionArgs) {
   const content = 'test';
 
-  const data = await wikiService.createPage(params.wikiId!, {
-    title: "page d'accueil",
-    content,
+  const data = await wikiService.createPage({
+    wikiId: params.wikiId!,
+    data: {
+      title: "page d'accueil",
+      content,
+    },
   });
 
   return redirect(`/id/${params.wikiId}/page/${params}/${data._id}`);

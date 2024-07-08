@@ -1,18 +1,27 @@
 import { odeServices } from 'edifice-ts-client';
-import { Page, PagePostPayload, PagePutPayload, Wiki } from '~/models';
+import {
+  Page,
+  PagePostPayload,
+  PagePutPayload,
+  PickedWiki,
+  Wiki,
+} from '~/models';
 
 /**
  *
  * @param baseURL string
  * @returns get all HTTP methods
  */
+
 const createWikiService = (baseURL: string) => ({
   /**
    *
    * @returns all wikis without pages
    */
   async getAllWiki() {
-    const response = await odeServices.http().get<Wiki[]>(`${baseURL}/list`);
+    const response = await odeServices
+      .http()
+      .get<PickedWiki[]>(`${baseURL}/list`);
     return response;
   },
 

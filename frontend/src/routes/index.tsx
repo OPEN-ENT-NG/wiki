@@ -11,6 +11,8 @@ import { EditPage, action as editAction } from './page/edit';
 import { Pages, loader as pagesLoader } from './page/list';
 import { Wiki, loader as wikiLoader } from './wiki';
 
+///assets/js/ode-explorer/lib/index.js
+
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {

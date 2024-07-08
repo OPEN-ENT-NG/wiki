@@ -4,9 +4,13 @@ import { wikiService } from '~/services/api';
 export async function action({ params }: ActionFunctionArgs) {
   const content = 'test';
 
-  await wikiService.updatePage(params.wikiId!, params.pageId!, {
-    title: 'page mise à jour',
-    content,
+  await wikiService.updatePage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+    data: {
+      title: 'page mise à jour',
+      content,
+    },
   });
 
   return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);

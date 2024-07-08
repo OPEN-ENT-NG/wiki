@@ -14,7 +14,7 @@ export const useCreateComment = () => {
       wikiService.createComment({ wikiId, pageId }),
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
   });
@@ -35,7 +35,7 @@ export const useUpdateComment = () => {
     }) => wikiService.updateComment({ wikiId, pageId, commentId }),
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
   });
@@ -55,7 +55,7 @@ export const useDeleteComment = () => {
     }) => wikiService.deleteComment({ wikiId, pageId, commentId }),
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.one({ wikiId, pageId }).queryKey,
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
   });

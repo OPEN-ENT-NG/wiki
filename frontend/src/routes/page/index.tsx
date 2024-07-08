@@ -14,27 +14,38 @@ export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
     const data = await queryClient.ensureQueryData(
-      pageQueryOptions.one(params.wikiId!, params.pageId!)
+      pageQueryOptions.findOne({
+        wikiId: params.wikiId!,
+        pageId: params.pageId!,
+      })
     );
 
     return data;
   };
 
 export async function action({ params }: ActionFunctionArgs) {
-  console.log({ params });
-  await wikiService.deletePage(params.wikiId!, params.pageId!);
+  await wikiService.deletePage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+  });
   return redirect(`/id/${params.wikiId}`);
 }
 
 export const Page = () => {
   const params = useParams();
-  const querie = useGetPage(params.wikiId!, params.pageId!);
 
-  if (querie.isLoading) return <LoadingScreen />;
+  const { isPending, error, data } = useGetPage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+  });
+
+  if (isPending) return <LoadingScreen />;
+
+  if (error) return 'An error has occurred: ' + error.message;
 
   return (
     <>
-      <div>{querie.data?.title}</div>
+      <div>{data?.title}</div>
       <Form method="delete">
         <button type="submit">supprimer page</button>
       </Form>
