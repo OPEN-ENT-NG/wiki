@@ -1,6 +1,7 @@
 import { Layout, LoadingScreen, useOdeClient } from '@edifice-ui/react';
+
+import { matchPath, Outlet, ScrollRestoration } from 'react-router-dom';
 import { basename } from '..';
-import { matchPath, Outlet } from 'react-router-dom';
 
 /** Check old format URL and redirect if needed */
 export const loader = async () => {
@@ -30,6 +31,7 @@ export const Root = () => {
   return (
     <Layout>
       <Outlet />
+      <ScrollRestoration />
     </Layout>
   );
 };
