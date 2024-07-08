@@ -1,9 +1,13 @@
-import { EmptyScreen, Heading } from '@edifice-ui/react';
+import { EmptyScreen, Heading, useOdeClient } from '@edifice-ui/react';
+import { useTranslation } from 'react-i18next';
 
 import emptyScreenImage from '~/assets/illu-wiki.svg';
 
 export const WikiEmptyScreen = () => {
   const emptyStyles = { maxWidth: '424px', margin: '0 auto' };
+
+  const { appCode } = useOdeClient();
+  const { t } = useTranslation(appCode);
 
   return (
     <div
@@ -12,12 +16,11 @@ export const WikiEmptyScreen = () => {
     >
       <EmptyScreen imageSrc={emptyScreenImage} />
       <Heading className="text-secondary mb-16">
-        Créez une première page
+        {t('wiki.first.emptyscreen.title')}
       </Heading>
-      <p className="text-center">
-        Votre première page peut être une introduction ou bien un récapitulatif
-        de votre contenu
-      </p>
+      <p className="text-center">{t('wiki.first.emptyscreen.text')}</p>
     </div>
   );
 };
+
+export default WikiEmptyScreen;
