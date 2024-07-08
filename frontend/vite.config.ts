@@ -48,6 +48,8 @@ export default ({ mode }: { mode: string }) => {
         '^/(?=theme|locale|i18n|skin)': proxyObj,
         '^/(?=auth|appregistry|cas|userbook|directory|communication|conversation|portal|session|timeline|workspace|infra)':
           proxyObj,
+        '/xiti': proxyObj,
+        '/analyticsConf': proxyObj,
         '/explorer': proxyObj,
         '/wiki': proxyObj,
       },
@@ -79,10 +81,12 @@ export default ({ mode }: { mode: string }) => {
       assetsDir: 'public',
       chunkSizeWarningLimit: 2000,
       rollupOptions: {
-        external: ['edifice-ts-client'],
+        external: ['edifice-ts-client' /* 'ode-explorer/lib' */],
         output: {
           paths: {
             'edifice-ts-client': '/assets/js/edifice-ts-client/index.js',
+            /* 'ode-explorer/lib':
+              'https://cdn.jsdelivr.net/npm/ode-explorer@1.4.13-develop-pedago.202407031810/lib/+esm', */
           },
         },
       },

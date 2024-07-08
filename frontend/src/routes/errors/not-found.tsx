@@ -5,6 +5,7 @@ import { useNavigate, useRouteError } from 'react-router-dom';
 export const NotFound = () => {
   const error = useRouteError();
   const navigate = useNavigate();
+
   console.error(error);
 
   return (
