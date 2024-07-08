@@ -22,7 +22,7 @@ export const pageQueryOptions = {
   revisions: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.base, 'revision', { id: pageId }] as const,
-      queryFn: () => wikiService.getRevisionPage({ wikiId, pageId }),
+      queryFn: () => wikiService.getRevisionsPage({ wikiId, pageId }),
       staleTime: 5000,
     }),
 };
@@ -41,7 +41,7 @@ export const useGetPage = ({
   return useQuery(pageQueryOptions.findOne({ wikiId, pageId }));
 };
 
-export const useGetRevisionPage = ({
+export const useGetRevisionsPage = ({
   wikiId,
   pageId,
 }: {

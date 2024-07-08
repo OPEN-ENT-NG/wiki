@@ -18,7 +18,7 @@ const createWikiService = (baseURL: string) => ({
    *
    * @returns all wikis without pages
    */
-  async getAllWiki() {
+  async getAllWikis() {
     const response = await odeServices
       .http()
       .get<PickedWiki[]>(`${baseURL}/list`);
@@ -29,7 +29,7 @@ const createWikiService = (baseURL: string) => ({
    *
    * @returns all wikis with pages
    */
-  async getAllWikiWithPages() {
+  async getAllWikisWithPages() {
     const response = await odeServices
       .http()
       .get<Wiki[]>(`${baseURL}/listallpages`);
@@ -67,7 +67,7 @@ const createWikiService = (baseURL: string) => ({
    * @param pageId
    * @returns all revisions of a page
    */
-  async getRevisionPage({
+  async getRevisionsPage({
     wikiId,
     pageId,
   }: {
@@ -121,7 +121,7 @@ const createWikiService = (baseURL: string) => ({
   /**
    *
    * @param wikiId
-   * @returns ???
+   * @returns
    */
   async deletePage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
@@ -130,6 +130,10 @@ const createWikiService = (baseURL: string) => ({
     return response;
   },
 
+  /**
+   *
+   * NOT IMPLEMENTED YET
+   */
   async createComment({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
       .http()
@@ -137,6 +141,10 @@ const createWikiService = (baseURL: string) => ({
     return response;
   },
 
+  /**
+   *
+   * NOT IMPLEMENTED YET
+   */
   async updateComment({
     wikiId,
     pageId,
@@ -153,7 +161,10 @@ const createWikiService = (baseURL: string) => ({
       );
     return response;
   },
-
+  /**
+   *
+   * NOT IMPLEMENTED YET
+   */
   async deleteComment({
     wikiId,
     pageId,
@@ -172,4 +183,5 @@ const createWikiService = (baseURL: string) => ({
   },
 });
 
-export const wikiService = createWikiService('/wiki');
+export const baseURL = '/wiki';
+export const wikiService = createWikiService(baseURL);

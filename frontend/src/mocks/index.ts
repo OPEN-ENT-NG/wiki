@@ -1,24 +1,7 @@
 import { http, HttpResponse } from 'msw';
+import { baseURL } from '~/services/api';
 
-export const handlers = [
-  http.get('/wiki/list', () => {
-    return HttpResponse.json(wikisMock);
-  }),
-  http.get('/wiki/listallpages', () => {
-    return HttpResponse.json(wikisMockWithPages);
-  }),
-  http.get('/wiki/6e3d23f6-890f-4453-af19-f9853a14b354/listpages', () => {
-    return HttpResponse.json(wikiMock);
-  }),
-  http.get(
-    '/wiki/6e3d23f6-890f-4453-af19-f9853a14b354/page/6669c22b1b543d54ee3d804e',
-    () => {
-      return HttpResponse.json(wikiPageMock);
-    }
-  ),
-];
-
-export const wikiMock = {
+export const mockWiki = {
   _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
   title: 'Wiki Clément',
   pages: [
@@ -77,7 +60,7 @@ export const wikiMock = {
   index: '668819aa359b28399237368f',
 };
 
-export const wikisMock = [
+export const mockWikis = [
   {
     _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
     title: 'Wiki Clément',
@@ -105,7 +88,7 @@ export const wikisMock = [
   },
 ];
 
-export const wikisMockWithPages = [
+export const mockWikisWithPages = [
   {
     _id: '423a3e89-d3a4-4524-97e7-f476c71d9d6e',
     title: 'Définitions Espanol',
@@ -175,7 +158,7 @@ export const wikisMockWithPages = [
   },
 ];
 
-export const wikiPageMock = {
+export const mockPage = {
   _id: '6e3d23f6-890f-4453-af19-f9853a14b354',
   title: 'Wiki Clément',
   pages: [
@@ -199,3 +182,61 @@ export const wikiPageMock = {
     displayName: 'Madame isabelle POLONIO (prof arts plastiques)',
   },
 };
+
+export const mockRevision = [
+  {
+    _id: '235ab109-0421-4251-8693-800740006661',
+    wikiId: '6ef1343b-e07d-4bc4-828f-20a300e22a18',
+    pageId: '6684fdce6a32ef3e1a62c92d',
+    userId: '2875315d-48a2-46fd-b21a-4b6150761730',
+    username: 'ADMC Clément',
+    title: '22ma new page',
+    content: '<div class="ng-scope">update</div>',
+    date: {
+      $date: 1720431608339,
+    },
+  },
+  {
+    _id: 'c7e68db2-88f6-4e1a-bbf5-cf7c8fbce895',
+    wikiId: '6ef1343b-e07d-4bc4-828f-20a300e22a18',
+    pageId: '6684fdce6a32ef3e1a62c92d',
+    userId: '2875315d-48a2-46fd-b21a-4b6150761730',
+    username: 'ADMC Clément',
+    title: '22ma new page',
+    content: '<div class="ng-scope">aaaaaaazezef 222</div>',
+    date: {
+      $date: 1720184598119,
+    },
+  },
+];
+
+/**
+ * MSW Handlers
+ */
+export const handlers = [
+  http.get(`/wiki/list`, () => {
+    return HttpResponse.json(mockWikis, { status: 200 });
+  }),
+  http.get(`/wiki/listallpages`, () => {
+    return HttpResponse.json(mockWikisWithPages, { status: 200 });
+  }),
+  http.get(`/wiki/:wikiId/listpages`, () => {
+    return HttpResponse.json(mockWiki, { status: 200 });
+  }),
+  http.get(`/wiki/:wikiId/page/:pageId`, () => {
+    return HttpResponse.json(mockPage);
+  }),
+  http.get(`${baseURL}/revisions/${mockWiki._id}/:pageId`, () => {
+    return HttpResponse.json(mockRevision, { status: 200 });
+  }),
+  http.post(`/wiki/:wikiId/page`, async ({ request }) => {
+    const newPage = await request.json();
+    return HttpResponse.json(newPage, { status: 201 });
+  }),
+  http.put(`/wiki/:wikiId/page/:pageId`, async ({ request }) => {
+    return HttpResponse.json({ number: 1 }, { status: 200 });
+  }),
+  http.delete(`wiki/:wikiId/page/:pageId`, () => {
+    return HttpResponse.json({ number: 0 });
+  }),
+];

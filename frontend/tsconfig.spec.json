@@ -24,6 +24,6 @@
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx",
     "src/**/*.d.ts",
-    "src/services/api/__tests__/fetch.spec.ts"
+    "src/services/api/__tests__/index.spec.ts"
   ]
 }
