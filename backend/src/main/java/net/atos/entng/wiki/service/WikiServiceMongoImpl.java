@@ -46,7 +46,6 @@ import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
 
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
-
 	private final String collection;
 	private final MongoDb mongo;
 	private final ExplorerPlugin explorerPlugin;
@@ -58,10 +57,19 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		this.explorerPlugin = plugin;
 	}
 
-	// TODO : créer des constantes pour les noms des champs
+	@Override
+	public void getWiki(String id, Handler<Either<String, JsonObject>> handler) {
+		super.retrieve(id, handler);
+	}
+
+	// TODO: add a print param getWiki to get all information to print a wiki? and then remove this method?
+	/* @Override
+	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler) {
+		super.retrieve(id, handler);
+	} */
 
 	@Override
-	public void listWikis(UserInfos user,
+	public void getWikis(UserInfos user,
 			Handler<Either<String, JsonArray>> handler) {
 		// Query : return wikis visible by current user only (i.e. owner or
 		// shared)
@@ -89,7 +97,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void listPages(String idWiki,
+	public void getPages(String idWiki,
 			Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
@@ -98,36 +106,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));
-	}
-
-	@Override
-	public void listAllPages(UserInfos user,
-			Handler<Either<String, JsonArray>> handler) {
-		// Query : return pages visible by current user only (i.e. owner or
-		// shared)
-		List<DBObject> groups = new ArrayList<>();
-		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		if(user.getGroupsIds().size() > 0){
-			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
-		}
-
-		QueryBuilder query = new QueryBuilder().or(
-				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
-				QueryBuilder
-						.start("shared")
-						.elemMatch(
-								new QueryBuilder().or(
-										groups.toArray(new DBObject[groups
-												.size()])).get()).get());
-
-		// Projection
-		JsonObject projection = new JsonObject();
-		projection.put("pages.content", 0).put("created", 0);
-
-		JsonObject sort = new JsonObject().put("pages.title", 1);
-
-		mongo.find(collection, MongoQueryBuilder.build(query), sort,
-				projection, MongoDbResult.validResultsHandler(handler));
 	}
 
 	@Override
@@ -362,11 +340,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));
-	}
-
-	@Override
-	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler) {
-		super.retrieve(id, handler);
 	}
 
 	@Override
