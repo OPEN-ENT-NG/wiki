@@ -23,17 +23,7 @@ import {
   mockWikis,
   mockWikisWithPages,
 } from '~/mocks';
-import { server } from '~/mocks/node';
-
-// Enable API mocking before tests.
-beforeAll(() => server.listen());
-
-// Reset any request handlers that are declared as a part of our tests
-// (i.e. for testing one-time error scenarios)
-afterEach(() => server.resetHandlers());
-
-// Disable API mocking after the tests are done.
-afterAll(() => server.close());
+import '../../../mocks/setup.msw';
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -100,7 +100,7 @@ export default ({ mode }: { mode: string }) => {
       },
       environment: 'jsdom',
       include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-
+      setupFiles: ['./src/mocks/setup.vitest.ts'],
       reporters: ['default'],
       coverage: {
         reportsDirectory: './coverage/wiki',

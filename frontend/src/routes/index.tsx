@@ -9,14 +9,12 @@ import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, action as editAction } from './page/edit';
 import { Pages, loader as pagesLoader } from './page/list';
-import { Wiki, loader as wikiLoader } from './wiki';
-
-///assets/js/ode-explorer/lib/index.js
+import { Index, loader as wikiLoader } from './wiki';
 
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {
-    path: '/*',
+    path: '/',
     async lazy() {
       const { loader, Root: Component } = await import('~/routes/root');
       return {
@@ -32,22 +30,19 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'id/:wikiId',
+        loader: wikiLoader(queryClient),
+        element: <Index />,
         children: [
           {
-            index: true,
-            loader: wikiLoader(queryClient),
-            element: <Wiki />,
-          },
-          {
             path: 'pages',
-            loader: pagesLoader(queryClient),
             element: <Pages />,
+            loader: pagesLoader(queryClient),
           },
           {
             path: 'page/:pageId',
+            element: <Page />,
             loader: pageLoader(queryClient),
             action: deleteAction,
-            element: <Page />,
           },
           {
             path: 'page/create',
@@ -56,8 +51,8 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           },
           {
             path: 'page/:pageId/edit',
-            action: editAction,
             element: <EditPage />,
+            action: editAction,
           },
           {
             path: 'page/:pageId/subpage/create',
