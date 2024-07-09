@@ -15,10 +15,16 @@ export const WikiEmptyScreen = () => {
       style={emptyStyles}
     >
       <EmptyScreen imageSrc={emptyScreenImage} />
-      <Heading className="text-secondary mb-16">
+      <Heading
+        className="text-secondary mb-16"
+        level="h2"
+        data-testid="emptyscreen-title"
+      >
         {t('wiki.first.emptyscreen.title')}
       </Heading>
-      <p className="text-center">{t('wiki.first.emptyscreen.text')}</p>
+      <p className="text-center" data-testid="emptyscreen-text">
+        {t('wiki.first.emptyscreen.text')}
+      </p>
     </div>
   );
 };

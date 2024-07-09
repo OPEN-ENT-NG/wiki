@@ -1,4 +1,4 @@
-import { Grid, checkUserRight } from '@edifice-ui/react';
+import { Grid } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
@@ -14,7 +14,6 @@ import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
-import { useUserRightsStore } from '~/store';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -24,9 +23,9 @@ export const loader =
     );
 
     // TODO: wait normalized rights
-    const userRights = await checkUserRight([]);
+    /* const userRights = await checkUserRight([]);
     const { setUserRights } = useUserRightsStore.getState();
-    setUserRights(userRights);
+    setUserRights(userRights); */
 
     if (odeServices.http().isResponseError()) {
       throw new Response('', {
