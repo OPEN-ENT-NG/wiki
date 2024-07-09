@@ -2,6 +2,7 @@ import React, { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
+import { ThemeProvider } from '@edifice-ui/react';
 import { RouterProvider } from 'react-router-dom';
 import './i18n';
 import { Providers, queryClient } from './providers';
@@ -20,7 +21,9 @@ if (import.meta.env.DEV) {
 root.render(
   <StrictMode>
     <Providers>
-      <RouterProvider router={router(queryClient)} />
+      <ThemeProvider>
+        <RouterProvider router={router(queryClient)} />
+      </ThemeProvider>
     </Providers>
   </StrictMode>
 );
