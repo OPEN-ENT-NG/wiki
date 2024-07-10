@@ -1,6 +1,6 @@
 import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { odeServices } from 'edifice-ts-client';
+import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import {
   LoaderFunctionArgs,
@@ -63,11 +63,16 @@ export const Index = () => {
           id: page._id,
           name: page.title,
           section: true,
+          showIconSection: false,
         };
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const handleClick = (pageId: ID) => {
+    navigate(`/id/${data._id}/page/${pageId}`);
+  };
 
   return (
     <>
@@ -80,14 +85,8 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-<<<<<<< HEAD
           <NewPage />
-=======
-          <TreeView data={treeData} />
-          <div>
-            <Link to="page/create">Create page</Link>
-          </div>
->>>>>>> d900712 (feat: #WB2-1513, add treeview component in side bar with content)
+          <TreeView data={treeData} onTreeItemUnfold={handleClick} />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
