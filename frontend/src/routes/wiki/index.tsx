@@ -1,7 +1,8 @@
-import { Grid, TreeView } from '@edifice-ui/react';
+import { Button, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -11,7 +12,6 @@ import {
 } from 'react-router-dom';
 import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
-import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
 import { useStoreContext } from '~/store';
@@ -44,6 +44,7 @@ export const Index = () => {
   const { setTreeData } = useStoreContext();
   const treeData = useStoreContext((state) => state.treeData);
   const match = useMatch('/id/:wikiId');
+  const { t } = useTranslation();
 
   /**
    * Redirect to the default page if exist
@@ -74,6 +75,10 @@ export const Index = () => {
     navigate(`/id/${data._id}/page/${pageId}`);
   };
 
+  const handleCreatePage = () => {
+    navigate(`page/create`);
+  };
+
   return (
     <>
       <AppHeader />
@@ -85,8 +90,11 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <TreeView data={treeData} onTreeItemUnfold={handleClick} />
-          <NewPage />
+          <div className="d-grid my-16">
+            <Button variant="outline" onClick={handleCreatePage}>
+              {t('wiki.create.new.page')}
+            </Button>
+          </div>
           <TreeView data={treeData} onTreeItemUnfold={handleClick} />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
