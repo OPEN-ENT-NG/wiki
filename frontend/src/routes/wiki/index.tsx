@@ -1,6 +1,6 @@
 import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { odeServices } from 'edifice-ts-client';
+import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import {
   Link,
@@ -63,11 +63,16 @@ export const Index = () => {
           id: page._id,
           name: page.title,
           section: true,
+          showIconSection: false,
         };
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const handleClick = (pageId: ID) => {
+    navigate(`/id/${data._id}/page/${pageId}`);
+  };
 
   return (
     <>
@@ -80,7 +85,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <TreeView data={treeData} />
+          <TreeView data={treeData} onTreeItemUnfold={handleClick} />
           <div>
             <Link to="page/create">Create page</Link>
           </div>
