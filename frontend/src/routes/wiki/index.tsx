@@ -2,6 +2,7 @@ import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -44,6 +45,7 @@ export const Index = () => {
   const { setTreeData } = useStoreContext();
   const treeData = useStoreContext((state) => state.treeData);
   const match = useMatch('/id/:wikiId');
+  const { t } = useTranslation();
 
   /**
    * Redirect to the default page if exist
@@ -72,6 +74,10 @@ export const Index = () => {
 
   const handleClick = (pageId: ID) => {
     navigate(`/id/${data._id}/page/${pageId}`);
+  };
+
+  const handleCreatePage = () => {
+    navigate(`page/create`);
   };
 
   return (
