@@ -14,7 +14,7 @@ import { AppHeader } from '~/features/app/AppHeader';
 import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
-import { useStoreActions, useTreeData } from '~/store/treeview';
+import { useStoreContext } from '~/store';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -41,8 +41,8 @@ export const loader =
 export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
-  const { setTreeData } = useStoreActions();
-  const treeData = useTreeData();
+  const { setTreeData } = useStoreContext();
+  const treeData = useStoreContext((state) => state.treeData);
   const match = useMatch('/id/:wikiId');
 
   /**
@@ -87,6 +87,7 @@ export const Index = () => {
         >
           <TreeView data={treeData} onTreeItemUnfold={handleClick} />
           <NewPage />
+          <TreeView data={treeData} />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
