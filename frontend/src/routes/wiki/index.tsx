@@ -87,7 +87,7 @@ export const Index = () => {
         >
           <TreeView data={treeData} onTreeItemUnfold={handleClick} />
           <NewPage />
-          <TreeView data={treeData} />
+          <TreeView data={treeData} onTreeItemUnfold={handleClick} />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
