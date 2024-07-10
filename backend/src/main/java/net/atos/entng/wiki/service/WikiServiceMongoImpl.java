@@ -60,6 +60,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void getWiki(String id, Handler<Either<String, JsonObject>> handler) {
 		super.retrieve(id, handler);
+
+		QueryBuilder query = QueryBuilder.start("_id").is(id);
+
+		JsonObject projection = new JsonObject()
+				.put("pages.content", 0)
+				.put("pages.contentPlain", 0);
+
+		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
+				MongoDbResult.validResultHandler(handler));
 	}
 
 	// TODO: add a print param getWiki to get all information to print a wiki? and then remove this method?
@@ -101,8 +110,16 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
-		JsonObject projection = new JsonObject();
-		projection.put("pages.content", 0).put("created", 0);
+		JsonObject projection = new JsonObject()
+				.put("_id", 0)
+				.put("title", 0)
+				.put("thumbnail", 0)
+				.put("created", 0)
+				.put("modified", 0)
+				.put("owner", 0)
+				.put("index", 0)
+				.put("pages.content", 0)
+				.put("pages.contentPlain", 0);
 
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));
