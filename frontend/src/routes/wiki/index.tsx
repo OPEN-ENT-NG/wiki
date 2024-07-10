@@ -1,4 +1,4 @@
-import { Grid } from '@edifice-ui/react';
+import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
@@ -14,6 +14,7 @@ import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
+import { useStoreContext } from '~/store';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -40,6 +41,8 @@ export const loader =
 export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
+  const { setTreeData } = useStoreContext();
+  const treeData = useStoreContext((state) => state.treeData);
   const match = useMatch('/id/:wikiId');
 
   /**
@@ -52,6 +55,17 @@ export const Index = () => {
       const pageId = findIndexPage?._id;
       return navigate(`/id/${data._id}/page/${pageId}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    setTreeData(
+      data.pages.map((page) => {
+        return {
+          id: page._id,
+          name: page.title,
+          section: true,
+        };
+      })
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -66,7 +80,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          ...
+          <TreeView data={treeData} />
           <div>
             <Link to="page/create">Create page</Link>
           </div>
