@@ -195,19 +195,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
-
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki)
 				.put("pages._id").is(idPage);
 
 		// Projection
-		JsonObject matchId = new JsonObject();
-		matchId.put("_id", idPage);
-		JsonObject elemMatch = new JsonObject();
-		elemMatch.put("$elemMatch", matchId);
-
-		JsonObject projection = new JsonObject();
-		projection.put("pages", elemMatch).put("title", 1)
-				.put("owner", 1).put("shared", 1);
+		JsonObject projection = new JsonObject()
+				.put("_id", 0)
+				.put("pages.$", 1);
 
 		// Send query to event bus
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
