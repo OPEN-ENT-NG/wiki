@@ -1,9 +1,9 @@
-import { Grid } from '@edifice-ui/react';
+import { Button, Grid } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Link,
   LoaderFunctionArgs,
   Outlet,
   useLoaderData,
@@ -41,6 +41,7 @@ export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
   const match = useMatch('/id/:wikiId');
+  const { t } = useTranslation();
 
   /**
    * Redirect to the default page if exist
@@ -55,6 +56,10 @@ export const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  const handleCreatePage = () => {
+    navigate(`page/create`);
+  };
+
   return (
     <>
       <AppHeader />
@@ -66,9 +71,10 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          ...
-          <div>
-            <Link to="page/create">Create page</Link>
+          <div className="d-grid my-16">
+            <Button variant="outline" onClick={handleCreatePage}>
+              {t('wiki.create.new.page')}
+            </Button>
           </div>
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
