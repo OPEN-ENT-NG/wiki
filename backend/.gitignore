@@ -33,4 +33,5 @@ gradlew*
 src/main/resources/public/*.js
 src/main/resources/public/*.css
 src/main/resources/view/index.html
+src/main/resources/public/*.svg
 # src/main/resources/view
