@@ -1,4 +1,5 @@
-import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
+import { TextPage } from '@edifice-ui/icons';
+import { checkUserRight, Dropdown, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
 import {
@@ -61,6 +62,31 @@ export const Index = () => {
     navigate(`/id/${data?._id}/page/${pageId}`);
   };
 
+  const test = [
+    {
+      id: '1',
+      name: 'OUI',
+      section: true,
+      children: [
+        {
+          id: '2',
+          name: 'OH QUE OUI',
+        },
+      ],
+    },
+    {
+      id: '3',
+      name: 'NON',
+      section: true,
+      children: [
+        {
+          id: '4',
+          name: 'OH QUE NON',
+        },
+      ],
+    },
+  ];
+
   return (
     <>
       <AppHeader />
@@ -81,7 +107,15 @@ export const Index = () => {
             />
           )}
         </Grid.Col>
-        <Grid.Col sm="4" md="8" lg="6" xl="9">
+        <Grid.Col sm="4" md="8" lg="6" xl="9" className="mt-24">
+          <div className="dropdown-treeview">
+            <Dropdown block>
+              <Dropdown.Trigger label="Pages" icon={<TextPage />} />
+              <Dropdown.Menu>
+                <TreeView data={test} />
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
           {match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
