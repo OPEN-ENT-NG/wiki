@@ -1,9 +1,7 @@
-import { Plus } from '@edifice-ui/icons';
-import { Button, Grid, useOdeClient } from '@edifice-ui/react';
+import { Grid } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -13,6 +11,7 @@ import {
 } from 'react-router-dom';
 import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
+import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
 
@@ -42,8 +41,6 @@ export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
   const match = useMatch('/id/:wikiId');
-  const { appCode } = useOdeClient();
-  const { t } = useTranslation();
 
   /**
    * Redirect to the default page if exist
@@ -58,10 +55,6 @@ export const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const handleCreatePage = () => {
-    navigate(`page/create`);
-  };
-
   return (
     <>
       <AppHeader />
@@ -73,15 +66,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <div className="d-grid my-16">
-            <Button
-              variant="outline"
-              onClick={handleCreatePage}
-              leftIcon={<Plus />}
-            >
-              {t('wiki.create.new.page', { ns: appCode })}
-            </Button>
-          </div>
+          <NewPage />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
