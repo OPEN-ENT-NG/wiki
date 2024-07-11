@@ -1,4 +1,5 @@
-import { Button, Grid } from '@edifice-ui/react';
+import { Plus } from '@edifice-ui/icons';
+import { Button, Grid, useOdeClient } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
@@ -41,6 +42,7 @@ export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
   const match = useMatch('/id/:wikiId');
+  const { appCode } = useOdeClient();
   const { t } = useTranslation();
 
   /**
@@ -72,8 +74,12 @@ export const Index = () => {
           as="aside"
         >
           <div className="d-grid my-16">
-            <Button variant="outline" onClick={handleCreatePage}>
-              {t('wiki.create.new.page')}
+            <Button
+              variant="outline"
+              onClick={handleCreatePage}
+              leftIcon={<Plus />}
+            >
+              {t('wiki.create.new.page', { ns: appCode })}
             </Button>
           </div>
         </Grid.Col>
