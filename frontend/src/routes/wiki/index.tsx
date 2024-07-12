@@ -3,7 +3,6 @@ import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import {
-  Link,
   LoaderFunctionArgs,
   Outlet,
   useLoaderData,
@@ -12,6 +11,7 @@ import {
 } from 'react-router-dom';
 import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
+import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
 
@@ -66,10 +66,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          ...
-          <div>
-            <Link to="page/create">Create page</Link>
-          </div>
+          <NewPage />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
