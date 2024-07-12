@@ -3,8 +3,8 @@ import {
   mockPage,
   mockRevision,
   mockWiki,
-  mockWikis,
   mockWikiPages,
+  mockWikis,
 } from '~/mocks';
 import { wikiService } from '..';
 
