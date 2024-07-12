@@ -1,7 +1,6 @@
 import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
-import { useEffect } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -48,27 +47,27 @@ export const Index = () => {
   /**
    * Redirect to the default page if exist
    */
-  useEffect(() => {
-    const findIndexPage = data.pages.find((page) => page._id === data.index);
+  // useEffect(() => {
+  //   const findIndexPage = data.pages.find((page) => page._id === data.index);
 
-    if (findIndexPage) {
-      const pageId = findIndexPage?._id;
-      return navigate(`/id/${data._id}/page/${pageId}`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   if (findIndexPage) {
+  //     const pageId = findIndexPage?._id;
+  //     return navigate(`/id/${data._id}/page/${pageId}`);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
 
-    setTreeData(
-      data.pages.map((page) => {
-        return {
-          id: page._id,
-          name: page.title,
-          section: true,
-          showIconSection: false,
-        };
-      })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  //   setTreeData(
+  //     data.pages.map((page) => {
+  //       return {
+  //         id: page._id,
+  //         name: page.title,
+  //         section: true,
+  //         showIconSection: false,
+  //       };
+  //     })
+  //   );
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [data]);
 
   const handleClick = (pageId: ID) => {
     navigate(`/id/${data._id}/page/${pageId}`);
@@ -85,6 +84,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
+          <p data-testid="text">some text</p>
           <NewPage />
           <TreeView data={treeData} onTreeItemUnfold={handleClick} />
         </Grid.Col>
