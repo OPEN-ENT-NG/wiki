@@ -29,15 +29,11 @@ import io.vertx.core.json.JsonObject;
 import fr.wseduc.webutils.Either;
 
 public interface WikiService {
+	public void getWiki(String id, Handler<Either<String, JsonObject>> handler);
 
-	public void listWikis(UserInfos user, Handler<Either<String, JsonArray>> handler);
+	/* public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler); */
 
-	public void listPages(String idWiki,
-			Handler<Either<String, JsonObject>> handler);
-
-	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler);
-
-	public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler);
+	public void getWikis(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler);
@@ -50,6 +46,9 @@ public interface WikiService {
 
 	public void getPage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
+
+	public void getPages(String idWiki,
+						 Handler<Either<String, JsonObject>> handler);
 
 	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
 			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);

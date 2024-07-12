@@ -19,6 +19,12 @@ export const pageQueryOptions = {
       queryFn: () => wikiService.getPage({ wikiId, pageId }),
       staleTime: 5000,
     }),
+  findAllFromWiki: ({ wikiId }: { wikiId: string }) =>
+    queryOptions({
+      queryKey: [...pageQueryOptions.base, { id: wikiId }] as const,
+      queryFn: () => wikiService.getWikiPages(wikiId),
+      staleTime: 5000,
+    }),
   revisions: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.base, 'revision', { id: pageId }] as const,
@@ -41,6 +47,10 @@ export const useGetPage = ({
   return useQuery(pageQueryOptions.findOne({ wikiId, pageId }));
 };
 
+export const useGetPagesFromWiki = ({ wikiId }: { wikiId: string }) => {
+  return useQuery(pageQueryOptions.findAllFromWiki({ wikiId }));
+};
+
 export const useGetRevisionsPage = ({
   wikiId,
   pageId,
@@ -60,9 +70,6 @@ export const useCreatePage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAll().queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
     },
   });
@@ -88,9 +95,6 @@ export const useUpdatePage = () => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
-      queryClient.invalidateQueries({
-        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
-      });
     },
   });
 };
@@ -106,9 +110,6 @@ export const useDeletePage = () => {
       });
       queryClient.removeQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
     },
   });

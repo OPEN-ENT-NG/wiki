@@ -4,7 +4,7 @@ import {
   mockRevision,
   mockWiki,
   mockWikis,
-  mockWikisWithPages,
+  mockWikiPages,
 } from '~/mocks';
 import { wikiService } from '..';
 
@@ -12,18 +12,18 @@ import '../../../mocks/setup.msw';
 
 describe('Wiki GET Methods', () => {
   test('makes a GET request to get all wikis without pages', async () => {
-    const response = await wikiService.getAllWikis();
+    const response = await wikiService.getWikis();
 
     expect(response).toBeDefined();
     expect(response).toHaveLength(2);
     expect(response).toStrictEqual(mockWikis);
   });
 
-  test('makes a GET request to get all wikis with pages', async () => {
-    const response = await wikiService.getAllWikisWithPages();
+  test('makes a GET request to get pages from a wiki', async () => {
+    const response = await wikiService.getWikiPages(mockWiki._id);
 
     expect(response).toBeDefined();
-    expect(response).toStrictEqual(mockWikisWithPages);
+    expect(response).toStrictEqual(mockWikiPages);
   });
 
   test('makes a GET request to get one wiki with pages', async () => {

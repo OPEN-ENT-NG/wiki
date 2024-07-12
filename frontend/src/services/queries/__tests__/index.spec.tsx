@@ -8,21 +8,10 @@ import {
   useGetRevisionsPage,
   useUpdatePage,
 } from '../page';
-import {
-  useGetAllWikis,
-  useGetAllWikisWithPages,
-  useGetWiki,
-  wikiQueryOptions,
-} from '../wiki';
+import { useGetWikis, useGetWiki, wikiQueryOptions } from '../wiki';
 
 import { PropsWithChildren } from 'react';
-import {
-  mockPage,
-  mockRevision,
-  mockWiki,
-  mockWikis,
-  mockWikisWithPages,
-} from '~/mocks';
+import { mockPage, mockRevision, mockWiki, mockWikis } from '~/mocks';
 import '../../../mocks/setup.msw';
 
 const queryClient = new QueryClient({
@@ -43,8 +32,8 @@ const wrapper = ({ children }: PropsWithChildren) => {
 };
 
 describe('Wiki GET Queries', () => {
-  test('use useGetAllWikis to get all wikis', async () => {
-    const { result } = renderHook(() => useGetAllWikis(), {
+  test('use useGetWikis to get wikis', async () => {
+    const { result } = renderHook(() => useGetWikis(), {
       wrapper,
     });
 
@@ -52,17 +41,6 @@ describe('Wiki GET Queries', () => {
 
     expect(result.current.data).toBeDefined();
     expect(result.current.data).toEqual(mockWikis);
-  });
-
-  test('use useGetAllWikisWithPages to get all wikis with pages', async () => {
-    const { result } = renderHook(() => useGetAllWikisWithPages(), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockWikisWithPages);
   });
 
   test('use useGetWiki to get one wiki', async () => {
@@ -143,9 +121,6 @@ describe('Wiki Page mutations Queries', () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: wikiQueryOptions.findAll().queryKey,
     });
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAllWithPages().queryKey,
-    });
   });
 
   test('update a page with useUpdatePage hook', async () => {
@@ -175,9 +150,6 @@ describe('Wiki Page mutations Queries', () => {
       queryKey: pageQueryOptions.findOne({ wikiId: 'wikiId', pageId: 'pageId' })
         .queryKey,
     });
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAllWithPages().queryKey,
-    });
   });
 
   test('delete a page with useDeletePage hook', async () => {
@@ -206,10 +178,6 @@ describe('Wiki Page mutations Queries', () => {
     expect(removeQueriesSpy).toHaveBeenCalledWith({
       queryKey: pageQueryOptions.findOne({ wikiId: 'wikiId', pageId: 'pageId' })
         .queryKey,
-    });
-
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAllWithPages().queryKey,
     });
   });
 });
