@@ -1,14 +1,14 @@
-import { TreeNode } from '@edifice-ui/react';
+import { TreeData } from '@edifice-ui/react';
 import { FOLDER } from 'edifice-ts-client';
 import { create } from 'zustand';
 
 interface State {
-  treeData: TreeNode[];
+  treeData: TreeData[];
 }
 
 type Action = {
   updaters: {
-    setTreeData: (treeData: TreeNode[]) => void;
+    setTreeData: (treeData: TreeData[]) => void;
   };
 };
 
@@ -26,7 +26,7 @@ const initialState = {
 export const useStoreContext = create<State & Action>((set) => ({
   ...initialState,
   updaters: {
-    setTreeData: (treeData: TreeNode[]) => set(() => ({ treeData })),
+    setTreeData: (treeData: TreeData[]) => set(() => ({ treeData })),
   },
 }));
 
