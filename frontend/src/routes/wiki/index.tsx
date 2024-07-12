@@ -3,7 +3,6 @@ import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import {
-  Link,
   LoaderFunctionArgs,
   Outlet,
   useLoaderData,
@@ -12,6 +11,7 @@ import {
 } from 'react-router-dom';
 import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
+import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
 import { useStoreActions, useTreeData } from '~/store/treeview';
@@ -86,9 +86,7 @@ export const Index = () => {
           as="aside"
         >
           <TreeView data={treeData} onTreeItemUnfold={handleClick} />
-          <div>
-            <Link to="page/create">Create page</Link>
-          </div>
+          <NewPage />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
