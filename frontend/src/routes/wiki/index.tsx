@@ -12,6 +12,7 @@ import {
 } from 'react-router-dom';
 import { WikiEmptyScreen } from '~/components/WikiEmptyScreen';
 import { AppHeader } from '~/features/app/AppHeader';
+import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
 import { useStoreActions, useTreeData } from '~/store/treeview';
@@ -90,12 +91,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <div className="d-grid my-16">
-            <Button variant="outline" onClick={handleCreatePage}>
-              {t('wiki.create.new.page')}
-            </Button>
-          </div>
-          <TreeView data={treeData} onTreeItemUnfold={handleClick} />
+          <NewPage />
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9">
           {match ? <WikiEmptyScreen /> : <Outlet />}
