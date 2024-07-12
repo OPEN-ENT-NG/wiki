@@ -8,14 +8,8 @@ export const wikiQueryOptions = {
   base: ['wiki'] as const,
   findAll: () =>
     queryOptions({
-      queryKey: [...wikiQueryOptions.base, 'listall'] as const,
-      queryFn: wikiService.getAllWikis,
-      staleTime: 5000,
-    }),
-  findAllWithPages: () =>
-    queryOptions({
-      queryKey: [...wikiQueryOptions.base, 'listallpages'] as const,
-      queryFn: wikiService.getAllWikisWithPages,
+      queryKey: [...wikiQueryOptions.base, 'list'] as const,
+      queryFn: wikiService.getWikis,
       staleTime: 5000,
     }),
   findOne: (wikiId: string) =>
@@ -30,12 +24,8 @@ export const wikiQueryOptions = {
  * All queries and mutations
  */
 
-export const useGetAllWikis = () => {
+export const useGetWikis = () => {
   return useQuery(wikiQueryOptions.findAll());
-};
-
-export const useGetAllWikisWithPages = () => {
-  return useQuery(wikiQueryOptions.findAllWithPages());
 };
 
 export const useGetWiki = (wikiId: string) => {

@@ -3,6 +3,7 @@ import { Modified } from './date';
 export interface Page {
   _id: string;
   title: string;
+  content: string;
   contentPlain: string;
   author: string;
   authorName: string;

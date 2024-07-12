@@ -88,74 +88,28 @@ export const mockWikis = [
   },
 ];
 
-export const mockWikisWithPages = [
-  {
-    _id: '423a3e89',
-    title: 'Définitions Espanol',
-    pages: [
-      {
-        _id: '5540ede1e4b056471c495282',
-        title: 'Acaparar',
-        author: 'b6db229d',
-        authorName: 'Author',
-        modified: {
-          $date: 1430318586054,
-        },
-        contentPlain: '',
+export const mockWikiPages = {
+  pages: [
+    {
+      _id: '668fa268f6b74f5fc8884cab',
+      title: 'page 01',
+      author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
+      authorName: 'Author',
+      modified: {
+        $date: 1720689256171,
       },
-      {
-        _id: '5540eec6e4b056471c495283',
-        title: 'Resultar',
-        author: '13f1e9f7',
-        authorName: 'Author',
-        modified: {
-          $date: 1501842229907,
-        },
-        contentPlain: '',
-      },
-      {
-        _id: '5540ef0fe4b056471c495284',
-        title: 'Lechería',
-        author: 'b6db229d',
-        authorName: 'Author',
-        modified: {
-          $date: 1430318863835,
-        },
-        contentPlain: '',
-      },
-      {
-        _id: '580f3f8ee4b07ac1b023b2db',
-        title: 'Accueil',
-        contentPlain: '',
-        author: 'a87b39c0',
-        authorName: 'Author',
-        modified: {
-          $date: 1478192151290,
-        },
-      },
-      {
-        _id: '657974cc736a590490395b4b',
-        title: 'Titre',
-        contentPlain: '',
-        author: '219a1774',
-        authorName: 'Author',
-        modified: {
-          $date: 1702458572178,
-        },
-      },
-    ],
-    owner: {
-      userId: 'b6db229d',
-      displayName: 'Author',
     },
-    modified: {
-      $date: 1501842229907,
+    {
+      _id: '668fa274f6b74f5fc8884cac',
+      title: 'page 02',
+      author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
+      authorName: 'Author',
+      modified: {
+        $date: 1720689268906,
+      },
     },
-    thumbnail: '',
-    shared: [],
-    index: '580f3f8ee4b07ac1b023b2db',
-  },
-];
+  ],
+};
 
 export const mockPage = {
   _id: 'f9853a14b354',
@@ -215,11 +169,11 @@ export const handlers = [
   http.get(`/wiki/list`, () => {
     return HttpResponse.json(mockWikis, { status: 200 });
   }),
-  http.get(`/wiki/listallpages`, () => {
-    return HttpResponse.json(mockWikisWithPages, { status: 200 });
-  }),
-  http.get(`/wiki/:wikiId/listpages`, () => {
+  http.get(`/wiki/:wikiId`, () => {
     return HttpResponse.json(mockWiki, { status: 200 });
+  }),
+  http.get(`/wiki/:wikiId/pages`, () => {
+    return HttpResponse.json(mockWikiPages, { status: 200 });
   }),
   http.get(`/wiki/:wikiId/page/:pageId`, () => {
     return HttpResponse.json(mockPage);

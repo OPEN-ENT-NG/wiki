@@ -18,21 +18,10 @@ const createWikiService = (baseURL: string) => ({
    *
    * @returns all wikis without pages
    */
-  async getAllWikis() {
+  async getWikis() {
     const response = await odeServices
       .http()
       .get<PickedWiki[]>(`${baseURL}/list`);
-    return response;
-  },
-
-  /**
-   *
-   * @returns all wikis with pages
-   */
-  async getAllWikisWithPages() {
-    const response = await odeServices
-      .http()
-      .get<Wiki[]>(`${baseURL}/listallpages`);
     return response;
   },
 
@@ -42,9 +31,19 @@ const createWikiService = (baseURL: string) => ({
    * @returns get a wiki by id
    */
   async getWiki(wikiId: string) {
+    const response = await odeServices.http().get<Wiki>(`${baseURL}/${wikiId}`);
+    return response;
+  },
+
+  /**
+   *
+   * @param wikiId string
+   * @returns get wiki pages by wiki id
+   */
+  async getWikiPages(wikiId: string) {
     const response = await odeServices
       .http()
-      .get<Wiki>(`${baseURL}/${wikiId}/listpages`);
+      .get<Page[]>(`${baseURL}/${wikiId}/pages`);
     return response;
   },
 
