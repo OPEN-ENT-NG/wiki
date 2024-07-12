@@ -1,8 +1,7 @@
-import { Button, Grid, TreeView } from '@edifice-ui/react';
+import { Grid } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { ID, odeServices } from 'edifice-ts-client';
+import { odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -15,7 +14,6 @@ import { AppHeader } from '~/features/app/AppHeader';
 import { NewPage } from '~/features/wiki/NewPage';
 import { type Wiki as WikiData } from '~/models';
 import { wikiQueryOptions } from '~/services/queries';
-import { useStoreActions, useTreeData } from '~/store/treeview';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -42,10 +40,7 @@ export const loader =
 export const Index = () => {
   const data = useLoaderData() as WikiData;
   const navigate = useNavigate();
-  const { setTreeData } = useStoreActions();
-  const treeData = useTreeData();
   const match = useMatch('/id/:wikiId');
-  const { t } = useTranslation();
 
   /**
    * Redirect to the default page if exist
@@ -58,27 +53,7 @@ export const Index = () => {
       return navigate(`/id/${data._id}/page/${pageId}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    setTreeData(
-      data.pages.map((page) => {
-        return {
-          id: page._id,
-          name: page.title,
-          section: true,
-          showIconSection: false,
-        };
-      })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-
-  const handleClick = (pageId: ID) => {
-    navigate(`/id/${data._id}/page/${pageId}`);
-  };
-
-  const handleCreatePage = () => {
-    navigate(`page/create`);
-  };
 
   return (
     <>
