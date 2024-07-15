@@ -8,7 +8,7 @@ import {
 } from '~/mocks';
 import { wikiService } from '..';
 
-import '../../../mocks/setup.msw';
+import '~/mocks/setup.msw';
 
 describe('Wiki GET Methods', () => {
   test('makes a GET request to get all wikis without pages', async () => {

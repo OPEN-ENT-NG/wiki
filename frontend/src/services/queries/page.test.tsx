@@ -7,12 +7,12 @@ import {
   useGetPage,
   useGetRevisionsPage,
   useUpdatePage,
-} from '../page';
-import { useGetWikis, useGetWiki, wikiQueryOptions } from '../wiki';
+} from './page';
+import { wikiQueryOptions } from './wiki';
 
 import { PropsWithChildren } from 'react';
-import { mockPage, mockRevision, mockWiki, mockWikis } from '~/mocks';
-import '../../../mocks/setup.msw';
+import { mockPage, mockRevision } from '~/mocks';
+import '~/mocks/setup.msw';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,36 +30,8 @@ const wrapper = ({ children }: PropsWithChildren) => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
-
-describe('Wiki GET Queries', () => {
-  test('use useGetWikis to get wikis', async () => {
-    const { result } = renderHook(() => useGetWikis(), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockWikis);
-  });
-
-  test('use useGetWiki to get one wiki', async () => {
-    const { result } = renderHook(
-      () => useGetWiki('6e3d23f6-890f-4453-af19-f9853a14b354'),
-      {
-        wrapper,
-      }
-    );
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockWiki);
-  });
-});
-
 describe('Wiki Page GET Queries', () => {
-  test('get one page of a wiki', async () => {
+  test('use useGetPage hook to get one page of a wiki', async () => {
     const { result } = renderHook(
       () =>
         useGetPage({
@@ -77,7 +49,7 @@ describe('Wiki Page GET Queries', () => {
     expect(result.current.data).toEqual(mockPage);
   });
 
-  test('get revisions of a page', async () => {
+  test('use useGetRevisionsPage to get revisions of a page', async () => {
     const { result } = renderHook(
       () =>
         useGetRevisionsPage({

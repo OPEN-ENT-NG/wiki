@@ -1,5 +1,6 @@
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
+import { odeServices } from 'edifice-ts-client';
 import {
   ActionFunctionArgs,
   Form,
@@ -7,8 +8,7 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { wikiService } from '~/services/api';
-import { pageQueryOptions, useGetPage } from '~/services/queries';
+import { pageQueryOptions, useGetPage, wikiService } from '~/services';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -19,6 +19,13 @@ export const loader =
         pageId: params.pageId!,
       })
     );
+
+    if (odeServices.http().isResponseError()) {
+      throw new Response('', {
+        status: odeServices.http().latestResponse.status,
+        statusText: odeServices.http().latestResponse.statusText,
+      });
+    }
 
     return data;
   };
@@ -45,7 +52,7 @@ export const Page = () => {
 
   return (
     <>
-      <div>{data?.title}</div>
+      <div>{data.title}</div>
       <Form method="delete">
         <button type="submit">supprimer page</button>
       </Form>

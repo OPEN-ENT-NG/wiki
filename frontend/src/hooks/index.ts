@@ -5,3 +5,5 @@
  All hooks shared across the application
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
+
+export * from './useAccessStore';

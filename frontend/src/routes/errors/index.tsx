@@ -7,7 +7,7 @@ export const PageError = () => {
   const navigate = useNavigate();
 
   const { appCode } = useOdeClient();
-  const { t } = useTranslation(appCode);
+  const { t } = useTranslation();
 
   console.error(error);
 
@@ -17,7 +17,9 @@ export const PageError = () => {
         <Heading level="h2" headingStyle="h2" className="text-secondary">
           {t('oops')}
         </Heading>
-        <div className="text">{t('wiki.notfound.or.unauthorized')}</div>
+        <div className="text">
+          {t('wiki.notfound.or.unauthorized', { ns: appCode })}
+        </div>
         <Button color="primary" onClick={() => navigate(-1)}>
           {t('back')}
         </Button>

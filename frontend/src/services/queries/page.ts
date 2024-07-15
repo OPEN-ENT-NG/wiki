@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { PagePostPayload, PagePutPayload } from '~/models';
-import { wikiService } from '../api';
+import { wikiService } from '..';
 import { wikiQueryOptions } from './wiki';
 
 /**

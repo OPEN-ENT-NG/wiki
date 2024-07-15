@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, Form, redirect } from 'react-router-dom';
-import { wikiService } from '~/services/api';
+import { wikiService } from '~/services';
 
 export async function action({ params }: ActionFunctionArgs) {
   const content = 'test';
