@@ -16,9 +16,8 @@ import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { useAccessStore } from '~/hooks/useAccessStore';
-import { baseURL } from '~/services/api';
-import { useGetWiki } from '~/services/queries';
+import { baseURL, useGetWiki } from '~/services';
+import { useUserRights } from '~/store';
 
 type ActionDropdownMenuOptions = {
   id: string;
@@ -33,7 +32,7 @@ export const AppActions = () => {
   const { t } = useTranslation();
 
   /** Store to handle correctly rights to access ressource to avoid unexpected re-renders  */
-  const { userRights } = useAccessStore();
+  const userRights = useUserRights();
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {

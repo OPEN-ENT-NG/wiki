@@ -1,12 +1,7 @@
 import { RightRole } from 'edifice-ts-client';
-import { create } from 'zustand';
+import { createStore, useStore } from 'zustand';
 
 type UserRights = Record<RightRole, boolean>;
-
-interface UserRightsState {
-  userRights: UserRights;
-  setUserRights: (rights: UserRights) => void;
-}
 
 /**
  * Basic store for managing "rights" array
@@ -18,12 +13,53 @@ interface UserRightsState {
   const { setUserRights } = useUserRightsStore.getState();
   setUserRights(userRights);
  */
-export const useUserRightsStore = create<UserRightsState>((set) => ({
+interface State {
+  userRights: UserRights;
+}
+
+type Action = {
+  actions: {
+    setUserRights: (userRights: UserRights) => void;
+  };
+};
+
+type ExtractState<S> = S extends {
+  getState: () => infer T;
+}
+  ? T
+  : never;
+
+type Params<U> = Parameters<typeof useStore<typeof store, U>>;
+
+const initialState = {
   userRights: {
     creator: false,
     contrib: false,
     manager: false,
     read: false,
   },
-  setUserRights: (rights: UserRights) => set({ userRights: rights }),
+};
+
+const store = createStore<State & Action>()((set, get) => ({
+  ...initialState,
+  actions: {
+    setUserRights: (userRights: UserRights) => set(() => ({ userRights })),
+  },
 }));
+
+// Selectors
+const userRights = (state: ExtractState<typeof store>) => state.userRights;
+const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
+
+// Getters
+export const getUserRights = () => userRights(store.getState());
+export const getUserRightsActions = () => actionsSelector(store.getState());
+
+// React Store
+function useUserRightsStore<U>(selector: Params<U>[1]) {
+  return useStore(store, selector);
+}
+
+// Hooks
+export const useUserRights = () => useUserRightsStore(userRights);
+export const useUserRightsActions = () => useUserRightsStore(actionsSelector);

@@ -2,7 +2,7 @@ import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { LoaderFunctionArgs, useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { useGetWiki, wikiQueryOptions } from '~/services/queries';
+import { useGetWiki, wikiQueryOptions } from '~/services';
 
 export const loader =
   (queryClient: QueryClient) =>
