@@ -1,16 +1,9 @@
-import {
-  Options,
-  Print,
-  SetBackground,
-  Settings,
-  Share,
-} from '@edifice-ui/icons';
+import { Options, Print, Settings, Share } from '@edifice-ui/icons';
 import {
   Dropdown,
   DropdownMenuOptions,
   IconButton,
   IconButtonProps,
-  useOdeClient,
 } from '@edifice-ui/react';
 import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { baseURL, useGetWiki } from '~/services';
 import { useUserRights } from '~/store';
+import { useWikiActions } from '~/store/wiki';
 
 type ActionDropdownMenuOptions = {
   id: string;
@@ -26,34 +20,27 @@ type ActionDropdownMenuOptions = {
 
 export const AppActions = () => {
   const params = useParams();
-  const { data } = useGetWiki(params.wikiId!);
 
-  const { appCode } = useOdeClient();
+  const { data } = useGetWiki(params.wikiId!);
   const { t } = useTranslation();
+  const { setOpenShareModal, setOpenUpdateModal } = useWikiActions();
 
   /** Store to handle correctly rights to access ressource to avoid unexpected re-renders  */
   const userRights = useUserRights();
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {
-      id: 'background',
-      label: t('collaborativewall.modal.background', { ns: appCode }),
-      icon: <SetBackground />,
-      action: () => console.log(''),
-      visibility: userRights.creator || userRights.manager,
-    },
-    {
       id: 'share',
       label: t('share'),
       icon: <Share />,
-      action: () => console.log(''),
+      action: () => setOpenShareModal(true),
       visibility: userRights.creator || userRights.manager,
     },
     {
       id: 'properties',
       label: t('properties'),
       icon: <Settings />,
-      action: () => console.log(''),
+      action: () => setOpenUpdateModal(true),
       visibility: userRights.creator || userRights.manager,
     },
     {
