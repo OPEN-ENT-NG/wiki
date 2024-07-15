@@ -1,6 +1,3 @@
-import { http, HttpResponse } from 'msw';
-import { baseURL } from '~/services/api';
-
 export const mockWiki = {
   _id: 'f9853a14b354',
   title: 'Wiki',
@@ -160,35 +157,4 @@ export const mockRevision = [
       $date: 1720184598119,
     },
   },
-];
-
-/**
- * MSW Handlers
- */
-export const handlers = [
-  http.get(`/wiki/list`, () => {
-    return HttpResponse.json(mockWikis, { status: 200 });
-  }),
-  http.get(`/wiki/:wikiId`, () => {
-    return HttpResponse.json(mockWiki, { status: 200 });
-  }),
-  http.get(`/wiki/:wikiId/pages`, () => {
-    return HttpResponse.json(mockWikiPages, { status: 200 });
-  }),
-  http.get(`/wiki/:wikiId/page/:pageId`, () => {
-    return HttpResponse.json(mockPage);
-  }),
-  http.get(`${baseURL}/revisions/${mockWiki._id}/:pageId`, () => {
-    return HttpResponse.json(mockRevision, { status: 200 });
-  }),
-  http.post(`/wiki/:wikiId/page`, async ({ request }) => {
-    const newPage = await request.json();
-    return HttpResponse.json(newPage, { status: 201 });
-  }),
-  http.put(`/wiki/:wikiId/page/:pageId`, async ({ request }) => {
-    return HttpResponse.json({ number: 1 }, { status: 200 });
-  }),
-  http.delete(`wiki/:wikiId/page/:pageId`, () => {
-    return HttpResponse.json({ number: 0 });
-  }),
 ];

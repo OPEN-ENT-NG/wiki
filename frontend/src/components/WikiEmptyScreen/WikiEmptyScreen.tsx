@@ -14,16 +14,12 @@ export const WikiEmptyScreen = () => {
       className="d-flex flex-column align-items-center justify-content-center"
       style={emptyStyles}
     >
-      <EmptyScreen imageSrc={emptyScreenImage} />
-      <Heading
-        className="text-secondary mb-16"
-        level="h2"
-        data-testid="emptyscreen-title"
-      >
-        {t('wiki.first.emptyscreen.title')}
+      <EmptyScreen imageSrc={emptyScreenImage} imageAlt="Wiki Image" />
+      <Heading className="text-secondary mb-16" level="h2">
+        {t('wiki.first.emptyscreen.title', { ns: appCode })}
       </Heading>
-      <p className="text-center" data-testid="emptyscreen-text">
-        {t('wiki.first.emptyscreen.text')}
+      <p className="text-center">
+        {t('wiki.first.emptyscreen.text', { ns: appCode })}
       </p>
     </div>
   );

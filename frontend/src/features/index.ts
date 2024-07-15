@@ -5,3 +5,7 @@
  This folder should contain all features in an app
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
+
+export * from './app/AppActions';
+export * from './app/AppHeader';
+export * from './wiki/NewPage';

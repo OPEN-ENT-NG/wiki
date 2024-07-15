@@ -1,6 +1,5 @@
 import { Plus } from '@edifice-ui/icons';
 import { Button, useOdeClient } from '@edifice-ui/react';
-
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
