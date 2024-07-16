@@ -14,7 +14,7 @@ import { Index, loader as wikiLoader } from './wiki';
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {
-    path: '/',
+    path: '/*',
     async lazy() {
       const { loader, Root: Component } = await import('~/routes/root');
       return {
