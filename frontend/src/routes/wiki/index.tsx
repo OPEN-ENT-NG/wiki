@@ -1,7 +1,8 @@
 import { TextPage } from '@edifice-ui/icons';
-import { checkUserRight, Dropdown, Grid, TreeView } from '@edifice-ui/react';
+import { checkUserRight, Dropdown, Grid, IconButtonProps, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
+import { RefAttributes, useState } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -17,6 +18,7 @@ import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
+import './index.css';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -46,6 +48,8 @@ export const Index = () => {
   const treeData = useTreeData();
   const match = useMatch('/id/:wikiId');
 
+  const [nodeId, setNodeId] = useState<string>('');
+
   const { data } = useGetWiki(params.wikiId!);
 
   /**
@@ -60,32 +64,8 @@ export const Index = () => {
 
   const handleClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
+    setNodeId(pageId);
   };
-
-  const test = [
-    {
-      id: '1',
-      name: 'OUI',
-      section: true,
-      children: [
-        {
-          id: '2',
-          name: 'OH QUE OUI',
-        },
-      ],
-    },
-    {
-      id: '3',
-      name: 'NON',
-      section: true,
-      children: [
-        {
-          id: '4',
-          name: 'OH QUE NON',
-        },
-      ],
-    },
-  ];
 
   return (
     <>
@@ -104,6 +84,7 @@ export const Index = () => {
             <TreeView
               data={treeData}
               showIcon={false}
+              selectedNodeId={nodeId}
               onTreeItemClick={handleClick}
             />
           )}
@@ -111,10 +92,30 @@ export const Index = () => {
         <Grid.Col sm="4" md="8" lg="6" xl="9" className="mt-24">
           <div className="dropdown-treeview">
             <Dropdown block>
-              <Dropdown.Trigger label="Pages" icon={<TextPage />} />
-              <Dropdown.Menu>
-                <TreeView data={test} />
-              </Dropdown.Menu>
+              {(
+                triggerProps: JSX.IntrinsicAttributes &
+                  Omit<IconButtonProps, 'ref'> &
+                  RefAttributes<HTMLButtonElement>,
+                itemRefs,
+                setVisible
+              ) => (
+                <>
+                  <Dropdown.Trigger label="Pages" icon={<TextPage />} />
+                  <Dropdown.Menu
+                    onClick={() => {
+                      setVisible(false);
+                    }}
+                  >
+                    <TreeView
+                      data={treeData}
+                      showIcon={false}
+                      selectedNodeId={nodeId}
+                      allExpandedNodes={true}
+                      onTreeItemClick={handleClick}
+                    />
+                  </Dropdown.Menu>
+                </>
+              )}
             </Dropdown>
           </div>
           {match ? <WikiEmptyScreen /> : <Outlet />}
