@@ -44,6 +44,7 @@
   "wiki.createform.create": "Enregistrer",
   "wiki.createform.input.placeholder": "Entrez le titre de votre wiki",
   "wiki.createform.toggle.title": "Page visible pour tous",
+  "wiki.createform.toggle.message": "Par défaut, cette page est visible par toutes les personnes à qui vous avez partagé le wiki.",
   "wiki.createform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",
   "wiki.delete": "Supprimer",
   "wiki.editform.cancel": "Annuler",

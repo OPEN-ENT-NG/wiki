@@ -50,9 +50,7 @@ export const CreatePage = () => {
         <Toggle onChange={toggle} />
         <Label>{t('wiki.createform.toggle.title')}</Label>
         <Tooltip
-          message={
-            'Par défaut, cette page est visible par toutes les personnes à qui vous avez partagé le wiki.'
-          }
+          message={t('wiki.createform.toggle.message')}
           placement="bottom-start"
         >
           <InfoCircle className="c-pointer" height="18" />
