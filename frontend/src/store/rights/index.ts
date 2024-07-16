@@ -33,7 +33,7 @@ type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 
 const initialState = {
   userRights: {
-    creator: true,
+    creator: false,
     contrib: false,
     manager: false,
     read: false,

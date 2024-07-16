@@ -52,7 +52,19 @@ export const AppActions = () => {
     },
   ];
 
-  return (
+  const isOnlyRead =
+    userRights.read &&
+    !userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
+
+  return isOnlyRead ? (
+    <IconButton
+      variant="outline"
+      icon={<Print />}
+      onClick={() => alert('print')}
+    />
+  ) : (
     <Dropdown>
       {(
         triggerProps: JSX.IntrinsicAttributes &

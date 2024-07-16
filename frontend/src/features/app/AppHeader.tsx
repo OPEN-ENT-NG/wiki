@@ -9,11 +9,7 @@ import { IWebApp } from 'edifice-ts-client';
 import { Suspense, lazy } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetWiki, wikiQueryOptions } from '~/services';
-import {
-  useOpenShareModal,
-  useOpenUpdateModal,
-  useWikiActions,
-} from '~/store/wiki';
+import { useOpenShareModal, useOpenUpdateModal, useWikiActions } from '~/store';
 import { AppActions } from './AppActions';
 
 /* Lazy Loaded Modals */

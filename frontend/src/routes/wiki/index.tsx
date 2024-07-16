@@ -1,7 +1,6 @@
 import { Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
-import { useEffect } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -12,8 +11,10 @@ import {
 import { WikiEmptyScreen } from '~/components';
 import { AppHeader } from '~/features';
 import { NewPage } from '~/features/wiki/NewPage';
+import { useFeedData } from '~/hooks/useFeedData';
+import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
-import { useTreeActions, useTreeData } from '~/store/treeview';
+import { useTreeData } from '~/store/treeview';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -23,8 +24,8 @@ export const loader =
     );
 
     // TODO: wait normalized rights
-    /* const userRights = await checkUserRight([]);
-    const { setUserRights } = useUserRightsStore.getState();
+    /* const userRights = await checkUserRight(data.rights);
+    const { setUserRights } = getUserRightsActions();
     setUserRights(userRights); */
 
     if (odeServices.http().isResponseError()) {
@@ -44,32 +45,16 @@ export const Index = () => {
   const match = useMatch('/id/:wikiId');
 
   const { data } = useGetWiki(params.wikiId!);
-  const { setTreeData } = useTreeActions();
 
   /**
    * Redirect to the default page if exist
    */
-  useEffect(() => {
-    if (data) {
-      const findIndexPage = data.pages.find((page) => page._id === data.index);
+  useRedirectDefaultPage();
 
-      if (findIndexPage) {
-        const pageId = findIndexPage?._id;
-        return navigate(`/id/${data?._id}/page/${pageId}`);
-      }
-
-      setTreeData(
-        data.pages.map((page, index) => {
-          return {
-            id: page._id,
-            name: page.title,
-            section: true,
-          };
-        })
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  /**
+   * Feed treeData
+   */
+  useFeedData();
 
   const handleClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
