@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import fr.wseduc.webutils.Utils;
+import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import org.bson.types.ObjectId;
 import org.entcore.common.explorer.IdAndVersion;
-import org.entcore.common.explorer.impl.ExplorerPlugin;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
+import org.entcore.common.share.ShareNormalizer;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
 import io.vertx.core.Handler;
@@ -48,19 +50,20 @@ import fr.wseduc.webutils.Either;
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
 	private final String collection;
 	private final MongoDb mongo;
-	private final ExplorerPlugin explorerPlugin;
+	private final WikiExplorerPlugin wikiExplorerPlugin;
 
-	public WikiServiceMongoImpl(final String collection, final ExplorerPlugin plugin) {
+	private final ShareNormalizer shareNormalizer;
+
+	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
-		this.explorerPlugin = plugin;
+		this.wikiExplorerPlugin = plugin;
+		this.shareNormalizer = new ShareNormalizer(this.wikiExplorerPlugin.getSecuredActions());
 	}
 
 	@Override
 	public void getWiki(String id, Handler<Either<String, JsonObject>> handler) {
-		super.retrieve(id, handler);
-
 		QueryBuilder query = QueryBuilder.start("_id").is(id);
 
 		JsonObject projection = new JsonObject()
@@ -68,7 +71,20 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("pages.contentPlain", 0);
 
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
-				MongoDbResult.validResultHandler(handler));
+				result -> {
+					final JsonObject body = result.body();
+					if (body.containsKey("result")) {
+						this.addNormalizedShares(body.getJsonObject("result"));
+					}
+					handler.handle(Utils.validResult(result));
+				});
+	}
+
+	private JsonObject addNormalizedShares(final JsonObject wiki) {
+		if (wiki != null) {
+			shareNormalizer.addNormalizedRights(wiki, e -> wikiExplorerPlugin.getCreatorForModel(e).map(UserInfos::getUserId));
+		}
+		return wiki;
 	}
 
 	// TODO: add a print param getWiki to get all information to print a wiki? and then remove this method?
@@ -142,7 +158,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				// notify Explorer
 				newWiki.put("version", System.currentTimeMillis());
 				newWiki.put("_id", r.right().getValue().getString("_id"));
-				explorerPlugin.notifyUpsert(user, newWiki, folderId)
+				wikiExplorerPlugin.notifyUpsert(user, newWiki, folderId)
 					.onSuccess(e -> {
 						// on success return 200
 						handler.handle(r);
@@ -173,7 +189,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				// notify EUR
 				data.put("_id", idWiki);
 				data.put("version", System.currentTimeMillis());
-				explorerPlugin.notifyUpsert(user, data)
+				wikiExplorerPlugin.notifyUpsert(user, data)
 						.onSuccess(e -> {
 							// on success return 200
 							handler.handle(r);
@@ -194,7 +210,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		super.delete(idWiki, r -> {
 			if (r.isRight()) {
 				// notify EUR
-				explorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
+				wikiExplorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
 						.onSuccess(e -> {
 							// on success return 200
 							handler.handle(r);
