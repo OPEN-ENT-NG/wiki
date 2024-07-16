@@ -19,13 +19,9 @@
 
 package net.atos.entng.wiki.controllers;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import fr.wseduc.webutils.I18n;
 import net.atos.entng.wiki.Wiki;
@@ -86,6 +82,8 @@ public class WikiController extends MongoDbControllerHelper {
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
 			Map<String, fr.wseduc.webutils.security.SecuredAction> securedActions) {
 		super.init(vertx, config, rm, securedActions);
+		final Map<String, List<String>> groupedActions = new HashMap<>();
+		this.shareService = this.explorerPlugin.createShareService(groupedActions);
 	}
 
 	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin) {
@@ -95,6 +93,18 @@ public class WikiController extends MongoDbControllerHelper {
 		this.wikiConfig = wikiConfig;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 		this.eventHelper = new EventHelper(eventStore);
+	}
+
+	@Override
+	protected boolean shouldNormalizedRights() {
+		return true;
+	}
+
+	@Override
+	protected Function<JsonObject, Optional<String>> jsonToOwnerId() {
+		return json -> {
+			return this.explorerPlugin.getCreatorForModel(json).map(user -> user.getUserId());
+		};
 	}
 
 	@Get("")
