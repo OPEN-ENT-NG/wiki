@@ -1,10 +1,13 @@
 import { AppParams } from 'ode-explorer/lib';
 import { workflows } from './workflows';
 
+import { WikiResourceService } from '../services/resource/service';
+
 export const explorerConfig: AppParams = {
   app: 'wiki',
   types: ['wiki'],
   libraryAppFilter: 'Wiki',
+  service: WikiResourceService,
   filters: [
     { id: 'owner', defaultValue: true },
     { id: 'public', defaultValue: false },
