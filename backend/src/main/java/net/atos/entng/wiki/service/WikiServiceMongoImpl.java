@@ -64,8 +64,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void getWiki(String id, Handler<Either<String, JsonObject>> handler) {
-		super.retrieve(id, handler);
-
 		QueryBuilder query = QueryBuilder.start("_id").is(id);
 
 		JsonObject projection = new JsonObject()
