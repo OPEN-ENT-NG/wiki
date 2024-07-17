@@ -23,16 +23,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-/* vi.mock('OdeClientProvider', async () => {
-  const provider = await vi.importActual<typeof import('@edifice-ui/react')>(
-    'OdeClientProvider'
-  );
-  return {
-    ...provider,
-    useSession: () => data,
-  };
-}); */
-
 vi.mock('~/store/treeview', () => ({
   useTreeActions: () => ({
     setTreeData: vi.fn(),
@@ -56,6 +46,11 @@ describe('Index Route', () => {
     });
   });
 
+  it('should render the AppHeader', () => {
+    renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
+    expect(screen.getByLabelText('breadcrumb'));
+  });
+
   it('should render Index page if no data found', async () => {
     renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
 
@@ -73,7 +68,6 @@ describe('Index Route', () => {
       `/id/${mockWiki._id}`
     );
 
-    // await waitFor(() => expect(screen.getByRole('tree')).toBeDefined());
     await waitFor(() =>
       expect(container.querySelector('.treeview')).toBeDefined()
     );

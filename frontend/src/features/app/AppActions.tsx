@@ -20,13 +20,11 @@ type ActionDropdownMenuOptions = {
 
 export const AppActions = () => {
   const params = useParams();
+  const userRights = useUserRights();
 
   const { data } = useGetWiki(params.wikiId!);
   const { t } = useTranslation();
   const { setOpenShareModal, setOpenUpdateModal } = useWikiActions();
-
-  /** Store to handle correctly rights to access ressource to avoid unexpected re-renders  */
-  const userRights = useUserRights();
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {
@@ -60,6 +58,7 @@ export const AppActions = () => {
 
   return isOnlyRead ? (
     <IconButton
+      data-testid="print-button"
       variant="outline"
       icon={<Print />}
       onClick={() => alert('print')}
@@ -71,7 +70,7 @@ export const AppActions = () => {
           Omit<IconButtonProps, 'ref'> &
           RefAttributes<HTMLButtonElement>
       ) => (
-        <>
+        <div data-testid="dropdown">
           <IconButton
             {...triggerProps}
             type="button"
@@ -99,7 +98,7 @@ export const AppActions = () => {
               </Fragment>
             ))}
           </Dropdown.Menu>
-        </>
+        </div>
       )}
     </Dropdown>
   );

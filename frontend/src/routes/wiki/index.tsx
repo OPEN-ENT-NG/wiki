@@ -1,4 +1,4 @@
-import { Grid, TreeView } from '@edifice-ui/react';
+import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
 import {
@@ -8,12 +8,13 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { WikiEmptyScreen } from '~/components';
 import { AppHeader } from '~/features';
 import { NewPage } from '~/features/wiki/NewPage';
+import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
 import { useFeedData } from '~/hooks/useFeedData';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
+import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
 
 export const loader =
@@ -24,9 +25,9 @@ export const loader =
     );
 
     // TODO: wait normalized rights
-    /* const userRights = await checkUserRight(data.rights);
+    const userRights = await checkUserRight(data.rights);
     const { setUserRights } = getUserRightsActions();
-    setUserRights(userRights); */
+    setUserRights(userRights);
 
     if (odeServices.http().isResponseError()) {
       throw new Response('', {

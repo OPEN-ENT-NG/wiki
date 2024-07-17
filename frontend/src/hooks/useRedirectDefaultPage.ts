@@ -9,12 +9,15 @@ export const useRedirectDefaultPage = () => {
   const { data } = useGetWiki(params.wikiId!);
 
   useEffect(() => {
-    if (data) {
+    if (data && data.pages) {
       const findIndexPage = data.pages.find((page) => page._id === data.index);
+      const firstPage = data.pages[0];
 
       if (findIndexPage) {
         const pageId = findIndexPage?._id;
         return navigate(`/id/${data?._id}/page/${pageId}`);
+      } else {
+        return navigate(`/id/${data?._id}/page/${firstPage._id}`);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
