@@ -20,6 +20,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('@edifice-ui/editor', () => ({
+  Editor: vi.fn().mockImplementation(() => <div />),
+}));
+
 describe('NewPage component', () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -66,20 +70,25 @@ describe('NewPage component', () => {
      * We render the expected page when useNavigate is used
      * We are navigating to `page/create`
      */
-    // renderWithRouter('/', <CreatePage />);
-
     renderWithRouter('/', <CreatePage />, `/`);
 
     /**
      * We "await" to be in the page and find our element (h1)
      */
     // await waitFor(() => screen.getByRole('heading'));
-    await screen.findByRole('heading');
+    await screen.findByRole('form');
     /**
-     * In our "create page", we expect <h1> with a text inside
+     * In our "create page", we expect <form> is defined
      */
-    expect(screen.getByRole('heading')).toHaveTextContent(
-      "Création d'une page"
-    );
+    expect(screen.findByRole('form')).toBeDefined();
+    /**
+     * In our "create page", we expect <toggle> is defined
+     */
+    expect(screen.findByRole('toggle')).toBeDefined();
+    /**
+     * In our "create page", we expect we have our Buttons Cancel and Save
+     */
+    expect(screen.getByRole('button', { name: /wiki.editform.cancel/i }));
+    expect(screen.getByRole('button', { name: /save/i }));
   });
 });
