@@ -13,7 +13,7 @@ importers:
         version: 1.5.15-develop-pedago.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@edifice-ui/react':
         specifier: develop-pedago
-        version: 1.5.15-develop-pedago.5(43hy5em7pssfz2ha3aqodbdcxi)
+        version: 1.5.15-develop-pedago.7(43hy5em7pssfz2ha3aqodbdcxi)
       '@tanstack/react-query':
         specifier: 5.8.4
         version: 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -28,7 +28,7 @@ importers:
         version: 2.4.2
       ode-explorer:
         specifier: develop-pedago
-        version: 1.4.13-develop-pedago.202407181026(5qcnqfdocxibqxhhfudvjjpm7i)
+        version: 1.4.13-develop-pedago.202407181244(5qcnqfdocxibqxhhfudvjjpm7i)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -134,7 +134,7 @@ importers:
         version: 1.5.15-develop-pedago.3
       edifice-ts-client:
         specifier: develop-pedago
-        version: 1.5.15-develop-pedago.5
+        version: 1.5.15-develop-pedago.7
       eslint:
         specifier: ~8.57.0
         version: 8.57.0
@@ -914,8 +914,16 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0
 
+<<<<<<< HEAD
   '@edifice-ui/react@1.5.15-develop-pedago.5':
     resolution: {integrity: sha512-IhZGqDzkU/Pz/4y+kQQ1e0wcyokd2D+YKHhCYaCQRjUedc2JsEgrvjZjDm2zvV7F5jXsNG1i5lNe1UXV013/Xg==}
+=======
+  '@edifice-ui/react@1.5.15-develop-pedago.7':
+    resolution:
+      {
+        integrity: sha512-qWi7XJavAb0xIOV78Jc55nE/k027aE38eyskCS3LCdcyMeZ0cliJeAipV/BPkNRSU37g9+OM1do7eTihL+UnOg==,
+      }
+>>>>>>> 8959fc7 (wip: #WB2-1603, add delete modal)
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@react-spring/web': 9.7.3
@@ -2907,8 +2915,16 @@ packages:
   dayjs@1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
 
+<<<<<<< HEAD
   dayjs@1.11.11:
     resolution: {integrity: sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==}
+=======
+  dayjs@1.11.12:
+    resolution:
+      {
+        integrity: sha512-Rt2g+nTbLlDWZTwwrIXjy9MeiZmSDI375FvZs72ngxx8PDC6YXOeR3q5LAuPzjZQxhiWdRKac7RKV+YyQYfYIg==,
+      }
+>>>>>>> 8959fc7 (wip: #WB2-1603, add delete modal)
 
   debug@3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
@@ -3044,8 +3060,16 @@ packages:
   edifice-bootstrap@1.5.15-develop-pedago.3:
     resolution: {integrity: sha512-RyGo8OWcSQlmVGrJt4dir2NxOvdPPm/5bwGjG4fcRUQiWBXPOVnyINDKsP2KnQeWUrd2K4Pfxr4f9KiqeTmmgA==}
 
+<<<<<<< HEAD
   edifice-ts-client@1.5.15-develop-pedago.5:
     resolution: {integrity: sha512-xcmDGUUHo4+Gu88VfH37WA69X6GF9G+7Lmve5MnwCXD0mLMnMap2yJekjHPsX3zwAR7id7DhSKbQz6LCpaM6QQ==}
+=======
+  edifice-ts-client@1.5.15-develop-pedago.7:
+    resolution:
+      {
+        integrity: sha512-hJb9GarxsWl2bsiujhmC7NkESZOK61F26mn/tigiv2BABlMk/tVapG+qYPyeq9g/C/rogwiX05ibSG0CVvktSA==,
+      }
+>>>>>>> 8959fc7 (wip: #WB2-1603, add delete modal)
 
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
@@ -4318,9 +4342,18 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
+<<<<<<< HEAD
   ode-explorer@1.4.13-develop-pedago.202407181026:
     resolution: {integrity: sha512-H8/VEkiXGZN1seLYsWZXqDjXyeqcgE2XDl9z0BqEjOHJSZP0bw/T/+TTvUJqcXaMoPJo1hSKbmuNbqNg0s7UPg==}
     engines: {node: 18 || 20}
+=======
+  ode-explorer@1.4.13-develop-pedago.202407181244:
+    resolution:
+      {
+        integrity: sha512-d84AwcCeIRmm1aSEH4RY+iPH97e8tOjezfPOWJz9i9j8Qfop6tONtnudkwpPL2wHncfZKs72iUzJBGStS6Hqfg==,
+      }
+    engines: { node: 18 || 20 }
+>>>>>>> 8959fc7 (wip: #WB2-1603, add delete modal)
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -5237,9 +5270,18 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
 
+<<<<<<< HEAD
   type-fest@4.22.0:
     resolution: {integrity: sha512-hxMO1k4ip1uTVGgPbs1hVpYyhz2P91A6tQyH2H9POx3U6T3MdhIcfY8L2hRu/LRmzPFdfduOS0RIDjFlP2urPw==}
     engines: {node: '>=16'}
+=======
+  type-fest@4.22.1:
+    resolution:
+      {
+        integrity: sha512-9tHNEa0Ov81YOopiVkcCJVz5TM6AEQ+CHHjFIktqPnE3NV0AHIkx+gh9tiCl58m/66wWxkOC9eltpa75J4lQPA==,
+      }
+    engines: { node: '>=16' }
+>>>>>>> 8959fc7 (wip: #WB2-1603, add delete modal)
 
   typed-array-buffer@1.0.2:
     resolution: {integrity: sha512-gEymJYKZtKXzzBzM4jqa9w6Q1Jjm7x2d+sh19AdsD4wqnMPDYyvwpsIc2Q/835kHuo3BEQ7CjelGhfTsoBb2MQ==}
@@ -6555,7 +6597,7 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@edifice-ui/react@1.5.15-develop-pedago.5(43hy5em7pssfz2ha3aqodbdcxi)':
+  '@edifice-ui/react@1.5.15-develop-pedago.7(43hy5em7pssfz2ha3aqodbdcxi)':
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@edifice-ui/icons': 1.5.15-develop-pedago.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -8845,7 +8887,7 @@ snapshots:
       cli-table3: 0.6.5
       commander: 6.2.1
       common-tags: 1.8.2
-      dayjs: 1.11.11
+      dayjs: 1.11.12
       debug: 4.3.5(supports-color@8.1.1)
       enquirer: 2.4.1
       eventemitter2: 6.4.7
@@ -8905,7 +8947,7 @@ snapshots:
 
   dayjs@1.11.10: {}
 
-  dayjs@1.11.11: {}
+  dayjs@1.11.12: {}
 
   debug@3.2.7(supports-color@8.1.1):
     dependencies:
@@ -9031,7 +9073,7 @@ snapshots:
       '@popperjs/core': 2.11.8
       bootstrap: 5.3.2(@popperjs/core@2.11.8)
 
-  edifice-ts-client@1.5.15-develop-pedago.5:
+  edifice-ts-client@1.5.15-develop-pedago.7:
     dependencies:
       axios: 1.6.6
       core-js: 3.35.1
@@ -10377,7 +10419,7 @@ snapshots:
       outvariant: 1.4.3
       path-to-regexp: 6.2.2
       strict-event-emitter: 0.5.1
-      type-fest: 4.22.0
+      type-fest: 4.22.1
       yargs: 17.7.2
     optionalDependencies:
       typescript: 5.4.5
@@ -10532,12 +10574,12 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  ode-explorer@1.4.13-develop-pedago.202407181026(5qcnqfdocxibqxhhfudvjjpm7i):
+  ode-explorer@1.4.13-develop-pedago.202407181244(5qcnqfdocxibqxhhfudvjjpm7i):
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@dnd-kit/modifiers': 7.0.0(@dnd-kit/core@6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@edifice-ui/icons': 1.5.15-develop-pedago.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@edifice-ui/react': 1.5.15-develop-pedago.5(43hy5em7pssfz2ha3aqodbdcxi)
+      '@edifice-ui/react': 1.5.15-develop-pedago.7(43hy5em7pssfz2ha3aqodbdcxi)
       '@react-spring/web': 9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tanstack/react-query': 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       clsx: 2.1.0
@@ -11566,7 +11608,7 @@ snapshots:
 
   type-fest@0.21.3: {}
 
-  type-fest@4.22.0: {}
+  type-fest@4.22.1: {}
 
   typed-array-buffer@1.0.2:
     dependencies:
