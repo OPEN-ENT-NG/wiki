@@ -8,6 +8,7 @@ export interface Wiki {
   owner: Owner;
   index?: string;
   shared?: string[];
+  rights: string[];
   pages: Page[];
   thumbnail: string;
 }

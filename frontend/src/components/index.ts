@@ -5,4 +5,3 @@
  All UI components shared across the application
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-export * from './WikiEmptyScreen/WikiEmptyScreen';

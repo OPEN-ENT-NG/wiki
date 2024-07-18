@@ -40,7 +40,7 @@ const initialState = {
   },
 };
 
-const store = createStore<State & Action>()((set, get) => ({
+const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
     setUserRights: (userRights: UserRights) => set(() => ({ userRights })),
