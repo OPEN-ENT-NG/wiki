@@ -8,6 +8,7 @@ import {
   Tooltip,
   useOdeClient,
 } from '@edifice-ui/react';
+import { QueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,24 +19,28 @@ import {
 } from 'react-router-dom';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
-import { wikiService } from '~/services';
+import { wikiQueryOptions, wikiService } from '~/services';
 
-export async function action({ params, request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const title = formData.get('title') as string;
-  const content = formData.get('content') as string;
-  //const toggle = formData.get('toggle') === 'on';
+export const action =
+  (queryClient: QueryClient) =>
+  async ({ params, request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    //const toggle = formData.get('toggle') === 'on';
 
-  const data = await wikiService.createPage({
-    wikiId: params.wikiId!,
-    data: {
-      title,
-      content,
-    },
-  });
+    const data = await wikiService.createPage({
+      wikiId: params.wikiId!,
+      data: {
+        title,
+        content,
+      },
+    });
 
-  return redirect(`/id/${params.wikiId}/page/${data._id}`);
-}
+    await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+
+    return redirect(`/id/${params.wikiId}/page/${data._id}`);
+  };
 
 export const CreatePage = () => {
   const navigate = useNavigate();
