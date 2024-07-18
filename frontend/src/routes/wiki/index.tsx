@@ -1,8 +1,7 @@
-import { TextPage } from '@edifice-ui/icons';
-import { checkUserRight, Dropdown, Grid, IconButtonProps, TreeView } from '@edifice-ui/react';
+import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { ID, odeServices } from 'edifice-ts-client';
-import { RefAttributes, useState } from 'react';
+import { useState } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -19,6 +18,7 @@ import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
 import './index.css';
+import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -90,34 +90,11 @@ export const Index = () => {
           )}
         </Grid.Col>
         <Grid.Col sm="4" md="8" lg="6" xl="9" className="mt-24">
-          <div className="dropdown-treeview">
-            <Dropdown block>
-              {(
-                triggerProps: JSX.IntrinsicAttributes &
-                  Omit<IconButtonProps, 'ref'> &
-                  RefAttributes<HTMLButtonElement>,
-                itemRefs,
-                setVisible
-              ) => (
-                <>
-                  <Dropdown.Trigger label="Pages" icon={<TextPage />} />
-                  <Dropdown.Menu
-                    onClick={() => {
-                      setVisible(false);
-                    }}
-                  >
-                    <TreeView
-                      data={treeData}
-                      showIcon={false}
-                      selectedNodeId={nodeId}
-                      allExpandedNodes={true}
-                      onTreeItemClick={handleClick}
-                    />
-                  </Dropdown.Menu>
-                </>
-              )}
-            </Dropdown>
-          </div>
+          <DropdownTreeview
+            treeData={treeData}
+            nodeId={nodeId}
+            handleClick={handleClick}
+          />
           {match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
