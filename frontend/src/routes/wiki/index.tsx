@@ -72,6 +72,7 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
+          <p data-testid="text">some text</p>
           <NewPage />
           {treeData && (
             <TreeView

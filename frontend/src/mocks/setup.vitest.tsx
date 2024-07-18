@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
-import { RenderOptions, render } from '@testing-library/react';
+import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
 
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import '../i18n';
 import { Providers } from '../providers';
 import './setup.msw';

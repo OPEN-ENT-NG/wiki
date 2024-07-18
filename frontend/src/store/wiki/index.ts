@@ -16,12 +16,14 @@ type UserRights = Record<RightRole, boolean>;
 interface State {
   openUpdateModal: boolean;
   openShareModal: boolean;
+  openDeleteModal: boolean;
 }
 
 type Action = {
   actions: {
     setOpenUpdateModal: (value: boolean) => void;
     setOpenShareModal: (value: boolean) => void;
+    setOpenDeleteModal: (value: boolean) => void;
   };
 };
 
@@ -36,6 +38,7 @@ type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 const initialState = {
   openUpdateModal: false,
   openShareModal: false,
+  openDeleteModal: false,
 };
 
 const store = createStore<State & Action>()((set, get) => ({
@@ -43,6 +46,7 @@ const store = createStore<State & Action>()((set, get) => ({
   actions: {
     setOpenUpdateModal: (openUpdateModal: boolean) => set({ openUpdateModal }),
     setOpenShareModal: (openShareModal: boolean) => set({ openShareModal }),
+    setOpenDeleteModal: (openDeleteModal: boolean) => set({ openDeleteModal }),
   },
 }));
 
@@ -51,11 +55,14 @@ const openUpdateModal = (state: ExtractState<typeof store>) =>
   state.openUpdateModal;
 const openShareModal = (state: ExtractState<typeof store>) =>
   state.openShareModal;
+const openDeleteModal = (state: ExtractState<typeof store>) =>
+  state.openDeleteModal;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 
 // Getters
 export const getOpenUpdateModal = () => openUpdateModal(store.getState());
 export const getOpenShareModal = () => openShareModal(store.getState());
+export const getOpenDeleteModal = () => openDeleteModal(store.getState());
 export const getWikiActions = () => actionsSelector(store.getState());
 
 // React Store
@@ -66,4 +73,5 @@ function useWikiStore<U>(selector: Params<U>[1]) {
 // Hooks
 export const useOpenUpdateModal = () => useWikiStore(openUpdateModal);
 export const useOpenShareModal = () => useWikiStore(openShareModal);
+export const useOpenDeleteModal = () => useWikiStore(openDeleteModal);
 export const useWikiActions = () => useWikiStore(actionsSelector);
