@@ -1,1 +1,1 @@
-export const TTITLE_LENGTH_MAX = 60;
+export const MAX_TITLE_LENGTH = 60;

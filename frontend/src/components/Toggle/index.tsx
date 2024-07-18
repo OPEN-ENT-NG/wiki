@@ -1,4 +1,5 @@
 import { forwardRef, InputHTMLAttributes } from 'react';
+import './index.css';
 
 export const Toggle = forwardRef<
   HTMLInputElement,

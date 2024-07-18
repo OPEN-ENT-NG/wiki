@@ -16,9 +16,8 @@ import {
   redirect,
   useNavigate,
 } from 'react-router-dom';
-import { ButtonGroup } from '~/components/ButtonGroup';
 import { Toggle } from '~/components/Toggle';
-import { TTITLE_LENGTH_MAX } from '~/config/init-config';
+import { MAX_TITLE_LENGTH } from '~/config/init-config';
 import { wikiService } from '~/services';
 
 export async function action({ params, request }: ActionFunctionArgs) {
@@ -40,16 +39,18 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
 export const CreatePage = () => {
   const navigate = useNavigate();
-  const { appCode } = useOdeClient();
-  const { t } = useTranslation(appCode);
   const editorRef = useRef<EditorRef>(null);
+
   const [content, setContent] = useState('');
 
-  const handleCancel = () => {
+  const { appCode } = useOdeClient();
+  const { t } = useTranslation(appCode);
+
+  const handleOnButtonCancel = () => {
     navigate(-1);
   };
 
-  const handleContentChange = ({ editor }: any) => {
+  const handleOnContentChange = ({ editor }: any) => {
     const htmlContent = editor.getHTML();
     setContent(htmlContent);
   };
@@ -63,7 +64,7 @@ export const CreatePage = () => {
             name="title"
             type="text"
             size="md"
-            maxLength={TTITLE_LENGTH_MAX}
+            maxLength={MAX_TITLE_LENGTH}
             placeholder={t('wiki.createform.input.placeholder')}
           ></Input>
         </FormControl>
@@ -77,24 +78,24 @@ export const CreatePage = () => {
             <InfoCircle className="c-pointer" height="18" />
           </Tooltip>
         </FormControl>
-        <div className="mx-md-16 mt-16 post-content-editor">
+        <div className="mx-md-16 mt-16 post-content-editor`">
           <Editor
             ref={editorRef}
             content=""
             mode="edit"
             visibility="protected"
-            onContentChange={handleContentChange}
+            onContentChange={handleOnContentChange}
           ></Editor>
           <input type="hidden" name="content" value={content} />
         </div>
-        <ButtonGroup className="gap-8 mt-16 mx-md-16" variant="reverse">
-          <Button type="button" variant="ghost" onClick={handleCancel}>
+        <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
+          <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
           </Button>
           <Button type="submit" variant="filled" leftIcon={<Save />}>
             {t('wiki.editform.save')}
           </Button>
-        </ButtonGroup>
+        </div>
       </Form>
     </div>
   );
