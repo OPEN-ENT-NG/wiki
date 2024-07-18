@@ -41,12 +41,10 @@ export const loader =
 
 export const action = (queryClient: QueryClient) =>
   async function action({ params }: ActionFunctionArgs) {
-    const result = await wikiService.deletePage({
+    await wikiService.deletePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
     });
-
-    console.log({ result });
 
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
 
