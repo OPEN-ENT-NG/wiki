@@ -1,2 +1,2 @@
-export * from './explorerConfig';
+export * from './explorer';
 export * from './workflows';
