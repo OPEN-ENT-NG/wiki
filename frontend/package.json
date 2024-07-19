@@ -23,6 +23,7 @@
     ]
   },
   "dependencies": {
+    "@edifice-ui/editor": "develop-pedago",
     "@edifice-ui/icons": "develop-pedago",
     "@edifice-ui/react": "develop-pedago",
     "@tanstack/react-query": "5.8.4",
