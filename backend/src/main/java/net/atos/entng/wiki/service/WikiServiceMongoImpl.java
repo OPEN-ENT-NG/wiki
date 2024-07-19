@@ -142,12 +142,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createWiki(UserInfos user, String wikiTitle, String thumbnail,
+	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, String description,
 	final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler) {
 
 		JsonObject newWiki = new JsonObject();
-		newWiki.put("title", wikiTitle)
+		newWiki
+				.put("title", wikiTitle)
+				.put("description", description)
 				.put("pages", new JsonArray());
 		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
 			newWiki.put("thumbnail", thumbnail);
@@ -174,10 +176,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail,
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail, String description,
 			Handler<Either<String, JsonObject>> handler) {
 		JsonObject data = new JsonObject();
-		data.put("title", wikiTitle);
+		data
+				.put("title", wikiTitle)
+				.put("description", description);
+
 		if(thumbnail==null || thumbnail.trim().isEmpty()){
 			data.put("thumbnail", "");
 		} else {
