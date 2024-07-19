@@ -47,7 +47,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'page/create',
             element: <CreatePage />,
-            action: createAction,
+            action: createAction(queryClient),
           },
           {
             path: 'page/:pageId/edit',
