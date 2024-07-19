@@ -7,6 +7,7 @@ import {
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
+import './dropdown.css';
 
 export const DropdownTreeview = ({
   treeData,

@@ -1,14 +1,3 @@
-.dropdown-treeview {
-  display: block;
-}
-
-@media (min-width: 1024px) {
-  .dropdown-treeview {
-    display: none;
-  }
-
-}
-
 .post-content-editor .ProseMirror[contenteditable='true'] {
   min-height: 180px;
 }
