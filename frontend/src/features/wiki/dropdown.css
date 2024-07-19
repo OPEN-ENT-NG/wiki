@@ -1,9 +1,9 @@
 .dropdown-treeview {
-    display: block;
+  display: block;
 }
 
 @media (min-width: 1024px) {
-    .dropdown-treeview {
-        display: none;
-    }
+  .dropdown-treeview {
+    display: none;
+  }
 }
