@@ -8,4 +8,5 @@
 
 export * from './app/AppActions';
 export * from './app/AppHeader';
+export * from './wiki/DropdownTreeview';
 export * from './wiki/NewPage';
