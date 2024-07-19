@@ -35,10 +35,10 @@ public interface WikiService {
 
 	public void getWikis(UserInfos user, Handler<Either<String, JsonArray>> handler);
 
-	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, final Optional<Number> folderId,
+	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, String description, final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail,
+	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail, String description,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void deleteWiki(UserInfos user, String idWiki,

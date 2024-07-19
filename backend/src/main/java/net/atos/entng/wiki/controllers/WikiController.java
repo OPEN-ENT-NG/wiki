@@ -185,17 +185,18 @@ public class WikiController extends MongoDbControllerHelper {
 			if (user != null) {
 				RequestUtils.bodyToJson(request, wiki -> {
 					// get data from request body
-					String wikiTitle = wiki.getString("title");
+					final String wikiTitle = wiki.getString("title");
 					if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
 						badRequest(request);
 						return;
 					}
-					String thumbnail = wiki.getString("thumbnail");
+					final String thumbnail = wiki.getString("thumbnail");
+					final String description = wiki.getString("description");
 					final Optional<Number> folderId = Optional.ofNullable(wiki.getNumber("folder"));
 					
 					// create Wiki
 					final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
-					wikiService.createWiki(user, wikiTitle, thumbnail, folderId, (r) -> {
+					wikiService.createWiki(user, wikiTitle, thumbnail, description, folderId, (r) -> {
 						if (r.isLeft()) {
 							// if fail return error
                             handler.handle(new Either.Left<>(r.left().getValue()));
@@ -222,6 +223,7 @@ public class WikiController extends MongoDbControllerHelper {
 					// get data from request body
 					final String idWiki = request.params().get("id");
 					final String wikiTitle = wiki.getString("title");
+					final String description = wiki.getString("description");
 					if (wikiTitle == null || wikiTitle.trim().isEmpty()) {
 						badRequest(request);
 						return;
@@ -229,7 +231,7 @@ public class WikiController extends MongoDbControllerHelper {
 					String thumbnail = wiki.getString("thumbnail");
 					
 					Handler<Either<String, JsonObject>> handler = defaultResponseHandler(request);
-					wikiService.updateWiki(user, idWiki, wikiTitle, thumbnail, r -> {
+					wikiService.updateWiki(user, idWiki, wikiTitle, thumbnail, description, r -> {
 						if (r.isLeft()) {
 							// if fail return error
 							handler.handle(new Either.Left<>(r.left().getValue()));
