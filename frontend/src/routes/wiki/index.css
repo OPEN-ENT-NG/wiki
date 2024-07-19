@@ -1,7 +1,3 @@
 .post-content-editor .ProseMirror[contenteditable='true'] {
   min-height: 180px;
 }
-
-.post-content-editor .ProseMirror[contenteditable='true'] {
-  min-height: 180px;
-}
