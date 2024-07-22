@@ -83,7 +83,7 @@ export const CreatePage = () => {
             <InfoCircle className="c-pointer" height="18" />
           </Tooltip>
         </FormControl>
-        <div className="mx-md-16 mt-16 post-content-editor`">
+        <div className="mx-md-16 mt-16 post-content-editor">
           <Editor
             ref={editorRef}
             content=""
