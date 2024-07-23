@@ -3,12 +3,14 @@ import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import {
   ActionFunctionArgs,
-  Form,
   LoaderFunctionArgs,
   redirect,
   useParams,
 } from 'react-router-dom';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
+import { Editor, EditorRef } from '@edifice-ui/editor';
+import { useRef } from 'react';
+import { ContentTitle } from '~/features/wiki/ContentTitle';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -40,22 +42,29 @@ export async function action({ params }: ActionFunctionArgs) {
 
 export const Page = () => {
   const params = useParams();
+  const editorRef = useRef<EditorRef>(null);
 
   const { isPending, error, data } = useGetPage({
     wikiId: params.wikiId!,
     pageId: params.pageId!,
   });
 
+  const page = data?.pages[0];
+
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
 
-  return (
-    <>
-      <div>{data.title}</div>
-      <Form method="delete">
-        <button type="submit">supprimer page</button>
-      </Form>
-    </>
-  );
+  return page ? (
+    <div className="d-flex flex-column mt-8 mx-md-8">
+      <ContentTitle page={page} />
+      <Editor
+        ref={editorRef}
+        content={page.content}
+        mode={'read'}
+        variant={'ghost'}
+        visibility={'protected'}
+      ></Editor>
+    </div>
+  ) : null;
 };
