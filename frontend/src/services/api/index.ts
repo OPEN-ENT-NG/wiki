@@ -1,5 +1,6 @@
 import { odeServices } from 'edifice-ts-client';
 import {
+  ArrayPage,
   Page,
   PagePostPayload,
   PagePutPayload,
@@ -56,7 +57,7 @@ const createWikiService = (baseURL: string) => ({
   async getPage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
       .http()
-      .get<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
+      .get<ArrayPage>(`${baseURL}/${wikiId}/page/${pageId}`);
     return response;
   },
 

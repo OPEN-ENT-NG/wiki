@@ -12,3 +12,7 @@ export interface Page {
   lastContributerName?: string;
   comments?: Comment[];
 }
+
+export interface ArrayPage {
+  pages: Array<Page>;
+}

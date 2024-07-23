@@ -1,26 +1,40 @@
-import { ActionFunctionArgs, Form, redirect } from 'react-router-dom';
-import { wikiService } from '~/services';
+import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
+import { FormPage } from '~/components/FormPage';
+import { queryClient } from '~/providers';
+import { useGetPage, wikiQueryOptions, wikiService } from '~/services';
 
-export async function action({ params }: ActionFunctionArgs) {
-  const content = 'test';
+export async function action({ params, request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const title = formData.get('title') as string;
+  const content = formData.get('content') as string;
 
   await wikiService.updatePage({
     wikiId: params.wikiId!,
     pageId: params.pageId!,
     data: {
-      title: 'page mise à jour',
+      title,
       content,
     },
   });
+
+  await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
 
   return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
 }
 
 export const EditPage = () => {
-  return (
-    <Form method="put">
-      <h1>Edition d'une page</h1>
-      <button type="submit">Editer une page</button>
-    </Form>
-  );
+  const params = useParams();
+
+  const { data } = useGetPage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+  });
+
+  const page = data?.pages[0];
+
+  return page ? (
+    <div className="page-container mt-32">
+      <FormPage page={page} />
+    </div>
+  ) : null;
 };
