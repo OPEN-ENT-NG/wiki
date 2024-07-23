@@ -10,6 +10,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import { AppHeader } from '~/features';
+import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 import { NewPage } from '~/features/wiki/NewPage';
 import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
 import { useFeedData } from '~/hooks/useFeedData';
@@ -18,7 +19,6 @@ import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
 import './index.css';
-import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -89,7 +89,13 @@ export const Index = () => {
             />
           )}
         </Grid.Col>
-        <Grid.Col sm="4" md="8" lg="6" xl="9" className="mt-24">
+        <Grid.Col
+          sm="4"
+          md="8"
+          lg="6"
+          xl="9"
+          className="d-flex ms-n16 ms-lg-n24 me-n16"
+        >
           <DropdownTreeview
             treeData={treeData}
             nodeId={nodeId}
