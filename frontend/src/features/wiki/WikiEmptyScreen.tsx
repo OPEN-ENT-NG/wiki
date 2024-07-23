@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import emptyScreenImage from '~/assets/illu-wiki.svg';
 
 export const WikiEmptyScreen = () => {
-  const emptyStyles = { maxWidth: '424px', margin: '0 auto' };
+  const emptyStyles = { maxWidth: '424px' };
 
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
 
   return (
     <div
-      className="d-flex flex-column align-items-center justify-content-center"
+      className="d-flex flex-column gap-24 flex-fill align-items-center justify-content-center m-auto"
       style={emptyStyles}
     >
       <EmptyScreen imageSrc={emptyScreenImage} imageAlt="Wiki Image" />
