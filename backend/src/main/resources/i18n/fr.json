@@ -157,5 +157,5 @@
   "explorer.emptyScreen.txt2d.consultation": "TODO",
   "explorer.emptyScreen.search.text": "Désolé, il n’y a rien sous ce nom-là... Aucun wiki ne correspond à votre recherche. Modifiez les critères et tentez à nouveau !",
   "explorer.emptyScreen.search.alt": "Illustration de la recherche de ressources",
-  "tooltip.shared": "Wiki partagé"
+  "explorer.tooltip.shared": "Wiki partagé"
 }
