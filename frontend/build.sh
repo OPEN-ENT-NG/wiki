@@ -22,10 +22,23 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-if [ -z ${USER_UID:+x} ]
+if [[ "$*" == *"--no-user"* ]]
 then
-  export USER_UID=1000
-  export GROUP_GID=1000
+  USER_OPTION=""
+else
+  case `uname -s` in
+    MINGW* | Darwin*)
+      USER_UID=1000
+      GROUP_GID=1000
+      ;;
+    *)
+      if [ -z ${USER_UID:+x} ]
+      then
+        USER_UID=`id -u`
+        GROUP_GID=`id -g`
+      fi
+  esac
+  USER_OPTION="-u $USER_UID:$GROUP_GID"
 fi
 
 # options
@@ -56,7 +69,7 @@ init() {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm install
   else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm install"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install"
   fi
 }
 
@@ -64,7 +77,7 @@ build () {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm run build
   else
-    docker-compose run --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm run build"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm build"
   fi
   status=$?
   if [ $status != 0 ];
