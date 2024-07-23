@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { render, renderWithRouter, screen } from '~/mocks/setup.vitest';
 import { CreatePage } from '~/routes/page/create';
 import { NewPage } from './NewPage';
@@ -21,7 +22,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('@edifice-ui/editor', () => ({
-  Editor: vi.fn().mockImplementation(() => <div />),
+  Editor: React.forwardRef(() => <div />),
 }));
 
 describe('NewPage component', () => {
