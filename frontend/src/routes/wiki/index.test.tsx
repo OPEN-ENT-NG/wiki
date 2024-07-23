@@ -39,7 +39,7 @@ describe('Index Route', () => {
   });
 
   it('should navigate to the Index page', async () => {
-    renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
+    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /wiki.create.new.page/i }));
@@ -47,12 +47,12 @@ describe('Index Route', () => {
   });
 
   it('should render the AppHeader', () => {
-    renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
+    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
     expect(screen.getByLabelText('breadcrumb'));
   });
 
   it('should render Index page if no data found', async () => {
-    renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
+    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
 
     const { result } = renderHook(() => {
       return false;
@@ -64,8 +64,8 @@ describe('Index Route', () => {
   it('should render TreeView component', async () => {
     const { container } = renderWithRouter(
       '/id/:wikiId',
-      <Index />,
-      `/id/${mockWiki._id}`
+      `/id/${mockWiki._id}`,
+      <Index />
     );
 
     await waitFor(() =>
@@ -74,7 +74,7 @@ describe('Index Route', () => {
   });
 
   it('should trigger a navigation hook if the data has an indexed/default page', async () => {
-    renderWithRouter('/id/:wikiId', <Index />, `/id/${mockWiki._id}`);
+    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
 
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
@@ -86,8 +86,8 @@ describe('Index Route', () => {
   it('should navigate to the page route if data is found', async () => {
     renderWithRouter(
       '/id/:wikiId/page/:pageId',
-      <Page />,
-      `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`
+      `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
+      <Page />
     );
 
     await waitFor(() => screen.getByRole('button'));

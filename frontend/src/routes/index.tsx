@@ -4,7 +4,7 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom';
 import { Explorer } from 'ode-explorer/lib';
 import { explorerConfig } from '~/config';
 import { PageError } from '~/routes/errors';
-import { NotFound } from './errors/not-found';
+import { NotFound } from '~/routes/errors/not-found';
 import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, action as editAction } from './page/edit';
@@ -14,7 +14,7 @@ import { Index, loader as wikiLoader } from './wiki';
 const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {
-    path: '/*',
+    path: '/',
     async lazy() {
       const { loader, Root: Component } = await import('~/routes/root');
       return {

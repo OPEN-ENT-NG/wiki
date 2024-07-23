@@ -19,8 +19,8 @@ const customRender = (
  */
 export const renderWithRouter = (
   path = '/',
-  element: JSX.Element,
-  mockedPath: string
+  target: string,
+  element: JSX.Element
 ) => {
   const routes = [
     {
@@ -30,7 +30,7 @@ export const renderWithRouter = (
   ];
 
   const router = createMemoryRouter(routes, {
-    initialEntries: [mockedPath],
+    initialEntries: [target],
   });
 
   return {

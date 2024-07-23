@@ -1,7 +1,7 @@
 import { AppParams } from 'ode-explorer/lib';
 import { workflows } from './workflows';
 
-import { WikiResourceService } from '../services/resource/service';
+import { WikiResourceService } from '~/services';
 
 export const explorerConfig: AppParams = {
   app: 'wiki',

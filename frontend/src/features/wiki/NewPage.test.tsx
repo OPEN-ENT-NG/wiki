@@ -70,7 +70,7 @@ describe('NewPage component', () => {
      * We render the expected page when useNavigate is used
      * We are navigating to `page/create`
      */
-    renderWithRouter('/', <CreatePage />, `/`);
+    renderWithRouter('/', `/`, <CreatePage />);
 
     /**
      * We "await" to be in the page and find our element (h1)
