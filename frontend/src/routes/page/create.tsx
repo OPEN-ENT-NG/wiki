@@ -61,47 +61,45 @@ export const CreatePage = () => {
   };
 
   return (
-    <div className="mt-32">
-      <Form method="post" role="form">
-        <FormControl id="inputForm" isRequired className="mx-md-16">
-          <Label>{t('wiki.linkerform.pagetitle.label')}</Label>
-          <Input
-            name="title"
-            type="text"
-            size="md"
-            maxLength={MAX_TITLE_LENGTH}
-            placeholder={t('wiki.createform.input.placeholder')}
-          ></Input>
-        </FormControl>
-        <FormControl id="toggleForm" className="mx-md-16 d-flex mt-24 gap-8">
-          <Toggle name="toggle" />
-          <Label>{t('wiki.createform.toggle.title')}</Label>
-          <Tooltip
-            message={t('wiki.createform.toggle.message')}
-            placement="bottom-start"
-          >
-            <InfoCircle className="c-pointer" height="18" />
-          </Tooltip>
-        </FormControl>
-        <div className="mx-md-16 mt-16 post-content-editor">
-          <Editor
-            ref={editorRef}
-            content=""
-            mode="edit"
-            visibility="protected"
-            onContentChange={handleOnContentChange}
-          ></Editor>
-          <input type="hidden" name="content" value={content} />
-        </div>
-        <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
-          <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
-            {t('wiki.editform.cancel')}
-          </Button>
-          <Button type="submit" variant="filled" leftIcon={<Save />}>
-            {t('wiki.editform.save')}
-          </Button>
-        </div>
-      </Form>
-    </div>
+    <Form method="post" role="form">
+      <FormControl id="inputForm" isRequired>
+        <Label>{t('wiki.linkerform.pagetitle.label')}</Label>
+        <Input
+          name="title"
+          type="text"
+          size="md"
+          maxLength={MAX_TITLE_LENGTH}
+          placeholder={t('wiki.createform.input.placeholder')}
+        ></Input>
+      </FormControl>
+      <FormControl id="toggleForm" className="mx-md-16 d-flex mt-24 gap-8">
+        <Toggle name="toggle" />
+        <Label>{t('wiki.createform.toggle.title')}</Label>
+        <Tooltip
+          message={t('wiki.createform.toggle.message')}
+          placement="bottom-start"
+        >
+          <InfoCircle className="c-pointer" height="18" />
+        </Tooltip>
+      </FormControl>
+      <div className="mt-16 post-content-editor">
+        <Editor
+          ref={editorRef}
+          content=""
+          mode="edit"
+          visibility="protected"
+          onContentChange={handleOnContentChange}
+        ></Editor>
+        <input type="hidden" name="content" value={content} />
+      </div>
+      <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
+        <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
+          {t('wiki.editform.cancel')}
+        </Button>
+        <Button type="submit" variant="filled" leftIcon={<Save />}>
+          {t('wiki.editform.save')}
+        </Button>
+      </div>
+    </Form>
   );
 };

@@ -19,6 +19,7 @@ import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
 import './index.css';
+import { useMediaQuery } from '@uidotdev/usehooks';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -47,6 +48,7 @@ export const Index = () => {
   const navigate = useNavigate();
   const treeData = useTreeData();
   const match = useMatch('/id/:wikiId');
+  const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
 
   const [nodeId, setNodeId] = useState<string>('');
 
@@ -94,14 +96,18 @@ export const Index = () => {
           md="8"
           lg="6"
           xl="9"
-          className="d-flex ms-n16 ms-lg-n24 me-n16"
+          className="ms-n16 ms-lg-n24 me-n16"
         >
-          <DropdownTreeview
-            treeData={treeData}
-            nodeId={nodeId}
-            handleClick={handleClick}
-          />
-          {match ? <WikiEmptyScreen /> : <Outlet />}
+          <div className="mt-16 mx-16">
+            {isSmallDevice && (
+              <DropdownTreeview
+                treeData={treeData}
+                nodeId={nodeId}
+                handleClick={handleClick}
+              />
+            )}
+            {match ? <WikiEmptyScreen /> : <Outlet />}
+          </div>
         </Grid.Col>
       </Grid>
     </>

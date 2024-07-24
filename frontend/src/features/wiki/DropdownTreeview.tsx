@@ -7,7 +7,6 @@ import {
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
-import './dropdown.css';
 
 export const DropdownTreeview = ({
   treeData,
@@ -19,7 +18,7 @@ export const DropdownTreeview = ({
   handleClick: (pageId: ID) => void;
 }) => {
   return (
-    <div className="dropdown-treeview">
+    <div className="dropdown-treeview w-100 mb-16">
       <Dropdown block>
         {(
           triggerProps: JSX.IntrinsicAttributes &
