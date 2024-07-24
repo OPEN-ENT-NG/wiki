@@ -14,8 +14,6 @@ export const useRedirectDefaultPage = () => {
       const findIndexPage = data.pages.find((page) => page._id === data.index);
       const firstPage = data.pages[0];
 
-      console.log({ findIndexPage, firstPage });
-
       if (findIndexPage) {
         const pageId = findIndexPage?._id;
         return navigate(`/id/${data?._id}/page/${pageId}`);
