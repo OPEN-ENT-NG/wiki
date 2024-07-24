@@ -21,6 +21,7 @@ package net.atos.entng.wiki.service;
 
 import java.util.Optional;
 
+import io.vertx.core.http.HttpServerRequest;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -44,17 +45,17 @@ public interface WikiService {
 	public void deleteWiki(UserInfos user, String idWiki,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void getPage(String idWiki, String idPage,
+	public void getPage(String idWiki, String idPage, HttpServerRequest request,
 			Handler<Either<String, JsonObject>> handler);
 
 	public void getPages(String idWiki,
 						 Handler<Either<String, JsonObject>> handler);
 
 	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
-			String pageContent, boolean isIndex, Handler<Either<String, JsonObject>> handler);
+						   String pageContent, boolean isIndex, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(UserInfos user, String idWiki, String idPage, String pageTitle, String pageContent,
-			boolean isIndex, boolean wasIndex, Handler<Either<String, JsonObject>> handler);
+			boolean isIndex, boolean wasIndex, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
