@@ -23,6 +23,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('@uidotdev/usehooks', () => ({
+  useMediaQuery: vi.fn(),
+}));
+
 vi.mock('~/store/treeview', () => ({
   useTreeActions: () => ({
     setTreeData: vi.fn(),
