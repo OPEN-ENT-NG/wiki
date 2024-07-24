@@ -32,6 +32,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 
+import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
 import org.entcore.common.events.EventStoreFactory;
@@ -86,10 +87,10 @@ public class WikiController extends MongoDbControllerHelper {
 		this.shareService = this.explorerPlugin.createShareService(groupedActions);
 	}
 
-	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin) {
+	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin, WikiService wikiService) {
 		super(collection);
 		this.explorerPlugin = plugin;
-		wikiService = new WikiServiceMongoImpl(collection, explorerPlugin);
+		this.wikiService = wikiService;
 		this.wikiConfig = wikiConfig;
 		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Wiki.class.getSimpleName());
 		this.eventHelper = new EventHelper(eventStore);
@@ -275,12 +276,10 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Get a specific page of a wiki")
 	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
 	public void getPage(final HttpServerRequest request) {
-		String idWiki = request.params().get("id");
-		String idPage = request.params().get("idpage");
+		final String idWiki = request.params().get("id");
+		final String idPage = request.params().get("idpage");
 
-		Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
-
-		wikiService.getPage(idWiki, idPage, handler);
+		wikiService.getPage(idWiki, idPage, request, notEmptyResponseHandler(request));
 	}
 
 	@Post("/:id/page")
@@ -295,8 +294,7 @@ public class WikiController extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject data) {
-							final String newPageId = ((WikiServiceMongoImpl) wikiService)
-									.newObjectId();
+							final String newPageId = new ObjectId().toString();
 
 							final String idWiki = request.params().get("id");
 							boolean isIndex = data.getBoolean("isIndex", false);
@@ -328,7 +326,7 @@ public class WikiController extends MongoDbControllerHelper {
 							};
 
 							wikiService.createPage(user, idWiki, newPageId, pageTitle,
-									pageContent, isIndex, handler);
+									pageContent, isIndex, request, handler);
 						}
 					});
 				}
@@ -362,7 +360,7 @@ public class WikiController extends MongoDbControllerHelper {
 								return;
 							}
 
-							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, isIndex, wasIndex,
+							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, isIndex, wasIndex, request,
 									new Handler<Either<String, JsonObject>>() {
 										@Override
 										public void handle(Either<String, JsonObject> r) {
@@ -418,7 +416,7 @@ public class WikiController extends MongoDbControllerHelper {
 					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
 						@Override
 						public void handle(JsonObject data) {
-							final String newCommentId = ((WikiServiceMongoImpl) wikiService).newObjectId();
+							final String newCommentId = new ObjectId().toString();
 
 							final String idWiki = request.params().get("id");
 							final String idPage = request.params().get("idpage");

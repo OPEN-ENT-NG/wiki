@@ -19,6 +19,10 @@
 
 package net.atos.entng.wiki;
 
+import fr.wseduc.transformer.IContentTransformerClient;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
@@ -26,7 +30,11 @@ import net.atos.entng.wiki.service.WikiSearchingEvents;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import net.atos.entng.wiki.service.WikiService;
+import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import org.entcore.common.editor.EventStoredContentTransformerFactoryProvider;
 import org.entcore.common.explorer.IExplorerPluginClient;
 import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
@@ -34,6 +42,8 @@ import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
+
+import static java.util.Optional.empty;
 
 public class Wiki extends BaseServer {
     public static final String APPLICATION = "wiki";
@@ -63,11 +73,19 @@ public class Wiki extends BaseServer {
 			setSearchingEvents(new WikiSearchingEvents(new MongoDbSearchService(WIKI_COLLECTION)));
 		}
 
+		// Tiptap Transformer
+		EventStoredContentTransformerFactoryProvider.init(vertx);
+		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
+		IContentTransformerClient contentTransformerClient = EventStoredContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
+
         // Create Explorer plugin
 		this.plugin = WikiExplorerPlugin.create(securedActions);
 
+		// Pass the Explorer plugin and the Tiptap transformer to the Wiki Service
+		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient);
+
         // Add Wiki Controller
-        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin);
+        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
 		addController(wikiController);
 		
         // Set Mongo Collection
@@ -77,6 +95,18 @@ public class Wiki extends BaseServer {
 
         // Start Explorer plugin
 		this.plugin.start();
+	}
+
+	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
+		final LocalMap<Object, Object> server= vertx.sharedData().getLocalMap("server");
+		final String rawConfiguration = (String) server.get("content-transformer");
+		final Optional<JsonObject> contentTransformerConfig;
+		if(rawConfiguration == null) {
+			contentTransformerConfig = empty();
+		} else {
+			contentTransformerConfig = Optional.of(new JsonObject(rawConfiguration));
+		}
+		return contentTransformerConfig;
 	}
 
 	@Override
