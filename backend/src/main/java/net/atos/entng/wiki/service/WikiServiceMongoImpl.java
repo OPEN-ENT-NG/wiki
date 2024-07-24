@@ -56,7 +56,6 @@ import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
 
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
-	public static final String TRANSFORMED_CONTENT_DB_FIELD_NAME = "transformed_content";
 	protected static final Logger log = LoggerFactory.getLogger(WikiServiceMongoImpl.class);
 	private final String collection;
 	private final MongoDb mongo;
