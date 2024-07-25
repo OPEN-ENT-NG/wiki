@@ -1,4 +1,4 @@
-import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
+import { checkUserRight, Grid, Menu, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
@@ -16,6 +16,7 @@ import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 import { NewPage } from '~/features/wiki/NewPage';
 import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
 import { useFeedData } from '~/hooks/useFeedData';
+import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
@@ -50,6 +51,7 @@ export const Index = () => {
   const treeData = useTreeData();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
+  const menu = useMenu();
 
   const [nodeId, setNodeId] = useState<string>('');
 
@@ -73,6 +75,7 @@ export const Index = () => {
   return (
     <>
       <AppHeader />
+
       <Grid className="flex-grow-1">
         <Grid.Col
           sm="3"
@@ -81,7 +84,17 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <p data-testid="text">some text</p>
+          <Menu label={data ? data.title : ''}>
+            <Menu.Item>
+              <Menu.Button
+                onClick={menu.onClick}
+                leftIcon={menu.leftIcon}
+                selected={menu.selected}
+              >
+                {menu.children}
+              </Menu.Button>
+            </Menu.Item>
+          </Menu>
           <NewPage />
           {treeData && (
             <TreeView

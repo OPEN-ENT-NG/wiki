@@ -11,7 +11,7 @@ import { EditPage, action as editAction } from './page/edit';
 import { Pages, loader as pagesLoader } from './page/list';
 import { Index, loader as wikiLoader } from './wiki';
 
-const routes = (queryClient: QueryClient): RouteObject[] => [
+export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {
     path: '/',

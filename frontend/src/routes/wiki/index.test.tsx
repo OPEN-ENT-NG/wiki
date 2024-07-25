@@ -25,6 +25,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('@uidotdev/usehooks', () => ({
   useMediaQuery: vi.fn(),
+  usePrevious: vi.fn(),
 }));
 
 vi.mock('~/store/treeview', () => ({
@@ -42,27 +43,30 @@ describe('Index Route', () => {
     vi.clearAllMocks();
   });
 
-  it('should navigate to the Index page', async () => {
+  beforeEach(() => {
     renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
+  });
 
+  it('should navigate to the Index page', async () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /wiki.create.new.page/i }));
     });
   });
 
   it('should render the AppHeader', () => {
-    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
     expect(screen.getByLabelText('breadcrumb'));
   });
 
   it('should render Index page if no data found', async () => {
-    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
-
     const { result } = renderHook(() => {
       return false;
     });
 
     await waitFor(() => expect(result.current).toBe(false));
+  });
+
+  it('should render Menu component', async () => {
+    await waitFor(() => expect(screen.findByLabelText('Wiki')));
   });
 
   it('should render TreeView component', async () => {
@@ -77,9 +81,7 @@ describe('Index Route', () => {
     );
   });
 
-  it('should trigger a navigation hook if the data has an indexed/default page', async () => {
-    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
-
+  it('should trigger a navigation if the data has an indexed/default page', async () => {
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
         `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`
