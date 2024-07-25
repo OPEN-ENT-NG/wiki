@@ -1,5 +1,6 @@
 import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
+import { useMediaQuery } from '@uidotdev/usehooks';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useState } from 'react';
 import {
@@ -19,7 +20,6 @@ import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useTreeData } from '~/store/treeview';
 import './index.css';
-import { useMediaQuery } from '@uidotdev/usehooks';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -98,7 +98,7 @@ export const Index = () => {
           xl="9"
           className="ms-n16 ms-lg-n24 me-n16"
         >
-          <div className="mt-16 mx-16">
+          <div className="mt-16 mx-16 mt-lg-0 mx-lg-0">
             {isSmallDevice && (
               <DropdownTreeview
                 treeData={treeData}

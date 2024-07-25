@@ -9,8 +9,8 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { pageQueryOptions, useGetPage, wikiService } from '~/services';
 import { ContentTitle } from '~/features/wiki/ContentHeader';
+import { pageQueryOptions, useGetPage, wikiService } from '~/services';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -54,7 +54,7 @@ export const Page = () => {
   if (error) return 'An error has occurred: ' + error.message;
 
   return data ? (
-    <div className="d-flex flex-column mt-24 mx-md-24 me-md-16">
+    <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
       <ContentTitle page={data} />
       <Editor
         ref={editorRef}
