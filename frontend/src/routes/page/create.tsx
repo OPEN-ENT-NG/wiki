@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { ActionFunctionArgs, redirect } from 'react-router-dom';
-import { FormPage } from '~/components/FormPage';
+import { FormPage } from '~/features/page/FormPage';
 import { wikiQueryOptions, wikiService } from '~/services';
 
 export const action =
@@ -25,9 +25,5 @@ export const action =
   };
 
 export const CreatePage = () => {
-  return (
-    <div className="page-container mt-32">
-      <FormPage />
-    </div>
-  );
+  return <FormPage />;
 };

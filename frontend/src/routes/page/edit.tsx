@@ -1,5 +1,6 @@
+import { LoadingScreen } from '@edifice-ui/react';
 import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
-import { FormPage } from '~/components/FormPage';
+import { FormPage } from '~/features/page/FormPage';
 import { queryClient } from '~/providers';
 import { useGetPage, wikiQueryOptions, wikiService } from '~/services';
 
@@ -25,16 +26,12 @@ export async function action({ params, request }: ActionFunctionArgs) {
 export const EditPage = () => {
   const params = useParams();
 
-  const { data } = useGetPage({
+  const { data, isPending } = useGetPage({
     wikiId: params.wikiId!,
     pageId: params.pageId!,
   });
 
-  const page = data?.pages[0];
+  if (isPending) return <LoadingScreen />;
 
-  return page ? (
-    <div className="page-container mt-32">
-      <FormPage page={page} />
-    </div>
-  ) : null;
+  return data ? <FormPage page={data} /> : null;
 };
