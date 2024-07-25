@@ -52,7 +52,7 @@ const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'page/:pageId/edit',
             element: <EditPage />,
-            action: editAction,
+            action: editAction(queryClient),
           },
           {
             path: 'page/:pageId/subpage/create',
