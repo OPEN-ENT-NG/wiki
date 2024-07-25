@@ -9,17 +9,16 @@ export type MenuButtonProps = Pick<
   selected: boolean;
 };
 
-export const MenuButton = (props: MenuButtonProps) => {
+export const MenuButton = (props: Partial<MenuButtonProps>) => {
   const { selected, leftIcon, rightIcon, onClick, children } = props;
 
   const { childProps } = useMenuContext();
 
   return (
     <Button
-      style={{ width: '100%' }}
       variant="ghost"
       color="tertiary"
-      className={clsx('stack', {
+      className={clsx('stack w-100', {
         selected: selected,
       })}
       leftIcon={leftIcon}

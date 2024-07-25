@@ -95,7 +95,6 @@ export const Menu = ({
           ref={menuRef}
           role="menubar"
           aria-label={label}
-          tabIndex={0}
           onKeyDown={onKeyDown}
           data-menubar-list
           className="list-unstyled d-flex flex-column gap-4"

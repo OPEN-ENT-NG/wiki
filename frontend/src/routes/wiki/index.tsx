@@ -86,15 +86,17 @@ export const Index = () => {
           as="aside"
         >
           <Menu label={data ? data.title : ''}>
-            <Menu.Item>
-              <Menu.Button
-                onClick={menus.onClick}
-                leftIcon={menus.leftIcon}
-                selected={menus.selected}
-              >
-                {menus.children}
-              </Menu.Button>
-            </Menu.Item>
+            {
+              <Menu.Item>
+                <Menu.Button
+                  onClick={menus.onClick}
+                  leftIcon={menus.leftIcon}
+                  selected={menus.selected}
+                >
+                  {menus.children}
+                </Menu.Button>
+              </Menu.Item>
+            }
           </Menu>
           <NewPage />
           {treeData && (
