@@ -1,4 +1,4 @@
-import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
+import { checkUserRight, Grid, Menu, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
@@ -11,7 +11,6 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { Menu } from '~/components/Menu/Menu';
 import { AppHeader } from '~/features';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 import { NewPage } from '~/features/wiki/NewPage';
@@ -50,9 +49,9 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const match = useMatch('/id/:wikiId/page/:pageId');
+  const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
-  const menus = useMenu();
+  const menu = useMenu();
 
   const [nodeId, setNodeId] = useState<string>('');
 
@@ -86,17 +85,15 @@ export const Index = () => {
           as="aside"
         >
           <Menu label={data ? data.title : ''}>
-            {
-              <Menu.Item>
-                <Menu.Button
-                  onClick={menus.onClick}
-                  leftIcon={menus.leftIcon}
-                  selected={menus.selected}
-                >
-                  {menus.children}
-                </Menu.Button>
-              </Menu.Item>
-            }
+            <Menu.Item>
+              <Menu.Button
+                onClick={menu.onClick}
+                leftIcon={menu.leftIcon}
+                selected={menu.selected}
+              >
+                {menu.children}
+              </Menu.Button>
+            </Menu.Item>
           </Menu>
           <NewPage />
           {treeData && (
