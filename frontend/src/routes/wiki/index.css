@@ -36,7 +36,7 @@
   --edifice-btn-font-weight: 700;
 }
 
-.btn.stack span>*:nth-child(2) {
+.btn.stack span > *:nth-child(2) {
   margin-left: auto;
 }
 
@@ -45,6 +45,6 @@
   outline: none;
 }
 
-[data-menubar-menuitem].focus>.btn:not(.selected) {
+[data-menubar-menuitem].focus > .btn:not(.selected) {
   background-color: var(--edifice-gray-300);
 }
