@@ -1,26 +1,39 @@
-import { ActionFunctionArgs, Form, redirect } from 'react-router-dom';
-import { wikiService } from '~/services';
+import { LoadingScreen } from '@edifice-ui/react';
+import { QueryClient } from '@tanstack/react-query';
+import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
+import { FormPage } from '~/features/page/FormPage';
+import { useGetPage, wikiQueryOptions, wikiService } from '~/services';
 
-export async function action({ params }: ActionFunctionArgs) {
-  const content = 'test';
+export const action =
+  (queryClient: QueryClient) =>
+  async ({ params, request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
 
-  await wikiService.updatePage({
-    wikiId: params.wikiId!,
-    pageId: params.pageId!,
-    data: {
-      title: 'page mise à jour',
-      content,
-    },
-  });
+    await wikiService.updatePage({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      data: {
+        title,
+        content,
+      },
+    });
 
-  return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
-}
+    await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+
+    return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
+  };
 
 export const EditPage = () => {
-  return (
-    <Form method="put">
-      <h1>Edition d'une page</h1>
-      <button type="submit">Editer une page</button>
-    </Form>
-  );
+  const params = useParams();
+
+  const { data, isPending } = useGetPage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+  });
+
+  if (isPending) return <LoadingScreen />;
+
+  return data ? <FormPage page={data} /> : null;
 };

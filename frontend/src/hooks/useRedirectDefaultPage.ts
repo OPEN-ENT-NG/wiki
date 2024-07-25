@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useMatch, useNavigate, useParams } from 'react-router-dom';
 import { useGetWiki } from '~/services';
 
 export const useRedirectDefaultPage = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const match = useMatch('/id/:wikiId');
 
   const { data } = useGetWiki(params.wikiId!);
 
   useEffect(() => {
-    if (data && !!data.pages.length) {
+    if (match && data && !!data.pages.length) {
       const findIndexPage = data.pages.find((page) => page._id === data.index);
       const firstPage = data.pages[0];
 

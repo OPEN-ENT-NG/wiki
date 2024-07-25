@@ -1,4 +1,4 @@
-.post-content-editor .ProseMirror[contenteditable='true'] {
+.page-content-editor .ProseMirror[contenteditable='true'] {
   min-height: 180px;
 }
 

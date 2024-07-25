@@ -1,6 +1,7 @@
 import { checkUserRight, Grid, TreeView } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
+import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useState } from 'react';
 import {
@@ -96,7 +97,9 @@ export const Index = () => {
           md="8"
           lg="6"
           xl="9"
-          className="ms-n16 ms-lg-n24 me-n16"
+          className={clsx('ms-n16 ms-lg-n24 me-n16', {
+            'd-flex': match,
+          })}
         >
           <div className="mt-16 mx-16 mt-lg-0 mx-lg-0">
             {isSmallDevice && (
