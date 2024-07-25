@@ -11,11 +11,13 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { Menu } from '~/components/Menu/Menu';
 import { AppHeader } from '~/features';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
 import { NewPage } from '~/features/wiki/NewPage';
 import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
 import { useFeedData } from '~/hooks/useFeedData';
+import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
@@ -48,8 +50,9 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const match = useMatch('/id/:wikiId');
+  const match = useMatch('/id/:wikiId/page/:pageId');
   const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
+  const menus = useMenu();
 
   const [nodeId, setNodeId] = useState<string>('');
 
@@ -73,6 +76,7 @@ export const Index = () => {
   return (
     <>
       <AppHeader />
+
       <Grid className="flex-grow-1">
         <Grid.Col
           sm="3"
@@ -81,7 +85,17 @@ export const Index = () => {
           className="border-end pt-16 pe-16 d-none d-lg-block"
           as="aside"
         >
-          <p data-testid="text">some text</p>
+          <Menu label={data ? data.title : ''}>
+            <Menu.Item>
+              <Menu.Button
+                onClick={menus.onClick}
+                leftIcon={menus.leftIcon}
+                selected={menus.selected}
+              >
+                {menus.children}
+              </Menu.Button>
+            </Menu.Item>
+          </Menu>
           <NewPage />
           {treeData && (
             <TreeView

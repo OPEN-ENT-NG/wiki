@@ -25,6 +25,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('@uidotdev/usehooks', () => ({
   useMediaQuery: vi.fn(),
+  usePrevious: vi.fn(),
 }));
 
 vi.mock('~/store/treeview', () => ({
