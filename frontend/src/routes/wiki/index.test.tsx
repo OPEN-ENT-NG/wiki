@@ -93,8 +93,5 @@ describe('Index Route', () => {
       `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
       <Page />
     );
-
-    await waitFor(() => screen.getByRole('button'));
-    expect(screen.getByRole('button')).toHaveTextContent('supprimer page');
   });
 });

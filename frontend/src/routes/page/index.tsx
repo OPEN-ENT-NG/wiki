@@ -1,14 +1,16 @@
+import { Editor, EditorRef } from '@edifice-ui/editor';
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
+import { useRef } from 'react';
 import {
   ActionFunctionArgs,
-  Form,
   LoaderFunctionArgs,
   redirect,
   useParams,
 } from 'react-router-dom';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
+import { ContentTitle } from '~/features/wiki/ContentHeader';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -40,6 +42,7 @@ export async function action({ params }: ActionFunctionArgs) {
 
 export const Page = () => {
   const params = useParams();
+  const editorRef = useRef<EditorRef>(null);
 
   const { isPending, error, data } = useGetPage({
     wikiId: params.wikiId!,
@@ -50,12 +53,16 @@ export const Page = () => {
 
   if (error) return 'An error has occurred: ' + error.message;
 
-  return (
-    <>
-      <div>{data.title}</div>
-      <Form method="delete">
-        <button type="submit">supprimer page</button>
-      </Form>
-    </>
-  );
+  return data ? (
+    <div className="d-flex flex-column mt-24 mx-md-24 me-md-16">
+      <ContentTitle page={data} />
+      <Editor
+        ref={editorRef}
+        content={data.content}
+        mode="read"
+        variant="ghost"
+        visibility="protected"
+      ></Editor>
+    </div>
+  ) : null;
 };
