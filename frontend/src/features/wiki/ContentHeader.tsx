@@ -11,13 +11,13 @@ export const ContentTitle = ({ page }: { page: Page }) => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="d-flex flex-column mt-8 mx-md-8">
+    <div className="d-flex flex-column">
       <div className="d-flex align-items-center">
         <h2 className="text-gray-800">{page.title}</h2>
       </div>
       <div className="d-flex align-items-center gap-12 mb-16 mb-md-24 mt-8">
         <Avatar
-          alt={t('wiki.consul.author.avatar')}
+          alt={t('wiki.read.author.avatar')}
           size="sm"
           src={getAvatarURL(page.author as ID, 'user')}
           variant="circle"
@@ -31,7 +31,7 @@ export const ContentTitle = ({ page }: { page: Page }) => {
           </a>
           <span className="separator d-none d-md-block"></span>
           <span>
-            {t('wiki.consult.dated.updated', {
+            {t('wiki.read.dated.updated', {
               date: formatDate(page.modified, 'short'),
             })}
           </span>
