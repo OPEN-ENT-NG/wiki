@@ -21,12 +21,12 @@ export const useMenu = () => {
     return match?.pathname === location.pathname;
   };
 
-  const menus = {
+  const data = {
     children: t('wiki.pagelist'),
     onClick: () => navigate(`/id/${params.wikiId}/pages`),
     leftIcon: <ViewList />,
     selected: isSelected('/id/:wikiId/pages') ?? false,
   };
 
-  return menus;
+  return data;
 };
