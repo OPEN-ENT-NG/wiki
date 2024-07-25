@@ -1,3 +1,18 @@
 .post-content-editor .ProseMirror[contenteditable='true'] {
   min-height: 180px;
 }
+
+.page-author {
+  color: var(--edifice-gray-700);
+}
+
+.page-author:hover {
+  color: rgba(var(--edifice-link-color-rgb), var(--edifice-link-opacity, 1));
+  text-decoration: underline;
+}
+
+.separator {
+  height: 16px;
+  border: 0;
+  border-left: 1px solid var(--edifice-gray-600);
+}
