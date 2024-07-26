@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm dlx vite build",
     "dev": "nx serve",
-    "pre-commit": "lint-staged",
+    "pre-commit": "pnpm install && nx format && nx lint --fix && nx build && nx test",
     "prepare": "cd .. && husky frontend/.husky || true",
     "test": "nx test"
   },
@@ -15,15 +15,6 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "pnpm install",
-      "nx format",
-      "nx lint --fix",
-      "nx build",
-      "nx test"
-    ]
   },
   "dependencies": {
     "@edifice-ui/editor": "develop-pedago",
