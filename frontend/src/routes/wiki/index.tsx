@@ -50,10 +50,10 @@ export const Index = () => {
   const navigate = useNavigate();
   const treeData = useTreeData();
   const match = useMatch('/id/:wikiId');
-  const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
+  const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
 
-  const [nodeId, setNodeId] = useState<string>('');
+  const [nodeId, setNodeId] = useState<string | undefined>(undefined);
 
   const { data } = useGetWiki(params.wikiId!);
 
@@ -67,9 +67,14 @@ export const Index = () => {
    */
   useFeedData();
 
-  const handleClick = (pageId: ID) => {
+  const handleOnTreeItemClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
     setNodeId(pageId);
+  };
+
+  const handleOnMenuClick = () => {
+    setNodeId('');
+    menu.onClick();
   };
 
   return (
@@ -77,34 +82,36 @@ export const Index = () => {
       <AppHeader />
 
       <Grid className="flex-grow-1">
-        <Grid.Col
-          sm="3"
-          lg="2"
-          xl="3"
-          className="border-end pt-16 pe-16 d-none d-lg-block"
-          as="aside"
-        >
-          <Menu label={data ? data.title : ''}>
-            <Menu.Item>
-              <Menu.Button
-                onClick={menu.onClick}
-                leftIcon={menu.leftIcon}
-                selected={menu.selected}
-              >
-                {menu.children}
-              </Menu.Button>
-            </Menu.Item>
-          </Menu>
-          <NewPage />
-          {treeData && (
-            <TreeView
-              data={treeData}
-              showIcon={false}
-              selectedNodeId={nodeId}
-              onTreeItemClick={handleClick}
-            />
-          )}
-        </Grid.Col>
+        {!isSmallDevice && (
+          <Grid.Col
+            sm="3"
+            lg="2"
+            xl="3"
+            className="border-end pt-16 pe-16 d-none d-lg-block"
+            as="aside"
+          >
+            <Menu label={data ? data.title : ''}>
+              <Menu.Item>
+                <Menu.Button
+                  onClick={handleOnMenuClick}
+                  leftIcon={menu.leftIcon}
+                  selected={menu.selected}
+                >
+                  {menu.children}
+                </Menu.Button>
+              </Menu.Item>
+            </Menu>
+            <NewPage />
+            {treeData && (
+              <TreeView
+                data={treeData}
+                showIcon={false}
+                selectedNodeId={nodeId}
+                onTreeItemClick={handleOnTreeItemClick}
+              />
+            )}
+          </Grid.Col>
+        )}
         <Grid.Col
           sm="4"
           md="8"
@@ -119,7 +126,7 @@ export const Index = () => {
               <DropdownTreeview
                 treeData={treeData}
                 nodeId={nodeId}
-                handleClick={handleClick}
+                handleOnTreeItemClick={handleOnTreeItemClick}
               />
             )}
             {match ? <WikiEmptyScreen /> : <Outlet />}
