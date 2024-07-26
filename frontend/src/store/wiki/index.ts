@@ -1,18 +1,5 @@
-import { RightRole } from 'edifice-ts-client';
 import { createStore, useStore } from 'zustand';
 
-type UserRights = Record<RightRole, boolean>;
-
-/**
- * Basic store for managing "rights" array
- * Use this store with `checkUserRight` utils
- * You can check rights in a react-router loader
- * And set userRights with the store to get a stable global state
- * 
- * const userRights = await checkUserRight(rights);
-  const { setUserRights } = useUserRightsStore.getState();
-  setUserRights(userRights);
- */
 interface State {
   openUpdateModal: boolean;
   openShareModal: boolean;
