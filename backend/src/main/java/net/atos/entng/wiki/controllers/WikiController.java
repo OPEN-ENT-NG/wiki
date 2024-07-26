@@ -316,50 +316,43 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Add page to wiki")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void createPage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, data -> {
+					// Get request param and payload data
+					final String newPageId = new ObjectId().toString();
+					final String idWiki = request.params().get("id");
 
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							final String newPageId = new ObjectId().toString();
+					final String pageTitle = data.getString("title");
+					final String pageContent = data.getString("content");
+					final String parentId = data.getString("parentId");
+					boolean isIndex = data.getBoolean("isIndex", false);
 
-							final String idWiki = request.params().get("id");
-							boolean isIndex = data.getBoolean("isIndex", false);
+					if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null) {
+						badRequest(request);
+						return;
+					}
 
-							final String pageTitle = data.getString("title");
-							final String pageContent = data.getString("content");
-							if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null) {
-								badRequest(request);
-								return;
-							}
-
-							// Return attribute _id of created page in case of success
-							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-								@Override
-								public void handle(Either<String, JsonObject> event) {
-									if (event.isRight()) {
-										createRevision(idWiki, newPageId, user, pageTitle, pageContent);
-										JsonObject result = new JsonObject();
-										result.put("_id", newPageId);
-										notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
-										renderJson(request, result);
-										eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
-									} else {
-										JsonObject error = new JsonObject().put(
-												"error", event.left().getValue());
-										renderJson(request, error, 400);
-									}
+					// Create Page
+					wikiService.createPage(user, idWiki, newPageId, pageTitle,
+							pageContent, isIndex, parentId, request, event -> {
+								// Return attribute _id of created page in case of success
+								if (event.isRight()) {
+									createRevision(idWiki, newPageId, user, pageTitle, pageContent);
+									JsonObject result = new JsonObject();
+									result.put("_id", newPageId);
+									notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
+									renderJson(request, result);
+									eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
+								} else {
+									JsonObject error = new JsonObject().put(
+											"error", event.left().getValue());
+									renderJson(request, error, 400);
 								}
-							};
-
-							wikiService.createPage(user, idWiki, newPageId, pageTitle,
-									pageContent, isIndex, request, handler);
-						}
-					});
-				}
+							});
+				});
+			} else {
+				unauthorized(request);
 			}
 		});
 
@@ -369,42 +362,35 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Update page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, data -> {
+					final String idWiki = request.params().get("id");
+					final String idPage = request.params().get("idpage");
 
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
+					final boolean isIndex = data.getBoolean("isIndex", false);
+					final boolean wasIndex = data.getBoolean("wasIndex", false);
+					final String pageTitle = data.getString("title");
+					final String pageContent = data.getString("content");
+					final String parentId = data.getString("parentId");
 
-							final String idWiki = request.params().get("id");
-							final String idPage = request.params().get("idpage");
-							boolean isIndex = data.getBoolean("isIndex", false);
-							boolean wasIndex = data.getBoolean("wasIndex", false);
+					if (pageTitle == null || pageTitle.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
 
-							final String pageTitle = data.getString("title");
-							final String pageContent = data.getString("content");
-							if (pageTitle == null || pageTitle.trim().isEmpty()) {
-								badRequest(request);
-								return;
-							}
-
-							wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, isIndex, wasIndex, request,
-									new Handler<Either<String, JsonObject>>() {
-										@Override
-										public void handle(Either<String, JsonObject> r) {
-											if (r.isRight()) {
-												createRevision(idWiki, idPage, user, pageTitle, pageContent);
-												renderJson(request, r.right().getValue());
-											} else {
-												leftToResponse(request, r.left());
-											}
-										}
-									});
+					wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, parentId, isIndex, wasIndex, request, result -> {
+						if (result.isRight()) {
+							createRevision(idWiki, idPage, user, pageTitle, pageContent);
+							renderJson(request, result.right().getValue());
+						} else {
+							leftToResponse(request, result.left());
 						}
+
 					});
-				}
+				});
+			} else {
+				unauthorized(request);
 			}
 		});
 
