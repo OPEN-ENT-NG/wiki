@@ -331,8 +331,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
-						   String pageContent, boolean isIndex, final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
+	public void createPage(final UserInfos user, final String idWiki, final String newPageId, final String pageTitle,
+						   final String pageContent, final boolean isIndex, final String parentId,
+						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		// Add new page to array "pages"
@@ -344,6 +345,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("authorName", user.getUsername())
 				.put("modified", MongoDb.now())
 				.put("created", MongoDb.now());
+
+		// Add parentId if page is a child page
+		if (parentId != null && !parentId.isEmpty()) {
+			newPage.put("parentId", parentId);
+		}
 
 		// Tiptap Transformer
 		Future<ContentTransformerResponse> contentTransformerResponseFuture;
@@ -396,8 +402,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(UserInfos user, String idWiki, String idPage, String pageTitle, String pageContent,
-			boolean isIndex, boolean wasIndex, final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
+	public void updatePage(final UserInfos user, final String idWiki, final String idPage, final String pageTitle,
+						   final String pageContent, final String parentId, final boolean isIndex, final boolean wasIndex,
+						   final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
 		JsonObject page = new JsonObject()
 				.put("title", pageTitle)
 				.put("content", pageContent)
@@ -457,10 +464,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					.set("pages.$.lastContributerName", user.getUsername())
 					.set("pages.$.modified", now)
 					.set("modified", now);
+
+			// Set parentId
+			if (parentId != null && !parentId.isEmpty()) {
+				modifier.set("pages.$.parentId", parentId);
+			}
+
 			if (isIndex) { // Set updated page as index
 				modifier.set("index", idPage);
-			}
-			else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
+			} else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
 				modifier.unset("index");
 			}
 
