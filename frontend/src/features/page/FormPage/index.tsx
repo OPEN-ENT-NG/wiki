@@ -35,8 +35,6 @@ export const FormPage = ({ page }: { page?: Page }) => {
     setContent(htmlContent);
   };
 
-  console.log({ navigation });
-
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
       <Form method="post" role="form">
