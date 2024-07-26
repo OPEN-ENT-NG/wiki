@@ -89,9 +89,39 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					final JsonObject body = result.body();
 					if (body.containsKey("result")) {
 						this.addNormalizedShares(body.getJsonObject("result"));
+						this.addChildrenPages(body.getJsonObject("result"));
 					}
 					handler.handle(Utils.validResult(result));
 				});
+	}
+
+	private JsonObject addChildrenPages(final JsonObject wiki) {
+		if (wiki != null) {
+			final JsonArray pages = wiki.getJsonArray("pages");
+			pages.forEach(page -> {
+				final JsonObject pageJO = (JsonObject) page;
+				final String parentId = pageJO.getString("parentId");
+
+				if (!StringUtils.isEmpty(parentId)) {
+					final Optional<Object> parentPage = pages
+							.stream()
+							.filter(p -> ((JsonObject) p).getString("_id").equals(parentId))
+							.findFirst();
+					if (parentPage.isPresent()) {
+						final JsonObject parentPageJO = (JsonObject) parentPage.get();
+						final JsonObject childPageJO = new JsonObject()
+								.put("_id", pageJO.getString("_id"))
+								.put("title", pageJO.getString("title"));
+						if (parentPageJO.getJsonArray("children") != null) {
+							parentPageJO.getJsonArray("children").add(childPageJO);
+						} else {
+							parentPageJO.put("children", new JsonArray().add(childPageJO));
+						}
+					}
+				}
+			});
+		}
+		return wiki;
 	}
 
 	private JsonObject addNormalizedShares(final JsonObject wiki) {
@@ -331,8 +361,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
-						   String pageContent, boolean isIndex, final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
+	public void createPage(final UserInfos user, final String idWiki, final String newPageId, final String pageTitle,
+						   final String pageContent, final boolean isIndex, final String parentId,
+						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		// Add new page to array "pages"
@@ -344,6 +375,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("authorName", user.getUsername())
 				.put("modified", MongoDb.now())
 				.put("created", MongoDb.now());
+
+		// Add parentId if page is a child page
+		if (parentId != null && !parentId.isEmpty()) {
+			newPage.put("parentId", parentId);
+		}
 
 		// Tiptap Transformer
 		Future<ContentTransformerResponse> contentTransformerResponseFuture;
@@ -396,8 +432,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(UserInfos user, String idWiki, String idPage, String pageTitle, String pageContent,
-			boolean isIndex, boolean wasIndex, final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
+	public void updatePage(final UserInfos user, final String idWiki, final String idPage, final String pageTitle,
+						   final String pageContent, final String parentId, final boolean isIndex, final boolean wasIndex,
+						   final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
 		JsonObject page = new JsonObject()
 				.put("title", pageTitle)
 				.put("content", pageContent)
@@ -457,10 +494,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					.set("pages.$.lastContributerName", user.getUsername())
 					.set("pages.$.modified", now)
 					.set("modified", now);
+
+			// Set parentId
+			if (parentId != null && !parentId.isEmpty()) {
+				modifier.set("pages.$.parentId", parentId);
+			}
+
 			if (isIndex) { // Set updated page as index
 				modifier.set("index", idPage);
-			}
-			else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
+			} else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
 				modifier.unset("index");
 			}
 
