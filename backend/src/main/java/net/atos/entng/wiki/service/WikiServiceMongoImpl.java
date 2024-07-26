@@ -89,9 +89,39 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					final JsonObject body = result.body();
 					if (body.containsKey("result")) {
 						this.addNormalizedShares(body.getJsonObject("result"));
+						this.addChildrenPages(body.getJsonObject("result"));
 					}
 					handler.handle(Utils.validResult(result));
 				});
+	}
+
+	private JsonObject addChildrenPages(final JsonObject wiki) {
+		if (wiki != null) {
+			final JsonArray pages = wiki.getJsonArray("pages");
+			pages.forEach(page -> {
+				final JsonObject pageJO = (JsonObject) page;
+				final String parentId = pageJO.getString("parentId");
+
+				if (!StringUtils.isEmpty(parentId)) {
+					final Optional<Object> parentPage = pages
+							.stream()
+							.filter(p -> ((JsonObject) p).getString("_id").equals(parentId))
+							.findFirst();
+					if (parentPage.isPresent()) {
+						final JsonObject parentPageJO = (JsonObject) parentPage.get();
+						final JsonObject childPageJO = new JsonObject()
+								.put("_id", pageJO.getString("_id"))
+								.put("title", pageJO.getString("title"));
+						if (parentPageJO.getJsonArray("children") != null) {
+							parentPageJO.getJsonArray("children").add(childPageJO);
+						} else {
+							parentPageJO.put("children", new JsonArray().add(childPageJO));
+						}
+					}
+				}
+			});
+		}
+		return wiki;
 	}
 
 	private JsonObject addNormalizedShares(final JsonObject wiki) {
