@@ -117,20 +117,20 @@ export const Index = () => {
           md="8"
           lg="6"
           xl="9"
-          className={clsx('ms-n16 ms-lg-n24 me-n16', {
-            'd-flex': match,
+          className={clsx({
+            'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
+            'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
+            'd-flex': !match && !isSmallDevice,
           })}
         >
-          <div className="mt-16 mx-16 mt-lg-0 mx-lg-0">
-            {isSmallDevice && (
-              <DropdownTreeview
-                treeData={treeData}
-                nodeId={nodeId}
-                handleOnTreeItemClick={handleOnTreeItemClick}
-              />
-            )}
-            {match ? <WikiEmptyScreen /> : <Outlet />}
-          </div>
+          {isSmallDevice && (
+            <DropdownTreeview
+              treeData={treeData}
+              nodeId={nodeId}
+              handleOnTreeItemClick={handleOnTreeItemClick}
+            />
+          )}
+          {!match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
     </>
