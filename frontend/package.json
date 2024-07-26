@@ -18,8 +18,11 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
+      "pnpm install",
       "nx format",
-      "nx lint --fix"
+      "nx lint --fix",
+      "nx build",
+      "nx test"
     ]
   },
   "dependencies": {

@@ -2,3 +2,4 @@
 .idea
 .gradle
 .pnpm-store
+.pnpm-lock.yaml
