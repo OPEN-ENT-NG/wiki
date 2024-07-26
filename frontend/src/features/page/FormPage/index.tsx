@@ -10,13 +10,14 @@ import {
 } from '@edifice-ui/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, useNavigate } from 'react-router-dom';
+import { Form, useNavigate, useNavigation } from 'react-router-dom';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
 import { Page } from '~/models';
 
 export const FormPage = ({ page }: { page?: Page }) => {
   const navigate = useNavigate();
+  const navigation = useNavigation();
   const editorRef = useRef<EditorRef>(null);
 
   const [content, setContent] = useState('');
@@ -33,6 +34,8 @@ export const FormPage = ({ page }: { page?: Page }) => {
     const htmlContent = editor.getHTML();
     setContent(htmlContent);
   };
+
+  console.log({ navigation });
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
@@ -73,7 +76,12 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
           </Button>
-          <Button type="submit" variant="filled" leftIcon={<Save />}>
+          <Button
+            type="submit"
+            variant="filled"
+            leftIcon={<Save />}
+            isLoading={navigation.state === 'submitting'}
+          >
             {t('wiki.editform.save')}
           </Button>
         </div>

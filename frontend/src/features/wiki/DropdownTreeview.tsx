@@ -11,11 +11,11 @@ import { RefAttributes } from 'react';
 export const DropdownTreeview = ({
   treeData,
   nodeId,
-  handleClick,
+  handleOnTreeItemClick,
 }: {
   treeData: TreeData[];
-  nodeId: string;
-  handleClick: (pageId: ID) => void;
+  nodeId: string | undefined;
+  handleOnTreeItemClick: (pageId: ID) => void;
 }) => {
   return (
     <div className="dropdown-treeview w-100 mb-16">
@@ -40,7 +40,7 @@ export const DropdownTreeview = ({
                 selectedNodeId={nodeId}
                 allExpandedNodes={true}
                 onTreeItemClick={(pageId) => {
-                  handleClick(pageId);
+                  handleOnTreeItemClick(pageId);
                   setVisible(false);
                 }}
               />
