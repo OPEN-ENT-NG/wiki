@@ -48,6 +48,7 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var entcore_1 = __webpack_require__(1);
 	console.log('wiki behaviours loaded');
+	var defaultPagination = 10;
 	var isWikiApplication = function () {
 	    return (window.location.pathname === '/wiki');
 	};
@@ -242,6 +243,12 @@
 	    }
 	};
 	wikiNamespace.listVersions = function (wiki, scope) {
+	    // WB2-1601: add event
+	    entcore_1.http().postJson('/infra/event/web/store', {
+	        "event-type": "ACCESS_WIKI_PAGE_VERSIONS",
+	        "module": "wiki",
+	        "userId": entcore_1.model.me.userId
+	    });
 	    wiki.page.versions.sync();
 	    if (isWikiApplication()) {
 	        entcore_1.template.open('main', 'versions');
@@ -522,7 +529,7 @@
 	        }
 	    }.bind(this));
 	};
-	wikiNamespace.Page.prototype.save = function (callback,callback2) {
+	wikiNamespace.Page.prototype.save = function (callback, callback2) {
 	    entcore_1.http().putJson('/wiki/' + this.wiki_id + '/page/' + this._id, this)
 	        .done(function (result) {
 	        if (this.isIndex === true) {
@@ -649,13 +656,14 @@
 	    });
 	};
 	wikiNamespace.Wiki.prototype.setLastPages = function () {
+	    var pagination = window.pagination ? window.pagination : defaultPagination;
 	    var dateArray = entcore_1._.chain(this.pages.all).pluck("modified").compact().value();
 	    if (dateArray && dateArray.length > 0) {
-	        // get the last 5 modified pages
+	        // get the last modified pages using pagination config or defaultpagination when sniplet.
 	        this.lastPages = entcore_1._.chain(this.pages.all)
 	            .filter(function (page) { return page.modified && page.modified.$date; })
 	            .sortBy(function (page) { return page.modified.$date; })
-	            .last(5)
+	            .last(pagination)
 	            .reverse()
 	            .value();
 	    }
