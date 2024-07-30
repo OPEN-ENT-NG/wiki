@@ -231,7 +231,15 @@ wikiNamespace.duplicatePage = function(scope, currentWiki) {
 };
 
 wikiNamespace.listVersions = function(wiki, scope){
+	// WB2-1601: add event ACCESS_WIKI_PAGE_VERSIONS
+	http().postJson('/infra/event/web/store', {
+		"event-type": "ACCESS_WIKI_PAGE_VERSIONS",
+		"module": "wiki",
+		"userId": model.me.userId
+	});
+	
 	wiki.page.versions.sync();
+	
 	if(isWikiApplication()) {
 		template.open('main', 'versions');
 	}
