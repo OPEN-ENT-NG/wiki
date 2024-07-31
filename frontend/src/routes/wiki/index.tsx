@@ -49,7 +49,7 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const match = useMatch('/id/:wikiId');
+  const match = useMatch({ path: '/id/:wikiId', end: false });
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
 
@@ -76,6 +76,9 @@ export const Index = () => {
     setNodeId('');
     menu.onClick();
   };
+
+  console.log(match);
+  console.log(params.wikiId);
 
   return (
     <>
