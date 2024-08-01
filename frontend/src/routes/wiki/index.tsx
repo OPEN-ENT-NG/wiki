@@ -49,7 +49,7 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const match = useMatch({ path: '/id/:wikiId', end: false });
+  const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
 
@@ -77,13 +77,9 @@ export const Index = () => {
     menu.onClick();
   };
 
-  console.log(match);
-  console.log(params.wikiId);
-
   return (
     <>
       <AppHeader />
-
       <Grid className="flex-grow-1">
         {!isSmallDevice && (
           <Grid.Col
@@ -133,7 +129,7 @@ export const Index = () => {
               handleOnTreeItemClick={handleOnTreeItemClick}
             />
           )}
-          {!match ? <WikiEmptyScreen /> : <Outlet />}
+          {match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
     </>
