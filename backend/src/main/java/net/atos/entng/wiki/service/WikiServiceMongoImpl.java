@@ -361,13 +361,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createPage(final UserInfos user, final String wikiId, final String newPageId, final JsonObject page,
+	public void createPage(final UserInfos user, final String wikiId, final JsonObject page,
 						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(wikiId);
 
 		// Add extra fields to page
 		page
-				.put("_id", newPageId)
+				.put("_id", page.getString("_id"))
 				.put("author", user.getUserId())
 				.put("authorName", user.getUsername())
 				.put("modified", MongoDb.now())
@@ -414,7 +414,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 			if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
 				// Set new page as index
-				modifier.set("index", newPageId);
+				modifier.set("index", page.getString("_id"));
 			}
 
 			mongo.update(collection, MongoQueryBuilder.build(query),

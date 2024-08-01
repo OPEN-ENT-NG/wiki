@@ -320,15 +320,15 @@ public class WikiController extends MongoDbControllerHelper {
 			if (user != null) {
 				RequestUtils.bodyToJson(request, pathPrefix + "page", page -> {
 					final String wikiId = request.params().get("id");
-					final String newPageId = new ObjectId().toString();
+					page.put("_id", new ObjectId().toString());
 
 					// Create Page
-					wikiService.createPage(user, wikiId, newPageId, page, request, event -> {
+					wikiService.createPage(user, wikiId, page, request, event -> {
 								// Return attribute _id of created page in case of success
 								if (event.isRight()) {
-									createRevision(wikiId, newPageId, user, page.getString("title")
+									createRevision(wikiId, page.getString("_id"), user, page.getString("title")
 											, page.getString("content"));
-									notifyPageCreated(request, user, wikiId, newPageId, page.getString("title"));
+									notifyPageCreated(request, user, wikiId, page.getString("_id"), page.getString("title"));
 									eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
 									renderJson(request, page);
 								} else {

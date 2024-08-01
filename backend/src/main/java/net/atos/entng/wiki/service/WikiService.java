@@ -51,7 +51,7 @@ public interface WikiService {
 	public void getPages(String idWiki,
 						 Handler<Either<String, JsonObject>> handler);
 
-	public void createPage(UserInfos user, String wikiId, String newPageId, JsonObject page, HttpServerRequest request
+	public void createPage(UserInfos user, String wikiId, JsonObject page, HttpServerRequest request
 			, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(UserInfos user, String idWiki, JsonObject page, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
