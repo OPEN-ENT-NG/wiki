@@ -318,36 +318,23 @@ public class WikiController extends MongoDbControllerHelper {
 	public void createPage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				RequestUtils.bodyToJson(request, data -> {
-					// Get request param and payload data
+				RequestUtils.bodyToJson(request, pathPrefix + "page", page -> {
+					final String wikiId = request.params().get("id");
 					final String newPageId = new ObjectId().toString();
-					final String idWiki = request.params().get("id");
-
-					final String pageTitle = data.getString("title");
-					final String pageContent = data.getString("content");
-					final String parentId = data.getString("parentId");
-					boolean isIndex = data.getBoolean("isIndex", false);
-
-					if (pageTitle == null || pageTitle.trim().isEmpty() || pageContent == null) {
-						badRequest(request);
-						return;
-					}
 
 					// Create Page
-					wikiService.createPage(user, idWiki, newPageId, pageTitle,
-							pageContent, isIndex, parentId, request, event -> {
+					wikiService.createPage(user, wikiId, newPageId, page, request, event -> {
 								// Return attribute _id of created page in case of success
 								if (event.isRight()) {
-									createRevision(idWiki, newPageId, user, pageTitle, pageContent);
-									JsonObject result = new JsonObject();
-									result.put("_id", newPageId);
-									notifyPageCreated(request, user, idWiki, newPageId, pageTitle);
-									renderJson(request, result);
+									createRevision(wikiId, newPageId, user, page.getString("title")
+											, page.getString("content"));
+									notifyPageCreated(request, user, wikiId, newPageId, page.getString("title"));
 									eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
+									renderJson(request, page);
 								} else {
-									JsonObject error = new JsonObject().put(
-											"error", event.left().getValue());
-									renderJson(request, error, 400);
+									renderJson(request
+											, new JsonObject().put("error", event.left().getValue())
+											, 400);
 								}
 							});
 				});

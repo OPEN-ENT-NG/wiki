@@ -361,29 +361,21 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createPage(final UserInfos user, final String idWiki, final String newPageId, final String pageTitle,
-						   final String pageContent, final boolean isIndex, final String parentId,
+	public void createPage(final UserInfos user, final String wikiId, final String newPageId, final JsonObject page,
 						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		QueryBuilder query = QueryBuilder.start("_id").is(wikiId);
 
-		// Add new page to array "pages"
-		JsonObject newPage = new JsonObject();
-		newPage.put("_id", newPageId)
-				.put("title", pageTitle)
-				.put("content", pageContent)
+		// Add extra fields to page
+		page
+				.put("_id", newPageId)
 				.put("author", user.getUserId())
 				.put("authorName", user.getUsername())
 				.put("modified", MongoDb.now())
 				.put("created", MongoDb.now());
 
-		// Add parentId if page is a child page
-		if (parentId != null && !parentId.isEmpty()) {
-			newPage.put("parentId", parentId);
-		}
-
 		// Tiptap Transformer
 		Future<ContentTransformerResponse> contentTransformerResponseFuture;
-		if (newPage.containsKey("content")) {
+		if (page.containsKey("content")) {
 			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 			desiredFormats.add(ContentTransformerFormat.HTML);
 			desiredFormats.add(ContentTransformerFormat.JSON);
@@ -392,8 +384,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			// request to transform page "content" to desiredFormats
 			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
 					desiredFormats,
-					newPage.getInteger("contentVersion", 0),
-					newPage.getString("content", ""),
+					page.getInteger("contentVersion", 0),
+					page.getString("content", ""),
 					null
 			);
 
@@ -410,18 +402,18 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				if (transformerResponse.result() == null) {
 					log.debug("No content transformed.");
 				} else {
-					newPage.put("contentVersion", transformerResponse.result().getContentVersion());
-					newPage.put("content", transformerResponse.result().getCleanHtml());
-					newPage.put("jsonContent", transformerResponse.result().getJsonContent());
-					newPage.put("contentPlain", transformerResponse.result().getPlainTextContent());
+					page.put("contentVersion", transformerResponse.result().getContentVersion());
+					page.put("content", transformerResponse.result().getCleanHtml());
+					page.put("jsonContent", transformerResponse.result().getJsonContent());
+					page.put("contentPlain", transformerResponse.result().getPlainTextContent());
 				}
 			}
 
 			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-			modifier.push("pages", newPage);
+			modifier.push("pages", page);
 
-			// Set new page as index
-			if(isIndex) {
+			if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
+				// Set new page as index
 				modifier.set("index", newPageId);
 			}
 

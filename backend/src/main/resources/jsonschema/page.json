@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string" },
+    "content": { "type": "string" },
+    "parentId": { "type":  "string" },
+    "isIndex": { "type": "boolean"},
+    "isVisible": { "type": "boolean" }
+  },
+  "required": [
+    "title"
+  ]
+}
