@@ -5,8 +5,9 @@
   "properties": {
     "title": { "type": "string" },
     "content": { "type": "string" },
-    "parentId": { "type":  "string" },
+    "parentId": { "type":  ["string", "null"] },
     "isIndex": { "type": "boolean"},
+    "wasIndex": { "type": "boolean" },
     "isVisible": { "type": "boolean" }
   },
   "required": [

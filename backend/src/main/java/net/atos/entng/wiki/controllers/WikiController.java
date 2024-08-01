@@ -351,25 +351,15 @@ public class WikiController extends MongoDbControllerHelper {
 	public void updatePage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				RequestUtils.bodyToJson(request, data -> {
+				RequestUtils.bodyToJson(request, pathPrefix + "page", page -> {
 					final String idWiki = request.params().get("id");
-					final String idPage = request.params().get("idpage");
+					page.put("_id", request.params().get("idpage"));
 
-					final boolean isIndex = data.getBoolean("isIndex", false);
-					final boolean wasIndex = data.getBoolean("wasIndex", false);
-					final String pageTitle = data.getString("title");
-					final String pageContent = data.getString("content");
-					final String parentId = data.getString("parentId");
-
-					if (pageTitle == null || pageTitle.trim().isEmpty()) {
-						badRequest(request);
-						return;
-					}
-
-					wikiService.updatePage(user, idWiki, idPage, pageTitle, pageContent, parentId, isIndex, wasIndex, request, result -> {
+					wikiService.updatePage(user, idWiki, page, request, result -> {
 						if (result.isRight()) {
-							createRevision(idWiki, idPage, user, pageTitle, pageContent);
-							renderJson(request, result.right().getValue());
+							createRevision(idWiki, page.getString("_id"), user, page.getString("title")
+									, page.getString("content"));
+							renderJson(request, page);
 						} else {
 							leftToResponse(request, result.left());
 						}

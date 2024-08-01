@@ -424,12 +424,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(final UserInfos user, final String idWiki, final String idPage, final String pageTitle,
-						   final String pageContent, final String parentId, final boolean isIndex, final boolean wasIndex,
+	public void updatePage(final UserInfos user, final String idWiki, final JsonObject page,
 						   final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
-		JsonObject page = new JsonObject()
-				.put("title", pageTitle)
-				.put("content", pageContent)
+		// add extra fields to the page
+		page
 				.put("lastContributer", user.getUserId())
 				.put("lastContributerName", user.getUsername())
 				.put("modified", MongoDb.now());
@@ -471,13 +469,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			}
 
 			// Query
-			BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+			BasicDBObject idPageDBO = new BasicDBObject("_id", page.getString("_id"));
 			QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
 					.elemMatch(idPageDBO);
 			// Update
 			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 			JsonObject now = MongoDb.now();
-			modifier.set("pages.$.title", pageTitle)
+			modifier.set("pages.$.title", page.getString("title"))
 					.set("pages.$.contentVersion", page.getInteger("contentVersion"))
 					.set("pages.$.content", page.getString("content"))
 					.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
@@ -488,13 +486,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					.set("modified", now);
 
 			// Set parentId
-			if (parentId != null && !parentId.isEmpty()) {
-				modifier.set("pages.$.parentId", parentId);
+			if (!StringUtils.isEmpty(page.getString("parentId"))) {
+				modifier.set("pages.$.parentId", page.getString("parentId"));
 			}
 
-			if (isIndex) { // Set updated page as index
-				modifier.set("index", idPage);
-			} else if (wasIndex) { // Unset index when the value of isIndex has changed from true to false
+			if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
+				// Set updated page as index
+				modifier.set("index", page.getString("_id"));
+			} else if (Boolean.TRUE.equals(page.getBoolean("wasIndex"))) {
+				// Unset index when the value of isIndex has changed from true to false
 				modifier.unset("index");
 			}
 
