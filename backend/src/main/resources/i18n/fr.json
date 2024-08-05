@@ -127,7 +127,7 @@
   "wiki.first.emptyscreen.title": "Créez une première page",
   "wiki.first.emptyscreen.text": "Votre première page peut être une introduction ou bien un récapitulatif de votre contenu",
   "wiki.read.author.avatar": "Avatar de l'auteur",
-  "wiki.read.dated.updated": "(modifié le  [[date]])",
+  "wiki.read.dated.updated": "Modifié le [[date]]",
   "explorer.searchbar.placeholder": "Rechercher un wiki",
   "explorer.sidebar.title": "Wiki",
   "explorer.modal.props.title": "Propriétés du wiki",

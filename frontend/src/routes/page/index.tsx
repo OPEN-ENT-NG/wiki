@@ -9,7 +9,7 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { ContentTitle } from '~/features/wiki/ContentHeader';
+import { ContentHeader } from '~/features/wiki/ContentHeader';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
 
 export const loader =
@@ -55,7 +55,7 @@ export const Page = () => {
 
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
-      <ContentTitle page={data} />
+      <ContentHeader page={data} />
       <Editor
         ref={editorRef}
         content={data.content}
