@@ -119,7 +119,7 @@ export const Index = () => {
           className={clsx({
             'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
             'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
-            'd-flex': !match && !isSmallDevice,
+            'd-flex': match && !isSmallDevice,
           })}
         >
           {isSmallDevice && (
