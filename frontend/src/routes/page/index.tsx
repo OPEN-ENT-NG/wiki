@@ -2,7 +2,7 @@ import { Editor, EditorRef } from '@edifice-ui/editor';
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom';
 import { ContentHeader } from '~/features/wiki/ContentHeader';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
+import { useTreeActions } from '~/store';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -42,12 +43,20 @@ export async function action({ params }: ActionFunctionArgs) {
 
 export const Page = () => {
   const params = useParams();
+  const { setNodeIdActif } = useTreeActions();
   const editorRef = useRef<EditorRef>(null);
 
   const { isPending, error, data } = useGetPage({
     wikiId: params.wikiId!,
     pageId: params.pageId!,
   });
+
+  useEffect(() => {
+    if (data) {
+      setNodeIdActif(data._id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   if (isPending) return <LoadingScreen />;
 

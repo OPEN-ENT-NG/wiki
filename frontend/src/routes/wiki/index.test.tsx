@@ -30,12 +30,15 @@ vi.mock('@uidotdev/usehooks', () => ({
 
 vi.mock('~/store/treeview', () => ({
   useTreeActions: () => ({
-    setTreeData: vi.fn(),
+    setNodeIdActif: vi.fn(),
   }),
   useTreeData: () => [
     { id: '1', name: 'Page 1', section: true, showIconSection: false },
     { id: '2', name: 'Page 2', section: true, showIconSection: false },
   ],
+  useNodeIdActif: () => ({
+    setTreeData: vi.fn(),
+  }),
 }));
 
 describe('Index Route', () => {
@@ -54,7 +57,7 @@ describe('Index Route', () => {
   });
 
   it('should render the AppHeader', () => {
-    expect(screen.getByLabelText('breadcrumb'));
+    expect(screen.findByLabelText('breadcrumb'));
   });
 
   it('should render Index page if no data found', async () => {

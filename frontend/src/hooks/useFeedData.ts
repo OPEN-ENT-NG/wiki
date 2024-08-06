@@ -11,8 +11,24 @@ export const useFeedData = () => {
 
   useEffect(() => {
     if (data) {
+      const filteredPages = data.pages.filter((page) => !page.parentId);
+
       setTreeData(
-        data.pages.map((page) => {
+        filteredPages.map((page) => {
+          if (page.children) {
+            const childPages = page.children.map((child) => {
+              return {
+                id: child._id,
+                name: child.title,
+              };
+            });
+            return {
+              id: page._id,
+              name: page.title,
+              section: true,
+              children: childPages,
+            };
+          }
           return {
             id: page._id,
             name: page.title,
