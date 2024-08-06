@@ -56,7 +56,8 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           },
           {
             path: 'page/:pageId/subpage/create',
-            element: <div>création page enfant</div>,
+            element: <CreatePage />,
+            action: createAction(queryClient),
           },
           {
             path: 'page/:pageId/subpage/edit',

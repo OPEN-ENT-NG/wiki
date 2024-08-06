@@ -16,6 +16,7 @@ export const action =
       data: {
         title,
         content,
+        parentId: params.pageId! ?? undefined,
       },
     });
 

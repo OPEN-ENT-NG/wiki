@@ -11,4 +11,11 @@ export interface Page {
   lastContributer?: string;
   lastContributerName?: string;
   comments?: Comment[];
+  children?: [
+    {
+      _id: string;
+      title: string;
+    }
+  ];
+  parentId?: string;
 }
