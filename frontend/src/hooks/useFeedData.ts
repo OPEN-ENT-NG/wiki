@@ -28,13 +28,12 @@ export const useFeedData = () => {
               section: true,
               children: childPages,
             };
-          } else {
-            return {
-              id: page._id,
-              name: page.title,
-              section: true,
-            };
           }
+          return {
+            id: page._id,
+            name: page.title,
+            section: true,
+          };
         })
       );
     }
