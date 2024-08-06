@@ -10,11 +10,13 @@ import { createStore } from 'zustand/vanilla';
 
 interface State {
   treeData: TreeData[];
+  nodeIdActif: string;
 }
 
 type Action = {
   actions: {
     setTreeData: (treeData: TreeData[]) => void;
+    setNodeIdActif: (nodeIdActif: string) => void;
   };
 };
 
@@ -35,17 +37,20 @@ const initialState = {
       children: [],
     },
   ],
+  nodeIdActif: '',
 };
 
 const store = createStore<State & Action>()((set, get) => ({
   ...initialState,
   actions: {
     setTreeData: (treeData: TreeData[]) => set(() => ({ treeData })),
+    setNodeIdActif: (nodeIdActif: string) => set(() => ({ nodeIdActif })),
   },
 }));
 
 // Selectors
 const treeData = (state: ExtractState<typeof store>) => state.treeData;
+const nodeIdActif = (state: ExtractState<typeof store>) => state.nodeIdActif;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 
 // Getters
@@ -59,4 +64,5 @@ function useTreeStore<U>(selector: Params<U>[1]) {
 
 // Hooks
 export const useTreeData = () => useTreeStore(treeData);
+export const useNodeIdActif = () => useTreeStore(nodeIdActif);
 export const useTreeActions = () => useTreeStore(actionsSelector);

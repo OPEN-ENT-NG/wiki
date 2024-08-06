@@ -3,7 +3,6 @@ import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
-import { useState } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -20,7 +19,7 @@ import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
-import { useTreeData } from '~/store/treeview';
+import { useNodeIdActif, useTreeActions, useTreeData } from '~/store/treeview';
 import './index.css';
 
 export const loader =
@@ -49,11 +48,11 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
+  const nodeIdActif = useNodeIdActif();
+  const { setNodeIdActif } = useTreeActions();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
-
-  const [nodeId, setNodeId] = useState<string | undefined>(undefined);
 
   const { data } = useGetWiki(params.wikiId!);
 
@@ -69,12 +68,16 @@ export const Index = () => {
 
   const handleOnTreeItemClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
-    setNodeId(pageId);
+    setNodeIdActif(pageId);
   };
 
   const handleOnMenuClick = () => {
-    setNodeId('');
+    setNodeIdActif('');
     menu.onClick();
+  };
+
+  const handleOnTreeItemCreateChildren = (pageId: ID) => {
+    navigate(`page/${pageId}/subpage/create`);
   };
 
   return (
@@ -105,8 +108,9 @@ export const Index = () => {
               <TreeView
                 data={treeData}
                 showIcon={false}
-                selectedNodeId={nodeId}
+                selectedNodeId={nodeIdActif}
                 onTreeItemClick={handleOnTreeItemClick}
+                onTreeItemCreate={handleOnTreeItemCreateChildren}
               />
             )}
           </Grid.Col>
@@ -125,7 +129,7 @@ export const Index = () => {
           {isSmallDevice && (
             <DropdownTreeview
               treeData={treeData}
-              nodeId={nodeId}
+              nodeId={nodeIdActif}
               handleOnTreeItemClick={handleOnTreeItemClick}
             />
           )}

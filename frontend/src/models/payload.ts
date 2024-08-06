@@ -2,6 +2,7 @@ export interface PagePostPayload {
   title: string;
   content: string;
   isIndex?: boolean;
+  parentId?: string;
 }
 
 export interface PagePutPayload {
