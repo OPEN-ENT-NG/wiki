@@ -8,6 +8,7 @@ export interface Page {
   author: string;
   authorName: string;
   modified: Modified;
+  isVisible: boolean;
   lastContributer?: string;
   lastContributerName?: string;
   comments?: Comment[];
@@ -18,5 +19,4 @@ export interface Page {
     }
   ];
   parentId?: string;
-  isVisible?: boolean;
 }
