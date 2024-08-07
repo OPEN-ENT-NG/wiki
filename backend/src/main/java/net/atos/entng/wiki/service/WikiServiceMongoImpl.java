@@ -480,6 +480,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					.set("pages.$.content", page.getString("content"))
 					.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
 					.set("pages.$.contentPlain", page.getString("contentPlain"))
+					.set("pages.$.isVisible", page.getBoolean("isVisible"))
 					.set("pages.$.lastContributer", user.getUserId())
 					.set("pages.$.lastContributerName", user.getUsername())
 					.set("pages.$.modified", now)

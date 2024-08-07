@@ -7,6 +7,7 @@ import {
   Label,
   Tooltip,
   useOdeClient,
+  useToggle,
 } from '@edifice-ui/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
 
   const [content, setContent] = useState('');
   const [contentTitle, setContentTitle] = useState(page?.title ?? '');
+  const [isVisible, toggle] = useToggle(page?.isVisible);
 
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
@@ -33,6 +35,10 @@ export const FormPage = ({ page }: { page?: Page }) => {
   const handleOnContentChange = ({ editor }: any) => {
     const htmlContent = editor.getHTML();
     setContent(htmlContent);
+  };
+
+  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    toggle();
   };
 
   return (
@@ -51,7 +57,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           ></Input>
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
-          <Toggle name="toggle" />
+          <Toggle name="toggle" checked={isVisible} onChange={handleToggle} />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
             message={t('wiki.createform.toggle.message')}

@@ -18,4 +18,5 @@ export interface Page {
     }
   ];
   parentId?: string;
+  isVisible?: boolean;
 }

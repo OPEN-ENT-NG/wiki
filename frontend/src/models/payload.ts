@@ -3,6 +3,7 @@ export interface PagePostPayload {
   content: string;
   isIndex?: boolean;
   parentId?: string;
+  isVisible?: boolean;
 }
 
 export interface PagePutPayload {
@@ -10,6 +11,7 @@ export interface PagePutPayload {
   content: string;
   isIndex?: boolean;
   wasIndex?: boolean;
+  isVisible?: boolean;
 }
 
 export interface CommentPostPayload {
