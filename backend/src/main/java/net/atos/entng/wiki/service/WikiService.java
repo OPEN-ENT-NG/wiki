@@ -51,11 +51,10 @@ public interface WikiService {
 	public void getPages(String idWiki,
 						 Handler<Either<String, JsonObject>> handler);
 
-	public void createPage(UserInfos user, String idWiki, String newPageId, String pageTitle,
-						   String pageContent, boolean isIndex, String parentId, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
+	public void createPage(UserInfos user, String wikiId, JsonObject page, HttpServerRequest request
+			, Handler<Either<String, JsonObject>> handler);
 
-	public void updatePage(UserInfos user, String idWiki, String idPage, String pageTitle, String pageContent, String parentId,
-			boolean isIndex, boolean wasIndex, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
+	public void updatePage(UserInfos user, String idWiki, JsonObject page, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);

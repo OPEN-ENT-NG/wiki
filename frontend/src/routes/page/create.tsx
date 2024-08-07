@@ -7,9 +7,10 @@ export const action =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData = await request.formData();
+
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
-    //const toggle = formData.get('toggle') === 'on';
+    const toggle = formData.get('toggle') === 'on';
 
     const data = await wikiService.createPage({
       wikiId: params.wikiId!,
@@ -17,6 +18,7 @@ export const action =
         title,
         content,
         parentId: params.pageId! ?? undefined,
+        isVisible: toggle,
       },
     });
 
