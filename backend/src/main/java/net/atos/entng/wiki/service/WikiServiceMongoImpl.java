@@ -615,7 +615,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void createRevision(String wikiId, String pageId, UserInfos user,
-							   String pageTitle, String pageContent, Handler<Either<String, JsonObject>> handler) {
+							   String pageTitle, String pageContent, boolean isVisible,
+							   Handler<Either<String, JsonObject>> handler) {
 		JsonObject document = new JsonObject()
 				.put("wikiId", wikiId)
 				.put("pageId", pageId)
@@ -623,6 +624,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("username", user.getUsername())
 				.put("title", pageTitle)
 				.put("content", pageContent)
+				.put("isVisible", isVisible)
 				.put("date", MongoDb.now());
 		mongo.save(REVISIONS_COLLECTION, document, MongoDbResult.validResultHandler(handler));
 	}
