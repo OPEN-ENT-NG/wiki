@@ -362,46 +362,13 @@ public class WikiController extends MongoDbControllerHelper {
 					final String idWiki = request.params().get("id");
 					page.put("_id", request.params().get("idpage"));
 
-					// get existing page to compare page values
-					wikiService.getPage(idWiki, page.getString("_id"), request, getPageResult -> {
-						if (getPageResult.isRight()) {
-							JsonObject dbPage = getPageResult.right().getValue();
-
-							// if title, content or visibility has changed then we update the page and create a new revision
-							if (!StringUtils.equals(page.getString("title"), dbPage.getString("title"))
-									|| !StringUtils.equals(page.getString("content"), dbPage.getString("content"))
-									|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0
-							) {
-								wikiService.updatePage(user, idWiki, page, request, updatePageResult -> {
-									if (updatePageResult.isRight()) {
-										// create new revision of a page
-										// (if page was not visible and is still not visible then we don't create a new revision)
-										if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
-												&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
-											// do not create revision
-											log.info("Updating page... Page is still not visible, no revision will be created.");
-										} else {
-											createRevision(idWiki,
-													page.getString("_id"),
-													user,
-													page.getString("title"),
-													page.getString("content"),
-													page.getBoolean("isVisible"));
-										}
-										// render page information
-										renderJson(request, page);
-									} else {
-										leftToResponse(request, updatePageResult.left());
-									}
-								});
-							} else {
-								// do not update nor create revision
-								log.info("Updating page... Page has no changes, no update and no revision will be created.");
-								// render page information
-								renderJson(request, page);
-							}
+					wikiService.updatePage(user, idWiki, page, request, updatePageResult -> {
+						if (updatePageResult.isRight()) {
+							renderJson(request, updatePageResult.right().getValue());
 						} else {
-							leftToResponse(request, getPageResult.left());
+							renderJson(request
+									, new JsonObject().put("error", updatePageResult.left().getValue())
+									, 400);
 						}
 					});
 				});

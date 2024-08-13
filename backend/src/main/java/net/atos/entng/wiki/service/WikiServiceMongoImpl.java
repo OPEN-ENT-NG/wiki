@@ -426,82 +426,129 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void updatePage(final UserInfos user, final String idWiki, final JsonObject page,
 						   final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
-		// add extra fields to the page
-		page
-				.put("lastContributer", user.getUserId())
-				.put("lastContributerName", user.getUsername())
-				.put("modified", MongoDb.now());
+		// get existing page to compare page values
+		this.getPage(idWiki, page.getString("_id"), request, getPageResult -> {
+			if (getPageResult.isRight()) {
+				JsonObject dbPage = getPageResult.right().getValue();
 
-		// Tiptap Transformer
-		Future<ContentTransformerResponse> contentTransformerResponseFuture;
-		if (page.containsKey("content")) {
-			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
-			desiredFormats.add(ContentTransformerFormat.HTML);
-			desiredFormats.add(ContentTransformerFormat.JSON);
-			desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
+				// if title, content or visibility has changed then we update the page and create a new revision
+				if (!org.apache.commons.lang3.StringUtils.equals(page.getString("title"), dbPage.getString("title"))
+						|| !org.apache.commons.lang3.StringUtils.equals(page.getString("content"), dbPage.getString("content"))
+						|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0
+				) {
+					// Preparing the Mongo Update...
+					// Tiptap Transformer
+					Future<ContentTransformerResponse> contentTransformerResponseFuture;
+					if (page.containsKey("content")) {
+						Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
+						desiredFormats.add(ContentTransformerFormat.HTML);
+						desiredFormats.add(ContentTransformerFormat.JSON);
+						desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
 
-			// request to transform page "content" to desiredFormats
-			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
-					desiredFormats,
-					page.getInteger("contentVersion", 0),
-					page.getString("content", ""),
-					null
-			);
+						// request to transform page "content" to desiredFormats
+						ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
+								desiredFormats,
+								page.getInteger("contentVersion", 0),
+								page.getString("content", ""),
+								null
+						);
 
-			contentTransformerResponseFuture = this.contentTransformerClient
-					.transform(transformerRequest, request);
-		} else {
-			contentTransformerResponseFuture = Future.succeededFuture();
-		}
+						contentTransformerResponseFuture = this.contentTransformerClient
+								.transform(transformerRequest, request);
+					} else {
+						contentTransformerResponseFuture = Future.succeededFuture();
+					}
 
-		contentTransformerResponseFuture.onComplete(transformerResponse -> {
-			if (transformerResponse.failed()) {
-				log.error("Error while transforming the content", transformerResponse.cause());
-			} else {
-				if (transformerResponse.result() == null) {
-					log.debug("No content transformed.");
+					contentTransformerResponseFuture.onComplete(transformerResponse -> {
+						if (transformerResponse.failed()) {
+							log.error("Error while transforming the content", transformerResponse.cause());
+						} else {
+							if (transformerResponse.result() == null) {
+								log.debug("No content transformed.");
+							} else {
+								page.put("contentVersion", transformerResponse.result().getContentVersion());
+								page.put("content", transformerResponse.result().getCleanHtml());
+								page.put("jsonContent", transformerResponse.result().getJsonContent());
+								page.put("contentPlain", transformerResponse.result().getPlainTextContent());
+							}
+						}
+
+						// add extra fields to the page
+						page
+								.put("lastContributer", user.getUserId())
+								.put("lastContributerName", user.getUsername())
+								.put("modified", MongoDb.now());
+
+						// Mongo Query
+						BasicDBObject idPageDBO = new BasicDBObject("_id", page.getString("_id"));
+						QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
+								.elemMatch(idPageDBO);
+						// Mongo Modifier
+						MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+						JsonObject now = MongoDb.now();
+						modifier.set("pages.$.title", page.getString("title"))
+								.set("pages.$.contentVersion", page.getInteger("contentVersion"))
+								.set("pages.$.content", page.getString("content"))
+								.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
+								.set("pages.$.contentPlain", page.getString("contentPlain"))
+								.set("pages.$.isVisible", page.getBoolean("isVisible"))
+								.set("pages.$.lastContributer", user.getUserId())
+								.set("pages.$.lastContributerName", user.getUsername())
+								.set("pages.$.modified", now)
+								.set("modified", now);
+
+						// Set parentId
+						if (!StringUtils.isEmpty(page.getString("parentId"))) {
+							modifier.set("pages.$.parentId", page.getString("parentId"));
+						}
+
+						if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
+							// Set updated page as index
+							modifier.set("index", page.getString("_id"));
+						} else if (Boolean.TRUE.equals(page.getBoolean("wasIndex"))) {
+							// Unset index when the value of isIndex has changed from true to false
+							modifier.unset("index");
+						}
+
+						// Mongo Update
+						mongo.update(collection, MongoQueryBuilder.build(query),
+								modifier.build(), updateResult -> {
+									if ("ok".equals(updateResult.body().getString("status"))) {
+										// create new revision of a page
+										// (if page was not visible and is still not visible then we don't create a new revision)
+										if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
+												&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
+											// do not create revision
+											log.info("Updating page... Page is still not visible, no revision will be created.");
+											// return the page json information
+											handler.handle(new Either.Right<>(page));
+										} else {
+											this.createRevision(idWiki,
+													page.getString("_id"),
+													user,
+													page.getString("title"),
+													page.getString("content"),
+													page.getBoolean("isVisible"),
+													createRevisionResult -> {
+														// return the page json information
+														handler.handle(new Either.Right<>(page));
+													});
+										}
+									} else {
+										handler.handle(
+												new Either.Left<>(updateResult.body().getString("message", "")));
+									}
+								});
+					});
 				} else {
-					page.put("contentVersion", transformerResponse.result().getContentVersion());
-					page.put("content", transformerResponse.result().getCleanHtml());
-					page.put("jsonContent", transformerResponse.result().getJsonContent());
-					page.put("contentPlain", transformerResponse.result().getPlainTextContent());
+					// do not update nor create revision
+					log.info("Updating page... Page has no changes, no update and no revision will be created.");
+					// return the page json information
+					handler.handle(new Either.Right<>(page));
 				}
+			} else {
+				handler.handle(new Either.Left<>(getPageResult.left().getValue()));
 			}
-
-			// Query
-			BasicDBObject idPageDBO = new BasicDBObject("_id", page.getString("_id"));
-			QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-					.elemMatch(idPageDBO);
-			// Update
-			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-			JsonObject now = MongoDb.now();
-			modifier.set("pages.$.title", page.getString("title"))
-					.set("pages.$.contentVersion", page.getInteger("contentVersion"))
-					.set("pages.$.content", page.getString("content"))
-					.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
-					.set("pages.$.contentPlain", page.getString("contentPlain"))
-					.set("pages.$.isVisible", page.getBoolean("isVisible"))
-					.set("pages.$.lastContributer", user.getUserId())
-					.set("pages.$.lastContributerName", user.getUsername())
-					.set("pages.$.modified", now)
-					.set("modified", now);
-
-			// Set parentId
-			if (!StringUtils.isEmpty(page.getString("parentId"))) {
-				modifier.set("pages.$.parentId", page.getString("parentId"));
-			}
-
-			if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
-				// Set updated page as index
-				modifier.set("index", page.getString("_id"));
-			} else if (Boolean.TRUE.equals(page.getBoolean("wasIndex"))) {
-				// Unset index when the value of isIndex has changed from true to false
-				modifier.unset("index");
-			}
-
-			mongo.update(collection, MongoQueryBuilder.build(query),
-					modifier.build(),
-					MongoDbResult.validActionResultHandler(handler));
 		});
 	}
 
