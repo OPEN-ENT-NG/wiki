@@ -1,8 +1,15 @@
-import { checkUserRight, Grid, Menu, TreeView } from '@edifice-ui/react';
+import {
+  checkUserRight,
+  Grid,
+  Menu,
+  TreeData,
+  TreeView,
+} from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
+import { useState } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -25,6 +32,31 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
+import {
+  closestCenter,
+  defaultDropAnimation,
+  DndContext,
+  DragEndEvent,
+  DragMoveEvent,
+  DragOverlay,
+  DragStartEvent,
+  DropAnimation,
+  KeyboardSensor,
+  Modifier,
+  PointerSensor,
+  SensorContext,
+  UniqueIdentifier,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { createPortal } from 'react-dom';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -55,9 +87,27 @@ export const Index = () => {
   const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
   const { setSelectedNodeId } = useTreeActions();
+  const { setTreeData } = useTreeActions();
   const match = useMatch('/id/:wikiId');
-  const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
+  const isSmallDevice = useMediaQuery('only screen and (max-width : 1023px)');
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const [offsetLeft, setOffsetLeft] = useState(0);
+
+  /* const sensorContext: SensorContext = useRef({
+    items: treeData,
+    offset: offsetLeft,
+  });
+
+  const [coordinateGetter] = useState(() =>
+    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth)
+  ); */
 
   const { data } = useGetWiki(params.wikiId!);
 
@@ -91,6 +141,77 @@ export const Index = () => {
     navigate(`page/${pageId}/subpage/create`);
   };
 
+  const dropAnimationConfig: DropAnimation = {
+    keyframes({ transform }) {
+      return [
+        { opacity: 1, transform: CSS.Transform.toString(transform.initial) },
+        {
+          opacity: 0,
+          transform: CSS.Transform.toString({
+            ...transform.final,
+            x: transform.final.x + 5,
+            y: transform.final.y + 5,
+          }),
+        },
+      ];
+    },
+    easing: 'ease-out',
+    sideEffects({ active }) {
+      active.node.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: defaultDropAnimation.duration,
+        easing: defaultDropAnimation.easing,
+      });
+    },
+  };
+
+  const getAllIds = (data: TreeData[]): { id: string }[] => {
+    const result: { id: string }[] = [];
+
+    function traverse(items: any) {
+      items.forEach((item: TreeData) => {
+        result.push({ id: item.id });
+        if (item.children && item.children.length > 0) {
+          traverse(item.children);
+        }
+      });
+    }
+
+    traverse(data);
+    return result;
+  };
+
+  const allIds = getAllIds(treeData);
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (over) {
+      console.log(over.data.current?.node?.name);
+      const overIndex = treeData.findIndex(({ id }) => id === over.id);
+      const activeIndex = treeData.findIndex(({ id }) => id === active.id);
+
+      const newTreeData = arrayMove(treeData, activeIndex, overIndex);
+
+      setTreeData(newTreeData);
+    }
+  };
+
+  const adjustTranslate: Modifier = ({ transform }) => {
+    return {
+      ...transform,
+      y: transform.y - 25,
+    };
+  };
+
+  const handleDragMove = ({ delta }: DragMoveEvent) => {
+    setOffsetLeft(delta.x);
+  };
+
+  /* useEffect(() => {
+    sensorContext.current = {
+      items: flattenedItems,
+      offset: offsetLeft,
+    };
+  }, [flattenedItems, offsetLeft]); */
+
   return (
     <>
       <AppHeader />
@@ -116,7 +237,18 @@ export const Index = () => {
             </Menu>
             {!isOnlyRead && <NewPage />}
             {treeData && (
-              <TreeView
+              
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+                onDragMove={handleDragMove}
+              >
+                <SortableContext
+                  items={allIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <TreeView
                 data={treeData}
                 showIcon={false}
                 selectedNodeId={selectedNodeId}
@@ -125,6 +257,17 @@ export const Index = () => {
                   !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
                 }
               />
+                  {createPortal(
+                    <DragOverlay
+                      dropAnimation={dropAnimationConfig}
+                      modifiers={[adjustTranslate]}
+                    >
+                      <div>Coucou</div>
+                    </DragOverlay>,
+                    document.body
+                  )}
+                </SortableContext>
+              </DndContext>
             )}
           </Grid.Col>
         )}
