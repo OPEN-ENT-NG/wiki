@@ -78,7 +78,7 @@ public interface WikiService {
 			Handler<Either<String, JsonObject>> handler);
 
 	public void createRevision(String wikiId, String pageId, UserInfos user,
-			String pageTitle, String pageContent, Handler<Either<String, JsonObject>> handler);
+			String pageTitle, String pageContent, boolean isVisible, Handler<Either<String, JsonObject>> handler);
 
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler);
 
