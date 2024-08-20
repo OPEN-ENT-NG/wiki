@@ -3,6 +3,7 @@ import { Button, LoadingScreen, Modal } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
   Form,
@@ -56,8 +57,9 @@ export const Page = () => {
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
-  const { setOpenDeleteModal } = useWikiActions();
 
+  const { t } = useTranslation('wiki');
+  const { setOpenDeleteModal } = useWikiActions();
   const { setSelectedNodeId } = useTreeActions();
 
   const { isPending, error, data } = useGetPage({
@@ -67,7 +69,9 @@ export const Page = () => {
 
   const { data: wiki } = useGetWiki(params.wikiId!);
 
+  // Find current page
   const findPage = wiki?.pages.find((page) => page._id === params.pageId);
+  // Check if current page has children
   const hasChildren = findPage?.children;
 
   useEffect(() => {
@@ -76,6 +80,10 @@ export const Page = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const handleOnDeletePage = () => {
+    console.log({ findPage });
+  };
 
   if (isPending) return <LoadingScreen />;
 
@@ -101,33 +109,37 @@ export const Page = () => {
         >
           <Modal.Header onModalClose={() => setOpenDeleteModal(false)}>
             {hasChildren
-              ? 'Suppression des pages et sous-pages'
-              : 'Suppression de la page'}
+              ? t('wiki.modal.delete.pages.header')
+              : t('wiki.modal.delete.page.header')}
           </Modal.Header>
           <Modal.Subtitle>
             {hasChildren
-              ? 'Souhaitez-vous supprimer la page et ses sous-pages ?'
-              : 'Souhaitez-vous supprimer la page ?'}
+              ? t('wiki.modal.delete.pages.subtitle')
+              : t('wiki.modal.delete.page.subtitle')}
           </Modal.Subtitle>
           <Modal.Body>&nbsp;</Modal.Body>
           <Modal.Footer>
             <Button
-              type="button"
               color="tertiary"
               variant="ghost"
               onClick={() => setOpenDeleteModal(false)}
             >
-              Annuler
+              {t('wiki.modal.delete.page.cancel')}
             </Button>
             <Form
               action="destroy"
               method="post"
               onSubmit={() => setOpenDeleteModal(false)}
             >
-              <Button type="submit" color="danger" variant="filled">
+              <Button
+                // type="submit"
+                color="danger"
+                variant="filled"
+                onClick={handleOnDeletePage}
+              >
                 {hasChildren
-                  ? 'Supprimer la page et les sous-pages'
-                  : 'Supprimer la page'}
+                  ? t('wiki.modal.delete.pages.btn')
+                  : t('wiki.modal.delete.page.btn')}
               </Button>
             </Form>
           </Modal.Footer>

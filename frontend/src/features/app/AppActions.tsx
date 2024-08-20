@@ -13,7 +13,7 @@ import { baseURL, useGetWiki } from '~/services';
 import { useUserRights } from '~/store';
 import { useWikiActions } from '~/store/wiki';
 
-type ActionDropdownMenuOptions = {
+export type ActionDropdownMenuOptions = {
   id: string;
   visibility: boolean;
 } & DropdownMenuOptions;
