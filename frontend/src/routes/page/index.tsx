@@ -41,8 +41,9 @@ export const loader =
     return data;
   };
 
-export const action = (queryClient: QueryClient) =>
-  async function action({ params }: ActionFunctionArgs) {
+export const action =
+  (queryClient: QueryClient) =>
+  async ({ params }: ActionFunctionArgs) => {
     await wikiService.deletePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
