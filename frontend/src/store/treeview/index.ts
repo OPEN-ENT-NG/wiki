@@ -10,13 +10,13 @@ import { createStore } from 'zustand/vanilla';
 
 interface State {
   treeData: TreeData[];
-  nodeIdActif: string;
+  selectedNodeId: string;
 }
 
 type Action = {
   actions: {
     setTreeData: (treeData: TreeData[]) => void;
-    setNodeIdActif: (nodeIdActif: string) => void;
+    setSelectedNodeId: (selectedNodeId: string) => void;
   };
 };
 
@@ -37,20 +37,22 @@ const initialState = {
       children: [],
     },
   ],
-  nodeIdActif: '',
+  selectedNodeId: '',
 };
 
 const store = createStore<State & Action>()((set, get) => ({
   ...initialState,
   actions: {
     setTreeData: (treeData: TreeData[]) => set(() => ({ treeData })),
-    setNodeIdActif: (nodeIdActif: string) => set(() => ({ nodeIdActif })),
+    setSelectedNodeId: (selectedNodeId: string) =>
+      set(() => ({ selectedNodeId })),
   },
 }));
 
 // Selectors
 const treeData = (state: ExtractState<typeof store>) => state.treeData;
-const nodeIdActif = (state: ExtractState<typeof store>) => state.nodeIdActif;
+const selectedNodeId = (state: ExtractState<typeof store>) =>
+  state.selectedNodeId;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 
 // Getters
@@ -64,5 +66,5 @@ function useTreeStore<U>(selector: Params<U>[1]) {
 
 // Hooks
 export const useTreeData = () => useTreeStore(treeData);
-export const useNodeIdActif = () => useTreeStore(nodeIdActif);
+export const useSelectedNodeId = () => useTreeStore(selectedNodeId);
 export const useTreeActions = () => useTreeStore(actionsSelector);

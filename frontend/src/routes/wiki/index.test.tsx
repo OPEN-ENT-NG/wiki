@@ -30,15 +30,17 @@ vi.mock('@uidotdev/usehooks', () => ({
 
 vi.mock('~/store/treeview', () => ({
   useTreeActions: () => ({
-    setNodeIdActif: vi.fn(),
+    setSelectedNodeId: vi.fn(),
+    setTreeData: vi.fn(),
   }),
   useTreeData: () => [
     { id: '1', name: 'Page 1', section: true, showIconSection: false },
     { id: '2', name: 'Page 2', section: true, showIconSection: false },
   ],
-  useNodeIdActif: () => ({
+  useSelectedNodeId: () => 1,
+  /* useSelectedNodeId: () => ({
     setTreeData: vi.fn(),
-  }),
+  }), */
 }));
 
 describe('Index Route', () => {
