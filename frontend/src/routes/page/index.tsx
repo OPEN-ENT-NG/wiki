@@ -1,5 +1,5 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { Button, hasChildren, LoadingScreen, Modal } from '@edifice-ui/react';
+import { Button, LoadingScreen, Modal } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect, useRef } from 'react';
@@ -14,6 +14,7 @@ import { ContentHeader } from '~/features/wiki/ContentHeader';
 import {
   pageQueryOptions,
   useGetPage,
+  useGetWiki,
   wikiQueryOptions,
   wikiService,
 } from '~/services';
@@ -64,6 +65,11 @@ export const Page = () => {
     pageId: params.pageId!,
   });
 
+  const { data: wiki } = useGetWiki(params.wikiId!);
+
+  const findPage = wiki?.pages.find((page) => page._id === params.pageId);
+  const hasChildren = findPage?.children;
+
   useEffect(() => {
     if (data) {
       setSelectedNodeId(data._id);
@@ -85,6 +91,8 @@ export const Page = () => {
         variant="ghost"
         visibility="protected"
       ></Editor>
+
+      <button onClick={() => setOpenDeleteModal(true)}>supprimer page</button>
       {openDeleteModal && (
         <Modal
           id="delete-page"
@@ -92,14 +100,14 @@ export const Page = () => {
           onModalClose={() => setOpenDeleteModal(false)}
         >
           <Modal.Header onModalClose={() => setOpenDeleteModal(false)}>
-            {!hasChildren
-              ? 'Suppression de la page'
-              : 'Suppression des pages et sous-pages'}
+            {hasChildren
+              ? 'Suppression des pages et sous-pages'
+              : 'Suppression de la page'}
           </Modal.Header>
           <Modal.Subtitle>
-            {!hasChildren
-              ? 'Souhaitez-vous supprimer la page ?'
-              : 'Souhaitez-vous supprimer la page et ses sous-pages ?'}
+            {hasChildren
+              ? 'Souhaitez-vous supprimer la page et ses sous-pages ?'
+              : 'Souhaitez-vous supprimer la page ?'}
           </Modal.Subtitle>
           <Modal.Body>&nbsp;</Modal.Body>
           <Modal.Footer>
@@ -117,9 +125,9 @@ export const Page = () => {
               onSubmit={() => setOpenDeleteModal(false)}
             >
               <Button type="submit" color="danger" variant="filled">
-                {!hasChildren
-                  ? 'Supprimer la page'
-                  : 'Supprimer la page et les sous-pages'}
+                {hasChildren
+                  ? 'Supprimer la page et les sous-pages'
+                  : 'Supprimer la page'}
               </Button>
             </Form>
           </Modal.Footer>

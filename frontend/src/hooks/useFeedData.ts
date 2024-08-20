@@ -5,6 +5,8 @@ import { useGetWiki } from '~/services';
 import { useTreeActions } from '~/store';
 import { useFilterVisiblePage } from './useFilterVisiblePage';
 
+export const filterParentPage = (page: Page): boolean => !page.parentId;
+
 export const useFeedData = () => {
   const params = useParams();
 
@@ -12,7 +14,6 @@ export const useFeedData = () => {
   const { setTreeData } = useTreeActions();
 
   const filterVisiblePage = useFilterVisiblePage();
-  const filterParentPage = (page: Page): boolean => !page.parentId;
 
   useEffect(() => {
     if (data) {
