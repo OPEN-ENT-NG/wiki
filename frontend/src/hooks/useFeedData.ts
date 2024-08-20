@@ -44,5 +44,6 @@ export const useFeedData = () => {
         })
       );
     }
-  }, [data, setTreeData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 };

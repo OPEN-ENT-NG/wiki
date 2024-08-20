@@ -10,12 +10,14 @@ import { RefAttributes } from 'react';
 
 export const DropdownTreeview = ({
   treeData,
-  nodeId,
-  handleOnTreeItemClick,
+  selectedNodeId,
+  onTreeItemClick,
+  onTreeItemAction,
 }: {
   treeData: TreeData[];
-  nodeId: string | undefined;
-  handleOnTreeItemClick: (pageId: ID) => void;
+  selectedNodeId: string | undefined;
+  onTreeItemAction: (pageId: ID) => void;
+  onTreeItemClick: (pageId: ID) => void;
 }) => {
   return (
     <div className="dropdown-treeview w-100 mb-16">
@@ -37,12 +39,13 @@ export const DropdownTreeview = ({
               <TreeView
                 data={treeData}
                 showIcon={false}
-                selectedNodeId={nodeId}
+                selectedNodeId={selectedNodeId}
                 allExpandedNodes={true}
                 onTreeItemClick={(pageId) => {
-                  handleOnTreeItemClick(pageId);
+                  onTreeItemClick(pageId);
                   setVisible(false);
                 }}
+                onTreeItemAction={onTreeItemAction}
               />
             </Dropdown.Menu>
           </>

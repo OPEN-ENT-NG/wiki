@@ -19,7 +19,11 @@ import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
-import { useNodeIdActif, useTreeActions, useTreeData } from '~/store/treeview';
+import {
+  useSelectedNodeId,
+  useTreeActions,
+  useTreeData,
+} from '~/store/treeview';
 import './index.css';
 
 export const loader =
@@ -48,8 +52,8 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const nodeIdActif = useNodeIdActif();
-  const { setNodeIdActif } = useTreeActions();
+  const selectedNodeId = useSelectedNodeId();
+  const { setSelectedNodeId } = useTreeActions();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const menu = useMenu();
@@ -68,11 +72,11 @@ export const Index = () => {
 
   const handleOnTreeItemClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
-    setNodeIdActif(pageId);
+    setSelectedNodeId(pageId);
   };
 
   const handleOnMenuClick = () => {
-    setNodeIdActif('');
+    setSelectedNodeId('');
     menu.onClick();
   };
 
@@ -108,9 +112,9 @@ export const Index = () => {
               <TreeView
                 data={treeData}
                 showIcon={false}
-                selectedNodeId={nodeIdActif}
+                selectedNodeId={selectedNodeId}
                 onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemCreate={handleOnTreeItemCreateChildren}
+                onTreeItemAction={handleOnTreeItemCreateChildren}
               />
             )}
           </Grid.Col>
@@ -129,8 +133,9 @@ export const Index = () => {
           {isSmallDevice && (
             <DropdownTreeview
               treeData={treeData}
-              nodeId={nodeIdActif}
-              handleOnTreeItemClick={handleOnTreeItemClick}
+              selectedNodeId={selectedNodeId}
+              onTreeItemClick={handleOnTreeItemClick}
+              onTreeItemAction={handleOnTreeItemCreateChildren}
             />
           )}
           {match ? <WikiEmptyScreen /> : <Outlet />}

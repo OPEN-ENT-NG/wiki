@@ -43,7 +43,7 @@ export async function action({ params }: ActionFunctionArgs) {
 
 export const Page = () => {
   const params = useParams();
-  const { setNodeIdActif } = useTreeActions();
+  const { setSelectedNodeId } = useTreeActions();
   const editorRef = useRef<EditorRef>(null);
 
   const { isPending, error, data } = useGetPage({
@@ -53,7 +53,7 @@ export const Page = () => {
 
   useEffect(() => {
     if (data) {
-      setNodeIdActif(data._id);
+      setSelectedNodeId(data._id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
