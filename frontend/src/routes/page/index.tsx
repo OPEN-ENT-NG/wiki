@@ -1,5 +1,5 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { Button, LoadingScreen, Modal } from '@edifice-ui/react';
+import { Button, LoadingScreen, Modal, useUser } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect, useRef } from 'react';
@@ -8,7 +8,6 @@ import {
   ActionFunctionArgs,
   Form,
   LoaderFunctionArgs,
-  redirect,
   useParams,
 } from 'react-router-dom';
 import { ContentHeader } from '~/features/wiki/ContentHeader';
@@ -17,7 +16,6 @@ import {
   useGetPage,
   useGetWiki,
   wikiQueryOptions,
-  wikiService,
 } from '~/services';
 import { useOpenDeleteModal, useTreeActions, useWikiActions } from '~/store';
 
@@ -43,15 +41,32 @@ export const loader =
 
 export const action =
   (queryClient: QueryClient) =>
-  async ({ params }: ActionFunctionArgs) => {
-    await wikiService.deletePage({
+  async ({ params, request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const intent = formData.get('intent');
+
+    console.log({ intent });
+
+    const data = await queryClient.ensureQueryData(
+      wikiQueryOptions.findOne(params.wikiId!)
+    );
+
+    console.log(
+      data.pages
+        .filter((page) => page.parentId === params.pageId)
+        .filter(
+          (page) => page.author === '5eab3de4-757b-4139-acfe-c3bb4bb54f78'
+        )
+    );
+
+    /* await wikiService.deletePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-    });
+    }); */
 
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
 
-    return redirect(`/id/${params.wikiId}`);
+    return null;
   };
 
 export const Page = () => {
@@ -60,6 +75,7 @@ export const Page = () => {
   const openDeleteModal = useOpenDeleteModal();
 
   const { t } = useTranslation('wiki');
+  const { user } = useUser();
   const { setOpenDeleteModal } = useWikiActions();
   const { setSelectedNodeId } = useTreeActions();
 
@@ -133,10 +149,12 @@ export const Page = () => {
               onSubmit={() => setOpenDeleteModal(false)}
             >
               <Button
-                // type="submit"
+                type="submit"
                 color="danger"
                 variant="filled"
                 onClick={handleOnDeletePage}
+                name="destroy"
+                value={user?.userId}
               >
                 {hasChildren
                   ? t('wiki.modal.delete.pages.btn')
