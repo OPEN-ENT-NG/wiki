@@ -161,5 +161,10 @@
   "wiki.modal.delete.page.subtitle": "Souhaitez-vous supprimer la page ?",
   "wiki.modal.delete.pages.btn": "Souhaitez-vous supprimer la page et ses sous-pages ?",
   "wiki.modal.delete.page.btn": "Souhaitez-vous supprimer la page ?",
-  "wiki.modal.delete.page.cancel": "Annuler"
+  "wiki.modal.delete.page.cancel": "Annuler",
+  "wiki.page.dropdown.duplicate": "Dupliquer la page",
+  "wiki.page.dropdown.versions": "Voir l'historique",
+  "wiki.page.dropdown.delete": "Supprimer la page",
+  "wiki.page.dropdown.move": "Déplacer la page",
+  "wiki.page.dropdown.visibility": "Rendre non visible la page"
 }

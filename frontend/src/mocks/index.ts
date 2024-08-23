@@ -119,6 +119,7 @@ export const mockPage = {
       contentPlain: 'test modification',
       author: '123456789',
       authorName: 'Author',
+      isVisible: true,
       modified: {
         $date: 1718207454421,
       },

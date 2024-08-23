@@ -79,7 +79,7 @@ export default ({ mode }: { mode: string }) => {
         transformMixedEsModules: true,
       },
       assetsDir: 'public',
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 2500,
       rollupOptions: {
         external: ['edifice-ts-client' /* 'ode-explorer/lib' */],
         output: {

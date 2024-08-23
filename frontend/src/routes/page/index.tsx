@@ -8,14 +8,15 @@ import {
   ActionFunctionArgs,
   Form,
   LoaderFunctionArgs,
+  redirect,
   useParams,
 } from 'react-router-dom';
-import { ContentHeader } from '~/features/wiki/ContentHeader';
+import { ContentHeader } from '~/features/page/ContentHeader';
 import {
   pageQueryOptions,
   useGetPage,
   useGetWiki,
-  wikiQueryOptions,
+  wikiService,
 } from '~/services';
 import { useOpenDeleteModal, useTreeActions, useWikiActions } from '~/store';
 
@@ -41,32 +42,18 @@ export const loader =
 
 export const action =
   (queryClient: QueryClient) =>
-  async ({ params, request }: ActionFunctionArgs) => {
-    const formData = await request.formData();
-    const intent = formData.get('intent');
-
-    console.log({ intent });
-
-    const data = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!)
-    );
-
-    console.log(
-      data.pages
-        .filter((page) => page.parentId === params.pageId)
-        .filter(
-          (page) => page.author === '5eab3de4-757b-4139-acfe-c3bb4bb54f78'
-        )
-    );
-
-    /* await wikiService.deletePage({
+  async ({ params }: ActionFunctionArgs) => {
+    await wikiService.deletePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-    }); */
+    });
 
-    await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+    /**
+     * We invalidate wiki and pages queries
+     */
+    await queryClient.invalidateQueries();
 
-    return null;
+    return redirect(`/id/${params.wikiId}`);
   };
 
 export const Page = () => {
@@ -98,10 +85,6 @@ export const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  const handleOnDeletePage = () => {
-    console.log({ findPage });
-  };
-
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
@@ -117,7 +100,6 @@ export const Page = () => {
         visibility="protected"
       ></Editor>
 
-      <button onClick={() => setOpenDeleteModal(true)}>supprimer page</button>
       {openDeleteModal && (
         <Modal
           id="delete-page"
@@ -152,7 +134,6 @@ export const Page = () => {
                 type="submit"
                 color="danger"
                 variant="filled"
-                onClick={handleOnDeletePage}
                 name="destroy"
                 value={user?.userId}
               >

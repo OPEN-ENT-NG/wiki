@@ -64,7 +64,6 @@ function generateDevDeps(content) {
 }
 
 function createPackage() {
-  console.log(__dirname);
   fs.readFile(path.resolve(__dirname, '../package.json'), (err, data) => {
     if (err) {
       console.error(err);
