@@ -42,7 +42,10 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'page/:pageId',
             element: <Page />,
             loader: pageLoader(queryClient),
-            action: deleteAction,
+          },
+          {
+            path: 'page/:pageId/destroy',
+            action: deleteAction(queryClient),
           },
           {
             path: 'page/create',
