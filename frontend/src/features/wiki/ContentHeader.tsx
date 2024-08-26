@@ -32,9 +32,8 @@ export const ContentHeader = ({ page }: { page: Page }) => {
 
   const { formatDate } = useDate();
   const { appCode, user } = useOdeClient();
-  // const { user } = useUser();
   const { getAvatarURL, getUserbookURL } = useDirectory();
-  const { setOpenDeleteModal } = useWikiActions();
+  const { setOpenDeleteModal, setOpenVersionsModal } = useWikiActions();
   const { t } = useTranslation(appCode);
 
   const isOnlyRead =
@@ -42,6 +41,9 @@ export const ContentHeader = ({ page }: { page: Page }) => {
     !userRights.contrib &&
     !userRights.creator &&
     !userRights.manager;
+
+  const canContrib = userRights.contrib;
+  const canManage = userRights.manager;
 
   const handleEditPage = () => navigate(`edit`);
 
@@ -51,39 +53,35 @@ export const ContentHeader = ({ page }: { page: Page }) => {
       label: t('wiki.page.dropdown.visibility'),
       icon: <Hide />,
       action: () => console.log(''),
-      visibility: userRights.creator || userRights.manager,
+      visibility: canManage,
     },
     {
       id: 'move',
       label: t('wiki.page.dropdown.move'),
       icon: <FolderMove />,
       action: () => console.log(''),
-      visibility:
-        userRights.contrib || userRights.creator || userRights.manager,
+      visibility: canContrib || canManage,
     },
     {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),
       icon: <Tool />,
-      action: () => console.log(''),
-      visibility: userRights.creator || userRights.manager,
+      action: () => setOpenVersionsModal(true),
+      visibility: canContrib || canManage,
     },
     {
       id: 'duplicate',
       label: t('wiki.page.dropdown.duplicate'),
       icon: <Copy />,
       action: () => console.log(''),
-      visibility: userRights.creator || userRights.manager,
+      visibility: canManage,
     },
     {
       id: 'delete',
       label: t('wiki.page.dropdown.delete'),
       icon: <Delete />,
       action: () => setOpenDeleteModal(true),
-      visibility:
-        (userRights.contrib && user?.userId === page.author) ||
-        userRights.creator ||
-        userRights.manager,
+      visibility: (canContrib && user?.userId === page.author) || canManage,
     },
   ];
 
