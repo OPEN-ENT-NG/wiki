@@ -122,6 +122,7 @@ export const mockPage = {
       modified: {
         $date: 1718207454421,
       },
+      isVisible: false,
       lastContributer: '123456789',
       lastContributerName: 'Author',
     },

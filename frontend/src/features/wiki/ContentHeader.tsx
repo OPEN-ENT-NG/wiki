@@ -1,32 +1,91 @@
-import { Edit } from '@edifice-ui/icons';
+import {
+  Copy,
+  Delete,
+  Edit,
+  FolderMove,
+  Hide,
+  Options,
+  Tool,
+} from '@edifice-ui/icons';
 import {
   Avatar,
   Button,
+  Dropdown,
+  IconButton,
+  IconButtonProps,
   useDate,
   useDirectory,
   useOdeClient,
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
+import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Fragment } from 'react/jsx-runtime';
 import { Page } from '~/models';
-import { useUserRights } from '~/store';
+import { useUserRights, useWikiActions } from '~/store';
+import { ActionDropdownMenuOptions } from '../app/AppActions';
 
 export const ContentHeader = ({ page }: { page: Page }) => {
-  const { formatDate } = useDate();
   const navigate = useNavigate();
   const userRights = useUserRights();
-  const { appCode } = useOdeClient();
-  const { getAvatarURL, getUserbookURL } = useDirectory();
 
+  const { formatDate } = useDate();
+  const { appCode, user } = useOdeClient();
+  // const { user } = useUser();
+  const { getAvatarURL, getUserbookURL } = useDirectory();
+  const { setOpenDeleteModal } = useWikiActions();
   const { t } = useTranslation(appCode);
 
-  const handleEditPage = () => {
-    navigate(`edit`);
-  };
+  const isOnlyRead =
+    userRights.read &&
+    !userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
 
-  const userCanEdit =
-    userRights.contrib || userRights.creator || userRights.manager;
+  const handleEditPage = () => navigate(`edit`);
+
+  const dropdownOptions: ActionDropdownMenuOptions[] = [
+    {
+      id: 'visibility',
+      label: t('wiki.page.dropdown.visibility'),
+      icon: <Hide />,
+      action: () => console.log(''),
+      visibility: userRights.creator || userRights.manager,
+    },
+    {
+      id: 'move',
+      label: t('wiki.page.dropdown.move'),
+      icon: <FolderMove />,
+      action: () => console.log(''),
+      visibility:
+        userRights.contrib || userRights.creator || userRights.manager,
+    },
+    {
+      id: 'versions',
+      label: t('wiki.page.dropdown.versions'),
+      icon: <Tool />,
+      action: () => console.log(''),
+      visibility: userRights.creator || userRights.manager,
+    },
+    {
+      id: 'duplicate',
+      label: t('wiki.page.dropdown.duplicate'),
+      icon: <Copy />,
+      action: () => console.log(''),
+      visibility: userRights.creator || userRights.manager,
+    },
+    {
+      id: 'delete',
+      label: t('wiki.page.dropdown.delete'),
+      icon: <Delete />,
+      action: () => setOpenDeleteModal(true),
+      visibility:
+        (userRights.contrib && user?.userId === page.author) ||
+        userRights.creator ||
+        userRights.manager,
+    },
+  ];
 
   return (
     <div className="d-flex justify-content-between">
@@ -57,11 +116,50 @@ export const ContentHeader = ({ page }: { page: Page }) => {
           </div>
         </div>
       </div>
-      <div>
-        {userCanEdit && (
-          <Button onClick={handleEditPage} leftIcon={<Edit />}>
-            {t('wiki.page.edit')}
-          </Button>
+      <div className="d-flex justify-content-between align-items-center gap-12">
+        {!isOnlyRead && (
+          <>
+            <Button onClick={handleEditPage} leftIcon={<Edit />}>
+              {t('wiki.page.edit')}
+            </Button>
+            <Dropdown>
+              {(
+                triggerProps: JSX.IntrinsicAttributes &
+                  Omit<IconButtonProps, 'ref'> &
+                  RefAttributes<HTMLButtonElement>
+              ) => (
+                <div data-testid="dropdown">
+                  <IconButton
+                    {...triggerProps}
+                    type="button"
+                    aria-label="label"
+                    color="primary"
+                    variant="outline"
+                    icon={<Options />}
+                  />
+
+                  <Dropdown.Menu>
+                    {dropdownOptions.map((option) => (
+                      <Fragment key={option.id}>
+                        {option.type === 'divider' ? (
+                          <Dropdown.Separator />
+                        ) : (
+                          option.visibility && (
+                            <Dropdown.Item
+                              icon={option.icon}
+                              onClick={() => option.action(null)}
+                            >
+                              {option.label}
+                            </Dropdown.Item>
+                          )
+                        )}
+                      </Fragment>
+                    ))}
+                  </Dropdown.Menu>
+                </div>
+              )}
+            </Dropdown>
+          </>
         )}
       </div>
     </div>
