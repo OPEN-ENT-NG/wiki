@@ -2,7 +2,7 @@ import { Editor, EditorRef } from '@edifice-ui/editor';
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
-import { useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -11,7 +11,11 @@ import {
 } from 'react-router-dom';
 import { ContentHeader } from '~/features/wiki/ContentHeader';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
-import { useTreeActions } from '~/store';
+import { useOpenDeleteModal, useTreeActions } from '~/store';
+
+const DeleteModal = lazy(
+  async () => await import('~/features/page/DeleteModal')
+);
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -33,18 +37,28 @@ export const loader =
     return data;
   };
 
-export async function action({ params }: ActionFunctionArgs) {
-  await wikiService.deletePage({
-    wikiId: params.wikiId!,
-    pageId: params.pageId!,
-  });
-  return redirect(`/id/${params.wikiId}`);
-}
+export const action =
+  (queryClient: QueryClient) =>
+  async ({ params }: ActionFunctionArgs) => {
+    await wikiService.deletePage({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+    });
+
+    /**
+     * We invalidate wiki and pages queries
+     */
+    await queryClient.invalidateQueries();
+
+    return redirect(`/id/${params.wikiId}`);
+  };
 
 export const Page = () => {
   const params = useParams();
-  const { setSelectedNodeId } = useTreeActions();
   const editorRef = useRef<EditorRef>(null);
+  const openDeleteModal = useOpenDeleteModal();
+
+  const { setSelectedNodeId } = useTreeActions();
 
   const { isPending, error, data } = useGetPage({
     wikiId: params.wikiId!,
@@ -72,6 +86,10 @@ export const Page = () => {
         variant="ghost"
         visibility="protected"
       ></Editor>
+
+      <Suspense fallback={<LoadingScreen position={false} />}>
+        {openDeleteModal && <DeleteModal />}
+      </Suspense>
     </div>
   ) : null;
 };

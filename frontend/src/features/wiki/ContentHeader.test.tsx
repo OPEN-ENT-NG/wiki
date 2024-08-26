@@ -1,6 +1,6 @@
+import { mockPage } from '~/mocks';
 import { render, screen } from '~/mocks/setup.vitest';
 import { ContentHeader } from './ContentHeader';
-import { mockPage } from '~/mocks';
 
 /**
  * Create data test for component ContentHeader
@@ -64,12 +64,13 @@ describe('ContentHeader component', () => {
     render(<ContentHeader page={mockPage.pages[0]} />);
     expect(screen.getByText(/wiki.read.dated.updated/));
   });
-  it('should not render edit button when userCanEdit is false', () => {
+
+  it('should not render edit button when user cannot edit', () => {
     mocks.useUserRights.mockImplementation(() => ({
       contrib: false,
       creator: false,
       manager: false,
-      read: false,
+      read: true,
     }));
 
     render(<ContentHeader page={mockPage.pages[0]} />);
