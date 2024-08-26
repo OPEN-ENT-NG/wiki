@@ -82,7 +82,7 @@ const createWikiService = (baseURL: string) => ({
   /**
    *
    * @param wikiId
-   * @returns a new page
+   * @creates a new page
    */
   async createPage({
     wikiId,
@@ -100,7 +100,7 @@ const createWikiService = (baseURL: string) => ({
   /**
    *
    * @param wikiId
-   * @returns the updated page
+   * @updates a page
    */
   async updatePage({
     wikiId,
@@ -120,7 +120,7 @@ const createWikiService = (baseURL: string) => ({
   /**
    *
    * @param wikiId
-   * @returns
+   * @deletes a page
    */
   async deletePage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices

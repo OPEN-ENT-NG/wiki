@@ -6,9 +6,5 @@ export * from './api';
 /**
  * Queries
  */
-export * from './queries/actions';
-export * from './queries/comment';
-export * from './queries/page';
-export * from './queries/wiki';
-
-export * from './resource/service';
+export * from './queries';
+export * from './resource/resourceService';

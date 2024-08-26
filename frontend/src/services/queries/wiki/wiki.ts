@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { wikiService } from '..';
+import { wikiService } from '../..';
 
 /**
  * Wiki Query Options Factory

@@ -7,7 +7,6 @@ import { RouterProvider } from 'react-router-dom';
 import './i18n';
 import { Providers, queryClient } from './providers';
 import { router } from './routes';
-// import './services/WikiResourceService';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
