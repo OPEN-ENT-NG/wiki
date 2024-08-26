@@ -18,7 +18,7 @@ import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions } from '~/services';
-import { getUserRightsActions } from '~/store';
+import { getUserRightsActions, useUserRights } from '~/store';
 import {
   useSelectedNodeId,
   useTreeActions,
@@ -52,6 +52,7 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
+  const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
   const { setSelectedNodeId } = useTreeActions();
   const match = useMatch('/id/:wikiId');
@@ -59,6 +60,12 @@ export const Index = () => {
   const menu = useMenu();
 
   const { data } = useGetWiki(params.wikiId!);
+
+  const isOnlyRead =
+    userRights.read &&
+    !userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
 
   /**
    * Redirect to the default page if exist
@@ -107,7 +114,7 @@ export const Index = () => {
                 </Menu.Button>
               </Menu.Item>
             </Menu>
-            <NewPage />
+            {!isOnlyRead && <NewPage />}
             {treeData && (
               <TreeView
                 data={treeData}
