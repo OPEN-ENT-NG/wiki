@@ -8,11 +8,11 @@ import {
   useGetRevisionsPage,
   useUpdatePage,
 } from './page';
-import { wikiQueryOptions } from './wiki';
 
 import { PropsWithChildren } from 'react';
 import { mockPage, mockRevision } from '~/mocks';
 import '~/mocks/setup.msw';
+import { wikiQueryOptions } from '~/services';
 
 const queryClient = new QueryClient({
   defaultOptions: {

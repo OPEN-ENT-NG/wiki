@@ -3,8 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { wikiService } from '..';
-import { pageQueryOptions } from './page';
+import { pageQueryOptions, wikiService } from '..';
 
 /**
  *
