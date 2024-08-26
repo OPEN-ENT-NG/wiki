@@ -138,12 +138,15 @@ export const Index = () => {
           })}
         >
           {isSmallDevice && (
-            <DropdownTreeview
-              treeData={treeData}
-              selectedNodeId={selectedNodeId}
-              onTreeItemClick={handleOnTreeItemClick}
-              onTreeItemAction={handleOnTreeItemCreateChildren}
-            />
+            <>
+              <DropdownTreeview
+                treeData={treeData}
+                selectedNodeId={selectedNodeId}
+                onTreeItemClick={handleOnTreeItemClick}
+                onTreeItemAction={handleOnTreeItemCreateChildren}
+              />
+              {!isOnlyRead && <NewPage />}
+            </>
           )}
           {match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
