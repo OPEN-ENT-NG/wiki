@@ -32,14 +32,14 @@ export const AppActions = () => {
       label: t('share'),
       icon: <Share />,
       action: () => setOpenShareModal(true),
-      visibility: userRights.creator || userRights.manager,
+      visibility: userRights.manager,
     },
     {
       id: 'properties',
       label: t('properties'),
       icon: <Settings />,
       action: () => setOpenUpdateModal(true),
-      visibility: userRights.creator || userRights.manager,
+      visibility: userRights.manager,
     },
     {
       id: 'print',
