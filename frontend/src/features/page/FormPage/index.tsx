@@ -83,6 +83,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Button
             type="submit"
             variant="filled"
+            disabled={contentTitle.length === 0}
             leftIcon={<Save />}
             isLoading={navigation.state === 'submitting'}
           >

@@ -1,11 +1,12 @@
 import { Plus } from '@edifice-ui/icons';
 import { Button, useOdeClient } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 export const NewPage = () => {
   const navigate = useNavigate();
   const { appCode } = useOdeClient();
+  const match = useMatch('/id/:wikiId/page/create');
   const { t } = useTranslation();
 
   const handleCreatePage = () => {
@@ -14,7 +15,12 @@ export const NewPage = () => {
 
   return (
     <div className="d-grid my-16">
-      <Button variant="outline" onClick={handleCreatePage} leftIcon={<Plus />}>
+      <Button
+        variant="outline"
+        onClick={handleCreatePage}
+        leftIcon={<Plus />}
+        disabled={!!match}
+      >
         {t('wiki.create.new.page', { ns: appCode })}
       </Button>
     </div>

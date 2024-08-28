@@ -10,14 +10,21 @@ import { NewPage } from './NewPage';
  * useNavigate hook is called inside our component
  * Without mocking it, it will crash an error
  */
+const mocks = vi.hoisted(() => ({
+  useMatch: vi.fn(),
+}));
+
 const mockedUseNavigate = vi.fn();
+
 vi.mock('react-router-dom', async () => {
   const router = await vi.importActual<typeof import('react-router-dom')>(
     'react-router-dom'
   );
+
   return {
     ...router,
     useNavigate: () => mockedUseNavigate,
+    useMatch: mocks.useMatch,
   };
 });
 
@@ -38,6 +45,10 @@ describe('NewPage component', () => {
 
   it('should trigger useNavigate hook', async () => {
     /**
+     * Mock useMatch with null value
+     */
+    vi.mocked(mocks.useMatch).mockReturnValue(null);
+    /**
      * We are getting a 'user' with @testing-library/user-event
      */
     const user = userEvent.setup();
@@ -50,20 +61,48 @@ describe('NewPage component', () => {
     /**
      * We find the button in the component by role (better than by test-id)
      */
-    await screen.findByRole('button');
+    const button = await screen.findByRole('button');
+
+    /**
+     * The button can be accessed because the useMatch doesn't detect the URL
+     */
+    expect(button).not.toBeDisabled();
 
     /**
      * We use @testing-library/user-event to simulate user click
      * button should have a i18n key expected
      */
-    await user.click(
-      screen.getByRole('button', { name: /wiki.create.new.page/i })
-    );
+    await user.click(button);
     /**
      * Then, when user clicks,
      * We expect navigate(`page/create`) in handleCreatePage fn to have been called
      */
     expect(mockedUseNavigate).toHaveBeenCalledWith(`page/create`);
+  });
+
+  it('should cant trigger button because is disabled', async () => {
+    /**
+     * Mock useMatch with a value
+     */
+    vi.mocked(mocks.useMatch).mockReturnValue({
+      params: {
+        wikiId: '123',
+      },
+    });
+    /**
+     * As we mocked useNavigate, we can just render the component
+     */
+    render(<NewPage />);
+
+    /**
+     * We find the button in the component by role (better than by test-id)
+     */
+    const button = await screen.findByRole('button');
+
+    /**
+     * The button cant be accessed because the useMatch detect the URL
+     */
+    expect(button).toBeDisabled();
   });
 
   it('navigates to create page when button clicked', async () => {
