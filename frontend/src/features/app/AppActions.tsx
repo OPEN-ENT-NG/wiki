@@ -50,20 +50,9 @@ export const AppActions = () => {
     },
   ];
 
-  const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
+  const canManage = userRights.manager;
 
-  return isOnlyRead ? (
-    <IconButton
-      data-testid="print-button"
-      variant="outline"
-      icon={<Print />}
-      onClick={() => alert('print')}
-    />
-  ) : (
+  return canManage ? (
     <Dropdown>
       {(
         triggerProps: JSX.IntrinsicAttributes &
@@ -101,5 +90,12 @@ export const AppActions = () => {
         </div>
       )}
     </Dropdown>
+  ) : (
+    <IconButton
+      data-testid="print-button"
+      variant="outline"
+      icon={<Print />}
+      onClick={() => alert('print')}
+    />
   );
 };
