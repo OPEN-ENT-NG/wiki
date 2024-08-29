@@ -1,4 +1,4 @@
-import { Button, Modal, useOdeClient } from '@edifice-ui/react';
+import { Alert, Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useParams } from 'react-router-dom';
@@ -7,12 +7,11 @@ import { useOpenDeleteModal, useWikiActions } from '~/store';
 
 export default function DeleteModal() {
   const params = useParams();
+  const openDeleteModal = useOpenDeleteModal();
 
   const { t } = useTranslation('wiki');
   const { user } = useOdeClient();
   const { setOpenDeleteModal } = useWikiActions();
-  const openDeleteModal = useOpenDeleteModal();
-
   const { data: wiki } = useGetWiki(params.wikiId!);
 
   // Find current page
@@ -36,7 +35,11 @@ export default function DeleteModal() {
           ? t('wiki.modal.delete.pages.subtitle')
           : t('wiki.modal.delete.page.subtitle')}
       </Modal.Subtitle>
-      <Modal.Body>&nbsp;</Modal.Body>
+      <Modal.Body>
+        {hasChildren && (
+          <Alert type="warning">{t('wiki.modal.delete.pages.warning')}</Alert>
+        )}
+      </Modal.Body>
       <Modal.Footer>
         <Button
           color="tertiary"
