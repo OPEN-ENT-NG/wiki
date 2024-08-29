@@ -26,10 +26,11 @@ describe('Wiki GET Queries', () => {
       wrapper,
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockWikis);
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockWikis);
+    });
   });
 
   test('use useGetWiki hook to get one wiki', async () => {
@@ -42,9 +43,8 @@ describe('Wiki GET Queries', () => {
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockWiki);
     });
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockWiki);
   });
 });
