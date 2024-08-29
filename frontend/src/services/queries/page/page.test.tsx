@@ -43,10 +43,11 @@ describe('Wiki Page GET Queries', () => {
       }
     );
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockPage);
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockPage);
+    });
   });
 
   test('use useGetRevisionsPage to get revisions of a page', async () => {
@@ -61,10 +62,11 @@ describe('Wiki Page GET Queries', () => {
       }
     );
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toBeDefined();
-    expect(result.current.data).toEqual(mockRevision);
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockRevision);
+    });
   });
 });
 
@@ -84,14 +86,13 @@ describe('Wiki Page mutations Queries', () => {
       result.current.mutate(variables);
     });
 
-    await waitFor(() => result.current.isSuccess);
-
-    expect(result.current.variables).toStrictEqual(variables);
-
-    expect(result.current.data).toStrictEqual(data);
-
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAll().queryKey,
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBeTruthy();
+      expect(result.current.variables).toStrictEqual(variables);
+      expect(result.current.data).toStrictEqual(data);
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: wikiQueryOptions.findAll().queryKey,
+      });
     });
   });
 
@@ -109,18 +110,19 @@ describe('Wiki Page mutations Queries', () => {
       result.current.mutate(variables);
     });
 
-    await waitFor(() => result.current.isSuccess);
-
-    expect(result.current.variables).toStrictEqual(variables);
-
-    expect(result.current.data).toStrictEqual(response);
-
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAll().queryKey,
-    });
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: pageQueryOptions.findOne({ wikiId: 'wikiId', pageId: 'pageId' })
-        .queryKey,
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.variables).toStrictEqual(variables);
+      expect(result.current.data).toStrictEqual(response);
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: wikiQueryOptions.findAll().queryKey,
+      });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: pageQueryOptions.findOne({
+          wikiId: 'wikiId',
+          pageId: 'pageId',
+        }).queryKey,
+      });
     });
   });
 
@@ -137,19 +139,19 @@ describe('Wiki Page mutations Queries', () => {
       result.current.mutate(variables);
     });
 
-    await waitFor(() => result.current.isSuccess);
-
-    expect(result.current.variables).toStrictEqual(variables);
-
-    expect(result.current.data).toStrictEqual(response);
-
-    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: wikiQueryOptions.findAll().queryKey,
-    });
-
-    expect(removeQueriesSpy).toHaveBeenCalledWith({
-      queryKey: pageQueryOptions.findOne({ wikiId: 'wikiId', pageId: 'pageId' })
-        .queryKey,
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.variables).toStrictEqual(variables);
+      expect(result.current.data).toStrictEqual(response);
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: wikiQueryOptions.findAll().queryKey,
+      });
+      expect(removeQueriesSpy).toHaveBeenCalledWith({
+        queryKey: pageQueryOptions.findOne({
+          wikiId: 'wikiId',
+          pageId: 'pageId',
+        }).queryKey,
+      });
     });
   });
 });
