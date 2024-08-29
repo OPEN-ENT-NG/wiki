@@ -16,9 +16,9 @@ vi.mock('react-router-dom', () => ({
 }));
 
 const initialRights = {
-  contrib: false,
+  contrib: true,
   creator: false,
-  manager: false,
+  manager: true,
   read: true,
 };
 
@@ -69,23 +69,23 @@ describe('AppActions component', () => {
     });
   });
 
-  it('should render the print button when isOnlyRead is true', async () => {
+  it('should render the print button when canManage is false', async () => {
+    /**
+     * In this test only, we change the return value of our mock to test another condition -> isOnlyRead = false
+     */
+    mocks.useUserRights.mockImplementation(() => ({
+      contrib: true,
+      creator: false,
+      manager: false,
+      read: true,
+    }));
     render(<AppActions />);
 
     const printButton = screen.getByTestId('print-button');
     expect(printButton).toBeInTheDocument();
   });
 
-  it('should render the dropdown menu when isOnlyRead is false', () => {
-    /**
-     * In this test only, we change the return value of our mock to test another condition -> isOnlyRead = false
-     */
-    mocks.useUserRights.mockImplementation(() => ({
-      contrib: false,
-      creator: false,
-      manager: false,
-      read: false,
-    }));
+  it('should render the dropdown menu when canManage is true', () => {
     render(<AppActions />);
     const dropdownButton = screen.getByTestId('dropdown');
     expect(dropdownButton).toBeInTheDocument();
