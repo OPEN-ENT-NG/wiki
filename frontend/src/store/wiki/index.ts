@@ -5,6 +5,7 @@ interface State {
   openShareModal: boolean;
   openDeleteModal: boolean;
   openVersionsModal: boolean;
+  openConfirmVisibilityModal: boolean;
 }
 
 type Action = {
@@ -13,6 +14,7 @@ type Action = {
     setOpenShareModal: (value: boolean) => void;
     setOpenDeleteModal: (value: boolean) => void;
     setOpenVersionsModal: (value: boolean) => void;
+    setOpenConfirmVisibilityModal: (value: boolean) => void;
   };
 };
 
@@ -29,6 +31,7 @@ const initialState = {
   openShareModal: false,
   openDeleteModal: false,
   openVersionsModal: false,
+  openConfirmVisibilityModal: false,
 };
 
 const store = createStore<State & Action>()((set, get) => ({
@@ -39,6 +42,8 @@ const store = createStore<State & Action>()((set, get) => ({
     setOpenDeleteModal: (openDeleteModal: boolean) => set({ openDeleteModal }),
     setOpenVersionsModal: (openVersionsModal: boolean) =>
       set({ openVersionsModal }),
+    setOpenConfirmVisibilityModal: (openConfirmVisibilityModal: boolean) =>
+      set({ openConfirmVisibilityModal }),
   },
 }));
 
@@ -51,6 +56,8 @@ const openDeleteModal = (state: ExtractState<typeof store>) =>
   state.openDeleteModal;
 const openVersionsModal = (state: ExtractState<typeof store>) =>
   state.openVersionsModal;
+const openConfirmVisibilityModal = (state: ExtractState<typeof store>) =>
+  state.openConfirmVisibilityModal;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 
 // Getters
@@ -58,6 +65,8 @@ export const getOpenUpdateModal = () => openUpdateModal(store.getState());
 export const getOpenShareModal = () => openShareModal(store.getState());
 export const getOpenDeleteModal = () => openDeleteModal(store.getState());
 export const getOpenVersionsModal = () => openVersionsModal(store.getState());
+export const getOpenConfirmVisibilityModal = () =>
+  openConfirmVisibilityModal(store.getState());
 export const getWikiActions = () => actionsSelector(store.getState());
 
 // React Store
@@ -70,4 +79,6 @@ export const useOpenUpdateModal = () => useWikiStore(openUpdateModal);
 export const useOpenShareModal = () => useWikiStore(openShareModal);
 export const useOpenDeleteModal = () => useWikiStore(openDeleteModal);
 export const useOpenVersionsModal = () => useWikiStore(openVersionsModal);
+export const useOpenConfirmVisibilityModal = () =>
+  useWikiStore(openConfirmVisibilityModal);
 export const useWikiActions = () => useWikiStore(actionsSelector);
