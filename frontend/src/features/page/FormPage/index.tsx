@@ -57,7 +57,11 @@ export const FormPage = ({ page }: { page?: Page }) => {
           ></Input>
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
-          <Toggle name="toggle" checked={isVisible} onChange={handleToggle} />
+          <Toggle
+            name="isVisible"
+            checked={isVisible}
+            onChange={handleToggle}
+          />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
             message={t('wiki.createform.toggle.message')}
