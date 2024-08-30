@@ -15,7 +15,7 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
   const actionData = useActionData() as {
     title: string;
     content: string;
-    toggle: boolean;
+    isVisible: boolean;
   };
 
   const { appCode } = useOdeClient();
@@ -30,15 +30,14 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
       onModalClose={() => setOpenConfirmVisibilityModal(false)}
     >
       <Modal.Header onModalClose={() => setOpenConfirmVisibilityModal(false)}>
-        {page.isVisible &&
-          t('wiki.page.editform.modal.confirm.notvisible.title')}
-        {!page.isVisible && t('wiki.page.editform.modal.confirm.visible.title')}
+        {page.isVisible
+          ? t('wiki.page.editform.modal.confirm.notvisible.title')
+          : t('wiki.page.editform.modal.confirm.visible.title')}
       </Modal.Header>
       <Modal.Body>
-        {page.isVisible &&
-          t('wiki.page.editform.modal.confirm.notvisible.content')}
-        {!page.isVisible &&
-          t('wiki.page.editform.modal.confirm.visible.content')}
+        {page.isVisible
+          ? t('wiki.page.editform.modal.confirm.notvisible.content')
+          : t('wiki.page.editform.modal.confirm.visible.content')}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -53,30 +52,11 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
           method="post"
           onSubmit={() => setOpenConfirmVisibilityModal(false)}
         >
-          <FormControl id="title">
-            <Input
-              type="hidden"
-              name="title"
-              value={actionData.title}
-              size="sm"
-            />
-          </FormControl>
-          <FormControl id="content">
-            <Input
-              type="hidden"
-              name="content"
-              value={actionData.content}
-              size="sm"
-            />
-          </FormControl>
-          <FormControl id="toggle">
-            <Input
-              type="hidden"
-              name="toggle"
-              value={String(actionData.toggle)}
-              size="sm"
-            />
-          </FormControl>
+          <input
+            type="hidden"
+            name="actionData"
+            value={JSON.stringify(actionData)}
+          />
           <Button
             type="submit"
             color="primary"

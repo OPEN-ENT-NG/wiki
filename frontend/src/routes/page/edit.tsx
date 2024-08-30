@@ -1,6 +1,6 @@
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
 import { useGetPage, wikiQueryOptions, wikiService } from '~/services';
@@ -25,7 +25,7 @@ export const editAction =
     const formData = await request.formData();
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
-    const toggle = formData.get('toggle') === 'on';
+    const isVisible = formData.get('isVisible') === 'on';
 
     const wikiData = await queryClient.ensureQueryData(
       wikiQueryOptions.findOne(params.wikiId!)
@@ -36,9 +36,9 @@ export const editAction =
 
     // if current page has children we compare page visibility to toggle:
     // if page visibility has changed then we show confirm modal
-    if (pageData?.children && pageData.isVisible !== toggle) {
+    if (pageData?.children && pageData.isVisible !== isVisible) {
       setOpenConfirmVisibilityModal(true);
-      return { title, content, toggle };
+      return { title, content, isVisible };
     } else {
       // otherwise we call the updatePage service and redirect to current page.
       await wikiService.updatePage({
@@ -47,7 +47,7 @@ export const editAction =
         data: {
           title,
           content,
-          isVisible: toggle,
+          isVisible,
         },
       });
 
@@ -65,12 +65,12 @@ export const editAction =
 export const confirmVisibilityAction =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
-    // get the hidden inputs from the Confirm Modal
-    // the hidden inputs contain the page edit form data
+    // get the hidden input from the Confirm Modal
+    // the hidden input contains the page edit form data
     const formData = await request.formData();
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const toggle = formData.get('toggle') === 'true';
+    const { title, content, isVisible } = JSON.parse(
+      formData.get('actionData') as string
+    );
 
     await wikiService.updatePage({
       wikiId: params.wikiId!,
@@ -78,7 +78,7 @@ export const confirmVisibilityAction =
       data: {
         title,
         content,
-        isVisible: toggle,
+        isVisible,
       },
     });
 
@@ -102,7 +102,10 @@ export const EditPage = () => {
   return data ? (
     <>
       <FormPage page={data} />
-      {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
+
+      <Suspense fallback={<LoadingScreen position={false} />}>
+        {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
+      </Suspense>
     </>
   ) : null;
 };
