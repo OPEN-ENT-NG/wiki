@@ -45,7 +45,7 @@ describe('AppActions component', () => {
    * Before each test, we init the implementation of our mock => default to isOnlyRead
    */
   beforeEach(() => {
-    mocks.useUserRights.mockImplementation(() => initialRights);
+    mocks.useUserRights.mockReturnValue(initialRights);
   });
 
   afterEach(() => {
@@ -73,12 +73,12 @@ describe('AppActions component', () => {
     /**
      * In this test only, we change the return value of our mock to test another condition -> isOnlyRead = false
      */
-    mocks.useUserRights.mockImplementation(() => ({
+    mocks.useUserRights.mockReturnValue({
       contrib: true,
       creator: false,
       manager: false,
       read: true,
-    }));
+    });
     render(<AppActions />);
 
     const printButton = screen.getByTestId('print-button');

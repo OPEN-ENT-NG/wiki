@@ -97,12 +97,16 @@
   "wiki.share": "Partager",
   "wiki.share.current.wiki": "Partager le wiki",
   "wiki.table.head.author": "Auteur",
-  "wiki.table.head.modificationDate": "Modifié le",
-  "wiki.table.head.title": "Titre",
+  "wiki.table.head.state": "Statut",
+  "wiki.table.head.modificationDate": "Date de version",
+  "wiki.table.head.action": "Action",
+  "wiki.table.body.visible": "Visible",
+  "wiki.table.body.invisible": "Masqué",
   "wiki.title": "Wiki",
   "wiki.update": "Modifier",
   "wiki.version.restore": "Restaurer",
   "wiki.version.compare": "Comparer",
+  "wiki.version.cancel": "Comparer",
   "wiki.version.time": "Version du ",
   "wiki.your.comment.has.been.saved": "Votre commentaire a été enregistré.",
   "wiki.page.has.been.created": "La page a été créée.",
@@ -171,5 +175,8 @@
   "wiki.page.dropdown.versions": "Voir l'historique",
   "wiki.page.dropdown.delete": "Supprimer la page",
   "wiki.page.dropdown.move": "Déplacer la page",
-  "wiki.page.dropdown.visibility": "Rendre non visible la page"
+  "wiki.page.dropdown.visibility": "Rendre non visible la page",
+  "wiki.version.modal.title": "Historique des versions",
+  "wiki.version.modal.tips": "Astuce :",
+  "wiki.version.modal.alert": "sélectionner 2 versions pour activer la comparaison de versions."
 }

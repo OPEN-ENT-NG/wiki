@@ -1,10 +1,10 @@
 import { mockPage } from '~/mocks';
 import { render, screen } from '~/mocks/setup.vitest';
-import { ContentHeader } from './ContentHeader';
+import { PageHeader } from './PageHeader';
 
 /**
- * Create data test for component ContentHeader
- * Test render ContentHeader component
+ * Create data test for component PageHeader
+ * Test render PageHeader component
  * Test render Avatar component
  * Test render modified date
  */
@@ -44,36 +44,36 @@ vi.mock('~/store/rights', () => ({
   useUserRights: mocks.useUserRights,
 }));
 
-describe('ContentHeader component', () => {
+describe('PageHeader component', () => {
   beforeEach(() => {
-    mocks.useUserRights.mockImplementation(() => initialRights);
+    mocks.useUserRights.mockReturnValue(initialRights);
   });
 
   it('should render successfully', async () => {
-    const { baseElement } = render(<ContentHeader page={mockPage.pages[0]} />);
+    const { baseElement } = render(<PageHeader page={mockPage.pages[0]} />);
 
     expect(baseElement).toBeTruthy();
   });
 
   it('renders the avatar correctly with the correct alt text', () => {
-    render(<ContentHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockPage.pages[0]} />);
     expect(screen.getByAltText(/wiki.read.author.avatar/));
   });
 
   it('renders the formatted modified date correctly', () => {
-    render(<ContentHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockPage.pages[0]} />);
     expect(screen.getByText(/wiki.read.dated.updated/));
   });
 
   it('should not render edit button when user cannot edit', () => {
-    mocks.useUserRights.mockImplementation(() => ({
+    mocks.useUserRights.mockReturnValue({
       contrib: false,
       creator: false,
       manager: false,
       read: true,
-    }));
+    });
 
-    render(<ContentHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockPage.pages[0]} />);
 
     const editButton = screen.queryByRole('button', { name: 'wiki.page.edit' });
     expect(editButton).not.toBeInTheDocument();

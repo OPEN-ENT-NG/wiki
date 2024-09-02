@@ -6,6 +6,7 @@ import {
   PickedWiki,
   Wiki,
 } from '~/models';
+import { Revision } from '~/models/revision';
 
 /**
  *
@@ -75,7 +76,7 @@ const createWikiService = (baseURL: string) => ({
   }) {
     const response = await odeServices
       .http()
-      .get<Page>(`${baseURL}/revisions/${wikiId}/${pageId}`);
+      .get<Revision[]>(`${baseURL}/revisions/${wikiId}/${pageId}`);
     return response;
   },
 
