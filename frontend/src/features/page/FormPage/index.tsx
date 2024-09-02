@@ -9,41 +9,102 @@ import {
   useOdeClient,
   useToggle,
 } from '@edifice-ui/react';
-import { useRef, useState } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, useNavigate, useNavigation } from 'react-router-dom';
+import {
+  Form,
+  useBeforeUnload,
+  useBlocker,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from 'react-router-dom';
+import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
 import { Page } from '~/models';
 
 export const FormPage = ({ page }: { page?: Page }) => {
-  const navigate = useNavigate();
+  const params = useParams();
   const navigation = useNavigation();
+  const navigate = useNavigate();
   const editorRef = useRef<EditorRef>(null);
 
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(page?.content ?? '');
   const [contentTitle, setContentTitle] = useState(page?.title ?? '');
   const [isVisible, toggle] = useToggle(page?.isVisible);
+  const [isModified, setIsModified] = useState(false);
+  const [isDisableButton, setIsDisableButton] = useState(true);
 
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
 
+  useBeforeUnload((event) => {
+    if (isModify()) {
+      event.preventDefault();
+    }
+  });
+
   const handleOnButtonCancel = () => {
-    navigate(-1);
+    if (isModify()) {
+      navigate(`/id/${params.wikiId}`);
+    } else {
+      navigate('..');
+    }
+  };
+
+  const updateModificationState = () => {
+    if (isModify()) {
+      setIsModified(true);
+      setIsDisableButton(false);
+    }
   };
 
   const handleOnContentChange = ({ editor }: any) => {
     const htmlContent = editor.getHTML();
     setContent(htmlContent);
+    updateModificationState();
   };
 
-  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setContentTitle(event.target.value);
+    updateModificationState();
+  };
+
+  const handleToggle = () => {
     toggle();
+    updateModificationState();
+  };
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isModified && currentLocation !== nextLocation
+  );
+
+  const isModify = useCallback(() => {
+    if (!page) return !!content || !!contentTitle || isVisible;
+    return (
+      page.content !== (editorRef.current?.getContent('html') as string) ||
+      page.title !== contentTitle ||
+      page.isVisible !== isVisible
+    );
+  }, [content, contentTitle, isVisible, page]);
+
+  const handleClosePage = () => {
+    if (blocker.state === 'blocked') {
+      blocker.reset();
+    }
+  };
+
+  const resetModify = () => {
+    if (contentTitle.length > 0) {
+      setIsModified(false);
+    }
   };
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
-      <Form method="post" role="form">
+      <Form id="myForm" method="post" role="form">
         <FormControl id="inputForm" isRequired>
           <Label>{t('wiki.linkerform.pagetitle.label')}</Label>
           <Input
@@ -89,14 +150,26 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Button
             type="submit"
             variant="filled"
-            disabled={contentTitle.length === 0}
             leftIcon={<Save />}
             isLoading={navigation.state === 'submitting'}
+            disabled={isDisableButton}
+            onClick={resetModify}
           >
             {t('wiki.editform.save')}
           </Button>
         </div>
       </Form>
+      {blocker.state === 'blocked' ? (
+        <Suspense>
+          <CancelModal
+            isOpen={blocker.state === 'blocked'}
+            onClose={handleClosePage}
+            onCancel={() => blocker.proceed?.()}
+            isNewPage={!page}
+            resetModify={resetModify}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 };
