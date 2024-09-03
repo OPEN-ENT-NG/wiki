@@ -54,6 +54,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             placeholder={t('wiki.createform.input.placeholder')}
             value={contentTitle}
             onChange={(event) => setContentTitle(event.target.value)}
+            autoFocus={true}
           ></Input>
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
@@ -77,6 +78,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             mode="edit"
             visibility="protected"
             onContentChange={handleOnContentChange}
+            focus={null}
           ></Editor>
           <input type="hidden" name="content" value={content} />
         </div>
