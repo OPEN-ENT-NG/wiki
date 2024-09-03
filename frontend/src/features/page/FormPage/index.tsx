@@ -11,18 +11,14 @@ import {
 } from '@edifice-ui/react';
 import { Suspense, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Form,
-  useBeforeUnload,
-  useBlocker,
-  useNavigate,
-  useNavigation,
-  useParams,
-} from 'react-router-dom';
+import { Form, useNavigate, useNavigation, useParams } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
+import { useBlockerPage } from '~/hooks/useBlockerPage';
 import { Page } from '~/models';
+
+const isSubmitting = 'submitting';
 
 export const FormPage = ({ page }: { page?: Page }) => {
   const params = useParams();
@@ -38,16 +34,15 @@ export const FormPage = ({ page }: { page?: Page }) => {
 
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
-
-  useBeforeUnload((event) => {
-    if (isModify()) {
-      event.preventDefault();
-    }
-  });
+  const blocker = useBlockerPage(isModified);
 
   const handleOnButtonCancel = () => {
     if (isModify()) {
-      navigate(`/id/${params.wikiId}`);
+      if (page) {
+        navigate(`/id/${params.wikiId}/page/${page._id}`);
+      } else {
+        navigate(`/id/${params.wikiId}`);
+      }
     } else {
       navigate('..');
     }
@@ -75,11 +70,6 @@ export const FormPage = ({ page }: { page?: Page }) => {
     toggle();
     updateModificationState();
   };
-
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isModified && currentLocation !== nextLocation
-  );
 
   const isModify = useCallback(() => {
     if (!page) return !!content || !!contentTitle || isVisible;
@@ -151,7 +141,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             type="submit"
             variant="filled"
             leftIcon={<Save />}
-            isLoading={navigation.state === 'submitting'}
+            isLoading={navigation.state === isSubmitting}
             disabled={isDisableButton}
             onClick={resetModify}
           >
@@ -159,17 +149,17 @@ export const FormPage = ({ page }: { page?: Page }) => {
           </Button>
         </div>
       </Form>
-      {blocker.state === 'blocked' ? (
-        <Suspense>
+      <Suspense>
+        {blocker.state === 'blocked' ? (
           <CancelModal
             isOpen={blocker.state === 'blocked'}
             onClose={handleClosePage}
             onCancel={() => blocker.proceed?.()}
+            onReset={resetModify}
             isNewPage={!page}
-            resetModify={resetModify}
           />
-        </Suspense>
-      ) : null}
+        ) : null}
+      </Suspense>
     </div>
   );
 };

@@ -6,14 +6,14 @@ export const CancelModal = ({
   isOpen,
   onClose,
   onCancel,
+  onReset,
   isNewPage,
-  resetModify,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onCancel: () => void;
+  onReset: () => void;
   isNewPage: boolean;
-  resetModify: () => void;
 }) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation();
@@ -44,7 +44,7 @@ export const CancelModal = ({
           color="danger"
           variant="outline"
           form="myForm"
-          onClick={resetModify}
+          onClick={onReset}
           isLoading={navigation.state === 'submitting'}
         >
           {isNewPage
