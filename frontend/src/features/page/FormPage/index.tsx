@@ -56,6 +56,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             placeholder={t('wiki.createform.input.placeholder')}
             value={contentTitle}
             onChange={handleOnTitleChange}
+            autoFocus={true}
           ></Input>
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
