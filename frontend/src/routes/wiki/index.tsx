@@ -121,7 +121,9 @@ export const Index = () => {
                 showIcon={false}
                 selectedNodeId={selectedNodeId}
                 onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemAction={handleOnTreeItemCreateChildren}
+                onTreeItemAction={
+                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                }
               />
             )}
           </Grid.Col>
@@ -143,7 +145,9 @@ export const Index = () => {
                 treeData={treeData}
                 selectedNodeId={selectedNodeId}
                 onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemAction={handleOnTreeItemCreateChildren}
+                onTreeItemAction={
+                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                }
               />
               {!isOnlyRead && <NewPage />}
             </>
