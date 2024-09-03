@@ -80,6 +80,21 @@ export const loader =
     return data;
   };
 
+export interface TreeItem {
+  id: UniqueIdentifier;
+  name: string;
+  children: TreeItem[];
+  collapsed?: boolean;
+}
+
+export type TreeItems = TreeItem[];
+
+export interface FlattenedItem extends TreeItem {
+  parentId: UniqueIdentifier | null;
+  depth: number;
+  index: number;
+}
+
 export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
@@ -237,7 +252,6 @@ export const Index = () => {
             </Menu>
             {!isOnlyRead && <NewPage />}
             {treeData && (
-              
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -249,14 +263,14 @@ export const Index = () => {
                   strategy={verticalListSortingStrategy}
                 >
                   <TreeView
-                data={treeData}
-                showIcon={false}
-                selectedNodeId={selectedNodeId}
-                onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                }
-              />
+                    data={treeData}
+                    showIcon={false}
+                    selectedNodeId={selectedNodeId}
+                    onTreeItemClick={handleOnTreeItemClick}
+                    onTreeItemAction={
+                      !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                    }
+                  />
                   {createPortal(
                     <DragOverlay
                       dropAnimation={dropAnimationConfig}
