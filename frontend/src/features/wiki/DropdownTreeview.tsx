@@ -16,8 +16,8 @@ export const DropdownTreeview = ({
 }: {
   treeData: TreeData[];
   selectedNodeId: string | undefined;
-  onTreeItemAction: (pageId: ID) => void;
   onTreeItemClick: (pageId: ID) => void;
+  onTreeItemAction?: (pageId: ID) => void;
 }) => {
   return (
     <div className="dropdown-treeview w-100 mb-16">
