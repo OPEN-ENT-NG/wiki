@@ -1,4 +1,4 @@
-import { Editor, EditorRef } from '@edifice-ui/editor';
+import { Editor } from '@edifice-ui/editor';
 import { InfoCircle, Save } from '@edifice-ui/icons';
 import {
   Button,
@@ -7,86 +7,36 @@ import {
   Label,
   Tooltip,
   useOdeClient,
-  useToggle,
 } from '@edifice-ui/react';
-import { Suspense, useCallback, useRef, useState } from 'react';
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, useNavigate, useNavigation, useParams } from 'react-router-dom';
+import { Form } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
-import { useBlockerPage } from '~/hooks/useBlockerPage';
+import { useCancelPage } from '~/hooks/useCancelPage';
+import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 
-const isSubmitting = 'submitting';
-
 export const FormPage = ({ page }: { page?: Page }) => {
-  const params = useParams();
-  const navigation = useNavigation();
-  const navigate = useNavigate();
-  const editorRef = useRef<EditorRef>(null);
-
-  const [content, setContent] = useState(page?.content ?? '');
-  const [contentTitle, setContentTitle] = useState(page?.title ?? '');
-  const [isVisible, toggle] = useToggle(page?.isVisible);
-  const [isModified, setIsModified] = useState(false);
-  const [isDisableButton, setIsDisableButton] = useState(true);
-
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
-  const blocker = useBlockerPage(isModified);
+  const {
+    handleOnContentChange,
+    handleOnToggleChange,
+    handleOnTitleChange,
+    setIsModified,
+    isDisableButton,
+    contentTitle,
+    isModified,
+    isVisible,
+    editorRef,
+    content,
+  } = useFormPage(page);
+  const { handleOnButtonCancel, handleClosePage, isSubmitting, blocker } =
+    useCancelPage(isModified, page);
 
-  const handleOnButtonCancel = () => {
-    if (isModify()) {
-      if (page) {
-        navigate(`/id/${params.wikiId}/page/${page._id}`);
-      } else {
-        navigate(`/id/${params.wikiId}`);
-      }
-    } else {
-      navigate('..');
-    }
-  };
-
-  const updateModificationState = () => {
-    if (isModify()) {
-      setIsModified(true);
-      setIsDisableButton(false);
-    }
-  };
-
-  const handleOnContentChange = ({ editor }: any) => {
-    const htmlContent = editor.getHTML();
-    setContent(htmlContent);
-    updateModificationState();
-  };
-
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setContentTitle(event.target.value);
-    updateModificationState();
-  };
-
-  const handleToggle = () => {
-    toggle();
-    updateModificationState();
-  };
-
-  const isModify = useCallback(() => {
-    if (!page) return !!content || !!contentTitle || isVisible;
-    return (
-      page.content !== (editorRef.current?.getContent('html') as string) ||
-      page.title !== contentTitle ||
-      page.isVisible !== isVisible
-    );
-  }, [content, contentTitle, isVisible, page]);
-
-  const handleClosePage = () => {
-    if (blocker.state === 'blocked') {
-      blocker.reset();
-    }
-  };
-
-  const resetModify = () => {
+  const handleOnReset = () => {
     if (contentTitle.length > 0) {
       setIsModified(false);
     }
@@ -104,15 +54,14 @@ export const FormPage = ({ page }: { page?: Page }) => {
             maxLength={MAX_TITLE_LENGTH}
             placeholder={t('wiki.createform.input.placeholder')}
             value={contentTitle}
-            onChange={(event) => setContentTitle(event.target.value)}
-            autoFocus={true}
+            onChange={handleOnTitleChange}
           ></Input>
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
           <Toggle
             name="isVisible"
             checked={isVisible}
-            onChange={handleToggle}
+            onChange={handleOnToggleChange}
           />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
@@ -141,9 +90,9 @@ export const FormPage = ({ page }: { page?: Page }) => {
             type="submit"
             variant="filled"
             leftIcon={<Save />}
-            isLoading={navigation.state === isSubmitting}
+            isLoading={isSubmitting}
             disabled={isDisableButton}
-            onClick={resetModify}
+            onClick={handleOnReset}
           >
             {t('wiki.editform.save')}
           </Button>
@@ -155,7 +104,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             isOpen={blocker.state === 'blocked'}
             onClose={handleClosePage}
             onCancel={() => blocker.proceed?.()}
-            onReset={resetModify}
+            onReset={handleOnReset}
             isNewPage={!page}
           />
         ) : null}
