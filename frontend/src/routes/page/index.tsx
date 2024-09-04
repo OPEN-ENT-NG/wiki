@@ -9,6 +9,7 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
+import { CommentCard } from '~/features/comments/Comments';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
 import {
@@ -84,6 +85,16 @@ export const Page = () => {
 
   if (error) return 'An error has occurred: ' + error.message;
 
+  /* {
+  author,
+  created,
+  content = '',
+  mode,
+  className,
+  onPublish,
+  onRemove,
+} */
+
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
       <PageHeader page={data} />
@@ -94,6 +105,11 @@ export const Page = () => {
         variant="ghost"
         visibility="protected"
       ></Editor>
+
+      <div className="my-24">
+        <h3>1 commentaire</h3>
+        <CommentCard />
+      </div>
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeleteModal />}
