@@ -2,28 +2,27 @@ import {
   useBeforeUnload,
   useBlocker,
   useNavigate,
-  useNavigation,
   useParams,
 } from 'react-router-dom';
 import { Page } from '~/models';
 
 export const useCancelPage = (isModified: boolean, page?: Page) => {
   const params = useParams();
-  const navigation = useNavigation();
+
   const navigate = useNavigate();
 
-  const isSubmitting = navigation.state === 'submitting';
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isModified && currentLocation !== nextLocation
+  );
+
+  const isBlocked = blocker.state === 'blocked';
 
   useBeforeUnload((event) => {
     if (isModified) {
       event.preventDefault();
     }
   });
-
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isModified && currentLocation !== nextLocation
-  );
 
   const handleOnButtonCancel = () => {
     if (isModified) {
@@ -43,5 +42,5 @@ export const useCancelPage = (isModified: boolean, page?: Page) => {
     }
   };
 
-  return { handleOnButtonCancel, handleClosePage, isSubmitting, blocker };
+  return { handleOnButtonCancel, handleClosePage, isBlocked, blocker };
 };

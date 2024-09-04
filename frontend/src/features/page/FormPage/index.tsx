@@ -28,12 +28,13 @@ export const FormPage = ({ page }: { page?: Page }) => {
     setIsModified,
     isDisableButton,
     contentTitle,
+    isSubmitting,
     isModified,
     isVisible,
     editorRef,
     content,
   } = useFormPage(page);
-  const { handleOnButtonCancel, handleClosePage, isSubmitting, blocker } =
+  const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isModified, page);
 
   const handleOnReset = () => {
@@ -99,9 +100,9 @@ export const FormPage = ({ page }: { page?: Page }) => {
         </div>
       </Form>
       <Suspense>
-        {blocker.state === 'blocked' ? (
+        {isBlocked ? (
           <CancelModal
-            isOpen={blocker.state === 'blocked'}
+            isOpen={isBlocked}
             onClose={handleClosePage}
             onCancel={() => blocker.proceed?.()}
             onReset={handleOnReset}
