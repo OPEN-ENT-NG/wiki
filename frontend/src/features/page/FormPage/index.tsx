@@ -1,4 +1,4 @@
-import { Editor, EditorRef } from '@edifice-ui/editor';
+import { Editor } from '@edifice-ui/editor';
 import { InfoCircle, Save } from '@edifice-ui/icons';
 import {
   Button,
@@ -7,43 +7,39 @@ import {
   Label,
   Tooltip,
   useOdeClient,
-  useToggle,
 } from '@edifice-ui/react';
-import { useRef, useState } from 'react';
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, useNavigate, useNavigation } from 'react-router-dom';
+import { Form } from 'react-router-dom';
+import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/init-config';
+import { useCancelPage } from '~/hooks/useCancelPage';
+import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 
 export const FormPage = ({ page }: { page?: Page }) => {
-  const navigate = useNavigate();
-  const navigation = useNavigation();
-  const editorRef = useRef<EditorRef>(null);
-
-  const [content, setContent] = useState('');
-  const [contentTitle, setContentTitle] = useState(page?.title ?? '');
-  const [isVisible, toggle] = useToggle(page?.isVisible);
-
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
-
-  const handleOnButtonCancel = () => {
-    navigate(-1);
-  };
-
-  const handleOnContentChange = ({ editor }: any) => {
-    const htmlContent = editor.getHTML();
-    setContent(htmlContent);
-  };
-
-  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    toggle();
-  };
+  const {
+    handleOnContentChange,
+    handleOnToggleChange,
+    handleOnTitleChange,
+    handleOnReset,
+    isDisableButton,
+    contentTitle,
+    isSubmitting,
+    isModified,
+    isVisible,
+    editorRef,
+    content,
+  } = useFormPage(page);
+  const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
+    useCancelPage(isModified, page);
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
-      <Form method="post" role="form">
+      <Form id="myForm" method="post" role="form">
         <FormControl id="inputForm" isRequired>
           <Label>{t('wiki.linkerform.pagetitle.label')}</Label>
           <Input
@@ -53,7 +49,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             maxLength={MAX_TITLE_LENGTH}
             placeholder={t('wiki.createform.input.placeholder')}
             value={contentTitle}
-            onChange={(event) => setContentTitle(event.target.value)}
+            onChange={handleOnTitleChange}
             autoFocus={true}
           ></Input>
         </FormControl>
@@ -61,7 +57,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Toggle
             name="isVisible"
             checked={isVisible}
-            onChange={handleToggle}
+            onChange={handleOnToggleChange}
           />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
@@ -89,14 +85,26 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Button
             type="submit"
             variant="filled"
-            disabled={contentTitle.length === 0}
             leftIcon={<Save />}
-            isLoading={navigation.state === 'submitting'}
+            isLoading={isSubmitting}
+            disabled={isDisableButton}
+            onClick={handleOnReset}
           >
             {t('wiki.editform.save')}
           </Button>
         </div>
       </Form>
+      <Suspense>
+        {isBlocked ? (
+          <CancelModal
+            isOpen={isBlocked}
+            onClose={handleClosePage}
+            onCancel={() => blocker.proceed?.()}
+            onReset={handleOnReset}
+            isNewPage={!page}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 };
