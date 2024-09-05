@@ -38,9 +38,6 @@ vi.mock('~/store/treeview', () => ({
     { id: '2', name: 'Page 2', section: true, showIconSection: false },
   ],
   useSelectedNodeId: () => 1,
-  /* useSelectedNodeId: () => ({
-    setTreeData: vi.fn(),
-  }), */
 }));
 
 describe('Index Route', () => {
