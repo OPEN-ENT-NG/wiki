@@ -6,6 +6,7 @@ interface State {
   openDeleteModal: boolean;
   openRevisionModal: boolean;
   openConfirmVisibilityModal: boolean;
+  openPrintModal: boolean;
 }
 
 type Action = {
@@ -15,6 +16,7 @@ type Action = {
     setOpenDeleteModal: (value: boolean) => void;
     setOpenRevisionModal: (value: boolean) => void;
     setOpenConfirmVisibilityModal: (value: boolean) => void;
+    setOpenPrintModal: (value: boolean) => void;
   };
 };
 
@@ -32,6 +34,7 @@ const initialState = {
   openDeleteModal: false,
   openRevisionModal: false,
   openConfirmVisibilityModal: false,
+  openPrintModal: false,
 };
 
 const store = createStore<State & Action>()((set, get) => ({
@@ -44,6 +47,7 @@ const store = createStore<State & Action>()((set, get) => ({
       set({ openRevisionModal }),
     setOpenConfirmVisibilityModal: (openConfirmVisibilityModal: boolean) =>
       set({ openConfirmVisibilityModal }),
+    setOpenPrintModal: (openPrintModal: boolean) => set({ openPrintModal }),
   },
 }));
 
@@ -58,6 +62,8 @@ const openRevisionModal = (state: ExtractState<typeof store>) =>
   state.openRevisionModal;
 const openConfirmVisibilityModal = (state: ExtractState<typeof store>) =>
   state.openConfirmVisibilityModal;
+const openPrintModal = (state: ExtractState<typeof store>) =>
+  state.openPrintModal;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 
 // Getters
@@ -67,6 +73,7 @@ export const getOpenDeleteModal = () => openDeleteModal(store.getState());
 export const getOpenRevisionModal = () => openRevisionModal(store.getState());
 export const getOpenConfirmVisibilityModal = () =>
   openConfirmVisibilityModal(store.getState());
+export const getOpenPrintModal = () => openPrintModal(store.getState());
 export const getWikiActions = () => actionsSelector(store.getState());
 
 // React Store
@@ -81,4 +88,5 @@ export const useOpenDeleteModal = () => useWikiStore(openDeleteModal);
 export const useOpenRevisionModal = () => useWikiStore(openRevisionModal);
 export const useOpenConfirmVisibilityModal = () =>
   useWikiStore(openConfirmVisibilityModal);
+export const useOpenPrintModal = () => useWikiStore(openPrintModal);
 export const useWikiActions = () => useWikiStore(actionsSelector);
