@@ -1,3 +1,5 @@
+import { Revision } from '~/models/revision';
+
 export const mockWiki = {
   _id: 'f9853a14b354',
   title: 'Wiki',
@@ -133,7 +135,7 @@ export const mockPage = {
   },
 };
 
-export const mockRevision = [
+export const mockRevision: Revision[] = [
   {
     _id: '235ab109',
     wikiId: '6ef1343b',
@@ -141,6 +143,7 @@ export const mockRevision = [
     userId: '2875315d',
     username: 'Author',
     title: 'title',
+    isVisible: true,
     content: '',
     date: {
       $date: 1720431608339,
@@ -152,6 +155,7 @@ export const mockRevision = [
     pageId: '6684fd',
     userId: '2875315d',
     username: 'Author',
+    isVisible: false,
     title: 'title',
     content: '',
     date: {

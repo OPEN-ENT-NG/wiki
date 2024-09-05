@@ -19,11 +19,8 @@ describe('WikiEmptyScreen', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should render a heading', () => {
+  it('should render an h2', () => {
     expect(screen.getByRole('heading')).toBeInTheDocument();
-  });
-
-  it('should render a heading with h2 level', () => {
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
   });
 
