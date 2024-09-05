@@ -28,7 +28,9 @@ import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
 import fr.wseduc.transformer.to.ContentTransformerResponse;
 import fr.wseduc.webutils.Utils;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -92,7 +94,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				});
 	}
 
-	private JsonObject addChildrenPages(final JsonObject wiki) {
+	private void addChildrenPages(final JsonObject wiki) {
 		if (wiki != null) {
 			final JsonArray pages = wiki.getJsonArray("pages");
 			pages.forEach(page -> {
@@ -118,8 +120,24 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				}
 			});
 		}
-		return wiki;
 	}
+
+//	private JsonArray getSubPagesIDs(final JsonObject wiki, final String pageId) {
+//		JsonArray subPagesIDs = new JsonArray();
+//
+//		if (wiki != null) {
+//			final JsonArray pages = wiki.getJsonArray("pages");
+//			pages.forEach(page -> {
+//				final JsonObject pageJO = (JsonObject) page;
+//				final String parentId = pageJO.getString("parentId");
+//
+//				if (!StringUtils.isEmpty(parentId) && parentId.equals(pageId)) {
+//					subPagesIDs.add(pageJO.getString("_id"));
+//				}
+//			});
+//		}
+//		return subPagesIDs;
+//	}
 
 	private JsonObject addNormalizedShares(final JsonObject wiki) {
 		if (wiki != null) {
@@ -141,7 +159,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// shared)
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		if(user.getGroupsIds().size() > 0){
+		if(!user.getGroupsIds().isEmpty()){
 			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
 		}
 		QueryBuilder query = new QueryBuilder().or(
@@ -432,11 +450,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			if (getPageResult.isRight()) {
 				JsonObject dbPage = getPageResult.right().getValue();
 
-				// if title, content or visibility has changed then we update the page and create a new revision
-				if (!org.apache.commons.lang3.StringUtils.equals(page.getString("title"), dbPage.getString("title"))
-						|| !org.apache.commons.lang3.StringUtils.equals(page.getString("content"), dbPage.getString("content"))
-						|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0
-				) {
+				// if title, content or visibility has changed then we update the page
+				if (pageHasChanged(page, dbPage)) {
 					// Preparing the Mongo Update...
 					// Tiptap Transformer
 					Future<ContentTransformerResponse> contentTransformerResponseFuture;
@@ -512,17 +527,25 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						}
 
 						// Mongo Update
-						mongo.update(collection, MongoQueryBuilder.build(query),
-								modifier.build(), updateResult -> {
+						mongo.update(collection,
+								MongoQueryBuilder.build(query),
+								modifier.build(),
+								updateResult -> {
 									if ("ok".equals(updateResult.body().getString("status"))) {
+										// If update is OK then we update subPages visibility and create page revision
+										final List<Future> futures = new ArrayList<>();
+
+										final Future<Void> updateVisibilityPromise = this.updateVisibility(idWiki, page, dbPage);
+										futures.add(updateVisibilityPromise);
+
+										final Promise<Void> createRevisionPromise = Promise.promise();
+										futures.add(createRevisionPromise.future());
+
 										// create new revision of a page
 										// (if page was not visible and is still not visible then we don't create a new revision)
 										if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
 												&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
-											// do not create revision
-											log.info("Updating page... Page is still not visible, no revision will be created.");
-											// return the page json information
-											handler.handle(new Either.Right<>(page));
+											createRevisionPromise.complete();
 										} else {
 											this.createRevision(idWiki,
 													page.getString("_id"),
@@ -531,10 +554,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 													page.getString("content"),
 													page.getBoolean("isVisible"),
 													createRevisionResult -> {
-														// return the page json information
-														handler.handle(new Either.Right<>(page));
+														createRevisionPromise.complete();
 													});
 										}
+
+										CompositeFuture
+												.all(futures)
+												.onComplete(res -> handler.handle(new Either.Right<>(page)));
 									} else {
 										handler.handle(
 												new Either.Left<>(updateResult.body().getString("message", "")));
@@ -543,7 +569,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					});
 				} else {
 					// do not update nor create revision
-					log.info("Updating page... Page has no changes, no update and no revision will be created.");
 					// return the page json information
 					handler.handle(new Either.Right<>(page));
 				}
@@ -551,6 +576,65 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				handler.handle(new Either.Left<>(getPageResult.left().getValue()));
 			}
 		});
+	}
+
+	/**
+	 * Check if the page from API is different from page from Database.
+	 * @param page JsonObject page provided by the Controller
+	 * @param dbPage JsonObject page retrieved from the database
+	 * @return true if page is different from database (check title, content et isVisible fields)
+	 */
+	private static boolean pageHasChanged(JsonObject page, JsonObject dbPage) {
+		return !StringUtils.isEmpty(page.getString("title"))
+				&& page.getString("title").equals(dbPage.getString("title"))
+				|| !StringUtils.isEmpty(page.getString("content"))
+				&& page.getString("content").equals(dbPage.getString("content"))
+				|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0;
+	}
+
+	/**
+	 * Update visibility for subpages.
+	 * @param idWiki id of the related wiki
+	 * @param page the JsonObject page that is passed from the controller to the updatePage method
+	 * @return Future
+	 */
+	private Future<Void> updateVisibility(String idWiki, JsonObject page, JsonObject dbPage) {
+		final Promise<Void> promise = Promise.promise();
+
+		// if page visibility has changed then we update visibility for sub pages too
+		if (Boolean.compare(
+				page.getBoolean("isVisible"),
+				dbPage.getBoolean("isVisible")) != 0) {
+			// Mongo Query
+			QueryBuilder visibilityQuery = QueryBuilder
+					.start("_id")
+					.is(idWiki);
+
+			// Mongo Modifier
+			MongoUpdateBuilder visibilityModifier = new MongoUpdateBuilder();
+			visibilityModifier.set("pages.$[elem].isVisible", page.getBoolean("isVisible"));
+
+			// Mongo arrayFilters
+			JsonArray arrayFilters = new JsonArray()
+					.add(new JsonObject().put("elem.parentId", page.getString("_id")));
+
+			// Mongo Update
+			mongo.update(collection,
+					MongoQueryBuilder.build(visibilityQuery),
+					visibilityModifier.build(),
+					arrayFilters,
+					res -> {
+						if ("ok".equals(res.body().getString("status"))) {
+							promise.complete();
+						} else {
+							promise.fail(res.body().getString("message"));
+						}
+					});
+		} else {
+			promise.complete();
+		}
+
+		return promise.future();
 	}
 
 	@Override
@@ -719,5 +803,4 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		}
 		mongo.delete(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), MongoDbResult.validResultHandler(handler));
 	}
-
 }

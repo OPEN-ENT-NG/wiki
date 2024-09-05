@@ -3,7 +3,12 @@ import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
-import { useGetPage, wikiQueryOptions, wikiService } from '~/services';
+import {
+  pageQueryOptions,
+  useGetPage,
+  wikiQueryOptions,
+  wikiService,
+} from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
 
 const ConfirmVisibilityModal = lazy(
@@ -52,6 +57,7 @@ export const editAction =
       });
 
       await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+      await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
 
       return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
     }
