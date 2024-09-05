@@ -48,11 +48,17 @@ export const useFormPage = (page?: Page) => {
     updateModificationState();
   };
 
+  const handleOnReset = () => {
+    if (contentTitle.length > 0) {
+      setIsModified(false);
+    }
+  };
+
   return {
     handleOnContentChange,
     handleOnToggleChange,
     handleOnTitleChange,
-    setIsModified,
+    handleOnReset,
     isDisableButton,
     isSubmitting,
     contentTitle,

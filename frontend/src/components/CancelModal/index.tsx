@@ -36,7 +36,7 @@ export const CancelModal = ({
       <Modal.Body>
         {isNewPage
           ? t('wiki.page.create.cancel.message', { ns: appCode })
-          : t('wiki.page.edit.cancel.message', { nss: appCode })}
+          : t('wiki.page.edit.cancel.message', { ns: appCode })}
       </Modal.Body>
       <Modal.Footer>
         <Button

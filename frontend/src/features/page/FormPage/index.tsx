@@ -25,7 +25,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     handleOnContentChange,
     handleOnToggleChange,
     handleOnTitleChange,
-    setIsModified,
+    handleOnReset,
     isDisableButton,
     contentTitle,
     isSubmitting,
@@ -36,12 +36,6 @@ export const FormPage = ({ page }: { page?: Page }) => {
   } = useFormPage(page);
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isModified, page);
-
-  const handleOnReset = () => {
-    if (contentTitle.length > 0) {
-      setIsModified(false);
-    }
-  };
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
