@@ -163,9 +163,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void getPages(String idWiki,
+	public void getPages(String idWiki, String getContent,
 			Handler<Either<String, JsonObject>> handler) {
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
+		final QueryBuilder query = QueryBuilder.start("_id").is(idWiki);
 
 		JsonObject projection = new JsonObject()
 				.put("_id", 0)
@@ -174,11 +174,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("created", 0)
 				.put("modified", 0)
 				.put("owner", 0)
-				.put("index", 0)
-				.put("pages.content", 0)
-				.put("pages.contentPlain", 0)
-				.put("pages.jsonContent", 0)
-				.put("pages.contentVersion", 0);
+				.put("index", 0);
+
+		if (!Boolean.parseBoolean(getContent)) {
+			projection
+					.put("pages.content", 0)
+					.put("pages.contentPlain", 0)
+					.put("pages.jsonContent", 0)
+					.put("pages.contentVersion", 0);
+		}
 
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
 				MongoDbResult.validResultHandler(handler));

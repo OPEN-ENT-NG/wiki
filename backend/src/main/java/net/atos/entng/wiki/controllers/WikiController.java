@@ -194,7 +194,8 @@ public class WikiController extends MongoDbControllerHelper {
 	public void listPages(final HttpServerRequest request) {
 		Handler<Either<String, JsonObject>> handler = notEmptyResponseHandler(request);
 		String idWiki = request.params().get("id");
-		wikiService.getPages(idWiki, handler);
+		String getContent = request.params().get("content");
+		wikiService.getPages(idWiki, getContent, handler);
 	}
 
 	// TODO: add a print param to true in GET /wiki/:id to get all information to print a wiki?
