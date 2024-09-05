@@ -9,12 +9,19 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { ContentHeader } from '~/features/wiki/ContentHeader';
+import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { pageQueryOptions, useGetPage, wikiService } from '~/services';
-import { useOpenDeleteModal, useTreeActions } from '~/store';
+import {
+  useOpenDeleteModal,
+  useOpenRevisionModal,
+  useTreeActions,
+} from '~/store';
 
 const DeleteModal = lazy(
   async () => await import('~/features/page/DeleteModal')
+);
+const RevisionModal = lazy(
+  async () => await import('~/features/page/RevisionModal/RevisionModal')
 );
 
 export const loader =
@@ -57,6 +64,7 @@ export const Page = () => {
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
+  const openVersionsModal = useOpenRevisionModal();
 
   const { setSelectedNodeId } = useTreeActions();
 
@@ -78,7 +86,7 @@ export const Page = () => {
 
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
-      <ContentHeader page={data} />
+      <PageHeader page={data} />
       <Editor
         ref={editorRef}
         content={data.content}
@@ -89,6 +97,7 @@ export const Page = () => {
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeleteModal />}
+        {openVersionsModal && <RevisionModal />}
       </Suspense>
     </div>
   ) : null;

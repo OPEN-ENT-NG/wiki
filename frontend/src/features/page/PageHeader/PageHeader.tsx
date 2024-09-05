@@ -24,16 +24,16 @@ import { useNavigate } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { Page } from '~/models';
 import { useUserRights, useWikiActions } from '~/store';
-import { ActionDropdownMenuOptions } from '../app/AppActions';
+import { ActionDropdownMenuOptions } from '../../app/AppActions';
 
-export const ContentHeader = ({ page }: { page: Page }) => {
+export const PageHeader = ({ page }: { page: Page }) => {
   const navigate = useNavigate();
   const userRights = useUserRights();
 
   const { formatDate } = useDate();
   const { appCode, user } = useOdeClient();
   const { getAvatarURL, getUserbookURL } = useDirectory();
-  const { setOpenDeleteModal, setOpenVersionsModal } = useWikiActions();
+  const { setOpenDeleteModal, setOpenRevisionModal } = useWikiActions();
   const { t } = useTranslation(appCode);
 
   const isOnlyRead =
@@ -66,7 +66,7 @@ export const ContentHeader = ({ page }: { page: Page }) => {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),
       icon: <Tool />,
-      action: () => setOpenVersionsModal(true),
+      action: () => setOpenRevisionModal(true),
       visibility: canContrib || canManage,
     },
     {
