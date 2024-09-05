@@ -1,13 +1,14 @@
 import userEvent from '@testing-library/user-event';
+import { useCheckableTable } from '~/hooks/useCheckableTable';
+import { mockRevision } from '~/mocks';
 import { render, screen } from '~/mocks/setup.vitest';
 import RevisionModal from './RevisionModal';
-import { useRevisionTable } from './hooks/useRevisionTable';
 
 const mocks = vi.hoisted(() => ({
   handleOnSelectAllItems: vi.fn(),
   handleOnSelectItem: vi.fn(),
   useGetRevisionsPage: vi.fn(),
-  useRevisionTable: vi.fn(),
+  useCheckableTable: vi.fn(),
   setOpenRevisionModal: vi.fn(),
 }));
 
@@ -29,25 +30,19 @@ vi.mock('~/store/wiki', () => ({
   }),
 }));
 
-vi.mock('./hooks/useRevisionTable');
-
-const mockRevisionTableHookValue = {
-  selectedItems: ['1'],
-  allItemsSelected: false,
-  isIndeterminate: false,
-  disabledRestoreButton: false,
-  disabledVersionComparison: false,
-  handleOnSelectAllItems: mocks.handleOnSelectAllItems,
-  handleOnSelectItem: mocks.handleOnSelectItem,
-};
-
-/**
- * We have to mock useGetRevisionsPage to get Table component to be rendered
- */
-
 vi.mock('~/services', () => ({
   useGetRevisionsPage: mocks.useGetRevisionsPage,
 }));
+
+vi.mock('~/hooks/useCheckableTable');
+
+const mockRevisionTableHookValue = {
+  selectedItems: [mockRevision[0]._id, mockRevision[1]._id],
+  allItemsSelected: false,
+  isIndeterminate: false,
+  handleOnSelectAllItems: mocks.handleOnSelectAllItems,
+  handleOnSelectItem: mocks.handleOnSelectItem,
+};
 
 describe('RevisionModal', () => {
   afterEach(() => {
@@ -55,22 +50,10 @@ describe('RevisionModal', () => {
   });
 
   beforeEach(() => {
-    vi.mocked(useRevisionTable).mockReturnValue({
-      ...mockRevisionTableHookValue,
-      disabledRestoreButton: true,
-      disabledVersionComparison: true,
-    });
+    vi.mocked(useCheckableTable).mockReturnValue(mockRevisionTableHookValue);
 
     vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
-      data: [
-        { _id: '1', username: 'John Doe', isVisible: true, date: new Date() },
-        {
-          _id: '2',
-          username: 'Jane Smith',
-          isVisible: false,
-          date: new Date(),
-        },
-      ],
+      data: mockRevision,
       isLoading: false,
     });
   });
@@ -83,11 +66,12 @@ describe('RevisionModal', () => {
     expect(screen.getByText('wiki.version.restore')).toBeInTheDocument();
   });
 
-  it('should render LoadingScreen when isLoading is true', async () => {
+  it('should render LoadingScreen when data is loading', async () => {
     vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
-      data: [],
+      data: mockRevision,
       isLoading: true,
     });
+
     render(<RevisionModal />);
 
     expect(screen.getByAltText('loading')).toBeInTheDocument();
@@ -126,11 +110,6 @@ describe('RevisionModal', () => {
   });
 
   it('should enable the compare button when there are 2 selected items', async () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
-      ...mockRevisionTableHookValue,
-      disabledRestoreButton: true,
-      disabledVersionComparison: false,
-    });
     render(<RevisionModal />);
 
     const compareButton = screen.getByTestId('compare-button');
@@ -140,11 +119,11 @@ describe('RevisionModal', () => {
   });
 
   it('should disable the compare button when there are less than 2 selected items', async () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
+    vi.mocked(useCheckableTable).mockReturnValue({
       ...mockRevisionTableHookValue,
-      disabledRestoreButton: true,
-      disabledVersionComparison: true,
+      selectedItems: [mockRevision[0]._id],
     });
+
     render(<RevisionModal />);
 
     const compareButton = screen.getByTestId('compare-button');
@@ -160,16 +139,22 @@ describe('RevisionModal', () => {
     expect(restoreButton).toBeDisabled();
   });
 
-  it('should enable the Restore button when one item is selected', () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
+  it('should enable the Restore button when one item is selected', async () => {
+    vi.mocked(useCheckableTable).mockReturnValue({
       ...mockRevisionTableHookValue,
-      disabledRestoreButton: false,
-      disabledVersionComparison: true,
+      selectedItems: [mockRevision[0]._id],
     });
 
     render(<RevisionModal />);
 
+    const user = userEvent.setup();
+    const checkbox = screen.getAllByRole('checkbox')[1];
     const restoreButton = screen.getByTestId('restore-button');
+
+    await user.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+    expect(mocks.handleOnSelectItem).toHaveBeenCalledWith(mockRevision[0]._id);
     expect(restoreButton).not.toBeDisabled();
   });
 
@@ -180,21 +165,8 @@ describe('RevisionModal', () => {
     expect(checkbox).not.toBeChecked();
   });
 
-  it('should have all checkboxes checked if all items are selected', () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
-      ...mockRevisionTableHookValue,
-      allItemsSelected: true,
-    });
-
-    render(<RevisionModal />);
-
-    const checkbox = screen.getByTestId('th-checkbox');
-
-    expect(checkbox).toBeChecked();
-  });
-
   it('should detect change when all items are selected', async () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
+    vi.mocked(useCheckableTable).mockReturnValue({
       ...mockRevisionTableHookValue,
       allItemsSelected: true,
     });
@@ -210,21 +182,13 @@ describe('RevisionModal', () => {
   });
 
   it('should have one checkbox checked if user clicks a checkbox', async () => {
-    vi.mocked(useRevisionTable).mockReturnValue({
-      ...mockRevisionTableHookValue,
-      disabledRestoreButton: false,
-    });
-
     render(<RevisionModal />);
 
     const user = userEvent.setup();
-    const firstCheckbox = screen.getAllByRole('checkbox')[1];
-    const restoreButton = screen.getByTestId('restore-button');
+    const checkbox = screen.getAllByRole('checkbox')[1];
+    await user.click(checkbox);
 
-    await user.click(firstCheckbox);
-
-    expect(firstCheckbox).toBeChecked();
-    expect(mocks.handleOnSelectItem).toHaveBeenCalledWith('1');
-    expect(restoreButton).not.toBeDisabled();
+    expect(checkbox).toBeChecked();
+    expect(mocks.handleOnSelectItem).toHaveBeenCalledWith(mockRevision[0]._id);
   });
 });

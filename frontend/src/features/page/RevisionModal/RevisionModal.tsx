@@ -8,29 +8,37 @@ import {
   Table,
 } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
-import { useRevisionModal } from './hooks/useRevisionModal';
-import { useRevisionTable } from './hooks/useRevisionTable';
+import { useParams } from 'react-router-dom';
+import { useCheckableTable } from '~/hooks/useCheckableTable';
+import { Revision } from '~/models/revision';
+import { useGetRevisionsPage } from '~/services';
+import { useRevisionModal } from './useRevisionModal';
 
 const RevisionModal = () => {
-  const {
-    t,
-    items,
-    isLoading,
-    data,
-    formatDate,
-    openVersionsModal,
-    setOpenRevisionModal,
-  } = useRevisionModal();
+  const params = useParams();
+
+  const { data, isLoading } = useGetRevisionsPage({
+    wikiId: params.wikiId!,
+    pageId: params.pageId!,
+  });
 
   const {
     selectedItems,
     allItemsSelected,
     isIndeterminate,
-    disabledRestoreButton,
-    disabledVersionComparison,
     handleOnSelectAllItems,
     handleOnSelectItem,
-  } = useRevisionTable(data);
+  } = useCheckableTable<Revision>(data);
+
+  const {
+    t,
+    items,
+    formatDate,
+    openVersionsModal,
+    setOpenRevisionModal,
+    disabledVersionComparison,
+    disabledRestoreButton,
+  } = useRevisionModal({ data, selectedItems });
 
   if (isLoading) return <LoadingScreen />;
 
@@ -53,7 +61,7 @@ const RevisionModal = () => {
             {t('wiki.version.modal.alert')}
           </Alert>
         </div>
-        {data ? (
+        {data && (
           <Table>
             <Table.Thead>
               <Table.Tr>
@@ -72,7 +80,7 @@ const RevisionModal = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {data.map((item) => (
+              {data?.map((item) => (
                 <Table.Tr key={item._id}>
                   <Table.Td>
                     <Checkbox
@@ -108,7 +116,7 @@ const RevisionModal = () => {
               ))}
             </Table.Tbody>
           </Table>
-        ) : null}
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button

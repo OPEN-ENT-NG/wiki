@@ -1,19 +1,9 @@
 import { useState } from 'react';
-import { Revision } from '~/models/revision';
-import { useUserRights } from '~/store';
 
-export const useRevisionTable = (data: Revision[] | undefined) => {
+export const useCheckableTable = <T extends { _id: string }>(
+  data: T[] | undefined
+) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
-  const findSelectedItem =
-    selectedItems.length === 1
-      ? data?.find((revision) => revision._id === selectedItems[0])
-      : undefined;
-
-  const isSelectedItemVisible = findSelectedItem?.isVisible ?? false;
-
-  const userRights = useUserRights();
-  const canManage = userRights.manager;
 
   const handleOnSelectItem = (itemId: string) => {
     setSelectedItems((currentSelection: string[]) => {
@@ -38,16 +28,9 @@ export const useRevisionTable = (data: Revision[] | undefined) => {
     ? selectedItems?.length > 0 && selectedItems?.length < data?.length
     : false;
 
-  const disabledRestoreButton =
-    selectedItems.length !== 1 || (!isSelectedItemVisible && !canManage);
-  const disabledVersionComparison =
-    selectedItems.length < 2 || selectedItems.length > 2;
-
   return {
     selectedItems,
     allItemsSelected,
-    disabledRestoreButton,
-    disabledVersionComparison,
     isIndeterminate,
     handleOnSelectAllItems,
     handleOnSelectItem,

@@ -102,6 +102,7 @@
   "wiki.table.head.action": "Action",
   "wiki.table.body.visible": "Visible",
   "wiki.table.body.invisible": "Masqué",
+  "wiki.table.body.btn": "Voir",
   "wiki.title": "Wiki",
   "wiki.update": "Modifier",
   "wiki.version.restore": "Restaurer",
