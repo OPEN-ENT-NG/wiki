@@ -9,6 +9,7 @@ import {
 } from '@edifice-ui/icons';
 import {
   Avatar,
+  Badge,
   Button,
   Dropdown,
   IconButton,
@@ -111,6 +112,22 @@ export const PageHeader = ({ page }: { page: Page }) => {
                 date: formatDate(page.modified, 'long'),
               })}
             </span>
+            {!page.isVisible && (
+              <span>
+                <Badge
+                  variant={{
+                    type: 'notification',
+                    level: 'info',
+                    color: 'text',
+                  }}
+                >
+                  <div className="d-flex align-items-center">
+                    <Hide width="20" height="20" className="me-8" />
+                    {t('wiki.read.notvisible')}
+                  </div>
+                </Badge>
+              </span>
+            )}
           </div>
         </div>
       </div>
