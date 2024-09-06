@@ -113,20 +113,18 @@ export const PageHeader = ({ page }: { page: Page }) => {
               })}
             </span>
             {!page.isVisible && (
-              <span>
-                <Badge
-                  variant={{
-                    type: 'notification',
-                    level: 'info',
-                    color: 'text',
-                  }}
-                >
-                  <div className="d-flex align-items-center">
-                    <Hide width="20" height="20" className="me-8" />
-                    {t('wiki.read.notvisible')}
-                  </div>
-                </Badge>
-              </span>
+              <Badge
+                variant={{
+                  type: 'notification',
+                  level: 'info',
+                  color: 'text',
+                }}
+              >
+                <div className="d-flex align-items-center">
+                  <Hide width="20" height="20" className="me-8" />
+                  {t('wiki.read.notvisible')}
+                </div>
+              </Badge>
             )}
           </div>
         </div>
