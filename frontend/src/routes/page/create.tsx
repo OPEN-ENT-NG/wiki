@@ -27,6 +27,6 @@ export const action =
     return redirect(`/id/${params.wikiId}/page/${data._id}`);
   };
 
-export const CreatePage = () => {
-  return <FormPage />;
+export const CreatePage = ({ isSubPage }: { isSubPage?: boolean }) => {
+  return <FormPage isSubPage={isSubPage} />;
 };

@@ -18,7 +18,13 @@ import { useCancelPage } from '~/hooks/useCancelPage';
 import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 
-export const FormPage = ({ page }: { page?: Page }) => {
+export const FormPage = ({
+  page,
+  isSubPage,
+}: {
+  page?: Page;
+  isSubPage?: boolean;
+}) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
   const {
@@ -26,6 +32,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     handleOnToggleChange,
     handleOnTitleChange,
     handleOnReset,
+    disableToggle,
     isDisableButton,
     contentTitle,
     isSubmitting,
@@ -33,7 +40,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     isVisible,
     editorRef,
     content,
-  } = useFormPage(page);
+  } = useFormPage(page, isSubPage);
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isModified, page);
 
@@ -58,6 +65,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             name="isVisible"
             checked={isVisible}
             onChange={handleOnToggleChange}
+            disabled={disableToggle()}
           />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
