@@ -71,7 +71,7 @@ public interface WikiService {
 	 */
 	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler);
 
-	public void comment(UserInfos user, String idWiki, String idPage, String newCommentId,
+	public void addComment(UserInfos user, String idWiki, String idPage, String newCommentId,
 			String comment, Handler<Either<String, JsonObject>> handler);
 
 	public void deleteComment(String idWiki, String idPage, String idComment,
