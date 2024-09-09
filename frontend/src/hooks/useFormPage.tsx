@@ -1,20 +1,28 @@
 import { EditorRef } from '@edifice-ui/editor';
 import { useToggle } from '@uidotdev/usehooks';
 import { useCallback, useRef, useState } from 'react';
-import { useNavigation, useParams } from 'react-router-dom';
+import { useLocation, useNavigation, useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetWiki } from '~/services';
 
-export const useFormPage = (page?: Page, isSubPage?: boolean) => {
+export const useFormPage = (page?: Page) => {
   const navigation = useNavigation();
+  const location = useLocation();
   const editorRef = useRef<EditorRef>(null);
   const params = useParams();
   const { data: wikiData } = useGetWiki(params.wikiId!);
 
-  const defaultVisibleValue = useCallback(() => {
+  const isSubPage: boolean =
+    location.pathname.includes('subpage') || !!page?.parentId;
+  const editionMode = !!page?._id;
+
+  /**
+   * Return visibility toggle default value.
+   */
+  const getDefaultVisibleValue = useCallback(() => {
     // In edition mode, return current page visibility
-    if (page?._id) {
-      return page.isVisible;
+    if (editionMode) {
+      return page?.isVisible;
     }
     // In subpage creation mode, visibility must be the same as parent page visibility
     if (isSubPage) {
@@ -29,7 +37,7 @@ export const useFormPage = (page?: Page, isSubPage?: boolean) => {
 
   const [content, setContent] = useState(page?.content ?? '');
   const [contentTitle, setContentTitle] = useState(page?.title ?? '');
-  const [isVisible, toggle] = useToggle(defaultVisibleValue());
+  const [isVisible, toggle] = useToggle(getDefaultVisibleValue());
   const [isModified, setIsModified] = useState(false);
   const [isDisableButton, setIsDisableButton] = useState(true);
 

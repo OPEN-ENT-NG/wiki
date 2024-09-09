@@ -18,13 +18,7 @@ import { useCancelPage } from '~/hooks/useCancelPage';
 import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 
-export const FormPage = ({
-  page,
-  isSubPage,
-}: {
-  page?: Page;
-  isSubPage?: boolean;
-}) => {
+export const FormPage = ({ page }: { page?: Page }) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
   const {
@@ -40,7 +34,7 @@ export const FormPage = ({
     isVisible,
     editorRef,
     content,
-  } = useFormPage(page, isSubPage);
+  } = useFormPage(page);
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isModified, page);
 
