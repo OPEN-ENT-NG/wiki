@@ -662,6 +662,32 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
+	public void updateComment(String idWiki, String idPage, String idComment, String comment,
+							  Handler<Either<String, JsonObject>> handler) {
+		// Mongo Query
+		QueryBuilder query = QueryBuilder
+				.start("_id")
+				.is(idWiki)
+				.put("pages")
+				.elemMatch(new BasicDBObject("_id", idPage));
+
+		// Mongo Modifier
+		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("pages.$[page].comments.$[comment].comment", comment);
+
+		// Mongo ArrayFilters
+		JsonArray arrayFilters = new JsonArray()
+				.add(new JsonObject().put("page._id", idPage))
+				.add(new JsonObject().put("comment._id", idComment));
+
+		mongo.update(collection,
+				MongoQueryBuilder.build(query),
+				modifier.build(),
+				arrayFilters,
+				MongoDbResult.validActionResultHandler(handler));
+	}
+
+	@Override
 	public void createRevision(String wikiId, String pageId, UserInfos user,
 							   String pageTitle, String pageContent, boolean isVisible,
 							   Handler<Either<String, JsonObject>> handler) {

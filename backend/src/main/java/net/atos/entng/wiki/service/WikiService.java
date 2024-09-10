@@ -77,6 +77,9 @@ public interface WikiService {
 	public void deleteComment(String idWiki, String idPage, String idComment,
 			Handler<Either<String, JsonObject>> handler);
 
+	public void updateComment(String idWiki, String idPage, String idComment, String comment,
+							  Handler<Either<String, JsonObject>> handler);
+
 	public void createRevision(String wikiId, String pageId, UserInfos user,
 			String pageTitle, String pageContent, boolean isVisible, Handler<Either<String, JsonObject>> handler);
 
