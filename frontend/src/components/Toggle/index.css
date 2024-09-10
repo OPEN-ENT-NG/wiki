@@ -50,6 +50,10 @@ input:checked + .slider:before {
   transform: translateX(14px);
 }
 
+input[type='checkbox']:disabled + .slider {
+  cursor: not-allowed;
+}
+
 .slider.round {
   border-radius: 32px;
 }
