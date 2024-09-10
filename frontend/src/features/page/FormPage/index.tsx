@@ -26,6 +26,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     handleOnToggleChange,
     handleOnTitleChange,
     handleOnReset,
+    disableToggle,
     isDisableButton,
     contentTitle,
     isSubmitting,
@@ -58,6 +59,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             name="isVisible"
             checked={isVisible}
             onChange={handleOnToggleChange}
+            disabled={disableToggle()}
           />
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
