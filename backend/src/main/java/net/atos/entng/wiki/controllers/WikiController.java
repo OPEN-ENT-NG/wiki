@@ -401,48 +401,37 @@ public class WikiController extends MongoDbControllerHelper {
 		wikiService.deletePage(idWiki, idPage, handler);
 	}
 
-	@Post("/:id/page/:idpage")
+	@Post("/:id/page/:idpage/comment")
 	@ApiDoc("Add comment to a page")
 	@SecuredAction(value = "wiki.comment", type = ActionType.RESOURCE)
 	public void comment(final HttpServerRequest request) {
-		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
-			@Override
-			public void handle(final UserInfos user) {
-				if (user != null) {
-					RequestUtils.bodyToJson(request, new Handler<JsonObject>() {
-						@Override
-						public void handle(JsonObject data) {
-							final String newCommentId = new ObjectId().toString();
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, body -> {
+					final String newCommentId = new ObjectId().toString();
 
-							final String idWiki = request.params().get("id");
-							final String idPage = request.params().get("idpage");
-							final String comment = data.getString("comment", null);
-							if(comment == null || comment.trim().isEmpty()) {
-								badRequest(request);
-								return;
-							}
+					final String idWiki = request.params().get("id");
+					final String idPage = request.params().get("idpage");
+					final String comment = body.getString("comment", null);
+					if (comment == null || comment.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
 
-							// Return attribute _id of created comment in case of success
-							Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-								@Override
-								public void handle(Either<String, JsonObject> event) {
-									if (event.isRight()) {
-										JsonObject result = new JsonObject();
-										result.put("_id", newCommentId);
-										notifyCommentCreated(request, user, idWiki, idPage, newCommentId, comment);
-										renderJson(request, result);
-									} else {
-										JsonObject error = new JsonObject().put(
-												"error", event.left().getValue());
-										renderJson(request, error, 400);
-									}
-								}
-							};
-
-							wikiService.comment(user, idWiki, idPage, newCommentId, comment, handler);
+					wikiService.addComment(user, idWiki, idPage, newCommentId, comment, res -> {
+						// Return attribute _id of created comment in case of success
+						if (res.isRight()) {
+							JsonObject result = new JsonObject();
+							result.put("_id", newCommentId);
+							notifyCommentCreated(request, user, idWiki, idPage, newCommentId, comment);
+							renderJson(request, result);
+						} else {
+							JsonObject error = new JsonObject().put(
+									"error", res.left().getValue());
+							renderJson(request, error, 400);
 						}
 					});
-				}
+				});
 			}
 		});
 	}
