@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { Form } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
-import { MAX_TITLE_LENGTH } from '~/config/init-config';
+import { MAX_TITLE_LENGTH } from '~/config';
 import { useCancelPage } from '~/hooks/useCancelPage';
 import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';

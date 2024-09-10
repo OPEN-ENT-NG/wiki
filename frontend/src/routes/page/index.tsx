@@ -9,9 +9,17 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { CommentCard } from '~/features/comments/Comments';
+import { MAX_COMMENT_LENGTH } from '~/config';
+import { Comments } from '~/features/comments/Comments';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
-import { pageQueryOptions, useGetPage, wikiService } from '~/services';
+import {
+  pageQueryOptions,
+  useCreateComment,
+  useDeleteComment,
+  useGetPage,
+  useUpdateComment,
+  wikiService,
+} from '~/services';
 import {
   useOpenDeleteModal,
   useOpenRevisionModal,
@@ -81,19 +89,44 @@ export const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  const createComment = useCreateComment();
+  const deleteComment = useDeleteComment();
+  const updateComment = useUpdateComment();
+
+  const handleOnPostComment = async (comment: string) => {
+    createComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      comment,
+    });
+  };
+
+  const handleOnPutcomment = async ({
+    comment,
+    commentId,
+  }: {
+    comment: string;
+    commentId: string;
+  }) => {
+    updateComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      commentId,
+      comment,
+    });
+  };
+
+  const handleOnDeleteComment = async (commentId: string) => {
+    deleteComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      commentId,
+    });
+  };
+
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
-
-  /* {
-  author,
-  created,
-  content = '',
-  mode,
-  className,
-  onPublish,
-  onRemove,
-} */
 
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
@@ -106,10 +139,15 @@ export const Page = () => {
         visibility="protected"
       ></Editor>
 
-      <div className="my-24">
-        <h3>1 commentaire</h3>
-        <CommentCard />
-      </div>
+      <Comments
+        comments={data.comments}
+        commentMaxLength={MAX_COMMENT_LENGTH}
+        onPutComment={({ comment, commentId }) =>
+          handleOnPutcomment({ comment, commentId })
+        }
+        onDeleteComment={(commentId) => handleOnDeleteComment(commentId)}
+        onPostComment={(comment) => handleOnPostComment(comment)}
+      />
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeleteModal />}

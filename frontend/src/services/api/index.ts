@@ -7,6 +7,7 @@ import {
   Wiki,
 } from '~/models';
 import { Revision } from '~/models/revision';
+import { dtoToPage } from '~/utils/dtoToPage';
 
 /**
  *
@@ -58,7 +59,8 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .get<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
-    return response;
+
+    return dtoToPage(response);
   },
 
   /**
@@ -134,10 +136,18 @@ const createWikiService = (baseURL: string) => ({
    *
    * NOT IMPLEMENTED YET
    */
-  async createComment({ wikiId, pageId }: { wikiId: string; pageId: string }) {
+  async createComment({
+    wikiId,
+    pageId,
+    comment,
+  }: {
+    wikiId: string;
+    pageId: string;
+    comment: string;
+  }) {
     const response = await odeServices
       .http()
-      .post<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment`);
+      .postJson<Comment>(`${baseURL}/${wikiId}/page/${pageId}`, { comment });
     return response;
   },
 
@@ -149,14 +159,23 @@ const createWikiService = (baseURL: string) => ({
     wikiId,
     pageId,
     commentId,
+    comment,
   }: {
     wikiId: string;
     pageId: string;
     commentId: string;
+    comment: string;
   }) {
     const response = await odeServices
       .http()
+<<<<<<< HEAD
       .put<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`);
+=======
+      .putJson<Comment>(
+        `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
+        { comment }
+      );
+>>>>>>> fd80d49 (feat: #WB2-1532, add comments feature & component)
     return response;
   },
   /**

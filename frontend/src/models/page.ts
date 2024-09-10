@@ -1,3 +1,4 @@
+import { CommentDto } from './comment';
 import { Modified } from './date';
 
 export interface Page {
@@ -11,7 +12,7 @@ export interface Page {
   isVisible: boolean;
   lastContributer?: string;
   lastContributerName?: string;
-  comments?: Comment[];
+  comments?: CommentDto[];
   children?: [
     {
       _id: string;
