@@ -9,7 +9,12 @@ import { IWebApp } from 'edifice-ts-client';
 import { Suspense, lazy } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetWiki, wikiQueryOptions } from '~/services';
-import { useOpenShareModal, useOpenUpdateModal, useWikiActions } from '~/store';
+import {
+  useOpenPrintModal,
+  useOpenShareModal,
+  useOpenUpdateModal,
+  useWikiActions,
+} from '~/store';
 import { AppActions } from './AppActions';
 
 /* Lazy Loaded Modals */
@@ -17,12 +22,16 @@ const UpdateModal = lazy(
   async () => await import('~/components/ResourceModal')
 );
 const ShareModal = lazy(async () => await import('~/components/ShareModal'));
+const PrintModal = lazy(
+  async () => await import('~/features/page/PrintModal/PrintModal')
+);
 
 export const AppHeader = () => {
   const params = useParams();
   const queryClient = useQueryClient();
   const openUpdateModal = useOpenUpdateModal();
   const openShareModal = useOpenShareModal();
+  const openPrintModal = useOpenPrintModal();
 
   const { data } = useGetWiki(params.wikiId!);
   const { currentApp } = useOdeClient();
@@ -65,6 +74,7 @@ export const AppHeader = () => {
             onSuccess={() => setOpenShareModal(false)}
           />
         )}
+        {openPrintModal && <PrintModal />}
       </Suspense>
     </>
   );

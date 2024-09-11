@@ -7,9 +7,7 @@ import {
 } from '@edifice-ui/react';
 import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { baseURL, useGetWiki } from '~/services';
 import { useUserRights } from '~/store';
 import { useWikiActions } from '~/store/wiki';
 
@@ -19,12 +17,11 @@ export type ActionDropdownMenuOptions = {
 } & DropdownMenuOptions;
 
 export const AppActions = () => {
-  const params = useParams();
   const userRights = useUserRights();
 
-  const { data } = useGetWiki(params.wikiId!);
   const { t } = useTranslation();
-  const { setOpenShareModal, setOpenUpdateModal } = useWikiActions();
+  const { setOpenShareModal, setOpenUpdateModal, setOpenPrintModal } =
+    useWikiActions();
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {
@@ -45,7 +42,7 @@ export const AppActions = () => {
       id: 'print',
       label: t('print'),
       icon: <Print />,
-      action: () => window.open(`/${baseURL}/print/id/${data?._id}`),
+      action: () => setOpenPrintModal(true),
       visibility: true,
     },
   ];
