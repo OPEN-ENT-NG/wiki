@@ -32,7 +32,11 @@ export const useCancelPage = (isModified: boolean, page?: Page) => {
         navigate(`/id/${params.wikiId}`);
       }
     } else {
-      navigate('..');
+      if (page) {
+        navigate(`/id/${params.wikiId}/page/${page?._id}`);
+      } else {
+        navigate(`/id/${params.wikiId}/pages`);
+      }
     }
   };
 
