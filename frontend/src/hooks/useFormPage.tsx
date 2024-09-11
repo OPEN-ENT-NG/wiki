@@ -33,6 +33,7 @@ export const useFormPage = (page?: Page) => {
     }
     // In regular creation mode, visibility is true by default
     return true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, params.wikiId]);
 
   const [content, setContent] = useState(page?.content ?? '');
@@ -44,12 +45,15 @@ export const useFormPage = (page?: Page) => {
   const isSubmitting = navigation.state === 'submitting';
 
   const isModify = useCallback(() => {
-    if (!page) return !!content || !!contentTitle || isVisible;
-    return (
-      page.content !== (editorRef.current?.getContent('html') as string) ||
-      page.title !== contentTitle ||
-      page.isVisible !== isVisible
-    );
+    if (!page) return !!content || !!contentTitle;
+    if (content) {
+      return (
+        page.content !== content ||
+        page.title !== contentTitle ||
+        page.isVisible !== isVisible
+      );
+    }
+    return false;
   }, [content, contentTitle, isVisible, page]);
 
   const updateModificationState = () => {
@@ -91,6 +95,7 @@ export const useFormPage = (page?: Page) => {
       }
     }
     return false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubPage]);
 
   return {
