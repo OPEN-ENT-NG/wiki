@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
 type PrintGroup = 'allPages' | 'onePage';
 
 /**
- * We mock createPortal to open RevisionModal
+ * We mock createPortal to open PrintModal
  */
 vi.mock('react-dom', async () => {
   const dom = await vi.importActual<typeof import('react-dom')>('react-dom');
@@ -39,7 +39,7 @@ const mockPrintModalHookValue = {
   printGroup: 'onePage' as PrintGroup,
 };
 
-describe('RevisionModal', () => {
+describe('PrintModal', () => {
   afterEach(() => {
     vi.resetAllMocks();
   });
@@ -91,7 +91,7 @@ describe('RevisionModal', () => {
     expect(checkbox).not.toBeChecked();
   });
 
-  it('handles Radio group change', async () => {
+  it('should handles Radio group change', async () => {
     const { handleOnGroupChange } = useCheckablePrint();
 
     render(<PrintModal />);
@@ -102,7 +102,7 @@ describe('RevisionModal', () => {
     expect(handleOnGroupChange).toHaveBeenCalled();
   });
 
-  it('handles Checkbox toggle for printing comments', async () => {
+  it('should handles Checkbox toggle for printing comments', async () => {
     const { handleOnPrintComment } = useCheckablePrint();
 
     render(<PrintModal />);
@@ -113,7 +113,7 @@ describe('RevisionModal', () => {
     expect(handleOnPrintComment).toHaveBeenCalled();
   });
 
-  it('print button is rendered and clickable', async () => {
+  it('should print button is rendered and clickable', async () => {
     render(<PrintModal />);
     const user = userEvent.setup();
     const printButton = screen.getByText('wiki.modal.print.button.print');

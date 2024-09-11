@@ -1,10 +1,13 @@
 import { Button, Checkbox, Modal, Radio } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useCheckablePrint } from '~/hooks/useCheckablePrint';
-import { usePrintModal } from './usePrintModal';
+import { useTranslation } from 'react-i18next';
+import { useOpenPrintModal, useWikiActions } from '~/store';
 
 export default function PrintModal() {
-  const { t, openPrintModal, setOpenPrintModal } = usePrintModal();
+  const { t } = useTranslation('wiki');
+  const openPrintModal = useOpenPrintModal();
+  const { setOpenPrintModal } = useWikiActions();
 
   const {
     handleOnGroupChange,
