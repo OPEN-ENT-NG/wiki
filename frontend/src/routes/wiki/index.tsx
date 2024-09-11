@@ -25,6 +25,7 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
+import { useEffect } from 'react';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -79,7 +80,6 @@ export const Index = () => {
 
   const handleOnTreeItemClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
-    setSelectedNodeId(pageId);
   };
 
   const handleOnMenuClick = () => {
@@ -90,6 +90,15 @@ export const Index = () => {
   const handleOnTreeItemCreateChildren = (pageId: ID) => {
     navigate(`page/${pageId}/subpage/create`);
   };
+
+  useEffect(() => {
+    if (params.pageId) {
+      setSelectedNodeId(`${params.pageId}`);
+    } else {
+      setSelectedNodeId('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.pageId]);
 
   return (
     <>
