@@ -118,7 +118,7 @@ export const PageHeader = ({
                 date: formatDate(page.modified, 'long'),
               })}
             </span>
-            {!page.isVisible && !isPrint && (
+            {!page.isVisible && (
               <Badge
                 variant={{
                   type: 'content',

@@ -80,9 +80,9 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         async lazy() {
-          const { pageLoader, Component } = await import('./print');
+          const { printLoader, Component } = await import('./print');
           return {
-            loader: pageLoader(queryClient),
+            loader: printLoader(queryClient),
             Component,
           };
         },

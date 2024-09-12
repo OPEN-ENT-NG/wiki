@@ -24,6 +24,12 @@ export const wikiQueryOptions = {
       queryFn: () => wikiService.getWikiPages(wikiId, content),
       staleTime: 5000,
     }),
+  findOnePage: (wikiId: string, pageId: string) =>
+    queryOptions({
+      queryKey: [...wikiQueryOptions.base, { id: wikiId }] as const,
+      queryFn: () => wikiService.getPage({ wikiId: wikiId, pageId: pageId }),
+      staleTime: 5000,
+    }),
 };
 
 /**
