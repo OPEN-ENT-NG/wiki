@@ -2,11 +2,14 @@ import { TextPage } from '@edifice-ui/icons';
 import {
   Dropdown,
   IconButtonProps,
+  Menu,
   TreeData,
   TreeView,
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
+import { useMenu } from '~/hooks/useMenu';
+import { useTreeActions } from '~/store';
 
 export const DropdownTreeview = ({
   treeData,
@@ -19,6 +22,11 @@ export const DropdownTreeview = ({
   onTreeItemClick: (pageId: ID) => void;
   onTreeItemAction?: (pageId: ID) => void;
 }) => {
+  const { setSelectedNodeId } = useTreeActions();
+  const { data: menu, handleOnMenuClick } = useMenu({
+    onMenuClick: setSelectedNodeId,
+  });
+
   return (
     <div className="dropdown-treeview w-100 mb-16">
       <Dropdown block>
@@ -36,6 +44,18 @@ export const DropdownTreeview = ({
                 setVisible(false);
               }}
             >
+              <Menu label={menu.children}>
+                <Menu.Item>
+                  <Menu.Button
+                    onClick={handleOnMenuClick}
+                    leftIcon={menu.leftIcon}
+                    selected={menu.selected}
+                  >
+                    {menu.children}
+                  </Menu.Button>
+                </Menu.Item>
+              </Menu>
+              <Dropdown.Separator />
               <TreeView
                 data={treeData}
                 showIcon={false}

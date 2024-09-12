@@ -8,7 +8,11 @@ import {
   useParams,
 } from 'react-router-dom';
 
-export const useMenu = () => {
+export const useMenu = ({
+  onMenuClick,
+}: {
+  onMenuClick: (value: string) => void;
+}) => {
   const params = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,5 +32,10 @@ export const useMenu = () => {
     selected: isSelected('/id/:wikiId/pages') ?? false,
   };
 
-  return data;
+  const handleOnMenuClick = () => {
+    onMenuClick('');
+    data.onClick();
+  };
+
+  return { data, handleOnMenuClick };
 };

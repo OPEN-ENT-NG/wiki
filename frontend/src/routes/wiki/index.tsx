@@ -1,8 +1,15 @@
-import { checkUserRight, Grid, Menu, TreeView } from '@edifice-ui/react';
+import {
+  checkUserRight,
+  Dropdown,
+  Grid,
+  Menu,
+  TreeView,
+} from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
+import { useEffect } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -25,7 +32,6 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { useEffect } from 'react';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -58,7 +64,9 @@ export const Index = () => {
   const { setSelectedNodeId } = useTreeActions();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
-  const menu = useMenu();
+  const { data: menu, handleOnMenuClick } = useMenu({
+    onMenuClick: setSelectedNodeId,
+  });
 
   const { data } = useGetWiki(params.wikiId!);
 
@@ -80,11 +88,6 @@ export const Index = () => {
 
   const handleOnTreeItemClick = (pageId: ID) => {
     navigate(`/id/${data?._id}/page/${pageId}`);
-  };
-
-  const handleOnMenuClick = () => {
-    setSelectedNodeId('');
-    menu.onClick();
   };
 
   const handleOnTreeItemCreateChildren = (pageId: ID) => {
@@ -112,7 +115,7 @@ export const Index = () => {
             className="border-end pt-16 pe-16 d-none d-lg-block"
             as="aside"
           >
-            <Menu label={data ? data.title : ''}>
+            <Menu label={menu.children}>
               <Menu.Item>
                 <Menu.Button
                   onClick={handleOnMenuClick}
@@ -123,6 +126,7 @@ export const Index = () => {
                 </Menu.Button>
               </Menu.Item>
             </Menu>
+            <Dropdown.Separator />
             {!isOnlyRead && <NewPage />}
             {treeData && (
               <TreeView
