@@ -131,10 +131,10 @@ public class WikiSearchingEvents implements SearchingEvents {
 			}
 			final Boolean match = (matchTitle == 0 || matchContent == 0);
 			if (countMatchPage == 0 && match) {
-				titleRes = "<a href=\"/wiki/id/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
+				titleRes = "<a href=\"/wiki/id/" + wikiId + "/page/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedRes = jO.getJsonObject("modified");
 			} else if (countMatchPage > 0 && match && modifiedMarker.before(currentDate)) {
-				titleRes = "<a href=\"/wiki/id/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
+				titleRes = "<a href=\"/wiki/id/" + wikiId + "/page/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedMarker = currentDate;
 				modifiedRes = jO.getJsonObject("modified");
 			}
