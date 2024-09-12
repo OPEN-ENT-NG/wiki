@@ -1,6 +1,6 @@
-import { Page } from '~/models';
+import { PageDto } from '~/models';
 
-export const dtoToPage = (dto: Page) => {
+export const dtoToPage = (dto: PageDto) => {
   return {
     ...dto,
     comments: dto.comments?.map((comment) => ({

@@ -9,8 +9,7 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
-import { MAX_COMMENT_LENGTH } from '~/config';
-import { Comments } from '~/features/comments/Comments';
+import Comments from '~/features/comments/Comments';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import {
   pageQueryOptions,
@@ -141,12 +140,16 @@ export const Page = () => {
 
       <Comments
         comments={data.comments}
-        commentMaxLength={MAX_COMMENT_LENGTH}
-        onPutComment={({ comment, commentId }) =>
-          handleOnPutcomment({ comment, commentId })
-        }
-        onDeleteComment={(commentId) => handleOnDeleteComment(commentId)}
-        onPostComment={(comment) => handleOnPostComment(comment)}
+        options={{
+          maxCommentLength: 800,
+          maxComments: 5,
+        }}
+        callbacks={{
+          post: (comment) => handleOnPostComment(comment),
+          put: ({ comment, commentId }) =>
+            handleOnPutcomment({ comment, commentId }),
+          delete: (commentId) => handleOnDeleteComment(commentId),
+        }}
       />
 
       <Suspense fallback={<LoadingScreen position={false} />}>
