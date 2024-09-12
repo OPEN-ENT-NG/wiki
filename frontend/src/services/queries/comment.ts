@@ -5,10 +5,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pageQueryOptions, wikiService } from '..';
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
 
@@ -30,10 +26,6 @@ export const useCreateComment = () => {
   });
 };
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useUpdateComment = () => {
   const queryClient = useQueryClient();
 
@@ -57,10 +49,6 @@ export const useUpdateComment = () => {
   });
 };
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useDeleteComment = () => {
   const queryClient = useQueryClient();
   return useMutation({
