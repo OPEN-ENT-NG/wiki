@@ -155,8 +155,21 @@ export const mockRevision: Revision[] = [
     pageId: '6684fd',
     userId: '2875315d',
     username: 'Author',
+    isVisible: true,
+    title: 'title 2',
+    content: '',
+    date: {
+      $date: 1720184598119,
+    },
+  },
+  {
+    _id: 'd7e68db2',
+    wikiId: '6ef1343b',
+    pageId: '6684fd',
+    userId: '2875315d',
+    username: 'Author',
     isVisible: false,
-    title: 'title',
+    title: 'title 3',
     content: '',
     date: {
       $date: 1720184598119,
