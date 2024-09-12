@@ -156,9 +156,7 @@ const createWikiService = (baseURL: string) => ({
   }) {
     const response = await odeServices
       .http()
-      .post<Comment>(
-        `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`
-      );
+      .put<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`);
     return response;
   },
   /**

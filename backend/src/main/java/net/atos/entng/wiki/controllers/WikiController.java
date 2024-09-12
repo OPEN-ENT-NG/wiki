@@ -448,6 +448,31 @@ public class WikiController extends MongoDbControllerHelper {
 		wikiService.deleteComment(idWiki, idPage, idComment, notEmptyResponseHandler(request));
 	}
 
+	@Put("/:id/page/:idpage/comment/:idcomment")
+	@ApiDoc("Update a page comment")
+	@SecuredAction(value = "wiki.comment", type = ActionType.RESOURCE)
+	public void updateComment(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				RequestUtils.bodyToJson(request, body -> {
+					final String idWiki = request.params().get("id");
+					final String idPage = request.params().get("idpage");
+					final String idComment = request.params().get("idcomment");
+
+					final String comment = body.getString("comment", null);
+					if (comment == null || comment.trim().isEmpty()) {
+						badRequest(request);
+						return;
+					}
+
+					wikiService.updateComment(idWiki, idPage, idComment, comment, notEmptyResponseHandler(request));
+				});
+			} else {
+				unauthorized(request);
+			}
+		});
+	}
+
 	@Get("/revisions/:id/:idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void listRevisions(HttpServerRequest request) {
