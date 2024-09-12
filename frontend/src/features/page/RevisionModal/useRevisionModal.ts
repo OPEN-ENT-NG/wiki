@@ -31,10 +31,16 @@ export const useRevisionModal = ({
       ? data?.find((revision) => revision._id === selectedItems[0])
       : undefined;
 
+  const isLastVersion =
+    selectedItems.length === 1 && data?.[0]?._id === selectedItems[0];
+
   const isSelectedItemVisible = findSelectedItem?.isVisible ?? false;
 
   const disabledRestoreButton =
-    selectedItems.length !== 1 || (!isSelectedItemVisible && !canManage);
+    selectedItems.length !== 1 ||
+    (!isSelectedItemVisible && !canManage) ||
+    isLastVersion;
+
   const disabledVersionComparison =
     selectedItems.length < 2 || selectedItems.length > 2;
 
@@ -43,6 +49,7 @@ export const useRevisionModal = ({
     openVersionsModal,
     canManage,
     t,
+    isLastVersion,
     disabledRestoreButton,
     disabledVersionComparison,
     formatDate,

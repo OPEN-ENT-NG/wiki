@@ -80,39 +80,45 @@ const RevisionModal = () => {
               </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-              {data?.map((item) => (
-                <Table.Tr key={item._id}>
-                  <Table.Td>
-                    <Checkbox
-                      data-testid={`checkbox-${item._id}`}
-                      checked={selectedItems.includes(item._id)}
-                      onChange={() => {
-                        handleOnSelectItem(item._id);
-                      }}
-                    />
-                  </Table.Td>
-                  <Table.Td>{item.username}</Table.Td>
-                  <Table.Td>
-                    <Badge
-                      variant={{
-                        type: 'content',
-                        background: true,
-                        level: item.isVisible ? 'warning' : 'info',
-                      }}
-                    >
-                      {item.isVisible
-                        ? t('wiki.table.body.visible')
-                        : t('wiki.table.body.invisible')}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td className="fst-italic text-gray-700">
-                    {formatDate(item.date)}
-                  </Table.Td>
-                  <Table.Td>
-                    <Button variant="ghost">{t('wiki.table.body.btn')}</Button>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
+              {data?.map((item, index) => {
+                const isLastVersion = index === 0;
+
+                return (
+                  <Table.Tr key={item._id}>
+                    <Table.Td>
+                      <Checkbox
+                        data-testid={`checkbox-${item._id}`}
+                        checked={selectedItems.includes(item._id)}
+                        onChange={() => {
+                          handleOnSelectItem(item._id);
+                        }}
+                      />
+                    </Table.Td>
+                    <Table.Td>{item.username}</Table.Td>
+                    <Table.Td>
+                      <Badge
+                        variant={{
+                          type: 'content',
+                          background: true,
+                          level: item.isVisible ? 'warning' : 'info',
+                        }}
+                      >
+                        {item.isVisible
+                          ? t('wiki.table.body.visible')
+                          : t('wiki.table.body.invisible')}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td className="fst-italic text-gray-700">
+                      {formatDate(item.date)}
+                    </Table.Td>
+                    <Table.Td>
+                      <Button variant="ghost" disabled={isLastVersion}>
+                        {t('wiki.table.body.btn')}
+                      </Button>
+                    </Table.Td>
+                  </Table.Tr>
+                );
+              })}
             </Table.Tbody>
           </Table>
         )}
