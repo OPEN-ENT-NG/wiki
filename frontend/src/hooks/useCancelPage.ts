@@ -25,18 +25,10 @@ export const useCancelPage = (isModified: boolean, page?: Page) => {
   });
 
   const handleOnButtonCancel = () => {
-    if (isModified) {
-      if (page) {
-        navigate(`/id/${params.wikiId}/page/${page._id}`);
-      } else {
-        navigate(`/id/${params.wikiId}`);
-      }
+    if (page) {
+      navigate(`/id/${params.wikiId}/page/${page._id}`);
     } else {
-      if (page) {
-        navigate(`/id/${params.wikiId}/page/${page?._id}`);
-      } else {
-        navigate(`/id/${params.wikiId}/pages`);
-      }
+      navigate(-1);
     }
   };
 
