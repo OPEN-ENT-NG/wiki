@@ -191,28 +191,43 @@ export function CommentList() {
 }
 
 const useAutosizeTextArea = (
-  textAreaRef: HTMLTextAreaElement | null,
   value: string
-) => {
-  useEffect(() => {
-    if (textAreaRef) {
-      textAreaRef.style.height = 'auto';
-      const scrollHeight = textAreaRef.scrollHeight;
+): [
+  React.RefObject<HTMLTextAreaElement>,
+  (event: React.FocusEvent<HTMLTextAreaElement>) => void
+] => {
+  const ref = useRef<HTMLTextAreaElement | null>(null);
 
-      console.log({ value });
-      textAreaRef.style.height = scrollHeight + 'px';
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.height = 'auto';
+      const scrollHeight = ref.current.scrollHeight;
+
+      ref.current.style.height = scrollHeight + 'px';
     }
-  }, [textAreaRef, value]);
+  }, [ref, value]);
+
+  const onFocus = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+    event.currentTarget.setSelectionRange(
+      event.currentTarget.value.length + 1,
+      event.currentTarget.value.length + 1
+    );
+  };
+
+  return [ref, onFocus];
 };
 
 const CommentForm = ({ userId }: { userId: string }) => {
-  const ref = useRef<HTMLTextAreaElement | null>(null);
   const { t } = useTranslation();
+  const {
+    content,
+    handleChangeContent,
+    handleCreateComment,
+    setEditCommentId,
+    options,
+  } = useCommentsContext();
 
-  const { content, handleChangeContent, handleCreateComment, options } =
-    useCommentsContext();
-
-  useAutosizeTextArea(ref.current, content);
+  const [ref] = useAutosizeTextArea(content);
 
   return (
     <div className="border rounded-3 p-12 pb-8 d-flex gap-12 bg-gray-200">
@@ -227,6 +242,7 @@ const CommentForm = ({ userId }: { userId: string }) => {
           placeholder={t('comment.placeholder.textarea')}
           maxLength={options.maxCommentLength as number}
           onChange={handleChangeContent}
+          // onFocus={() => setEditCommentId(null)}
           rows={1}
           style={{ resize: 'none', overflow: 'hidden' }}
         />
@@ -260,12 +276,11 @@ const Comment = ({
   userId: string;
   profile: UserProfile[number];
 }) => {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<string>('');
 
   const { id, authorId, authorName, createdAt, comment: content } = comment;
 
-  const ref = useRef<HTMLTextAreaElement | null>(null);
-  useAutosizeTextArea(ref.current, content);
+  const [ref, onFocus] = useAutosizeTextArea(value);
 
   const { t } = useTranslation();
   const { fromNow } = useDate();
@@ -277,7 +292,6 @@ const Comment = ({
     handleModifyComment,
     handleReset,
     handleUpdateComment,
-    handleChangeContent,
   } = useCommentsContext();
 
   const isEditing = editCommentId === comment.id;
@@ -288,8 +302,25 @@ const Comment = ({
     });
 
   useEffect(() => {
-    if (isEditing) ref.current?.focus();
+    /* if (isEditing) {
+      console.log({ isEditing });
+      ref.current?.focus();
+      // setValue(value + ' ');
+    } */
+    ref.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing]);
+
+  const handleChangeContent = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setValue(event.target.value);
+  };
+
+  const onMouseUp = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+    const length = event.currentTarget.value.length;
+    event.currentTarget.setSelectionRange(length, length);
+  };
 
   return (
     <div
@@ -316,13 +347,16 @@ const Comment = ({
               <textarea
                 id="add-comment"
                 ref={ref}
-                value={value as string}
+                value={value}
                 className="form-control"
                 placeholder={t('comment.placeholder')}
                 maxLength={options.maxCommentLength as number}
                 onChange={handleChangeContent}
-                // rows={1}
+                rows={1}
                 style={{ resize: 'none', overflow: 'hidden' }}
+                onFocus={() => console.log('focus')}
+                onMouseUp={onMouseUp}
+                onBlur={() => console.log('blur')}
               />
             </div>
             <div className="d-flex justify-content-between align-items-center">
@@ -333,10 +367,7 @@ const Comment = ({
                   size="sm"
                   leftIcon={<Save />}
                   disabled={!content?.length}
-                  onClick={() => {
-                    handleUpdateComment(content);
-                    setValue(content);
-                  }}
+                  onClick={() => handleUpdateComment(value)}
                 >
                   {t('comment.save')}
                 </Button>
@@ -350,7 +381,7 @@ const Comment = ({
                 </Button>
               </div>
               <TextCounter
-                content={content}
+                content={value}
                 maxLength={options.maxCommentLength as number}
               />
             </div>
@@ -365,7 +396,10 @@ const Comment = ({
                   variant="ghost"
                   color="tertiary"
                   size="sm"
-                  onClick={() => handleModifyComment(comment.id)}
+                  onClick={() => {
+                    handleModifyComment(comment.id);
+                    setValue(content);
+                  }}
                 >
                   {t('comment.edit')}
                 </Button>

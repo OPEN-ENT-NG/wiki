@@ -9,6 +9,7 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
+import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import Comments from '~/features/comments/Comments';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import {
@@ -141,8 +142,8 @@ export const Page = () => {
       <Comments
         comments={data.comments}
         options={{
-          maxCommentLength: 800,
-          maxComments: 5,
+          maxCommentLength: MAX_COMMENT_LENGTH,
+          maxComments: MAX_COMMENTS,
         }}
         callbacks={{
           post: (comment) => handleOnPostComment(comment),
