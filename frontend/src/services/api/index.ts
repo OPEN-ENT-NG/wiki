@@ -122,9 +122,12 @@ const createWikiService = (baseURL: string) => ({
   },
 
   /**
+   * Delete a page of the current wiki.
    *
-   * @param wikiId
-   * @deletes a page
+   * @param {Object} params - expected params to delete a page.
+   * @param {string} params.wikiId - current wiki id.
+   * @param {string} params.pageId - id of a page from the current wiki.
+   * @returns {Promise<void>} a promise after deleting the page
    */
   async deletePage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
     const response = await odeServices
@@ -134,8 +137,13 @@ const createWikiService = (baseURL: string) => ({
   },
 
   /**
+   * Create a new comment
    *
-   * NOT IMPLEMENTED YET
+   * @param {Object} params - expected params to create a new comment.
+   * @param {string} params.wikiId - current wiki id.
+   * @param {string} params.pageId - id of a page from the current wiki.
+   * @param {string} params.comment - comment text.
+   * @returns {Promise<void>} a promise after creating the new comment.
    */
   async createComment({
     wikiId,
@@ -155,8 +163,13 @@ const createWikiService = (baseURL: string) => ({
   },
 
   /**
+   * Update a comment
    *
-   * NOT IMPLEMENTED YET
+   * @param {Object} params - expected params to update a comment.
+   * @param {string} params.wikiId - current wiki id.
+   * @param {string} params.pageId - id of a page from the current wiki.
+   * @param {string} params.comment - new comment text.
+   * @returns {Promise<void>} a promise after updating the comment.
    */
   async updateComment({
     wikiId,
@@ -171,19 +184,20 @@ const createWikiService = (baseURL: string) => ({
   }) {
     const response = await odeServices
       .http()
-<<<<<<< HEAD
-      .put<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`);
-=======
       .putJson<Comment>(
         `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
         { comment }
       );
->>>>>>> fd80d49 (feat: #WB2-1532, add comments feature & component)
     return response;
   },
   /**
+   * Delete a comment
    *
-   * NOT IMPLEMENTED YET
+   * @param {Object} params - expected params to delete a comment.
+   * @param {string} params.wikiId - current wiki id.
+   * @param {string} params.pageId - id of a page from the current wiki.
+   * @param {string} params.commentId - id of the comment to be deleted.
+   * @returns {Promise<void>} a promise after deleting the comment.
    */
   async deleteComment({
     wikiId,
