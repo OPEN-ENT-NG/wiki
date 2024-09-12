@@ -115,9 +115,9 @@ export const PageHeader = ({ page }: { page: Page }) => {
             {!page.isVisible && (
               <Badge
                 variant={{
-                  type: 'notification',
+                  type: 'content',
                   level: 'info',
-                  color: 'text',
+                  background: true,
                 }}
               >
                 <div className="d-flex align-items-center">

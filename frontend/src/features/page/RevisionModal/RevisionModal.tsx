@@ -94,10 +94,9 @@ const RevisionModal = () => {
                   <Table.Td>{item.username}</Table.Td>
                   <Table.Td>
                     <Badge
-                      className="p-8 px-16"
                       variant={{
-                        type: 'notification',
-                        color: 'text',
+                        type: 'content',
+                        background: true,
                         level: item.isVisible ? 'warning' : 'info',
                       }}
                     >
