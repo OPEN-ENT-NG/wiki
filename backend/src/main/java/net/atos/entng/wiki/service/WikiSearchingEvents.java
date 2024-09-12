@@ -92,7 +92,7 @@ public class WikiSearchingEvents implements SearchingEvents {
 				jr.put(aHeader.get(2), (JsonObject) map.get("modified"));
 				jr.put(aHeader.get(3), j.getJsonObject("owner").getString("displayName"));
 				jr.put(aHeader.get(4), j.getJsonObject("owner").getString("userId"));
-				jr.put(aHeader.get(5), "/wiki#/view/" + wikiId);
+				jr.put(aHeader.get(5), "/wiki/id/" + wikiId);
 				traity.add(jr);
 			}
 		}
@@ -131,10 +131,10 @@ public class WikiSearchingEvents implements SearchingEvents {
 			}
 			final Boolean match = (matchTitle == 0 || matchContent == 0);
 			if (countMatchPage == 0 && match) {
-				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
+				titleRes = "<a href=\"/wiki/id/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedRes = jO.getJsonObject("modified");
 			} else if (countMatchPage > 0 && match && modifiedMarker.before(currentDate)) {
-				titleRes = "<a href=\"/wiki#/view/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
+				titleRes = "<a href=\"/wiki/id/" + wikiId + "/" + jO.getString("_id") + "\">" + title + "</a>";
 				modifiedMarker = currentDate;
 				modifiedRes = jO.getJsonObject("modified");
 			}
