@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
+import { useEffect } from 'react';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -25,7 +26,6 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { useEffect } from 'react';
 
 export const loader =
   (queryClient: QueryClient) =>
