@@ -122,23 +122,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		}
 	}
 
-//	private JsonArray getSubPagesIDs(final JsonObject wiki, final String pageId) {
-//		JsonArray subPagesIDs = new JsonArray();
-//
-//		if (wiki != null) {
-//			final JsonArray pages = wiki.getJsonArray("pages");
-//			pages.forEach(page -> {
-//				final JsonObject pageJO = (JsonObject) page;
-//				final String parentId = pageJO.getString("parentId");
-//
-//				if (!StringUtils.isEmpty(parentId) && parentId.equals(pageId)) {
-//					subPagesIDs.add(pageJO.getString("_id"));
-//				}
-//			});
-//		}
-//		return subPagesIDs;
-//	}
-
 	private JsonObject addNormalizedShares(final JsonObject wiki) {
 		if (wiki != null) {
 			shareNormalizer.addNormalizedRights(wiki, e -> wikiExplorerPlugin.getCreatorForModel(e).map(UserInfos::getUserId));
