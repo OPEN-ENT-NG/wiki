@@ -384,21 +384,20 @@ public class WikiController extends MongoDbControllerHelper {
 		final String idWiki = request.params().get("id");
 		final String idPage = request.params().get("idpage");
 
-		Handler<Either<String, JsonObject>> handler = new Handler<Either<String, JsonObject>>() {
-			@Override
-			public void handle(Either<String, JsonObject> event) {
-				if (event.isRight()) {
-					deleteRevisions(idWiki, idPage);
-					wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
-				} else {
-					JsonObject error = new JsonObject()
-							.put("error", event.left().getValue());
-					renderJson(request, error, 400);
-				}
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				wikiService.deletePage(user, idWiki, idPage, res -> {
+					if (res.isRight()) {
+						deleteRevisions(idWiki, idPage);
+						wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
+					} else {
+						renderJson(request, new JsonObject().put("error", res.left().getValue()), 400);
+					}
+				});
+			} else {
+				unauthorized(request);
 			}
-		};
-
-		wikiService.deletePage(idWiki, idPage, handler);
+		});
 	}
 
 	@Post("/:id/page/:idpage/comment")
