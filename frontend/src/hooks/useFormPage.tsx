@@ -10,10 +10,12 @@ export const useFormPage = (page?: Page) => {
   const location = useLocation();
   const editorRef = useRef<EditorRef>(null);
   const params = useParams();
+
   const { data: wikiData } = useGetWiki(params.wikiId!);
 
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;
+
   const editionMode = !!page?._id;
 
   /**
@@ -111,5 +113,6 @@ export const useFormPage = (page?: Page) => {
     editorRef,
     isVisible,
     content,
+    isSubPage,
   };
 };

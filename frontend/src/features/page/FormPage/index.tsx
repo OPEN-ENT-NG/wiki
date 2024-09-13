@@ -34,21 +34,35 @@ export const FormPage = ({ page }: { page?: Page }) => {
     isVisible,
     editorRef,
     content,
+    isSubPage,
   } = useFormPage(page);
+
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isModified, page);
+
+  const label = isSubPage
+    ? 'wiki.createform.subpage.label'
+    : 'wiki.createform.page.label';
+
+  const placeholder = isSubPage
+    ? 'wiki.createform.subpage.placeholder'
+    : 'wiki.createform.page.placeholder';
+
+  const save = isSubPage
+    ? 'wiki.createform.subpage.save'
+    : 'wiki.createform.page.save';
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
       <Form id="myForm" method="post" role="form">
         <FormControl id="inputForm" isRequired>
-          <Label>{t('wiki.linkerform.pagetitle.label')}</Label>
+          <Label>{t(label)}</Label>
           <Input
             name="title"
             type="text"
             size="md"
             maxLength={MAX_TITLE_LENGTH}
-            placeholder={t('wiki.createform.input.placeholder')}
+            placeholder={t(placeholder)}
             value={contentTitle}
             onChange={handleOnTitleChange}
             autoFocus={true}
@@ -92,7 +106,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             disabled={isDisableButton}
             onClick={handleOnReset}
           >
-            {t('wiki.editform.save')}
+            {t(save)}
           </Button>
         </div>
       </Form>
