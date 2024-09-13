@@ -740,7 +740,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Mongo Modifier
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-		modifier.set("pages.$[page].comments.$[comment].comment", comment);
+		modifier.set("pages.$[page].comments.$[comment].comment", comment)
+				.set("pages.$[page].comments.$[comment].modified", MongoDb.now());
 
 		// Mongo ArrayFilters
 		JsonArray arrayFilters = new JsonArray()
