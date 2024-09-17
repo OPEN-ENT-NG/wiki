@@ -5,16 +5,19 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pageQueryOptions, wikiService } from '..';
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
-      wikiService.createComment({ wikiId, pageId }),
+    mutationFn: ({
+      wikiId,
+      pageId,
+      comment,
+    }: {
+      wikiId: string;
+      pageId: string;
+      comment: string;
+    }) => wikiService.createComment({ wikiId, pageId, comment }),
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
@@ -23,10 +26,6 @@ export const useCreateComment = () => {
   });
 };
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useUpdateComment = () => {
   const queryClient = useQueryClient();
 
@@ -35,11 +34,13 @@ export const useUpdateComment = () => {
       wikiId,
       pageId,
       commentId,
+      comment,
     }: {
       wikiId: string;
       pageId: string;
       commentId: string;
-    }) => wikiService.updateComment({ wikiId, pageId, commentId }),
+      comment: string;
+    }) => wikiService.updateComment({ wikiId, pageId, commentId, comment }),
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
@@ -48,10 +49,6 @@ export const useUpdateComment = () => {
   });
 };
 
-/**
- *
- * NOT IMPLEMENTED YET
- */
 export const useDeleteComment = () => {
   const queryClient = useQueryClient();
   return useMutation({

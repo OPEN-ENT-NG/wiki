@@ -1,11 +1,6 @@
 name: tests
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - develop*
   pull_request:
 
 permissions:
