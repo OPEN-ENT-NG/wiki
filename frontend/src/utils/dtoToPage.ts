@@ -9,6 +9,9 @@ export const dtoToPage = (dto: PageDto) => {
       authorId: comment.author,
       authorName: comment.authorName,
       createdAt: comment.created.$date,
+      ...(comment.modified?.$date && {
+        updatedAt: comment.modified.$date,
+      }),
     })),
   };
 };

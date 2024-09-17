@@ -188,6 +188,7 @@ const createWikiService = (baseURL: string) => ({
         `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
         { comment }
       );
+
     return response;
   },
   /**

@@ -44,11 +44,27 @@ interface RootProps {
 }
 
 type CommentOptions = {
+  /**
+   * Set new comment limit
+   */
   maxCommentLength: number;
+  /**
+   * Setting the limit on a response
+   */
   maxReplyLength: number;
+  /**
+   * Limit for displaying comments in the list
+   */
   maxComments: number;
+  /**
+   * Number of comments to load additionally
+   */
+  additionalComments: number;
+  /**
+   * Limit on displaying replies to a comment
+
+   */
   maxReplies: number;
-  showBadgeProfile: boolean;
 };
 
 interface UserProfileResult {
@@ -119,11 +135,39 @@ const CommentAvatar = ({ id }: { id: string }) => {
   );
 };
 
-const CommentDate = ({ createdAt }: { createdAt: string }) => {
+const CommentDate = ({
+  createdAt,
+  updatedAt,
+}: {
+  createdAt: number;
+  updatedAt: number;
+}) => {
+  const { fromNow } = useDate();
+  const { t } = useTranslation();
+
+  const getPublishedDate = (date: number) =>
+    t('comment.publish.date', {
+      date: fromNow(date),
+    });
+
+  const getUpdatedDate = (date: number) =>
+    t('comment.update.date', {
+      date: fromNow(date),
+    });
+
+  if (updatedAt) {
+    return (
+      <>
+        <span className="small text-gray-700">|</span>
+        <span className="small text-gray-700">{getUpdatedDate(updatedAt)}</span>
+      </>
+    );
+  }
+
   return createdAt ? (
     <>
       <span className="small text-gray-700">|</span>
-      <span className="small text-gray-700">{createdAt}</span>
+      <span className="small text-gray-700">{getPublishedDate(createdAt)}</span>
     </>
   ) : null;
 };
@@ -191,21 +235,27 @@ export function CommentList() {
 }
 
 const useAutosizeTextArea = (
-  value: string
+  autoFocus?: boolean
 ): [
   React.RefObject<HTMLTextAreaElement>,
-  (event: React.FocusEvent<HTMLTextAreaElement>) => void
+  (event: React.FocusEvent<HTMLTextAreaElement>) => void,
+  () => void
 ] => {
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
-  useEffect(() => {
+  const resizeTextarea = () => {
     if (ref.current) {
-      ref.current.style.height = 'auto';
+      ref.current.style.height = 'auto'; // Réinitialise la hauteur avant de recalculer
       const scrollHeight = ref.current.scrollHeight;
-
-      ref.current.style.height = scrollHeight + 'px';
+      ref.current.style.height = `${scrollHeight}px`; // Ajuste à la nouvelle hauteur
     }
-  }, [ref, value]);
+  };
+
+  useEffect(() => {
+    resizeTextarea();
+
+    if (autoFocus) ref.current?.focus();
+  });
 
   const onFocus = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     event.currentTarget.setSelectionRange(
@@ -214,20 +264,15 @@ const useAutosizeTextArea = (
     );
   };
 
-  return [ref, onFocus];
+  return [ref, onFocus, resizeTextarea];
 };
 
 const CommentForm = ({ userId }: { userId: string }) => {
   const { t } = useTranslation();
-  const {
-    content,
-    handleChangeContent,
-    handleCreateComment,
-    setEditCommentId,
-    options,
-  } = useCommentsContext();
+  const { content, handleChangeContent, handleCreateComment, options } =
+    useCommentsContext();
 
-  const [ref] = useAutosizeTextArea(content);
+  const [ref, onFocus] = useAutosizeTextArea();
 
   return (
     <div className="border rounded-3 p-12 pb-8 d-flex gap-12 bg-gray-200">
@@ -242,7 +287,7 @@ const CommentForm = ({ userId }: { userId: string }) => {
           placeholder={t('comment.placeholder.textarea')}
           maxLength={options.maxCommentLength as number}
           onChange={handleChangeContent}
-          // onFocus={() => setEditCommentId(null)}
+          onFocus={onFocus}
           rows={1}
           style={{ resize: 'none', overflow: 'hidden' }}
         />
@@ -278,12 +323,18 @@ const Comment = ({
 }) => {
   const [value, setValue] = useState<string>('');
 
-  const { id, authorId, authorName, createdAt, comment: content } = comment;
+  const {
+    id,
+    authorId,
+    authorName,
+    createdAt,
+    updatedAt,
+    comment: content,
+  } = comment;
 
-  const [ref, onFocus] = useAutosizeTextArea(value);
+  const [ref, onFocus, resizeTextarea] = useAutosizeTextArea(true);
 
   const { t } = useTranslation();
-  const { fromNow } = useDate();
 
   const {
     editCommentId,
@@ -296,30 +347,11 @@ const Comment = ({
 
   const isEditing = editCommentId === comment.id;
 
-  const getDate = (createdAt: number) =>
-    t('comment.publish.date', {
-      date: fromNow(createdAt),
-    });
-
-  useEffect(() => {
-    /* if (isEditing) {
-      console.log({ isEditing });
-      ref.current?.focus();
-      // setValue(value + ' ');
-    } */
-    ref.current?.focus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditing]);
-
   const handleChangeContent = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
+    resizeTextarea();
     setValue(event.target.value);
-  };
-
-  const onMouseUp = (event: React.MouseEvent<HTMLTextAreaElement>) => {
-    const length = event.currentTarget.value.length;
-    event.currentTarget.setSelectionRange(length, length);
   };
 
   return (
@@ -335,17 +367,15 @@ const Comment = ({
       <div className="flex flex-fill">
         <div className="d-flex align-items-center gap-12">
           <CommentTitle>{authorName}</CommentTitle>
-
-          {options.showBadgeProfile && <BadgeProfile profile={profile} />}
-
-          <CommentDate createdAt={getDate(createdAt)} />
+          <BadgeProfile profile={profile} />
+          <CommentDate createdAt={createdAt} updatedAt={updatedAt} />
         </div>
 
         {isEditing ? (
           <>
             <div className="mt-8 mb-4">
               <textarea
-                id="add-comment"
+                id="update-comment"
                 ref={ref}
                 value={value}
                 className="form-control"
@@ -354,9 +384,7 @@ const Comment = ({
                 onChange={handleChangeContent}
                 rows={1}
                 style={{ resize: 'none', overflow: 'hidden' }}
-                onFocus={() => console.log('focus')}
-                onMouseUp={onMouseUp}
-                onBlur={() => console.log('blur')}
+                onFocus={onFocus}
               />
             </div>
             <div className="d-flex justify-content-between align-items-center">
@@ -428,10 +456,9 @@ const CommentProvider = ({
   const options = {
     maxCommentLength: 200,
     maxReplyLength: 200,
-    maxComments: 2,
+    maxComments: 4,
     additionalComments: 5,
-    maxReplies: 10,
-    showBadgeProfile: true,
+    maxReplies: 5,
     ...commentOptions,
   };
 
@@ -456,14 +483,16 @@ const CommentProvider = ({
       ? t('comment.several', { number: commentsCount })
       : t('comment.little', { number: commentsCount });
 
+  const sortedComments = comments?.sort((a, b) => b.createdAt - a.createdAt);
+
   const displayedComments = useMemo(
-    () => comments?.slice(0, commentLimit) ?? [],
-    [comments, commentLimit]
+    () => sortedComments?.slice(0, commentLimit) ?? [],
+    [sortedComments, commentLimit]
   );
 
   const handleMoreComments = () => {
     const newLimit =
-      displayedComments?.length + (options.additionalComments || 5);
+      displayedComments?.length + (options.additionalComments ?? 5);
 
     if (newLimit === displayedComments.length) return;
 

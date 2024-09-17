@@ -1,4 +1,4 @@
-import { Created } from './date';
+import { Created, Modified } from './date';
 
 export interface CommentDto {
   _id: string;
@@ -6,6 +6,7 @@ export interface CommentDto {
   author: string;
   authorName: string;
   created: Created;
+  modified: Modified;
 }
 
 export interface Comment {
@@ -14,4 +15,5 @@ export interface Comment {
   authorId: string;
   authorName: string;
   createdAt: number;
+  updatedAt?: number;
 }
