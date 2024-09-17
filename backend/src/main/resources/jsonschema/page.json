@@ -8,7 +8,8 @@
     "parentId": { "type":  ["string", "null"] },
     "isIndex": { "type": "boolean"},
     "wasIndex": { "type": "boolean" },
-    "isVisible": { "type": "boolean" }
+    "isVisible": { "type": "boolean" },
+    "position": { "type": "number" }
   },
   "required": [
     "title"
