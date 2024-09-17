@@ -1,12 +1,14 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { LoadingScreen } from '@edifice-ui/react';
+import { LoadingScreen, useOdeClient, useToast } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { lazy, Suspense, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
-  redirect,
+  useActionData,
+  useNavigate,
   useParams,
 } from 'react-router-dom';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
@@ -47,24 +49,47 @@ export const loader =
 export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
-    await wikiService.deletePage({
-      wikiId: params.wikiId!,
-      pageId: params.pageId!,
-    });
+    try {
+      await wikiService.deletePage({
+        wikiId: params.wikiId!,
+        pageId: params.pageId!,
+      });
 
-    /**
-     * We invalidate wiki and pages queries
-     */
-    await queryClient.invalidateQueries();
+      /**
+       * We invalidate wiki and pages queries
+       */
+      await queryClient.invalidateQueries();
 
-    return redirect(`/id/${params.wikiId}`);
+      return { success: true };
+    } catch (error) {
+      return { error };
+    }
   };
 
 export const Page = () => {
   const params = useParams();
+  const toast = useToast();
+  const { appCode } = useOdeClient();
+  const { t } = useTranslation(appCode);
+  const navigate = useNavigate();
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
+
+  const actionData = useActionData() as {
+    error: string;
+    success: boolean;
+  };
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(t('wiki.toast.error.update.page'));
+    } else if (actionData?.success) {
+      toast.success(t('wiki.toast.success.update.page'));
+      navigate(`/id/${params.wikiId}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionData]);
 
   const { setSelectedNodeId } = useTreeActions();
 

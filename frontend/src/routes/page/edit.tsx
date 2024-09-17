@@ -1,7 +1,13 @@
-import { LoadingScreen } from '@edifice-ui/react';
+import { LoadingScreen, useOdeClient, useToast } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { lazy, Suspense } from 'react';
-import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ActionFunctionArgs,
+  useActionData,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
 import {
   pageQueryOptions,
@@ -9,6 +15,7 @@ import {
   wikiQueryOptions,
   wikiService,
 } from '~/services';
+import { Page } from '~/models';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
 
 const ConfirmVisibilityModal = lazy(
@@ -46,20 +53,24 @@ export const editAction =
       return { title, content, isVisible };
     } else {
       // otherwise we call the updatePage service and redirect to current page.
-      await wikiService.updatePage({
-        wikiId: params.wikiId!,
-        pageId: params.pageId!,
-        data: {
-          title,
-          content,
-          isVisible,
-        },
-      });
+      try {
+        const data = await wikiService.updatePage({
+          wikiId: params.wikiId!,
+          pageId: params.pageId!,
+          data: {
+            title,
+            content,
+            isVisible,
+          },
+        });
 
       await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
       await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
 
-      return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
+        return { success: true, data };
+      } catch (error) {
+        return { error };
+      }
     }
   };
 
@@ -78,23 +89,37 @@ export const confirmVisibilityAction =
       formData.get('actionData') as string
     );
 
-    await wikiService.updatePage({
-      wikiId: params.wikiId!,
-      pageId: params.pageId!,
-      data: {
-        title,
-        content,
-        isVisible,
-      },
-    });
+    try {
+      const data = await wikiService.updatePage({
+        wikiId: params.wikiId!,
+        pageId: params.pageId!,
+        data: {
+          title,
+          content,
+          isVisible,
+        },
+      });
 
-    await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+      await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
 
-    return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
+      return { success: true, data };
+    } catch (error) {
+      return { error };
+    }
   };
 
 export const EditPage = () => {
+  const toast = useToast();
+  const { appCode } = useOdeClient();
+  const { t } = useTranslation(appCode);
+  const navigate = useNavigate();
   const params = useParams();
+
+  const actionData = useActionData() as {
+    error: string;
+    success: boolean;
+    data: Page;
+  };
 
   const { data, isPending } = useGetPage({
     wikiId: params.wikiId!,
@@ -102,6 +127,16 @@ export const EditPage = () => {
   });
 
   const openConfirmVisibilityModal = getOpenConfirmVisibilityModal();
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(t('wiki.toast.error.update.page'));
+    } else if (actionData?.success) {
+      toast.success(t('wiki.toast.success.update.page'));
+      navigate(`/id/${params.wikiId}/page/${actionData.data._id!}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionData]);
 
   if (isPending) return <LoadingScreen />;
 

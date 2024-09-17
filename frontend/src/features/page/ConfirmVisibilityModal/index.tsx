@@ -12,6 +12,8 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
     isVisible: boolean;
   };
 
+  console.log(actionData);
+
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
   const { setOpenConfirmVisibilityModal } = useWikiActions();
