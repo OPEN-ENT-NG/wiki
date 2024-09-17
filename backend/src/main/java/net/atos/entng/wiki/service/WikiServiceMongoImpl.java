@@ -35,6 +35,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -494,6 +495,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 								.set("pages.$.lastContributer", user.getUserId())
 								.set("pages.$.lastContributerName", user.getUsername())
 								.set("pages.$.modified", now)
+								.set("pages.$.position", page.getInteger("position", 0))
 								.set("modified", now);
 
 						// Set parentId
@@ -572,7 +574,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				&& page.getString("title").equals(dbPage.getString("title"))
 				|| !StringUtils.isEmpty(page.getString("content"))
 				&& page.getString("content").equals(dbPage.getString("content"))
-				|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0;
+				|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0
+				|| NumberUtils.compare(page.getInteger("position", 0), dbPage.getInteger("position", 0)) != 0;
 	}
 
 	/**
