@@ -21,6 +21,7 @@ import { Page } from '~/models';
 export const FormPage = ({ page }: { page?: Page }) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
+
   const {
     handleOnContentChange,
     handleOnToggleChange,

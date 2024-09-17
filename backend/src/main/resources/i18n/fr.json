@@ -199,5 +199,9 @@
   "wiki.page.dropdown.visibility": "Rendre non visible la page",
   "wiki.version.modal.title": "Historique des versions",
   "wiki.version.modal.tips": "Astuce :",
-  "wiki.version.modal.alert": "sélectionner 2 versions pour activer la comparaison de versions."
+  "wiki.version.modal.alert": "sélectionner 2 versions pour activer la comparaison de versions.",
+  "wiki.toast.success.save.page": "Votre page a bien été enregistrée",
+  "wiki.toast.error.save.page": "Votre page n'a pas pu être enregistrée",
+  "wiki.toast.success.update.page": "Votre page a bien été modifiée",
+  "wiki.toast.error.update.page": "Votre page n'a pas pu être modifiée"
 }
