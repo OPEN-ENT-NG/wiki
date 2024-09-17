@@ -1,5 +1,6 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
 import { LoadingScreen } from '@edifice-ui/react';
+import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { lazy, Suspense, useEffect, useRef } from 'react';
@@ -9,8 +10,16 @@ import {
   redirect,
   useParams,
 } from 'react-router-dom';
+import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
-import { pageQueryOptions, useGetPage, wikiService } from '~/services';
+import {
+  pageQueryOptions,
+  useCreateComment,
+  useDeleteComment,
+  useGetPage,
+  useUpdateComment,
+  wikiService,
+} from '~/services';
 import {
   useOpenDeleteModal,
   useOpenRevisionModal,
@@ -80,6 +89,41 @@ export const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  const createComment = useCreateComment();
+  const deleteComment = useDeleteComment();
+  const updateComment = useUpdateComment();
+
+  const handleOnPostComment = async (comment: string) => {
+    createComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      comment,
+    });
+  };
+
+  const handleOnPutcomment = async ({
+    comment,
+    commentId,
+  }: {
+    comment: string;
+    commentId: string;
+  }) => {
+    updateComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      commentId,
+      comment,
+    });
+  };
+
+  const handleOnDeleteComment = async (commentId: string) => {
+    deleteComment.mutate({
+      wikiId: params.wikiId!,
+      pageId: params.pageId!,
+      commentId,
+    });
+  };
+
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
@@ -94,6 +138,20 @@ export const Page = () => {
         variant="ghost"
         visibility="protected"
       ></Editor>
+
+      <CommentProvider
+        comments={data.comments}
+        options={{
+          maxCommentLength: MAX_COMMENT_LENGTH,
+          maxComments: MAX_COMMENTS,
+        }}
+        callbacks={{
+          post: (comment) => handleOnPostComment(comment),
+          put: ({ comment, commentId }) =>
+            handleOnPutcomment({ comment, commentId }),
+          delete: (commentId) => handleOnDeleteComment(commentId),
+        }}
+      />
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeleteModal />}

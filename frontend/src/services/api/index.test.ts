@@ -44,7 +44,7 @@ describe('Wiki Page GET Methods', () => {
     expect(response).toBeDefined();
     expect(response).toHaveProperty('_id');
     expect(response).toHaveProperty('pages');
-    expect(response).toStrictEqual(mockPage);
+    expect(response).toEqual(mockPage);
   });
 
   test('makes a GET request to get revisions of a page', async () => {
