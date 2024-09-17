@@ -1,5 +1,6 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
 import { LoadingScreen } from '@edifice-ui/react';
+import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { lazy, Suspense, useEffect, useRef } from 'react';
@@ -10,7 +11,6 @@ import {
   useParams,
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
-import Comments from '~/features/comments/Comments';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import {
   pageQueryOptions,
@@ -139,7 +139,7 @@ export const Page = () => {
         visibility="protected"
       ></Editor>
 
-      <Comments
+      <CommentProvider
         comments={data.comments}
         options={{
           maxCommentLength: MAX_COMMENT_LENGTH,
