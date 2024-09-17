@@ -12,6 +12,7 @@ export interface PagePutPayload {
   isIndex?: boolean;
   wasIndex?: boolean;
   isVisible?: boolean;
+  parentId?: string;
 }
 
 export interface CommentPostPayload {
