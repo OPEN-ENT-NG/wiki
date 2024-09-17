@@ -32,6 +32,17 @@ export interface TreeProps extends SharedTreeProps {
   onTreeItemAction?: (nodeId: string) => void;
 }
 
+export interface DndTreeProps extends TreeProps {
+  /**
+   * Pass draggeNode when you drag an element from another context (resource / folder)
+   */
+  draggedNode?: {
+    isOver: boolean;
+    overId: string | undefined;
+    isTreeview: boolean;
+  };
+}
+
 export interface SortableTreeProps extends TreeProps {
   /**
    *
@@ -87,8 +98,12 @@ export interface TreeNodeProps
    */
   node: TreeItem;
   /**
-   * Use to disable sorting, check SortableTreeProps
+   * Is dragging element
    */
+  focused?: boolean
+  /**
+   * Use to disable sorting, check SortableTreeProps
+   */;
   disabled?: boolean;
   /**
    * Nodes expanded (opened)
@@ -98,6 +113,20 @@ export interface TreeNodeProps
    * Function to fold / unfold node
    */
   onToggleNode?: (nodeId: string) => void;
+}
+
+export interface DndTreeNodeProps extends TreeNodeProps {
+  /**
+   * Id of draggable node
+   */
+  draggedNodeId?: string | undefined;
+}
+
+export interface SortableTreeNodeProps extends TreeNodeProps {
+  /**
+   * Use to disable sorting, check SortableTreeProps
+   */
+  disabled?: boolean;
 }
 
 export interface FlattenedItem extends TreeItem {

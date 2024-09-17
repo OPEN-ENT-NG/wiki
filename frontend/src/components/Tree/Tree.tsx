@@ -1,5 +1,3 @@
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Folder, RafterRight } from '@edifice-ui/icons';
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
@@ -54,10 +52,11 @@ export const TreeNode = forwardRef(
       selectedNodeId,
       showIcon = false,
       expandedNodes,
-      disabled,
+      focused,
+      renderNode,
       onTreeItemClick,
       onToggleNode,
-      renderNode,
+      ...restProps
     }: TreeNodeProps,
     ref: Ref<HTMLLIElement>
   ) => {
@@ -66,14 +65,19 @@ export const TreeNode = forwardRef(
     const selected = selectedNodeId === node.id;
     const expanded = expandedNodes.has(node.id);
 
-    const { listeners, setNodeRef, transform, transition } = useSortable({
-      id: node.id,
-      disabled,
-    });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
+    const treeItemClasses = {
+      action: clsx('action-container d-flex align-items-center gap-8 px-2', {
+        'drag-focus': focused,
+        'py-4': !node.section,
+      }),
+      arrow: clsx({
+        'py-4': !node.section,
+        'py-8': node.section,
+        invisible: !Array.isArray(node.children) || node.children.length === 0,
+      }),
+      button: clsx('flex-fill d-flex align-items-center text-truncate gap-8', {
+        'py-8': node.section,
+      }),
     };
 
     const handleItemKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -98,30 +102,19 @@ export const TreeNode = forwardRef(
 
     return (
       <li
-        ref={setNodeRef}
+        {...restProps}
+        ref={ref}
         key={node.id}
         id={`treeitem-${node.id}`}
         role="treeitem"
         aria-selected={selected}
         aria-expanded={expanded}
-        style={style}
       >
         <div>
-          <div
-            className={clsx(
-              'action-container d-flex align-items-center gap-8 px-2',
-              {
-                'py-4': !node.section,
-              }
-            )}
-            {...listeners}
-          >
+          <div className={treeItemClasses.action}>
             {node.children && node.children.length > 0 ? (
               <div
-                className={clsx('py-8', {
-                  invisible:
-                    !Array.isArray(node.children) || node.children.length === 0,
-                })}
+                className={treeItemClasses.arrow}
                 tabIndex={0}
                 role="button"
                 onClick={() => onToggleNode?.(node.id)}
@@ -146,12 +139,7 @@ export const TreeNode = forwardRef(
             <div
               tabIndex={0}
               role="button"
-              className={clsx(
-                'flex-fill d-flex align-items-center text-truncate gap-8',
-                {
-                  'py-8': node.section,
-                }
-              )}
+              className={treeItemClasses.button}
               onClick={() => onTreeItemClick(node.id)}
               onKeyDown={handleItemKeyDown}
             >
@@ -159,7 +147,8 @@ export const TreeNode = forwardRef(
                 renderNode({
                   nodeId: node.id,
                   nodeName: node.name,
-                  hasChildren: node.children,
+                  hasChildren:
+                    Array.isArray(node.children) && !!node.children.length,
                 })
               ) : (
                 <div className="text-truncate">{node.name}</div>
@@ -171,6 +160,8 @@ export const TreeNode = forwardRef(
             <ul role="group">
               {node.children?.map((node) => (
                 <TreeNode
+                  {...restProps}
+                  ref={ref}
                   node={node}
                   key={node.id}
                   showIcon={showIcon}

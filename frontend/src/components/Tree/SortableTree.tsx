@@ -16,12 +16,20 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
+  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Folder, RafterRight } from '@edifice-ui/icons';
 import clsx from 'clsx';
 import { forwardRef, Ref, useEffect, useState } from 'react';
-import { TreeNode } from './Tree';
-import { FlattenedItem, SortableTreeProps, TreeItem } from './types';
+import { useTranslation } from 'react-i18next';
+import {
+  FlattenedItem,
+  SortableTreeProps,
+  TreeItem,
+  TreeNodeProps,
+} from './types';
 import { useTreeView } from './useTreeView';
 
 export const SortableTree = ({
@@ -117,13 +125,13 @@ export const SortableTree = ({
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
 
-    setActiveId(active.id);
+    setActiveId(active.id as unknown as string);
   }
 
   function handleDragOver(event: DragEndEvent) {
     const { over } = event;
 
-    setOverId(over?.id);
+    setOverId(over?.id as unknown as string);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -161,9 +169,9 @@ export const SortableTree = ({
     <div className="treeview">
       <ul role="tree" className="m-0 p-0">
         <DndContext
+          modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
           sensors={sensors}
           collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
@@ -192,6 +200,196 @@ export const SortableTree = ({
     </div>
   );
 };
+
+const TreeNode = forwardRef(
+  (
+    {
+      node,
+      selectedNodeId,
+      showIcon = false,
+      expandedNodes,
+      focused,
+      disabled,
+      renderNode,
+      onTreeItemClick,
+      onToggleNode,
+      ...restProps
+    }: TreeNodeProps,
+    ref: Ref<HTMLLIElement>
+  ) => {
+    const { t } = useTranslation();
+
+    const selected = selectedNodeId === node.id;
+    const expanded = expandedNodes.has(node.id);
+
+    const { listeners, setNodeRef, transform, transition } = useSortable({
+      id: node.id,
+      disabled,
+    });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    const treeItemClasses = {
+      action: clsx('action-container d-flex align-items-center gap-8 px-2', {
+        'drag-focus': focused,
+        'py-4': !node.section,
+      }),
+      arrow: clsx({
+        'py-4': !node.section,
+        'py-8': node.section,
+        invisible: !Array.isArray(node.children) || node.children.length === 0,
+      }),
+      button: clsx('flex-fill d-flex align-items-center text-truncate gap-8', {
+        'py-8': node.section,
+      }),
+    };
+
+    const handleItemKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.code === 'Enter' || event.code === 'Space') {
+        event.preventDefault();
+        event.stopPropagation();
+
+        onTreeItemClick?.(node.id);
+      }
+    };
+
+    const handleItemToggleKeyDown = (
+      event: React.KeyboardEvent<HTMLDivElement>
+    ) => {
+      if (event.code === 'Enter' || event.code === 'Space') {
+        event.preventDefault();
+        event.stopPropagation();
+
+        onToggleNode?.(node.id);
+      }
+    };
+
+    return (
+      <li
+        ref={setNodeRef}
+        key={node.id}
+        id={`treeitem-${node.id}`}
+        role="treeitem"
+        aria-selected={selected}
+        aria-expanded={expanded}
+        style={style}
+        {...listeners}
+      >
+        <div>
+          <div className={treeItemClasses.action}>
+            {node.children && node.children.length > 0 ? (
+              <div
+                className={treeItemClasses.arrow}
+                tabIndex={0}
+                role="button"
+                onClick={() => onToggleNode?.(node.id)}
+                onKeyDown={handleItemToggleKeyDown}
+                aria-label={t('foldUnfold')}
+              >
+                <RafterRight
+                  width={16}
+                  style={{
+                    transform: expanded ? 'rotate(90deg)' : '',
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="py-8 invisible"></div>
+            )}
+
+            {node.children && showIcon ? (
+              <Folder title="folder" width={20} height={20} />
+            ) : null}
+
+            <div
+              tabIndex={0}
+              role="button"
+              className={treeItemClasses.button}
+              onClick={() => onTreeItemClick(node.id)}
+              onKeyDown={handleItemKeyDown}
+            >
+              {renderNode ? (
+                renderNode({
+                  nodeId: node.id,
+                  nodeName: node.name,
+                  hasChildren:
+                    Array.isArray(node.children) && !!node.children.length,
+                })
+              ) : (
+                <div className="text-truncate">{node.name}</div>
+              )}
+            </div>
+          </div>
+
+          {expanded && node.children && !!node.children.length && (
+            <ul role="group">
+              {node.children?.map((node) => (
+                <TreeNode
+                  ref={ref}
+                  node={node}
+                  key={node.id}
+                  showIcon={showIcon}
+                  selectedNodeId={selectedNodeId}
+                  expandedNodes={expandedNodes}
+                  onTreeItemClick={onTreeItemClick}
+                  onToggleNode={onToggleNode}
+                  renderNode={renderNode}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      </li>
+    );
+  }
+);
+
+/* export const SortableTreeNode = forwardRef(
+  (
+    {
+      node,
+      selectedNodeId,
+      showIcon = false,
+      expandedNodes,
+      disabled,
+      renderNode,
+      onTreeItemClick,
+      onToggleNode,
+      ...restProps
+    }: SortableTreeNodeProps,
+    ref: Ref<HTMLLIElement>
+  ) => {
+    const { listeners, setNodeRef, transform, transition } = useSortable({
+      id: node.id,
+      disabled,
+    });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+      <TreeNode
+        ref={setNodeRef}
+        node={node}
+        key={node.id}
+        showIcon={showIcon}
+        selectedNodeId={selectedNodeId}
+        expandedNodes={expandedNodes}
+        onTreeItemClick={onTreeItemClick}
+        onToggleNode={onToggleNode}
+        renderNode={renderNode}
+        style={style}
+        {...listeners}
+        {...restProps}
+      />
+    );
+  }
+); */
 
 export const Item = forwardRef(
   ({ name, ...props }: { name: string }, ref: Ref<HTMLLIElement>) => {

@@ -67,7 +67,7 @@ export function findNodeById(
 export const useTreeView = ({
   data,
   externalSelectedNodeId,
-  //   draggedNode,
+  draggedNode,
   shouldExpandAllNodes,
   onTreeItemUnfold,
   onTreeItemFold,
@@ -75,11 +75,11 @@ export const useTreeView = ({
 }: {
   data: TreeItem | TreeItem[];
   externalSelectedNodeId?: string | null;
-  /* draggedNode?: {
+  draggedNode?: {
     isOver: boolean;
     overId: string | undefined;
     isTreeview: boolean;
-  }; */
+  };
   shouldExpandAllNodes?: boolean;
   /**
    * Callback function to provide unfolded item to parent component
@@ -99,9 +99,9 @@ export const useTreeView = ({
   >(undefined);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const siblingsNodes = useRef<Set<string>>(new Set());
-  /* const [draggedNodeId, setDraggedNodeId] = useState<string | undefined>(
+  const [draggedNodeId, setDraggedNodeId] = useState<string | undefined>(
     undefined
-  ); */
+  );
 
   const selectedNodeId = internalSelectedNodeId ?? externalSelectedNodeId;
 
@@ -169,15 +169,15 @@ export const useTreeView = ({
   //     // eslint-disable-next-line react-hooks/exhaustive-deps
   //   }, [data]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (draggedNode?.isOver && draggedNode.isTreeview) {
-      draggedNode.overId ? handleItemDrag(draggedNode.overId) : undefined;
+      draggedNode.overId && handleItemDrag(draggedNode.overId);
       setDraggedNodeId(draggedNode.overId);
     } else {
       setDraggedNodeId(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draggedNode]); */
+  }, [draggedNode]);
 
   useEffect(() => {
     if (shouldExpandAllNodes) {
@@ -298,17 +298,17 @@ export const useTreeView = ({
    * @param nodeId
    * @returns
    */
-  /* const handleItemDrag = (nodeId: string) => {
+  const handleItemDrag = (nodeId: string) => {
     const isNodeExist = findNodeById(data, externalSelectedNodeId as string);
     if (!isNodeExist) return;
     handleExpandNode(nodeId);
-  }; */
+  };
 
   return {
     selectedNodeId,
     expandedNodes,
     siblingsNodes,
-    // draggedNodeId,
+    draggedNodeId,
     handleItemClick,
     handleFoldUnfold,
   };
