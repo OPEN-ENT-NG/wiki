@@ -173,9 +173,6 @@ export const Index = () => {
                   });
                 }}
                 onTreeItemClick={handleOnTreeItemClick}
-                /* onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                } */
               />
             )}
           </Grid.Col>
