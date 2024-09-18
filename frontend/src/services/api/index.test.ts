@@ -22,9 +22,6 @@ describe('Wiki GET Methods', () => {
   test('makes a GET request to get pages from a wiki', async () => {
     const response = await wikiService.getWikiPages(mockWiki._id, false);
 
-    console.log(response);
-    console.log(mockWikiPages.pages);
-
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockWikiPages.pages);
   });
