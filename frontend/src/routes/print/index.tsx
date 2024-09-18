@@ -1,11 +1,17 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
+import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { useEffect, useRef } from 'react';
-import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
+import {
+  LoaderFunctionArgs,
+  useLoaderData,
+  useSearchParams,
+} from 'react-router-dom';
+import { MAX_COMMENT_LENGTH } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
-import { Page, Wiki } from '~/models';
-import { wikiQueryOptions } from '~/services';
+import { Page } from '~/models';
+import { pageQueryOptions } from '~/services';
 
 export const printLoader =
   (queryClient: QueryClient) =>
@@ -15,11 +21,17 @@ export const printLoader =
     const fetchData = async () => {
       if (printPageId) {
         return await queryClient.fetchQuery(
-          wikiQueryOptions.findOnePage(params.wikiId!, printPageId)
+          pageQueryOptions.findOne({
+            wikiId: params.wikiId!,
+            pageId: printPageId,
+          })
         );
       }
       return await queryClient.fetchQuery(
-        wikiQueryOptions.findAllPages(params.wikiId!, true)
+        pageQueryOptions.findAllFromWiki({
+          wikiId: params.wikiId!,
+          content: true,
+        })
       );
     };
 
@@ -38,7 +50,11 @@ export const printLoader =
 export const Component = () => {
   const editorRef = useRef<EditorRef>(null);
 
-  const data = useLoaderData() as Wiki | Page;
+  const data = useLoaderData() as Page[] | Page;
+
+  const [searchParams] = useSearchParams();
+
+  const isPrintComment = searchParams.get('printComment') === 'true';
 
   useEffect(() => {
     // Use setTimeout to update the message after 2000 milliseconds (2 seconds)
@@ -47,6 +63,8 @@ export const Component = () => {
     // Cleanup function to clear the timeout if the component unmounts
     return () => clearTimeout(timeoutId);
   }, []);
+
+  console.log(data);
 
   const printPage = (page: Page) => {
     return (
@@ -60,14 +78,23 @@ export const Component = () => {
             variant="ghost"
             visibility="protected"
           ></Editor>
+          {isPrintComment && (
+            <CommentProvider
+              type="read"
+              comments={page.comments}
+              options={{
+                maxCommentLength: MAX_COMMENT_LENGTH,
+              }}
+            />
+          )}
         </div>
       </div>
     );
   };
 
   return data
-    ? (data as Wiki).pages
-      ? (data as Wiki).pages.map((page) => printPage(page))
+    ? Array.isArray(data as Page[])
+      ? (data as Page[]).map((page) => printPage(page))
       : printPage(data as Page)
     : null;
 };

@@ -20,10 +20,13 @@ describe('Wiki GET Methods', () => {
   });
 
   test('makes a GET request to get pages from a wiki', async () => {
-    const response = await wikiService.getWikiPages(mockWiki._id);
+    const response = await wikiService.getWikiPages(mockWiki._id, false);
+
+    console.log(response);
+    console.log(mockWikiPages.pages);
 
     expect(response).toBeDefined();
-    expect(response).toStrictEqual(mockWikiPages);
+    expect(response).toStrictEqual(mockWikiPages.pages);
   });
 
   test('makes a GET request to get one wiki with pages', async () => {
