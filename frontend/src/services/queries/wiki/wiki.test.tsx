@@ -1,24 +1,9 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useGetWiki, useGetWikis } from './wiki';
 
-import { PropsWithChildren } from 'react';
 import { mockWiki, mockWikis } from '~/mocks';
 import '~/mocks/setup.msw';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-const wrapper = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+import { wrapper } from '~/mocks/setup.vitest';
 
 describe('Wiki GET Queries', () => {
   test('use useGetWikis hook to get wikis', async () => {

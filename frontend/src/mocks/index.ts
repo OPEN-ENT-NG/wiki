@@ -140,13 +140,13 @@ export const mockRevision: Revision[] = [
     _id: '235ab109',
     wikiId: '6ef1343b',
     pageId: '6684fd',
-    userId: '2875315d',
-    username: 'Author',
-    title: 'title',
+    userId: '2875315d-rev',
+    username: 'Author Rev',
+    title: 'title rev',
     isVisible: true,
-    content: '',
+    content: 'content rev',
     date: {
-      $date: 1720431608339,
+      $date: 1720431608340,
     },
   },
   {

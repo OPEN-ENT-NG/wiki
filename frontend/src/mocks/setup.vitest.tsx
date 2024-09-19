@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import '../i18n';
-import { Providers } from '../providers';
+import { Providers, queryClient } from '../providers';
 import './setup.msw';
 
 const customRender = (
@@ -40,6 +40,6 @@ export const renderWithRouter = (
     ...customRender(<RouterProvider router={router} />),
   };
 };
-
+export const wrapper = Providers;
 export * from '@testing-library/react';
-export { customRender as render };
+export { customRender as render, queryClient };

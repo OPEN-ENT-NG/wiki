@@ -197,6 +197,9 @@
   "wiki.page.dropdown.delete": "Supprimer la page",
   "wiki.page.dropdown.move": "Déplacer la page",
   "wiki.page.dropdown.visibility": "Rendre non visible la page",
+  "wiki.version.notfound": "La version n'existe pas",
+  "wiki.version.passed": "Version passée",
+  "wiki.version.latest": "Version actuelle",
   "wiki.version.modal.title": "Historique des versions",
   "wiki.version.modal.tips": "Astuce :",
   "wiki.version.modal.alert": "sélectionner 2 versions pour activer la comparaison de versions."

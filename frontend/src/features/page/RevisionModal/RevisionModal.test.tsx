@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import { useCheckableTable } from '~/hooks/useCheckableTable';
 import { mockRevision } from '~/mocks';
-import { render, screen } from '~/mocks/setup.vitest';
+import { renderWithRouter, screen } from '~/mocks/setup.vitest';
 import RevisionModal from './RevisionModal';
 
 const mocks = vi.hoisted(() => ({
@@ -59,7 +59,12 @@ describe('RevisionModal', () => {
   });
 
   it('should render component', async () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
     expect(screen.getByText('wiki.version.compare')).toBeInTheDocument();
@@ -72,13 +77,23 @@ describe('RevisionModal', () => {
       isLoading: true,
     });
 
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     expect(screen.getByAltText('loading')).toBeInTheDocument();
   });
 
   it('should have title', () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
     expect(screen.getByRole('heading')).toBeInTheDocument();
@@ -86,7 +101,12 @@ describe('RevisionModal', () => {
   });
 
   it('should close RevisionModal when user clicks on cancel button', async () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const closeBtn = screen.getByTestId('cancel-button');
@@ -98,7 +118,12 @@ describe('RevisionModal', () => {
   });
 
   it('should close RevisionModal when user clicks close btn', async () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const closeBtn = screen.getByTitle('close');
@@ -110,7 +135,12 @@ describe('RevisionModal', () => {
   });
 
   it('should enable the compare button when there are 2 selected items', async () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const compareButton = screen.getByTestId('compare-button');
 
@@ -124,7 +154,12 @@ describe('RevisionModal', () => {
       selectedItems: [mockRevision[1]._id],
     });
 
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const compareButton = screen.getByTestId('compare-button');
 
@@ -133,7 +168,12 @@ describe('RevisionModal', () => {
   });
 
   it('should disable the Restore button when multiple items are selected or conditions are not met', () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const restoreButton = screen.getByTestId('restore-button');
     expect(restoreButton).toBeDisabled();
@@ -145,7 +185,12 @@ describe('RevisionModal', () => {
       selectedItems: [mockRevision[1]._id],
     });
 
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId(`checkbox-${mockRevision[1]._id}`);
@@ -164,7 +209,12 @@ describe('RevisionModal', () => {
       selectedItems: [mockRevision[2]._id],
     });
 
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId(`checkbox-${mockRevision[2]._id}`);
@@ -178,7 +228,12 @@ describe('RevisionModal', () => {
   });
 
   it('should have no checkbox checked', () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const checkbox = screen.getByTestId('th-checkbox');
     expect(checkbox).not.toBeChecked();
@@ -190,7 +245,12 @@ describe('RevisionModal', () => {
       allItemsSelected: true,
     });
 
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId('th-checkbox');
@@ -202,7 +262,12 @@ describe('RevisionModal', () => {
   });
 
   it('should have one checkbox checked if user clicks a checkbox', async () => {
-    render(<RevisionModal />);
+    renderWithRouter(
+      '/',
+      `/`,
+
+      <RevisionModal />
+    );
 
     const user = userEvent.setup();
     const checkbox = screen.getAllByRole('checkbox')[2];

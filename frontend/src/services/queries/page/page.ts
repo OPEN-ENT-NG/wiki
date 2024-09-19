@@ -24,10 +24,44 @@ export const pageQueryOptions = {
       queryFn: () => wikiService.getWikiPages(wikiId),
       staleTime: 5000,
     }),
-  revisions: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
+  findAllRevisionsForPage: ({
+    wikiId,
+    pageId,
+  }: {
+    wikiId: string;
+    pageId: string;
+  }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.base, 'revision', { id: pageId }] as const,
       queryFn: () => wikiService.getRevisionsPage({ wikiId, pageId }),
+      staleTime: 5000,
+    }),
+  findOneRevision: ({
+    wikiId,
+    pageId,
+    revisionId,
+  }: {
+    wikiId: string;
+    pageId: string;
+    revisionId?: string;
+  }) =>
+    queryOptions({
+      enabled: !!revisionId,
+      queryKey: [
+        ...pageQueryOptions.base,
+        'revision',
+        { id: pageId },
+        { id: revisionId },
+      ] as const,
+      queryFn: async () => {
+        const r = await wikiService.getRevisionPage({
+          wikiId,
+          pageId,
+          revisionId: revisionId!,
+        });
+        console.log('R', r);
+        return r;
+      },
       staleTime: 5000,
     }),
 };
@@ -57,7 +91,21 @@ export const useGetRevisionsPage = ({
   wikiId: string;
   pageId: string;
 }) => {
-  return useQuery(pageQueryOptions.revisions({ wikiId, pageId }));
+  return useQuery(pageQueryOptions.findAllRevisionsForPage({ wikiId, pageId }));
+};
+
+export const useGetRevisionPage = ({
+  wikiId,
+  pageId,
+  revisionId,
+}: {
+  wikiId: string;
+  pageId: string;
+  revisionId?: string;
+}) => {
+  return useQuery(
+    pageQueryOptions.findOneRevision({ wikiId, pageId, revisionId })
+  );
 };
 
 export const useCreatePage = () => {
