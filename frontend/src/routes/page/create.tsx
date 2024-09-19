@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { ActionFunctionArgs, redirect } from 'react-router-dom';
+import { ActionFunctionArgs, redirect, useLocation } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
 import { wikiQueryOptions, wikiService } from '~/services';
 
@@ -28,5 +28,7 @@ export const action =
   };
 
 export const CreatePage = () => {
-  return <FormPage />;
+  const location = useLocation();
+
+  return <FormPage key={location.pathname} />;
 };
