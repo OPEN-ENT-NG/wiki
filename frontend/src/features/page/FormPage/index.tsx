@@ -116,7 +116,6 @@ export const FormPage = ({ page }: { page?: Page }) => {
             isOpen={isBlocked}
             onClose={handleClosePage}
             onCancel={() => blocker.proceed?.()}
-            onReset={handleOnReset}
             isNewPage={!page}
           />
         ) : null}

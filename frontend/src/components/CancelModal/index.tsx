@@ -1,23 +1,19 @@
 import { Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from 'react-router-dom';
 
 export const CancelModal = ({
   isOpen,
   onClose,
   onCancel,
-  onReset,
   isNewPage,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onCancel: () => void;
-  onReset: () => void;
   isNewPage: boolean;
 }) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation();
-  const navigation = useNavigation();
 
   return (
     <Modal
@@ -39,17 +35,10 @@ export const CancelModal = ({
           : t('wiki.page.edit.cancel.message', { ns: appCode })}
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          type="submit"
-          color="danger"
-          variant="outline"
-          form="myForm"
-          onClick={onReset}
-          isLoading={navigation.state === 'submitting'}
-        >
+        <Button color="tertiary" variant="ghost" onClick={onClose}>
           {isNewPage
-            ? t('wiki.page.create.cancel.button.save', { ns: appCode })
-            : t('wiki.page.edit.cancel.button.save', { ns: appCode })}
+            ? t('wiki.page.create.cancel.button.back', { ns: appCode })
+            : t('wiki.page.edit.cancel.button.back', { ns: appCode })}
         </Button>
         <Button
           type="button"
@@ -58,8 +47,8 @@ export const CancelModal = ({
           onClick={onCancel}
         >
           {isNewPage
-            ? t('wiki.page.create.cancel.button.unsaved', { ns: appCode })
-            : t('wiki.page.edit.cancel.button.unsaved', { ns: appCode })}
+            ? t('wiki.page.create.cancel.button.cancel', { ns: appCode })
+            : t('wiki.page.edit.cancel.button.cancel', { ns: appCode })}
         </Button>
       </Modal.Footer>
     </Modal>
