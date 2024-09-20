@@ -16,3 +16,19 @@
   border: 0;
   border-left: 1px solid var(--edifice-gray-600);
 }
+
+.indicator {
+  position: relative;
+  padding: 0;
+  height: 8px;
+  border-color: var(--edifice-secondary-300);
+  background-color: var(--edifice-secondary-300);
+  border-radius: 4px;
+  margin-left: var(--indicator-spacing) !important;
+
+  > * {
+    /* Items are hidden using height and opacity to retain focus */
+    opacity: 0;
+    height: 0;
+  }
+}
