@@ -27,14 +27,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Folder, RafterRight } from '@edifice-ui/icons';
 import clsx from 'clsx';
-import {
-  CSSProperties,
-  forwardRef,
-  Ref,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { CSSProperties, forwardRef, Ref, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -55,7 +48,7 @@ export const SortableTree = ({
   onTreeItemClick,
   onSortable,
 }: SortableTreeProps) => {
-  const [items, setItems] = useState<TreeItem[]>([]);
+  const [items, setItems] = useState<TreeItem[]>(() => nodes);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [currentPosition, setCurrentPosition] = useState<{
@@ -64,9 +57,9 @@ export const SortableTree = ({
   } | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (nodes) setItems(nodes);
-  }, [nodes]);
+  }, [nodes]); */
 
   const { selectedNodeId, expandedNodes, handleItemClick, handleFoldUnfold } =
     useTreeView({
@@ -276,11 +269,14 @@ export const SortableTree = ({
   }
 
   const flattenedTree: FlattenedItem[] = useMemo(
-    () => flattenTree(nodes, null),
+    () => flattenTree(items, null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [nodes]
+    [items]
   );
-  const sortedIds = flattenedTree.map(({ id }) => id);
+  const sortedIds = useMemo(
+    () => flattenedTree.map(({ id }) => id),
+    [flattenedTree]
+  );
 
   const activationConstraint = {
     delay: 250,
@@ -288,7 +284,7 @@ export const SortableTree = ({
   };
 
   const indicator = false;
-  const indentationWidth = 20;
+  const indentationWidth = 64;
 
   const projected =
     activeId && overId
@@ -312,22 +308,6 @@ export const SortableTree = ({
     })
   );
 
-  /*  function handleDragStart({active: {id: activeId}}: DragStartEvent) {
-    setActiveId(activeId);
-    setOverId(activeId);
-
-    const activeItem = flattenedItems.find(({id}) => id === activeId);
-
-    if (activeItem) {
-      setCurrentPosition({
-        parentId: activeItem.parentId,
-        overId: activeId,
-      });
-    }
-
-    document.body.style.setProperty('cursor', 'grabbing');
-  } */
-
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
 
@@ -342,11 +322,9 @@ export const SortableTree = ({
         overId: activeId as unknown as string,
       });
     }
-
-    document.body.style.setProperty('cursor', 'grabbing');
   }
 
-  function handleDragMove({ delta }: DragMoveEvent) {
+  function handleDragMove({ delta, active, over }: DragMoveEvent) {
     setOffsetLeft(delta.x);
   }
 
@@ -359,12 +337,12 @@ export const SortableTree = ({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      const overIndex = flattenedTree.findIndex(({ id }) => id === over?.id);
-      const activeIndex = flattenedTree.findIndex(({ id }) => id === active.id);
-      const overTreeItem = flattenedTree[overIndex];
-      const activeTreeItem = flattenedTree[activeIndex];
+    const overIndex = flattenedTree.findIndex(({ id }) => id === over?.id);
+    const activeIndex = flattenedTree.findIndex(({ id }) => id === active.id);
+    const overTreeItem = flattenedTree[overIndex];
+    const activeTreeItem = flattenedTree[activeIndex];
 
+    if (active.id !== over?.id) {
       if (projected && projected.depth === 1) {
         flattenedTree[activeIndex] = {
           ...activeTreeItem,
@@ -379,19 +357,26 @@ export const SortableTree = ({
               : overTreeItem.parentId,
         };
       }
-
-      const sortedItems = arrayMove(flattenedTree, activeIndex, overIndex);
-      const buildedTree = buildTree(sortedItems);
-
-      setItems(buildedTree);
-      setActiveId(null);
-      setOverId(null);
-
-      onSortable({
-        nodeId: active.id,
-        parentId: flattenedTree[activeIndex].parentId,
-      });
+    } else {
+      if (projected && projected.depth === 1) {
+        flattenedTree[activeIndex] = {
+          ...activeTreeItem,
+          parentId: projected.parentId,
+        };
+      }
     }
+
+    const sortedItems = arrayMove(flattenedTree, activeIndex, overIndex);
+    const buildedTree = buildTree(sortedItems);
+
+    setItems(buildedTree);
+    setActiveId(null);
+    setOverId(null);
+
+    onSortable({
+      nodeId: active.id,
+      parentId: flattenedTree[activeIndex].parentId,
+    });
   }
 
   const measuring = {
@@ -452,7 +437,7 @@ export const SortableTree = ({
             items={sortedIds}
             strategy={verticalListSortingStrategy}
           >
-            {Array.isArray(nodes) &&
+            {Array.isArray(items) &&
               items.map((node) => (
                 <TreeNode
                   node={node}
@@ -467,6 +452,7 @@ export const SortableTree = ({
                   depth={
                     node.id === activeId && projected ? projected.depth : 0
                   }
+                  indicator={indicator}
                   indentationWidth={indentationWidth}
                 />
               ))}
@@ -477,7 +463,7 @@ export const SortableTree = ({
               modifiers={indicator ? [adjustTranslate] : undefined}
             >
               {activeId && activeItem ? (
-                <Item
+                <DragOverlayItem
                   id={activeId}
                   depth={activeItem.depth}
                   indentationWidth={indentationWidth}
@@ -503,6 +489,7 @@ const TreeNode = forwardRef(
       disabled,
       indentationWidth,
       depth,
+      indicator,
       renderNode,
       onTreeItemClick,
       onToggleNode,
@@ -520,16 +507,13 @@ const TreeNode = forwardRef(
       wasDragging,
     }) => (isSorting || wasDragging ? false : true);
 
-    const { listeners, setNodeRef, transform, transition } = useSortable({
-      id: node.id,
-      disabled,
-      animateLayoutChanges,
-    });
+    const { listeners, setNodeRef, transform, transition, isDragging } =
+      useSortable({
+        id: node.id,
+        disabled,
+        animateLayoutChanges,
+      });
 
-    /* const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    }; */
     const style: CSSProperties = {
       transform: CSS.Translate.toString(transform),
       transition,
@@ -538,15 +522,14 @@ const TreeNode = forwardRef(
     const treeItemClasses = {
       action: clsx('action-container d-flex align-items-center gap-8 px-2', {
         'drag-focus': focused,
-        'py-4': !node.section,
+        'border border-secondary rounded rounded-2 shadow bg-white': isDragging,
       }),
       arrow: clsx({
-        'py-4': !node.section,
-        'py-8': node.section,
         invisible: !Array.isArray(node.children) || node.children.length === 0,
       }),
       button: clsx('flex-fill d-flex align-items-center text-truncate gap-8', {
-        'py-8': node.section,
+        'py-8': depth === 0,
+        'py-4': depth === 1,
       }),
     };
 
@@ -578,11 +561,10 @@ const TreeNode = forwardRef(
         role="treeitem"
         aria-selected={selected}
         aria-expanded={expanded}
-        //style={style}
         style={
           {
             ...style,
-            paddingLeft: `${indentationWidth * depth}px`,
+            paddingLeft: isDragging ? `${indentationWidth * depth}px` : null,
           } as React.CSSProperties
         }
         {...listeners}
@@ -658,7 +640,7 @@ const TreeNode = forwardRef(
   }
 );
 
-export const Item = forwardRef(
+export const DragOverlayItem = forwardRef(
   (
     {
       id,
@@ -669,7 +651,12 @@ export const Item = forwardRef(
     ref: Ref<HTMLDivElement>
   ) => {
     return (
-      <div {...props} ref={ref} style={{ background: 'blue' }}>
+      <div
+        ref={ref}
+        {...props}
+        className="opacity-0"
+        style={{ cursor: 'grabbing' }}
+      >
         <div
           className={clsx(
             'action-container d-flex align-items-center gap-8 px-2'
@@ -677,7 +664,7 @@ export const Item = forwardRef(
         >
           <div
             className={clsx(
-              'flex-fill d-flex align-items-center text-truncate gap-8'
+              'flex-fill d-flex align-items-center text-truncate gap-8 py-8'
             )}
           >
             <span className="text-truncate">{id}</span>

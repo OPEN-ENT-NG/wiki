@@ -130,7 +130,7 @@ export const Index = () => {
 
             {!isOnlyRead && <NewPage />}
 
-            {treeData && (
+            {treeData.length > 0 && (
               <SortableTree
                 nodes={treeData}
                 selectedNodeId={selectedNodeId}
