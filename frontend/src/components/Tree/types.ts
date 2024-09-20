@@ -100,10 +100,10 @@ export interface TreeNodeProps
   /**
    * Is dragging element
    */
-  focused?: boolean
+  focused?: boolean;
   /**
    * Use to disable sorting, check SortableTreeProps
-   */;
+   */
   disabled?: boolean;
   /**
    * Nodes expanded (opened)
@@ -131,6 +131,7 @@ export interface SortableTreeNodeProps extends TreeNodeProps {
 
 export interface FlattenedItem extends TreeItem {
   parentId: string | null;
+  depth: number;
 }
 
 export interface TreeViewHandlers {

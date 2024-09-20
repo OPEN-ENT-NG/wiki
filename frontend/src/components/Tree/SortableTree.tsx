@@ -1,18 +1,23 @@
 import {
+  Announcements,
   closestCenter,
+  defaultDropAnimation,
   DndContext,
   DragEndEvent,
+  DragMoveEvent,
+  DragOverlay,
   DragStartEvent,
+  DropAnimation,
   KeyboardSensor,
+  MeasuringStrategy,
+  Modifier,
   PointerSensor,
+  UniqueIdentifier,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
 import {
-  restrictToVerticalAxis,
-  restrictToWindowEdges,
-} from '@dnd-kit/modifiers';
-import {
+  AnimateLayoutChanges,
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
@@ -22,7 +27,15 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Folder, RafterRight } from '@edifice-ui/icons';
 import clsx from 'clsx';
-import { forwardRef, Ref, useEffect, useState } from 'react';
+import {
+  CSSProperties,
+  forwardRef,
+  Ref,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   FlattenedItem,
@@ -43,8 +56,13 @@ export const SortableTree = ({
   onSortable,
 }: SortableTreeProps) => {
   const [items, setItems] = useState<TreeItem[]>([]);
-  const [, setActiveId] = useState<string | null>(null);
-  const [, setOverId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<{
+    parentId: UniqueIdentifier | null;
+    overId: UniqueIdentifier;
+  } | null>(null);
+  const [offsetLeft, setOffsetLeft] = useState(0);
 
   useEffect(() => {
     if (nodes) setItems(nodes);
@@ -90,30 +108,202 @@ export const SortableTree = ({
 
   const flattenTree = (
     tree: TreeItem[],
-    parentId: string | null
+    parentId: string | null,
+    depth = 0
   ): FlattenedItem[] => {
     return tree.reduce((acc, node) => {
       acc.push({
         id: node.id,
         name: node.name,
-        parentId,
+        parentId: parentId ?? null,
+        depth: depth ?? 0,
       });
 
       if (node.children && node.children.length > 0) {
-        acc = acc.concat(flattenTree(node.children, node.id));
+        acc = acc.concat(flattenTree(node.children, node.id, depth + 1));
       }
 
       return acc;
     }, [] as FlattenedItem[]);
   };
 
-  const flattenedTree: FlattenedItem[] = flattenTree(nodes, null);
+  function getDragDepth(offset: number, indentationWidth: number) {
+    return Math.round(offset / indentationWidth);
+  }
+
+  function getMaxDepth({ previousItem }: { previousItem: FlattenedItem }) {
+    if (previousItem) {
+      return previousItem.depth + 1;
+    }
+
+    return 0;
+  }
+
+  function getMinDepth({ nextItem }: { nextItem: FlattenedItem }) {
+    if (nextItem) {
+      return nextItem.depth;
+    }
+
+    return 0;
+  }
+
+  function getMovementAnnouncement(
+    eventName: string,
+    activeId: UniqueIdentifier,
+    overId?: UniqueIdentifier
+  ) {
+    if (overId && projected) {
+      if (eventName !== 'onDragEnd') {
+        if (
+          currentPosition &&
+          projected.parentId === currentPosition.parentId &&
+          overId === currentPosition.overId
+        ) {
+          return;
+        } else {
+          setCurrentPosition({
+            parentId: projected.parentId,
+            overId,
+          });
+        }
+      }
+
+      const clonedItems: FlattenedItem[] = JSON.parse(
+        JSON.stringify(flattenTree(items, null, 0))
+      );
+      const overIndex = clonedItems.findIndex(({ id }) => id === overId);
+      const activeIndex = clonedItems.findIndex(({ id }) => id === activeId);
+      const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
+
+      const previousItem = sortedItems[overIndex - 1];
+
+      let announcement;
+      const movedVerb = eventName === 'onDragEnd' ? 'dropped' : 'moved';
+      const nestedVerb = eventName === 'onDragEnd' ? 'dropped' : 'nested';
+
+      if (!previousItem) {
+        const nextItem = sortedItems[overIndex + 1];
+        announcement = `${activeId} was ${movedVerb} before ${nextItem.id}.`;
+      } else {
+        if (projected.depth > previousItem.depth) {
+          announcement = `${activeId} was ${nestedVerb} under ${previousItem.id}.`;
+        } else {
+          let previousSibling: FlattenedItem | undefined = previousItem;
+          while (previousSibling && projected.depth < previousSibling.depth) {
+            const parentId: UniqueIdentifier | null = previousSibling.parentId;
+            previousSibling = sortedItems.find(({ id }) => id === parentId);
+          }
+
+          if (previousSibling) {
+            announcement = `${activeId} was ${movedVerb} after ${previousSibling.id}.`;
+          }
+        }
+      }
+
+      return announcement;
+    }
+
+    return;
+  }
+
+  const announcements: Announcements = {
+    onDragStart({ active }) {
+      return `Picked up ${active.id}.`;
+    },
+    onDragMove({ active, over }) {
+      return getMovementAnnouncement('onDragMove', active.id, over?.id);
+    },
+    onDragOver({ active, over }) {
+      return getMovementAnnouncement('onDragOver', active.id, over?.id);
+    },
+    onDragEnd({ active, over }) {
+      return getMovementAnnouncement('onDragEnd', active.id, over?.id);
+    },
+    onDragCancel({ active }) {
+      return `Moving was cancelled. ${active.id} was dropped in its original position.`;
+    },
+  };
+
+  function getProjection(
+    items: FlattenedItem[],
+    activeId: UniqueIdentifier,
+    overId: UniqueIdentifier,
+    dragOffset: number,
+    indentationWidth: number
+  ) {
+    const overItemIndex = items.findIndex(({ id }) => id === overId);
+    const activeItemIndex = items.findIndex(({ id }) => id === activeId);
+    const activeItem = items[activeItemIndex];
+    const newItems = arrayMove(items, activeItemIndex, overItemIndex);
+    const previousItem = newItems[overItemIndex - 1];
+    const nextItem = newItems[overItemIndex + 1];
+    const dragDepth = getDragDepth(dragOffset, indentationWidth);
+    const projectedDepth = activeItem.depth + dragDepth;
+    const maxDepth = getMaxDepth({
+      previousItem,
+    });
+    const minDepth = getMinDepth({ nextItem });
+    let depth = projectedDepth;
+
+    if (projectedDepth >= maxDepth) {
+      depth = maxDepth;
+    } else if (projectedDepth < minDepth) {
+      depth = minDepth;
+    }
+
+    return { depth, maxDepth, minDepth, parentId: getParentId() };
+
+    function getParentId() {
+      if (depth === 0 || !previousItem) {
+        return null;
+      }
+
+      if (depth === previousItem.depth) {
+        return previousItem.parentId;
+      }
+
+      if (depth > previousItem.depth) {
+        return previousItem.id;
+      }
+
+      const newParent = newItems
+        .slice(0, overItemIndex)
+        .reverse()
+        .find((item) => item.depth === depth)?.parentId;
+
+      return newParent ?? null;
+    }
+  }
+
+  const flattenedTree: FlattenedItem[] = useMemo(
+    () => flattenTree(nodes, null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nodes]
+  );
   const sortedIds = flattenedTree.map(({ id }) => id);
 
   const activationConstraint = {
     delay: 250,
     tolerance: 5,
   };
+
+  const indicator = false;
+  const indentationWidth = 20;
+
+  const projected =
+    activeId && overId
+      ? getProjection(
+          flattenedTree,
+          activeId,
+          overId,
+          offsetLeft,
+          indentationWidth
+        )
+      : null;
+
+  /* const [coordinateGetter] = useState(() =>
+    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth)
+  ); */
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint }),
@@ -122,10 +312,42 @@ export const SortableTree = ({
     })
   );
 
+  /*  function handleDragStart({active: {id: activeId}}: DragStartEvent) {
+    setActiveId(activeId);
+    setOverId(activeId);
+
+    const activeItem = flattenedItems.find(({id}) => id === activeId);
+
+    if (activeItem) {
+      setCurrentPosition({
+        parentId: activeItem.parentId,
+        overId: activeId,
+      });
+    }
+
+    document.body.style.setProperty('cursor', 'grabbing');
+  } */
+
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
 
     setActiveId(active.id as unknown as string);
+    setOverId(active.id as unknown as string);
+
+    const activeItem = flattenedTree.find(({ id }) => id === activeId);
+
+    if (activeItem) {
+      setCurrentPosition({
+        parentId: activeItem.parentId,
+        overId: activeId as unknown as string,
+      });
+    }
+
+    document.body.style.setProperty('cursor', 'grabbing');
+  }
+
+  function handleDragMove({ delta }: DragMoveEvent) {
+    setOffsetLeft(delta.x);
   }
 
   function handleDragOver(event: DragEndEvent) {
@@ -143,13 +365,20 @@ export const SortableTree = ({
       const overTreeItem = flattenedTree[overIndex];
       const activeTreeItem = flattenedTree[activeIndex];
 
-      flattenedTree[activeIndex] = {
-        ...activeTreeItem,
-        parentId:
-          overTreeItem.parentId === activeTreeItem.parentId
-            ? activeTreeItem.parentId
-            : overTreeItem.parentId,
-      };
+      if (projected && projected.depth === 1) {
+        flattenedTree[activeIndex] = {
+          ...activeTreeItem,
+          parentId: projected.parentId,
+        };
+      } else {
+        flattenedTree[activeIndex] = {
+          ...activeTreeItem,
+          parentId:
+            overTreeItem.parentId === activeTreeItem.parentId
+              ? activeTreeItem.parentId
+              : overTreeItem.parentId,
+        };
+      }
 
       const sortedItems = arrayMove(flattenedTree, activeIndex, overIndex);
       const buildedTree = buildTree(sortedItems);
@@ -165,16 +394,59 @@ export const SortableTree = ({
     }
   }
 
+  const measuring = {
+    droppable: {
+      strategy: MeasuringStrategy.Always,
+    },
+  };
+
+  const activeItem = activeId
+    ? flattenedTree.find(({ id }) => id === activeId)
+    : null;
+
+  const dropAnimationConfig: DropAnimation = {
+    keyframes({ transform }) {
+      return [
+        { opacity: 1, transform: CSS.Transform.toString(transform.initial) },
+        {
+          opacity: 0,
+          transform: CSS.Transform.toString({
+            ...transform.final,
+            x: transform.final.x + 5,
+            y: transform.final.y + 5,
+          }),
+        },
+      ];
+    },
+    easing: 'ease-out',
+    sideEffects({ active }) {
+      active.node.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: defaultDropAnimation.duration,
+        easing: defaultDropAnimation.easing,
+      });
+    },
+  };
+
+  const adjustTranslate: Modifier = ({ transform }) => {
+    return {
+      ...transform,
+      y: transform.y - 25,
+    };
+  };
+
   return (
     <div className="treeview">
       <ul role="tree" className="m-0 p-0">
         <DndContext
-          modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
+          accessibility={{ announcements }}
+          // modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
           sensors={sensors}
+          measuring={measuring}
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
+          onDragMove={handleDragMove}
         >
           <SortableContext
             items={sortedIds}
@@ -192,9 +464,28 @@ export const SortableTree = ({
                   disabled={isDisabled(node.id)}
                   onTreeItemClick={handleItemClick}
                   onToggleNode={handleFoldUnfold}
+                  depth={
+                    node.id === activeId && projected ? projected.depth : 0
+                  }
+                  indentationWidth={indentationWidth}
                 />
               ))}
           </SortableContext>
+          {createPortal(
+            <DragOverlay
+              dropAnimation={dropAnimationConfig}
+              modifiers={indicator ? [adjustTranslate] : undefined}
+            >
+              {activeId && activeItem ? (
+                <Item
+                  id={activeId}
+                  depth={activeItem.depth}
+                  indentationWidth={indentationWidth}
+                />
+              ) : null}
+            </DragOverlay>,
+            document.body
+          )}
         </DndContext>
       </ul>
     </div>
@@ -210,6 +501,8 @@ const TreeNode = forwardRef(
       expandedNodes,
       focused,
       disabled,
+      indentationWidth,
+      depth,
       renderNode,
       onTreeItemClick,
       onToggleNode,
@@ -222,13 +515,23 @@ const TreeNode = forwardRef(
     const selected = selectedNodeId === node.id;
     const expanded = expandedNodes.has(node.id);
 
+    const animateLayoutChanges: AnimateLayoutChanges = ({
+      isSorting,
+      wasDragging,
+    }) => (isSorting || wasDragging ? false : true);
+
     const { listeners, setNodeRef, transform, transition } = useSortable({
       id: node.id,
       disabled,
+      animateLayoutChanges,
     });
 
-    const style = {
+    /* const style = {
       transform: CSS.Transform.toString(transform),
+      transition,
+    }; */
+    const style: CSSProperties = {
+      transform: CSS.Translate.toString(transform),
       transition,
     };
 
@@ -275,7 +578,13 @@ const TreeNode = forwardRef(
         role="treeitem"
         aria-selected={selected}
         aria-expanded={expanded}
-        style={style}
+        //style={style}
+        style={
+          {
+            ...style,
+            paddingLeft: `${indentationWidth * depth}px`,
+          } as React.CSSProperties
+        }
         {...listeners}
       >
         <div>
@@ -337,6 +646,8 @@ const TreeNode = forwardRef(
                   onTreeItemClick={onTreeItemClick}
                   onToggleNode={onToggleNode}
                   renderNode={renderNode}
+                  indentationWidth={indentationWidth}
+                  depth={depth + 1}
                 />
               ))}
             </ul>
@@ -347,70 +658,32 @@ const TreeNode = forwardRef(
   }
 );
 
-/* export const SortableTreeNode = forwardRef(
+export const Item = forwardRef(
   (
     {
-      node,
-      selectedNodeId,
-      showIcon = false,
-      expandedNodes,
-      disabled,
-      renderNode,
-      onTreeItemClick,
-      onToggleNode,
-      ...restProps
-    }: SortableTreeNodeProps,
-    ref: Ref<HTMLLIElement>
+      id,
+      depth,
+      indentationWidth,
+      ...props
+    }: { id: string; depth: number; indentationWidth: number },
+    ref: Ref<HTMLDivElement>
   ) => {
-    const { listeners, setNodeRef, transform, transition } = useSortable({
-      id: node.id,
-      disabled,
-    });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
-
     return (
-      <TreeNode
-        ref={setNodeRef}
-        node={node}
-        key={node.id}
-        showIcon={showIcon}
-        selectedNodeId={selectedNodeId}
-        expandedNodes={expandedNodes}
-        onTreeItemClick={onTreeItemClick}
-        onToggleNode={onToggleNode}
-        renderNode={renderNode}
-        style={style}
-        {...listeners}
-        {...restProps}
-      />
-    );
-  }
-); */
-
-export const Item = forwardRef(
-  ({ name, ...props }: { name: string }, ref: Ref<HTMLLIElement>) => {
-    return (
-      <li {...props} ref={ref}>
-        <div>
+      <div {...props} ref={ref} style={{ background: 'blue' }}>
+        <div
+          className={clsx(
+            'action-container d-flex align-items-center gap-8 px-2'
+          )}
+        >
           <div
             className={clsx(
-              'action-container d-flex align-items-center gap-8 px-2'
+              'flex-fill d-flex align-items-center text-truncate gap-8'
             )}
           >
-            <div
-              className={clsx(
-                'flex-fill d-flex align-items-center text-truncate gap-8'
-              )}
-            >
-              <span className="text-truncate">{name}</span>
-            </div>
+            <span className="text-truncate">{id}</span>
           </div>
         </div>
-      </li>
+      </div>
     );
   }
 );
