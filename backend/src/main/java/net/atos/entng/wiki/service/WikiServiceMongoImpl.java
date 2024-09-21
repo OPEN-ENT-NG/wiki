@@ -36,7 +36,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -429,198 +428,179 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void updatePage(final UserInfos user, final String idWiki, final JsonObject page,
+	public void updatePage(final UserInfos user, final String idWiki, final String idPage, final JsonObject pagePayload,
 						   final HttpServerRequest request, Handler<Either<String, JsonObject>> handler) {
-		// get existing page to compare page values
-		this.getPage(idWiki, page.getString("_id"), request, getPageResult -> {
-			if (getPageResult.isRight()) {
-				JsonObject dbPage = getPageResult.right().getValue();
+		final JsonObject page = new JsonObject(pagePayload.toString());
 
-				// if title, content or visibility has changed then we update the page
-				if (pageHasChanged(page, dbPage)) {
-					// Preparing the Mongo Update...
-					// Tiptap Transformer
-					Future<ContentTransformerResponse> contentTransformerResponseFuture;
-					if (page.containsKey("content")) {
-						Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
-						desiredFormats.add(ContentTransformerFormat.HTML);
-						desiredFormats.add(ContentTransformerFormat.JSON);
-						desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
+		// Tiptap Transformer
+		Future<ContentTransformerResponse> transformFuture;
+		if (!page.getString("content", "").isEmpty()) {
+			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
+			desiredFormats.add(ContentTransformerFormat.HTML);
+			desiredFormats.add(ContentTransformerFormat.JSON);
+			desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
 
-						// request to transform page "content" to desiredFormats
-						ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
-								desiredFormats,
-								page.getInteger("contentVersion", 0),
-								page.getString("content", ""),
-								null
-						);
+			// request to transform page "content" to desiredFormats
+			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
+					desiredFormats,
+					page.getInteger("contentVersion", 0),
+					page.getString("content", ""),
+					null
+			);
 
-						contentTransformerResponseFuture = this.contentTransformerClient
-								.transform(transformerRequest, request);
-					} else {
-						contentTransformerResponseFuture = Future.succeededFuture();
-					}
+			transformFuture = this.contentTransformerClient.transform(transformerRequest, request);
+		} else {
+			transformFuture = Future.succeededFuture();
+		}
 
-					contentTransformerResponseFuture.onComplete(transformerResponse -> {
-						if (transformerResponse.failed()) {
-							log.error("Error while transforming the content", transformerResponse.cause());
-						} else {
-							if (transformerResponse.result() == null) {
-								log.debug("No content transformed.");
-							} else {
-								page.put("contentVersion", transformerResponse.result().getContentVersion());
-								page.put("content", transformerResponse.result().getCleanHtml());
-								page.put("jsonContent", transformerResponse.result().getJsonContent());
-								page.put("contentPlain", transformerResponse.result().getPlainTextContent());
-							}
-						}
+		transformFuture.onComplete(transformerResponse -> {
+			// Mongo update query
+			QueryBuilder query = QueryBuilder
+					.start("_id")
+					.is(idWiki)
+					.put("pages")
+					.elemMatch(new BasicDBObject("_id", idPage));
+			// Mongo Modifier
+			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 
-						// add extra fields to the page
-						page
-								.put("lastContributer", user.getUserId())
-								.put("lastContributerName", user.getUsername())
-								.put("modified", MongoDb.now());
+			if (transformerResponse.failed()) {
+				log.error("Error while transforming the content", transformerResponse.cause());
+			} else {
+				if (transformerResponse.result() == null) {
+					log.debug("No content transformed.");
+				} else {
+					modifier.set("pages.$.content", transformerResponse.result().getCleanHtml());
+					modifier.set("pages.$.contentVersion", transformerResponse.result().getContentVersion());
+					modifier.set("pages.$.jsonContent", transformerResponse.result().getJsonContent());
+					modifier.set("pages.$.contentPlain", transformerResponse.result().getPlainTextContent());
+				}
+			}
 
-						// Mongo Query
-						BasicDBObject idPageDBO = new BasicDBObject("_id", page.getString("_id"));
-						QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-								.elemMatch(idPageDBO);
-						// Mongo Modifier
-						MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-						JsonObject now = MongoDb.now();
-						modifier.set("pages.$.title", page.getString("title"))
-								.set("pages.$.contentVersion", page.getInteger("contentVersion"))
-								.set("pages.$.content", page.getString("content"))
-								.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
-								.set("pages.$.contentPlain", page.getString("contentPlain"))
-								.set("pages.$.isVisible", page.getBoolean("isVisible"))
-								.set("pages.$.lastContributer", user.getUserId())
-								.set("pages.$.lastContributerName", user.getUsername())
-								.set("pages.$.modified", now)
-								.set("pages.$.position", page.getInteger("position", 0))
-								.set("modified", now);
+			// Update fields if present in the payload
+			if (!page.getString("title", "").isEmpty()) {
+				modifier.set("pages.$.title", page.getString("title"));
+			}
+			if (page.getBoolean("isVisible", null) != null) {
+				modifier.set("pages.$.isVisible", page.getBoolean("isVisible"));
+			}
+			if (page.getInteger("position", null) != null) {
+				modifier.set("pages.$.position", page.getInteger("position"));
+			}
+			if (!page.getString("parentId", "").isEmpty()) {
+				modifier.set("pages.$.parentId", page.getString("parentId"));
+			}
 
-						// Set parentId
-						if (!StringUtils.isEmpty(page.getString("parentId"))) {
-							modifier.set("pages.$.parentId", page.getString("parentId"));
-						}
+			modifier.set("pages.$.lastContributer", user.getUserId());
+			modifier.set("pages.$.lastContributerName", user.getUsername());
 
-						if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
-							// Set updated page as index
-							modifier.set("index", page.getString("_id"));
-						} else if (Boolean.TRUE.equals(page.getBoolean("wasIndex"))) {
-							// Unset index when the value of isIndex has changed from true to false
-							modifier.unset("index");
-						}
+			JsonObject now = MongoDb.now();
+			modifier.set("pages.$.modified", now);
+			modifier.set("modified", now);
 
-						// Mongo Update
-						mongo.update(collection,
-								MongoQueryBuilder.build(query),
-								modifier.build(),
-								updateResult -> {
-									if ("ok".equals(updateResult.body().getString("status"))) {
-										// If update is OK then we update subPages visibility and create page revision
-										final List<Future> futures = new ArrayList<>();
+			if (Boolean.TRUE.equals(page.getBoolean("isIndex", false))) {
+				// Set updated page as index
+				modifier.set("index", idPage);
+			} else if (Boolean.TRUE.equals(page.getBoolean("wasIndex", false))) {
+				// Unset index when the value of isIndex has changed from true to false
+				modifier.unset("index");
+			}
 
-										final Future<Void> updateVisibilityPromise = this.updateVisibility(idWiki, page, dbPage);
-										futures.add(updateVisibilityPromise);
+			// before updating the page with new values,
+			// we get the previous page values from database to manage visibility update and revision creation
+			this.getPage(idWiki, idPage, request, getPageRes -> {
+				if (getPageRes.isRight()) {
+					JsonObject dbPage = getPageRes.right().getValue();
 
-										final Promise<Void> createRevisionPromise = Promise.promise();
-										futures.add(createRevisionPromise.future());
+					// Mongo Update
+					mongo.update(collection,
+							MongoQueryBuilder.build(query),
+							modifier.build(),
+							updateResult -> {
+								if (updateResult.body() != null
+										&& "ok".equals(updateResult.body().getString("status"))) {
+									// If update is OK then we update subPages visibility and create page revision
+									final List<Future> futures = new ArrayList<>();
 
-										// create new revision of a page
-										// (if page was not visible and is still not visible then we don't create a new revision)
-										if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
-												&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
-											createRevisionPromise.complete();
-										} else {
-											this.createRevision(idWiki,
-													page.getString("_id"),
-													user,
-													page.getString("title"),
-													page.getString("content"),
-													page.getBoolean("isVisible"),
-													createRevisionResult -> {
-														createRevisionPromise.complete();
-													});
-										}
+									// if page visibility has changed then we update visibility for sub pages too
+									if (Boolean.compare(
+											page.getBoolean("isVisible", false),
+											dbPage.getBoolean("isVisible", false)) != 0) {
+										final Future<Void> updateSubpagesVisibilityFuture = this.updateSubpagesVisibility(
+												idWiki,
+												idPage,
+												page.getBoolean("isVisible", false));
+										futures.add(updateSubpagesVisibilityFuture);
+									}
 
+									// create new revision of a page
+									// (if page was not visible and is still not visible then we don't create a new revision)
+									if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
+											&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
+										final Future<Void> createRevisionFuture = this.createRevision(
+												idWiki,
+												idPage,
+												user,
+												page.getString("title", dbPage.getString("title")),
+												page.getString("content", dbPage.getString("content")),
+												page.getBoolean("isVisible", dbPage.getBoolean("isVisible")),
+												page.getInteger("position", dbPage.getInteger("position")));
+										futures.add(createRevisionFuture);
+									}
+									if (futures.isEmpty()) {
+										handler.handle(new Either.Right<>(page));
+									} else {
 										CompositeFuture
 												.all(futures)
 												.onComplete(res -> handler.handle(new Either.Right<>(page)));
-									} else {
-										handler.handle(
-												new Either.Left<>(updateResult.body().getString("message", "")));
 									}
-								});
-					});
+								} else {
+									handler.handle(
+											new Either.Left<>(updateResult.body().getString("message", "")));
+								}
+							});
 				} else {
-					// do not update nor create revision
-					// return the page json information
-					handler.handle(new Either.Right<>(page));
+					log.error("[Wiki] Error when updating page: page with id " + idPage + " was not found.");
+					handler.handle(new Either.Left<>("Page with id " + idPage + " was not found."));
 				}
-			} else {
-				handler.handle(new Either.Left<>(getPageResult.left().getValue()));
-			}
+			});
 		});
-	}
-
-	/**
-	 * Check if the page from API is different from page from Database.
-	 * @param page JsonObject page provided by the Controller
-	 * @param dbPage JsonObject page retrieved from the database
-	 * @return true if page is different from database (check title, content et isVisible fields)
-	 */
-	private static boolean pageHasChanged(JsonObject page, JsonObject dbPage) {
-		return !StringUtils.isEmpty(page.getString("title"))
-				&& page.getString("title").equals(dbPage.getString("title"))
-				|| !StringUtils.isEmpty(page.getString("content"))
-				&& page.getString("content").equals(dbPage.getString("content"))
-				|| Boolean.compare(page.getBoolean("isVisible"), dbPage.getBoolean("isVisible")) != 0
-				|| NumberUtils.compare(page.getInteger("position", 0), dbPage.getInteger("position", 0)) != 0;
 	}
 
 	/**
 	 * Update visibility for subpages.
 	 * @param idWiki id of the related wiki
-	 * @param page the JsonObject page that is passed from the controller to the updatePage method
+	 * @param idPage id of the Parent page
+	 * @param isVisible the visibility of the parent page
 	 * @return Future
 	 */
-	private Future<Void> updateVisibility(String idWiki, JsonObject page, JsonObject dbPage) {
+	private Future<Void> updateSubpagesVisibility(String idWiki, String idPage, boolean isVisible) {
 		final Promise<Void> promise = Promise.promise();
 
-		// if page visibility has changed then we update visibility for sub pages too
-		if (Boolean.compare(
-				page.getBoolean("isVisible"),
-				dbPage.getBoolean("isVisible")) != 0) {
-			// Mongo Query
-			QueryBuilder visibilityQuery = QueryBuilder
-					.start("_id")
-					.is(idWiki);
+		// Mongo Query
+		QueryBuilder visibilityQuery = QueryBuilder
+				.start("_id")
+				.is(idWiki);
 
-			// Mongo Modifier
-			MongoUpdateBuilder visibilityModifier = new MongoUpdateBuilder();
-			visibilityModifier.set("pages.$[elem].isVisible", page.getBoolean("isVisible"));
+		// Mongo Modifier
+		MongoUpdateBuilder visibilityModifier = new MongoUpdateBuilder();
+		visibilityModifier.set("pages.$[elem].isVisible", isVisible);
 
-			// Mongo arrayFilters
-			JsonArray arrayFilters = new JsonArray()
-					.add(new JsonObject().put("elem.parentId", page.getString("_id")));
+		// Mongo arrayFilters
+		JsonArray arrayFilters = new JsonArray()
+				.add(new JsonObject().put("elem.parentId", idPage));
 
-			// Mongo Update
-			mongo.update(collection,
-					MongoQueryBuilder.build(visibilityQuery),
-					visibilityModifier.build(),
-					arrayFilters,
-					res -> {
-						if ("ok".equals(res.body().getString("status"))) {
-							promise.complete();
-						} else {
-							promise.fail(res.body().getString("message"));
-						}
-					});
-		} else {
-			promise.complete();
-		}
+		// Mongo Update
+		mongo.update(collection,
+				MongoQueryBuilder.build(visibilityQuery),
+				visibilityModifier.build(),
+				arrayFilters,
+				res -> {
+					if ("ok".equals(res.body().getString("status"))) {
+						promise.complete();
+					} else {
+						promise.fail(res.body().getString("message"));
+					}
+				});
 
 		return promise.future();
 	}
@@ -847,10 +827,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void createRevision(String wikiId, String pageId, UserInfos user,
-							   String pageTitle, String pageContent, boolean isVisible,
-							   Handler<Either<String, JsonObject>> handler) {
-		JsonObject document = new JsonObject()
+	public Future<Void> createRevision(String wikiId, String pageId, UserInfos user, String pageTitle,
+										 String pageContent, boolean isVisible, Integer position) {
+		final Promise<Void> promise = Promise.promise();
+
+		final JsonObject document = new JsonObject()
 				.put("wikiId", wikiId)
 				.put("pageId", pageId)
 				.put("userId", user.getUserId())
@@ -858,8 +839,19 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("title", pageTitle)
 				.put("content", pageContent)
 				.put("isVisible", isVisible)
+				.put("position", position)
 				.put("date", MongoDb.now());
-		mongo.save(REVISIONS_COLLECTION, document, MongoDbResult.validResultHandler(handler));
+
+		mongo.save(REVISIONS_COLLECTION, document, res -> {
+			if ("ok".equals(res.body().getString("status"))) {
+				promise.complete();
+			} else {
+				log.error("Error creating revision " + wikiId + "/" + pageId + " - " + res.body().getString("message"));
+				promise.fail(res.body().getString("message"));
+			}
+		});
+
+		return promise.future();
 	}
 
 	@Override

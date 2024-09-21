@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "PageUpdate",
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "content": { "type": "string" },
+    "parentId": { "type":  ["string", "null"] },
+    "isIndex": { "type": "boolean"},
+    "wasIndex": { "type": "boolean" },
+    "isVisible": { "type": "boolean" },
+    "position": { "type": "number" }
+  },
+  "additionalProperties": false
+}
