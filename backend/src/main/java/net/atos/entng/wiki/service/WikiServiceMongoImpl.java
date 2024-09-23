@@ -22,6 +22,7 @@ package net.atos.entng.wiki.service;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
@@ -40,6 +41,7 @@ import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.share.ShareNormalizer;
+import org.entcore.common.share.ShareRoles;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
 import io.vertx.core.Handler;
@@ -624,24 +626,110 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void deletePage(String idWiki, String idPage,
+	public void deletePage(UserInfos user, String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler) {
+		// Page IDs to delete
+		final List<String> pageIDsToDelete = new ArrayList<>();
+		// For sure, we will delete the page with given idPage
+		pageIDsToDelete.add(idPage);
 
-		// Query
-		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-		QueryBuilder query = QueryBuilder.start("_id").is(idWiki).put("pages")
-				.elemMatch(idPageDBO);
+		// Subpages IDs that will become a page
+		final List<String> subpageIDsToPage = new ArrayList<>();
 
-		// Update
-		JsonObject idPageJO = new JsonObject();
-		idPageJO.put("_id", idPage);
-		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-		modifier.pull("pages", idPageJO);
-		modifier.set("modified", MongoDb.now());
+		// We check if page has subpages to implement the following rules:
+		// - if manager:
+		//   => delete all subpages
+		// - if contrib:
+		//   => delete subpages only if user is author
+		//   => non authored subpages will become pages
+		this.getWiki(idWiki, getWikiRes -> {
+			final JsonObject wiki = getWikiRes.right().getValue();
+			final JsonArray subpages = getSubPages(wiki, idPage);
+			if (!subpages.isEmpty()) {
+				if (isManager(wiki, user)) {
+					pageIDsToDelete.addAll(
+							subpages
+									.stream()
+									.map(page -> ((JsonObject) page).getString("_id"))
+									.collect(Collectors.toList()));
+				} else if (isContrib(wiki, user)) {
+					subpages.forEach(subpage -> {
+						JsonObject subpageJO = (JsonObject) subpage;
+						if (isPageAuthor(subpageJO, user)) {
+							pageIDsToDelete.add(subpageJO.getString("_id"));
+						} else {
+							subpageIDsToPage.add(subpageJO.getString("_id"));
+						}
+					});
+				}
+			}
 
-		mongo.update(collection, MongoQueryBuilder.build(query),
-				modifier.build(),
-				MongoDbResult.validActionResultHandler(handler));
+			final List<Future> futures = new ArrayList<>();
+			// Delete subpages in "pageIDsToDelete"
+			final Promise<Void> subpagesDeletePromise = Promise.promise();
+			futures.add(subpagesDeletePromise.future());
+			// Mongo query
+			final QueryBuilder subpagesDeleteQuery = QueryBuilder
+					.start("_id")
+					.is(idWiki);
+			// Mongo modifier
+			final MongoUpdateBuilder subpagesDeleteModifier = new MongoUpdateBuilder();
+			subpagesDeleteModifier.pull("pages", MongoQueryBuilder.build(QueryBuilder.start("_id").in(pageIDsToDelete)));
+			subpagesDeleteModifier.set("modified", MongoDb.now());
+			// Execute query
+			mongo.update(collection,
+					MongoQueryBuilder.build(subpagesDeleteQuery),
+					subpagesDeleteModifier.build(),
+					deleteSubpagesRes -> {
+						if ("ok".equals(deleteSubpagesRes.body().getString("status"))) {
+							subpagesDeletePromise.complete();
+						} else {
+							subpagesDeletePromise.fail(deleteSubpagesRes.body().getString("message"));
+						}
+					});
+
+			// Converting subpages to pages for subpages in "subpageIDsToPage"
+			final Promise<Void> subpagesToPagesPromise = Promise.promise();
+			futures.add(subpagesToPagesPromise.future());
+
+			if (!subpageIDsToPage.isEmpty()) {
+				// Mongo query
+				final QueryBuilder subpagesToPageQuery = QueryBuilder
+						.start("_id")
+						.is(idWiki);
+				// Mongo modifier
+				final MongoUpdateBuilder subpagesToPageModifier = new MongoUpdateBuilder();
+				subpagesToPageModifier.unset("pages.$[elem].parentId");
+				subpagesToPageModifier.set("modified", MongoDb.now());
+				// Mongo arrayFilters
+				final JsonArray arrayFilters = new JsonArray()
+						.add(MongoQueryBuilder.build(QueryBuilder.start("elem._id").in(subpageIDsToPage)));
+				// Execute query
+				mongo.update(collection,
+						MongoQueryBuilder.build(subpagesToPageQuery),
+						subpagesToPageModifier.build(),
+						arrayFilters,
+						subpagesToPagesRes -> {
+							if ("ok".equals(subpagesToPagesRes.body().getString("status"))) {
+								subpagesToPagesPromise.complete();
+							} else {
+								subpagesToPagesPromise.fail(subpagesToPagesRes.body().getString("message"));
+							}
+
+						});
+			} else {
+				subpagesToPagesPromise.complete();
+			}
+
+			CompositeFuture
+					.all(futures)
+					.onSuccess(res -> {
+						handler.handle(new Either.Right<>(new JsonObject().put("result", "ok")));
+					})
+					.onFailure(err -> {
+						handler.handle(new Either.Left<>(err.getMessage()));
+					});
+		});
 	}
 
 	/**
@@ -789,5 +877,82 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			query.put("pageId").is(pageId);
 		}
 		mongo.delete(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), MongoDbResult.validResultHandler(handler));
+	}
+
+	/**
+	 * Return Subpages from a Page with given pageId.
+	 * @param wiki the wiki containing the page we want to get subpages
+	 * @param pageId the page ID we want to get subpages
+	 * @return List<String> page subpages IDs
+	 */
+	public static JsonArray getSubPages(final JsonObject wiki, final String pageId) {
+		JsonArray subPages = new JsonArray();
+
+		if (wiki != null) {
+			final JsonArray pages = wiki.getJsonArray("pages");
+			pages.forEach(page -> {
+				final JsonObject pageJO = (JsonObject) page;
+				final String parentId = pageJO.getString("parentId");
+
+				if (!StringUtils.isEmpty(parentId) && parentId.equals(pageId)) {
+					subPages.add(pageJO);
+				}
+			});
+		}
+		return subPages;
+	}
+
+	// TODO: this method is coming from Explorer project -> centralize this in entcore
+	// but be careful: the owner property in resource is different from app to app
+	// in Wiki it is "owner" but in other app it may be "createdBy"
+	public static boolean isManager(final JsonObject wiki, final UserInfos user) {
+		final String userId = user.getUserId();
+		final JsonArray rights = wiki.getJsonArray("rights");
+
+		// Check if we are the owner
+		if (rights == null) {
+		    if (userId != null && wiki.getJsonObject("owner") != null) {
+				return userId.equals(wiki.getJsonObject("owner").getString("userId"));
+			}
+		} else { // Otherwise check rights
+			final Set<String> myAdminRights = new HashSet<>();
+			myAdminRights.add(ShareRoles.Manager.getSerializedForUser(userId));
+			myAdminRights.add(ShareRoles.getSerializedForCreator(userId));
+			final List<String> groupIds = user.getGroupsIds();
+			if (groupIds != null) {
+				for (String groupId : user.getGroupsIds()) {
+					myAdminRights.add(ShareRoles.Manager.getSerializedForGroup(groupId));
+				}
+			}
+			return rights.stream().anyMatch(myAdminRights::contains);
+		}
+
+		return false;
+	}
+
+	// TODO: centralize this in entcore
+	public static boolean isContrib(final JsonObject wiki, final UserInfos user) {
+		final JsonArray rights = wiki.getJsonArray("rights");
+
+		if (rights != null) {
+			final Set<String> myRights = new HashSet<>();
+			myRights.add(ShareRoles.Contrib.getSerializedForUser(user.getUserId()));
+
+			final List<String> groupIds = user.getGroupsIds();
+			if(groupIds != null) {
+				for (String groupId : user.getGroupsIds()) {
+					myRights.add(ShareRoles.Contrib.getSerializedForGroup(groupId));
+				}
+			}
+
+			return rights.stream().anyMatch(myRights::contains);
+		}
+
+		return false;
+	}
+
+	public static boolean isPageAuthor(final JsonObject page, final UserInfos user) {
+		return page.getString("author") != null
+				&& page.getString("author").equals(user.getUserId());
 	}
 }
