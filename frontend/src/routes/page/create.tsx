@@ -10,7 +10,7 @@ export const action =
 
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
-    const toggle = formData.get('toggle') === 'on';
+    const isVisible = formData.get('isVisible') === 'on';
 
     const data = await wikiService.createPage({
       wikiId: params.wikiId!,
@@ -18,7 +18,7 @@ export const action =
         title,
         content,
         parentId: params.pageId! ?? undefined,
-        isVisible: toggle,
+        isVisible,
       },
     });
 
