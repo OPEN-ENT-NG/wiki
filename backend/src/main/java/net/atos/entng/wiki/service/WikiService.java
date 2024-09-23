@@ -21,6 +21,7 @@ package net.atos.entng.wiki.service;
 
 import java.util.Optional;
 
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
@@ -54,7 +55,7 @@ public interface WikiService {
 	public void createPage(UserInfos user, String wikiId, JsonObject page, HttpServerRequest request
 			, Handler<Either<String, JsonObject>> handler);
 
-	public void updatePage(UserInfos user, String idWiki, JsonObject page, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
+	public void updatePage(UserInfos user, String idWiki, String idPage, JsonObject pagePayload, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
 
 	public void deletePage(UserInfos user, String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
@@ -80,8 +81,8 @@ public interface WikiService {
 	public void updateComment(String idWiki, String idPage, String idComment, String comment,
 							  Handler<Either<String, JsonObject>> handler);
 
-	public void createRevision(String wikiId, String pageId, UserInfos user,
-			String pageTitle, String pageContent, boolean isVisible, Handler<Either<String, JsonObject>> handler);
+	public Future<Void> createRevision(String wikiId, String pageId, UserInfos user, String pageTitle, String pageContent,
+										 boolean isVisible, Integer position);
 
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler);
 
