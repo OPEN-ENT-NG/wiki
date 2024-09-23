@@ -70,7 +70,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
         </FormControl>
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
           <Toggle
-            name="toggle"
+            name="isVisible"
             checked={isVisible}
             onChange={handleOnToggleChange}
             disabled={disableToggle()}
