@@ -89,16 +89,25 @@ export const useFormPage = (page?: Page) => {
 
   const disableToggle = useCallback(() => {
     if (isSubPage) {
-      const parentPage = wikiData?.pages.find(
-        (page) => page._id === params.pageId
-      );
-      if (!parentPage?.isVisible) {
+      let parentPage;
+
+      if (editionMode) {
+        parentPage = wikiData?.pages.find(
+          (wikiPage) => wikiPage._id === page?.parentId
+        );
+      } else {
+        parentPage = wikiData?.pages.find(
+          (wikiPage) => wikiPage._id === params.pageId
+        );
+      }
+
+      if (parentPage && !parentPage.isVisible) {
         return true;
       }
     }
+
     return false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubPage]);
+  }, [editionMode, isSubPage, wikiData, page, params]);
 
   return {
     handleOnContentChange,
