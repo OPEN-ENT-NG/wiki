@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import fr.wseduc.webutils.I18n;
+import io.vertx.core.AsyncResult;
 import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
@@ -317,7 +318,7 @@ public class WikiController extends MongoDbControllerHelper {
 	public void createPage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				RequestUtils.bodyToJson(request, pathPrefix + "page", page -> {
+				RequestUtils.bodyToJson(request, pathPrefix + "pageCreate", page -> {
 					final String wikiId = request.params().get("id");
 					page.put("_id", new ObjectId().toString());
 
@@ -325,12 +326,17 @@ public class WikiController extends MongoDbControllerHelper {
 					wikiService.createPage(user, wikiId, page, request, event -> {
 								if (event.isRight()) {
 									// create version of a page
-									createRevision(wikiId,
+									wikiService.createRevision(
+											wikiId,
 											page.getString("_id"),
 											user,
 											page.getString("title"),
 											page.getString("content"),
-											page.getBoolean("isVisible"));
+											page.getBoolean("isVisible"),
+											page.getInteger("position"))
+											.onFailure(handler -> {
+												log.error("Error creating revision " + wikiId + "/" + page.getString("_id") + " - " + handler.getMessage());
+											});
 									notifyPageCreated(request, user, wikiId, page.getString("_id"), page.getString("title"));
 									eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
 									// render created page json information
@@ -355,11 +361,13 @@ public class WikiController extends MongoDbControllerHelper {
 	public void updatePage(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				RequestUtils.bodyToJson(request, pathPrefix + "page", page -> {
-					final String idWiki = request.params().get("id");
-					page.put("_id", request.params().get("idpage"));
-
-					wikiService.updatePage(user, idWiki, page, request, updatePageResult -> {
+				RequestUtils.bodyToJson(request, pathPrefix + "pageUpdate", pagePayload -> {
+					wikiService.updatePage(user,
+							request.params().get("id"),
+							request.params().get("idpage"),
+							pagePayload,
+							request,
+							updatePageResult -> {
 						if (updatePageResult.isRight()) {
 							renderJson(request, updatePageResult.right().getValue());
 						} else {
@@ -568,19 +576,6 @@ public class WikiController extends MongoDbControllerHelper {
 				}
 			}
 		});
-	}
-
-	private void createRevision(final String idWiki, final String pageId,
-								UserInfos user, String pageTitle, String pageContent, boolean isVisible) {
-		wikiService.createRevision(idWiki, pageId, user, pageTitle, pageContent, isVisible,
-				new Handler<Either<String, JsonObject>>() {
-					@Override
-					public void handle(Either<String, JsonObject> r) {
-						if (r.isLeft()) {
-							log.error("Error creating revision " + idWiki + "/" + pageId + " - " + r.left().getValue());
-						}
-					}
-				});
 	}
 
 	private void deleteRevisions(final String idWiki, final String idPage) {
