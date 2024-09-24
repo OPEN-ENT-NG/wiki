@@ -1,14 +1,9 @@
 import { useToast } from '@edifice-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Page } from '~/models';
-import {
-  pageQueryOptions,
-  useGetPage,
-  useGetRevisionPage,
-  wikiQueryOptions,
-  wikiService,
-} from '~/services';
+import { useGetPage, useGetRevisionPage, wikiService } from '~/services';
 import { useUserRights } from '~/store';
 
 export const useRevision = () => {
@@ -17,6 +12,7 @@ export const useRevision = () => {
   const navigate = useNavigate();
   const params = useParams();
   const userRights = useUserRights();
+  const [isRestoring, setIsRestoring] = useState<boolean>(false);
   // load page from route params
   const page = useGetPage({
     wikiId: params.wikiId!,
@@ -38,20 +34,45 @@ export const useRevision = () => {
       toast.error('wiki.version.notfound');
       return;
     }
-    await wikiService.updatePage({
+    await restoreRevision({
+      title: revision.data.title,
+      content: revision.data.content,
+      isVisible: page.data.isVisible,
+    });
+  };
+
+  const restoreRevisionById = async (revisionId: string) => {
+    const version = await wikiService.getRevisionPage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-      data: {
-        title: revision.data.title,
-        content: revision.data.content,
-        isVisible: page.data.isVisible,
-      },
+      revisionId,
     });
+    await restoreRevision(version);
+  };
 
-    await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
-    await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
+  const restoreRevision = async ({
+    content,
+    isVisible,
+    title,
+  }: {
+    title: string;
+    content: string;
+    isVisible: boolean;
+  }) => {
+    try {
+      // disable restore button
+      setIsRestoring(true);
+      await wikiService.updatePage({
+        wikiId: params.wikiId!,
+        pageId: params.pageId!,
+        data: { content, title, isVisible },
+      });
+      await queryClient.invalidateQueries();
 
-    return navigate(`/id/${params.wikiId}/page/${params.pageId!}`);
+      return navigate(`/id/${params.wikiId}/page/${params.pageId!}`);
+    } finally {
+      setIsRestoring(false);
+    }
   };
 
   const getPageVersionFromRoute = () => {
@@ -88,11 +109,14 @@ export const useRevision = () => {
   };
 
   return {
+    isRestoring,
     canRestore,
     getPageFromRoute,
     getRevisionFromRoute,
     getPageVersionFromRoute,
     navigateToLatestRevision,
     restoreCurrentRevision,
+    restoreRevisionById,
+    restoreRevision,
   };
 };
