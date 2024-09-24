@@ -199,5 +199,6 @@
   "wiki.page.dropdown.visibility": "Rendre non visible la page",
   "wiki.version.modal.title": "Historique des versions",
   "wiki.version.modal.tips": "Astuce :",
-  "wiki.version.modal.alert": "sélectionner 2 versions pour activer la comparaison de versions."
+  "wiki.version.modal.alert.compare": "Sélectionner 2 versions pour activer la comparaison de versions.",
+  "wiki.version.modal.alert.invisible": "Afin de rendre plus lisible la liste, les modifications sur une page masquée ne sont pas listées."
 }
