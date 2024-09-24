@@ -53,13 +53,16 @@ const RevisionModal = () => {
         {t('wiki.version.modal.title')}
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-24">
+        <div className="mb-8">
           <Alert type="info">
             <strong className="text-info">
               {t('wiki.version.modal.tips')}
             </strong>{' '}
-            {t('wiki.version.modal.alert')}
+            {t('wiki.version.modal.alert.compare')}
           </Alert>
+        </div>
+        <div className="mb-24">
+          <Alert type="info">{t('wiki.version.modal.alert.invisible')}</Alert>
         </div>
         {data && (
           <Table>
