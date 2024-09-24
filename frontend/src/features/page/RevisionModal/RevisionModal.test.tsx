@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { useCheckableTable } from '~/hooks/useCheckableTable';
-import { mockRevision } from '~/mocks';
+import { mockPage, mockRevision } from '~/mocks';
 import { renderWithRouter, screen } from '~/mocks/setup.vitest';
 import RevisionModal from './RevisionModal';
 
@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   handleOnSelectItem: vi.fn(),
   useGetRevisionsPage: vi.fn(),
   useCheckableTable: vi.fn(),
+  useGetPage: vi.fn(),
+  useGetRevisionPage: vi.fn(),
   setOpenRevisionModal: vi.fn(),
 }));
 
@@ -32,6 +34,8 @@ vi.mock('~/store/wiki', () => ({
 
 vi.mock('~/services', () => ({
   useGetRevisionsPage: mocks.useGetRevisionsPage,
+  useGetPage: mocks.useGetPage,
+  useGetRevisionPage: mocks.useGetRevisionPage,
 }));
 
 vi.mock('~/hooks/useCheckableTable');
@@ -50,6 +54,11 @@ describe('RevisionModal', () => {
   });
 
   beforeEach(() => {
+    // mock current page
+    mocks.useGetPage.mockReturnValue({
+      data: mockPage.pages[0],
+    });
+
     vi.mocked(useCheckableTable).mockReturnValue(mockRevisionTableHookValue);
 
     vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({

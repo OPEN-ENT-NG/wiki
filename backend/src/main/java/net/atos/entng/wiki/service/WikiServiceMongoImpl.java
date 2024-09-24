@@ -534,8 +534,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 									// create new revision of a page
 									// (if page was not visible and is still not visible then we don't create a new revision)
-									if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
-											&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
+									if (Boolean.TRUE.equals(dbPage.getBoolean("isVisible"))
+											|| Boolean.TRUE.equals(page.getBoolean("isVisible"))) {
 										final Future<Void> createRevisionFuture = this.createRevision(
 												idWiki,
 												idPage,
