@@ -3,9 +3,9 @@ import {
   Delete,
   Edit,
   FolderMove,
+  Forgoing,
   Hide,
   Options,
-  Tool,
 } from '@edifice-ui/icons';
 import {
   Avatar,
@@ -66,7 +66,7 @@ export const PageHeader = ({ page }: { page: Page }) => {
     {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),
-      icon: <Tool />,
+      icon: <Forgoing />,
       action: () => setOpenRevisionModal(true),
       visibility: canContrib || canManage,
     },
