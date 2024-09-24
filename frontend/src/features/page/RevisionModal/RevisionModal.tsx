@@ -39,8 +39,8 @@ const RevisionModal = () => {
     setOpenRevisionModal,
     disabledVersionComparison,
     disabledRestoreButton,
+    restoreSelection,
   } = useRevisionModal({ data, selectedItems });
-
   const handleOnOpen = useCallback(
     (id: string) => {
       setOpenRevisionModal(false);
@@ -161,6 +161,7 @@ const RevisionModal = () => {
           color="primary"
           variant="filled"
           disabled={disabledRestoreButton}
+          onClick={restoreSelection}
         >
           {t('wiki.version.restore')}
         </Button>

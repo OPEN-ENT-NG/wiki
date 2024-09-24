@@ -1,5 +1,6 @@
 import { useDate } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
+import { useRevision } from '~/hooks/useRevision';
 import { Revision } from '~/models/revision';
 import { useOpenRevisionModal, useUserRights, useWikiActions } from '~/store';
 
@@ -11,7 +12,7 @@ export const useRevisionModal = ({
   selectedItems: string[];
 }) => {
   const openVersionsModal = useOpenRevisionModal();
-
+  const { isRestoring, restoreRevisionById } = useRevision();
   const userRights = useUserRights();
   const canManage = userRights.manager;
 
@@ -37,12 +38,23 @@ export const useRevisionModal = ({
   const isSelectedItemVisible = findSelectedItem?.isVisible ?? false;
 
   const disabledRestoreButton =
+    isRestoring ||
     selectedItems.length !== 1 ||
     (!isSelectedItemVisible && !canManage) ||
     isLastVersion;
 
   const disabledVersionComparison =
     selectedItems.length < 2 || selectedItems.length > 2;
+
+  const restoreSelection = async () => {
+    if (selectedItems.length !== 1) {
+      return;
+    }
+    const item = selectedItems[0];
+    await restoreRevisionById(item);
+    // close modal
+    setOpenRevisionModal(false);
+  };
 
   return {
     items,
@@ -54,5 +66,6 @@ export const useRevisionModal = ({
     disabledVersionComparison,
     formatDate,
     setOpenRevisionModal,
+    restoreSelection,
   };
 };
