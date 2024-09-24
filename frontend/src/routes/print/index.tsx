@@ -57,10 +57,8 @@ export const Component = () => {
   const isPrintComment = searchParams.get('printComment') === 'true';
 
   useEffect(() => {
-    // Use setTimeout to update the message after 2000 milliseconds (2 seconds)
     const timeoutId = setTimeout(() => window.print(), 1000);
 
-    // Cleanup function to clear the timeout if the component unmounts
     return () => clearTimeout(timeoutId);
   }, []);
 
