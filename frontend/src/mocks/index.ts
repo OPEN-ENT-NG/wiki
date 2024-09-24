@@ -7,6 +7,7 @@ export const mockWiki = {
     {
       _id: '001',
       title: 'ma nouvelle page',
+      content: 'test modification',
       contentPlain: 'test modification',
       author: '123456789',
       authorName: 'Author',
@@ -15,10 +16,12 @@ export const mockWiki = {
       },
       lastContributer: '123456789',
       lastContributerName: 'Author',
+      isVisible: true,
     },
     {
       _id: '002',
       title: 'aaaa',
+      content: 'rgrgrg aaz',
       contentPlain: 'rgrgrg aaz',
       author: '123456789',
       authorName: 'Author',
@@ -27,26 +30,81 @@ export const mockWiki = {
       },
       lastContributer: '123456789',
       lastContributerName: 'Author',
+      isVisible: true,
     },
     {
       _id: '003',
       title: 'test gras',
+      content: 'ma super page',
       contentPlain: 'ma super page',
       author: '123456789',
       authorName: 'Author',
       modified: {
         $date: 1720193036074,
       },
+      isVisible: true,
     },
     {
       _id: '004',
       title: 'zefzefzefzef',
+      content: 'zefzefzef',
       contentPlain: 'zefzefzef',
       author: '123456789',
       authorName: 'Author',
       modified: {
         $date: 1720195498738,
       },
+      isVisible: true,
+    },
+    {
+      _id: '005',
+      title: 'page parent 005 masquée',
+      content: 'ma page parent 005 masquée',
+      contentPlain: 'ma page parent 005 masquée',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720195498738,
+      },
+      isVisible: false,
+    },
+    {
+      _id: '006',
+      title: 'sous page 006 masquée de page parent 005 masquée',
+      content: 'ma sous page 006 masquée de page parent 005 masquée',
+      contentPlain: 'ma sous page 006 masquée de page parent 005 masquée',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720195498738,
+      },
+      isVisible: false,
+      parentId: '005',
+    },
+    {
+      _id: '007',
+      title: 'page parent 007 visible',
+      content: 'ma page parent 007 visible',
+      contentPlain: 'ma page parent 007 visible',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720195498738,
+      },
+      isVisible: true,
+    },
+    {
+      _id: '008',
+      title: 'sous page 008 visible de page parent 007 visible',
+      content: 'ma sous page 008 visible de page parent 007 visible',
+      contentPlain: 'ma sous page 008 visible de page parent 007 visible',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720195498738,
+      },
+      isVisible: true,
+      parentId: '007',
     },
   ],
   modified: {
@@ -57,6 +115,8 @@ export const mockWiki = {
     displayName: 'Author',
   },
   index: '004',
+  rights: [],
+  thumbnail: 'wikiThumbnail.jpg',
 };
 
 export const mockWikis = [

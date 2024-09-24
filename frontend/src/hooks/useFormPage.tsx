@@ -107,6 +107,7 @@ export const useFormPage = (page?: Page) => {
     handleOnTitleChange,
     handleOnReset,
     disableToggle,
+    getDefaultVisibleValue,
     isDisableButton,
     isSubmitting,
     contentTitle,
