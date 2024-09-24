@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useLocation, useNavigation, useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetWiki } from '~/services';
+import { findPage } from '~/utils/findPage';
 
 export const useFormPage = (page?: Page) => {
   const navigation = useNavigation();
@@ -22,21 +23,22 @@ export const useFormPage = (page?: Page) => {
    * Return visibility toggle default value.
    */
   const getDefaultVisibleValue = useCallback(() => {
+    let isVisible: boolean | undefined = false;
+
     // In edition mode, return current page visibility
     if (editionMode) {
-      return page?.isVisible;
+      isVisible = page?.isVisible;
+    } else if (isSubPage) {
+      // In subpage creation mode, visibility must be the same as parent page visibility
+      const parentPage = findPage(wikiData!, params.pageId!);
+      isVisible = parentPage?.isVisible;
+    } else {
+      // In page creation mode, visibility is true by default
+      isVisible = true;
     }
-    // In subpage creation mode, visibility must be the same as parent page visibility
-    if (isSubPage) {
-      const parentPage = wikiData?.pages.find(
-        (page) => page._id === params.pageId
-      );
-      return parentPage?.isVisible;
-    }
-    // In regular creation mode, visibility is true by default
-    return true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, params.wikiId]);
+
+    return isVisible;
+  }, [page, params, editionMode, isSubPage, wikiData]);
 
   const [content, setContent] = useState(page?.content ?? '');
   const [contentTitle, setContentTitle] = useState(page?.title ?? '');
@@ -89,21 +91,11 @@ export const useFormPage = (page?: Page) => {
 
   const disableToggle = useCallback(() => {
     if (isSubPage) {
-      let parentPage;
-
-      if (editionMode) {
-        parentPage = wikiData?.pages.find(
-          (wikiPage) => wikiPage._id === page?.parentId
-        );
-      } else {
-        parentPage = wikiData?.pages.find(
-          (wikiPage) => wikiPage._id === params.pageId
-        );
-      }
-
-      if (parentPage && !parentPage.isVisible) {
-        return true;
-      }
+      const parentPageId: string | undefined = editionMode
+        ? page.parentId
+        : params.pageId;
+      const parentPage = findPage(wikiData!, parentPageId!);
+      return !parentPage?.isVisible;
     }
 
     return false;
