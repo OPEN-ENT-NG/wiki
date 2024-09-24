@@ -3,7 +3,7 @@ import { useState } from 'react';
 type PrintGroup = 'allPages' | 'onePage';
 
 export const useCheckablePrint = () => {
-  const [isAllPages, setIsAllPages] = useState<boolean>(false);
+  const [, setIsAllPages] = useState<boolean>(false);
   const [printGroup, setPrintGroup] = useState<PrintGroup>('onePage');
   const [printComment, setPrintComment] = useState<boolean>(false);
 

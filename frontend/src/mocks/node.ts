@@ -242,7 +242,7 @@ const handlers = [
   http.get(`${baseURL}/:wikiId/page/:pageId`, () => {
     return HttpResponse.json(mockPage);
   }),
-  http.get(`${baseURL}/revisions/${mockWiki._id}/:pageId`, () => {
+  http.get(`${baseURL}/${mockWiki._id}/page/:pageId/revisions`, () => {
     return HttpResponse.json(mockRevision, { status: 200 });
   }),
   http.post(`${baseURL}/:wikiId/page`, async ({ request }) => {
@@ -264,6 +264,9 @@ const handlers = [
         default: 'PRODUCTION_COLLABORATIVE',
       },
     });
+  }),
+  http.get(`${baseURL}/${mockWiki._id}/page/:pageId/revisions/:version`, () => {
+    return HttpResponse.json(mockRevision[0], { status: 200 });
   }),
 ];
 

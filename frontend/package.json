@@ -9,7 +9,11 @@
     "dev": "nx serve",
     "pre-commit": "lint-staged",
     "prepare": "cd .. && husky frontend/.husky || true",
-    "test": "nx test"
+    "test": "nx test",
+    "format": "pnpm format:check && pnpm format:write",
+    "format:check": "npx prettier --check .",
+    "format:write": "npx prettier --write .",
+    "lint": "eslint ."
   },
   "husky": {
     "hooks": {

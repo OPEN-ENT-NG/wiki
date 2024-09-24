@@ -1,14 +1,10 @@
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
-import { ActionFunctionArgs, redirect, useParams } from 'react-router-dom';
+import { ActionFunctionArgs, redirect } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
-import {
-  pageQueryOptions,
-  useGetPage,
-  wikiQueryOptions,
-  wikiService,
-} from '~/services';
+import { useRevision } from '~/hooks/useRevision';
+import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
 
 const ConfirmVisibilityModal = lazy(
@@ -94,12 +90,8 @@ export const confirmVisibilityAction =
   };
 
 export const EditPage = () => {
-  const params = useParams();
-
-  const { data, isPending } = useGetPage({
-    wikiId: params.wikiId!,
-    pageId: params.pageId!,
-  });
+  const { getPageFromRoute } = useRevision();
+  const { data, isPending } = getPageFromRoute();
 
   const openConfirmVisibilityModal = getOpenConfirmVisibilityModal();
 

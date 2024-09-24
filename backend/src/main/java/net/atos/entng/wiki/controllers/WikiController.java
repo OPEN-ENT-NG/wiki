@@ -32,6 +32,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
@@ -480,7 +481,7 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
-	@Get("/revisions/:id/:idpage")
+	@Get("/:id/page/:idpage/revisions")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void listRevisions(HttpServerRequest request) {
 		String id = request.params().get("id");
@@ -490,6 +491,17 @@ public class WikiController extends MongoDbControllerHelper {
 			return;
 		}
 		wikiService.listRevisions(id, pageId, arrayResponseHandler(request));
+	}
+
+	@Get("/:id/page/:idpage/revisions/:idrev")
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
+	public void getRevisionById(HttpServerRequest request) {
+		String revisionId = request.params().get("idrev");
+		if (StringUtils.isEmpty(revisionId)) {
+			badRequest(request, "invalid.params");
+			return;
+		}
+		wikiService.getRevisionById(revisionId, notEmptyResponseHandler(request));
 	}
 
 	@Get("/library")

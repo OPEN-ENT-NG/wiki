@@ -86,6 +86,13 @@ public interface WikiService {
 
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler);
 
+	/**
+	 *
+	 * @param revisionId id of the revision
+	 * @param handler a Handler that receive revision content as JsonObject using an Either
+	 */
+	void getRevisionById(String revisionId, Handler<Either<String, JsonObject>> handler);
+
 	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler);
 
 }

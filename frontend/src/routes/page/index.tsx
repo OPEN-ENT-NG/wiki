@@ -12,11 +12,12 @@ import {
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
+import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
+import { useRevision } from '~/hooks/useRevision';
 import {
   pageQueryOptions,
   useCreateComment,
   useDeleteComment,
-  useGetPage,
   useUpdateComment,
   wikiService,
 } from '~/services';
@@ -50,6 +51,16 @@ export const loader =
       });
     }
 
+    if (params.versionId) {
+      await queryClient.ensureQueryData(
+        pageQueryOptions.findOneRevision({
+          wikiId: params.wikiId!,
+          pageId: params.pageId!,
+          revisionId: params.versionId!,
+        })
+      );
+    }
+
     return data;
   };
 
@@ -77,11 +88,9 @@ export const Page = () => {
 
   const { setSelectedNodeId } = useTreeActions();
 
-  const { isPending, error, data } = useGetPage({
-    wikiId: params.wikiId!,
-    pageId: params.pageId!,
-  });
-
+  const { getPageVersionFromRoute } = useRevision();
+  const { isPending, error, data, showComments, isRevision } =
+    getPageVersionFromRoute();
   useEffect(() => {
     if (data) {
       setSelectedNodeId(data._id);
@@ -130,7 +139,7 @@ export const Page = () => {
 
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
-      <PageHeader page={data} />
+      {isRevision ? <RevisionHeader page={data} /> : <PageHeader page={data} />}
       <Editor
         ref={editorRef}
         content={data.content}
@@ -139,19 +148,21 @@ export const Page = () => {
         visibility="protected"
       ></Editor>
 
-      <CommentProvider
-        comments={data.comments}
-        options={{
-          maxCommentLength: MAX_COMMENT_LENGTH,
-          maxComments: MAX_COMMENTS,
-        }}
-        callbacks={{
-          post: (comment) => handleOnPostComment(comment),
-          put: ({ comment, commentId }) =>
-            handleOnPutcomment({ comment, commentId }),
-          delete: (commentId) => handleOnDeleteComment(commentId),
-        }}
-      />
+      {showComments && (
+        <CommentProvider
+          comments={data.comments}
+          options={{
+            maxCommentLength: MAX_COMMENT_LENGTH,
+            maxComments: MAX_COMMENTS,
+          }}
+          callbacks={{
+            post: (comment) => handleOnPostComment(comment),
+            put: ({ comment, commentId }) =>
+              handleOnPutcomment({ comment, commentId }),
+            delete: (commentId) => handleOnDeleteComment(commentId),
+          }}
+        />
+      )}
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeleteModal />}

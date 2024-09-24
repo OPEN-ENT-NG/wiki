@@ -71,6 +71,11 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'page/:pageId/subpage/edit',
             element: <div>édition page enfant</div>,
           },
+          {
+            path: 'page/:pageId/version/:versionId',
+            element: <Page />,
+            loader: pageLoader(queryClient),
+          },
         ],
       },
       {

@@ -56,6 +56,17 @@ describe('Wiki Page GET Methods', () => {
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockRevision);
   });
+
+  test('makes a GET request to get one revision of a page', async () => {
+    const response = await wikiService.getRevisionPage({
+      wikiId: mockPage._id,
+      pageId: mockPage.pages[0]._id,
+      revisionId: mockRevision[0]._id,
+    });
+
+    expect(response).toBeDefined();
+    expect(response).toStrictEqual(mockRevision[0]);
+  });
 });
 
 describe('Wiki Page Mutation Methods', () => {
