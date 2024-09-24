@@ -1,35 +1,22 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import {
   pageQueryOptions,
   useCreatePage,
   useDeletePage,
   useGetPage,
+  useGetRevisionPage,
   useGetRevisionsPage,
   useUpdatePage,
 } from './page';
 
-import { PropsWithChildren } from 'react';
 import { mockPage, mockRevision } from '~/mocks';
 import '~/mocks/setup.msw';
 import { wikiQueryOptions } from '~/services';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
+import { queryClient, wrapper } from '~/mocks/setup.vitest';
 
 const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries');
 const removeQueriesSpy = vi.spyOn(queryClient, 'removeQueries');
 
-const wrapper = ({ children }: PropsWithChildren) => {
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
 describe('Wiki Page GET Queries', () => {
   test('use useGetPage hook to get one page of a wiki', async () => {
     const { result } = renderHook(
@@ -66,6 +53,26 @@ describe('Wiki Page GET Queries', () => {
       expect(result.current.isSuccess).toBe(true);
       expect(result.current.data).toBeDefined();
       expect(result.current.data).toEqual(mockRevision);
+    });
+  });
+
+  test('use useGetRevisionPage to get revisions of a page', async () => {
+    const { result } = renderHook(
+      () =>
+        useGetRevisionPage({
+          wikiId: mockPage._id,
+          pageId: mockPage.pages[0]._id,
+          revisionId: mockRevision[0]._id,
+        }),
+      {
+        wrapper,
+      }
+    );
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockRevision[0]);
     });
   });
 });

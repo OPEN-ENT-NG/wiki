@@ -79,7 +79,30 @@ const createWikiService = (baseURL: string) => ({
   }) {
     const response = await odeServices
       .http()
-      .get<Revision[]>(`${baseURL}/revisions/${wikiId}/${pageId}`);
+      .get<Revision[]>(`${baseURL}/${wikiId}/page/${pageId}/revisions`);
+    return response;
+  },
+  /**
+   *
+   * @param wikiId
+   * @param pageId
+   * @param revisionId
+   * @returns on revision of a page by id
+   */
+  async getRevisionPage({
+    wikiId,
+    pageId,
+    revisionId,
+  }: {
+    wikiId: string;
+    pageId: string;
+    revisionId: string;
+  }) {
+    const response = await odeServices
+      .http()
+      .get<Revision>(
+        `${baseURL}/${wikiId}/page/${pageId}/revisions/${revisionId}`
+      );
     return response;
   },
 

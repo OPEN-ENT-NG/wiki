@@ -862,6 +862,16 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				MongoDbResult.validResultsHandler(handler));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void getRevisionById(String revisionId, Handler<Either<String, JsonObject>> handler) {
+		QueryBuilder query = QueryBuilder.start("_id").is(revisionId);
+		mongo.findOne(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), null, null,
+				MongoDbResult.validResultHandler(handler));
+	}
+
 	@Override
 	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId);
