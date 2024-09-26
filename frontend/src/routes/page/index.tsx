@@ -75,7 +75,12 @@ export const action =
     /**
      * We invalidate wiki and pages queries
      */
-    await queryClient.invalidateQueries();
+    queryClient.removeQueries(
+      pageQueryOptions.findOne({
+        wikiId: params.wikiId!,
+        pageId: params.pageId!,
+      })
+    );
 
     return redirect(`/id/${params.wikiId}`);
   };
