@@ -5,8 +5,9 @@ import { useMatch, useNavigate } from 'react-router-dom';
 
 export const NewPage = () => {
   const navigate = useNavigate();
-  const { appCode } = useOdeClient();
   const match = useMatch('/id/:wikiId/page/create');
+
+  const { appCode } = useOdeClient();
   const { t } = useTranslation();
 
   const handleCreatePage = () => {
