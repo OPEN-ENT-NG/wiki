@@ -113,6 +113,20 @@ export interface TreeNodeProps
    * Function to fold / unfold node
    */
   onToggleNode?: (nodeId: string) => void;
+  /**
+   * Space for indentation
+   */
+  indentationWidth: number;
+
+  depth: number;
+
+  isChildren?: boolean;
+
+  projected?: {
+    depth: number;
+    parentId: string | null;
+    activeId: UniqueIdentifier;
+  } | null;
 }
 
 export interface DndTreeNodeProps extends TreeNodeProps {
