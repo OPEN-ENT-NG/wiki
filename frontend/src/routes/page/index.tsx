@@ -155,6 +155,7 @@ export const Page = () => {
             maxCommentLength: MAX_COMMENT_LENGTH,
             maxComments: MAX_COMMENTS,
           }}
+          type="edit"
           callbacks={{
             post: (comment) => handleOnPostComment(comment),
             put: ({ comment, commentId }) =>

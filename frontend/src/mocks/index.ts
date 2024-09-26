@@ -97,6 +97,7 @@ export const mockWikiPages = {
       modified: {
         $date: 1720689256171,
       },
+      comments: undefined,
     },
     {
       _id: '668fa274f6b74f5fc8884cac',
@@ -106,6 +107,7 @@ export const mockWikiPages = {
       modified: {
         $date: 1720689268906,
       },
+      comments: undefined,
     },
   ],
 };

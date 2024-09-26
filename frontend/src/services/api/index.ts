@@ -6,9 +6,11 @@ import {
   PagePutPayload,
   PickedWiki,
   Wiki,
+  WikiDto,
 } from '~/models';
 import { Revision } from '~/models/revision';
 import { dtoToPage } from '~/utils/dtoToPage';
+import { dtoToWikiPage } from '~/utils/dtoToWikiPages';
 
 /**
  *
@@ -43,11 +45,11 @@ const createWikiService = (baseURL: string) => ({
    * @param wikiId string
    * @returns get wiki pages by wiki id
    */
-  async getWikiPages(wikiId: string) {
+  async getWikiPages(wikiId: string, content: boolean) {
     const response = await odeServices
       .http()
-      .get<Page[]>(`${baseURL}/${wikiId}/pages`);
-    return response;
+      .get<WikiDto>(`${baseURL}/${wikiId}/pages?content=${content}`);
+    return dtoToWikiPage(response);
   },
 
   /**

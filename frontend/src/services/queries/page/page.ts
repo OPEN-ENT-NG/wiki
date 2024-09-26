@@ -18,10 +18,16 @@ export const pageQueryOptions = {
       queryFn: () => wikiService.getPage({ wikiId, pageId }),
       staleTime: 5000,
     }),
-  findAllFromWiki: ({ wikiId }: { wikiId: string }) =>
+  findAllFromWiki: ({
+    wikiId,
+    content,
+  }: {
+    wikiId: string;
+    content: boolean;
+  }) =>
     queryOptions({
       queryKey: [...pageQueryOptions.base, { id: wikiId }] as const,
-      queryFn: () => wikiService.getWikiPages(wikiId),
+      queryFn: () => wikiService.getWikiPages(wikiId, content),
       staleTime: 5000,
     }),
   findAllRevisionsForPage: ({
@@ -80,8 +86,14 @@ export const useGetPage = ({
   return useQuery(pageQueryOptions.findOne({ wikiId, pageId }));
 };
 
-export const useGetPagesFromWiki = ({ wikiId }: { wikiId: string }) => {
-  return useQuery(pageQueryOptions.findAllFromWiki({ wikiId }));
+export const useGetPagesFromWiki = ({
+  wikiId,
+  content,
+}: {
+  wikiId: string;
+  content: boolean;
+}) => {
+  return useQuery(pageQueryOptions.findAllFromWiki({ wikiId, content }));
 };
 
 export const useGetRevisionsPage = ({

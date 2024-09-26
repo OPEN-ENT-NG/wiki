@@ -27,7 +27,13 @@ import { Page } from '~/models';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions';
 
-export const PageHeader = ({ page }: { page: Page }) => {
+export const PageHeader = ({
+  page,
+  isPrint,
+}: {
+  page: Page;
+  isPrint?: boolean;
+}) => {
   const navigate = useNavigate();
   const userRights = useUserRights();
 
@@ -130,7 +136,7 @@ export const PageHeader = ({ page }: { page: Page }) => {
         </div>
       </div>
       <div className="d-flex justify-content-between align-items-center gap-12">
-        {!isOnlyRead && (
+        {!isOnlyRead && !isPrint && (
           <>
             <Button onClick={handleEditPage} leftIcon={<Edit />}>
               {t('wiki.page.edit')}

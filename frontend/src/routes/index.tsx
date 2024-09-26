@@ -79,8 +79,14 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
         ],
       },
       {
-        path: 'print/id/:wallId',
-        element: <div>print</div>,
+        async lazy() {
+          const { printLoader, Component } = await import('./print');
+          return {
+            loader: printLoader(queryClient),
+            Component,
+          };
+        },
+        path: 'print/id/:wikiId',
         errorElement: <PageError />,
       },
     ],

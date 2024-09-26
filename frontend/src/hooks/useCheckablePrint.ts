@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 type PrintGroup = 'allPages' | 'onePage';
 
 export const useCheckablePrint = () => {
-  const [, setIsAllPages] = useState<boolean>(false);
+  const params = useParams();
+  const navigate = useNavigate();
+  const [isAllPages, setIsAllPages] = useState<boolean>(false);
   const [printGroup, setPrintGroup] = useState<PrintGroup>('onePage');
   const [printComment, setPrintComment] = useState<boolean>(false);
 
@@ -29,9 +32,23 @@ export const useCheckablePrint = () => {
     setIsAllPages(allPages);
   };
 
+  const generateQueryParams = () => {
+    if (isAllPages) {
+      return `printComment=${printComment}`;
+    } else {
+      return `printPageId=${params.pageId}&printComment=${printComment}`;
+    }
+  };
+
+  const handleOnPrintWiki = () => {
+    const queryParams = generateQueryParams();
+    navigate(`/print/id/${params.wikiId}?${queryParams}`);
+  };
+
   return {
     handleOnGroupChange,
     handleOnPrintComment,
+    handleOnPrintWiki,
     printComment,
     printGroup,
   };
