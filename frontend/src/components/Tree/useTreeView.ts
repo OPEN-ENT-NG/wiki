@@ -301,7 +301,7 @@ export const useTreeView = ({
   const handleItemDrag = (nodeId: string) => {
     const isNodeExist = findNodeById(data, externalSelectedNodeId as string);
     if (!isNodeExist) return;
-    handleExpandNode(nodeId);
+    handleCollapseNode(nodeId);
   };
 
   return {
