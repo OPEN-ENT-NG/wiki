@@ -8,6 +8,12 @@ export type TreeItem = {
   children?: TreeItem[];
 };
 
+export type Projected = {
+  depth: number;
+  parentId: string | null;
+  activeId: UniqueIdentifier;
+} | null;
+
 export interface TreeProps extends SharedTreeProps {
   /**
    * Tree data
@@ -122,11 +128,7 @@ export interface TreeNodeProps
 
   isChildren?: boolean;
 
-  projected?: {
-    depth: number;
-    parentId: string | null;
-    activeId: UniqueIdentifier;
-  } | null;
+  projected?: Projected;
 }
 
 export interface DndTreeNodeProps extends TreeNodeProps {

@@ -160,7 +160,7 @@ export const Index = () => {
 
                   if (!page) return;
 
-                  /* await wikiService.updatePage({
+                  await wikiService.updatePage({
                     wikiId: params.wikiId!,
                     pageId: nodeId as string,
                     data: {
@@ -173,7 +173,7 @@ export const Index = () => {
                           }
                         : undefined),
                     },
-                  }); */
+                  });
                 }}
                 onTreeItemClick={handleOnTreeItemClick}
               />

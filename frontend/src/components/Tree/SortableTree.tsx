@@ -1,4 +1,4 @@
-import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 import {
   AnimateLayoutChanges,
   SortableContext,
@@ -11,10 +11,9 @@ import clsx from 'clsx';
 import { CSSProperties, forwardRef, Ref } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { SortableTreeProps, TreeNodeProps } from './types';
+import { FlattenedItem, SortableTreeProps, TreeNodeProps } from './types';
 import { useTreeView } from './useTreeView';
 import { useTreeSortable } from './useTreeSortable';
-import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 
 export const SortableTree = ({
   nodes,
@@ -60,10 +59,9 @@ export const SortableTree = ({
       <ul role="tree" className="m-0 p-0">
         <DndContext
           accessibility={{ announcements }}
-          modifiers={[restrictToWindowEdges]}
+          //modifiers={[restrictToWindowEdges]}
           sensors={sensors}
           measuring={measuring}
-          collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
@@ -100,7 +98,7 @@ export const SortableTree = ({
             >
               {activeId && activeItem ? (
                 <DragOverlayItem
-                  id={activeId}
+                  activeItem={activeItem}
                   depth={activeItem.depth}
                   indentationWidth={indentationWidth}
                 />
@@ -248,7 +246,7 @@ const TreeNode = forwardRef(
               onClick={() => onTreeItemClick(node.id)}
               onKeyDown={handleItemKeyDown}
             >
-              {renderNode ? (
+              {renderNode && !isChildren ? (
                 renderNode({
                   nodeId: node.id,
                   nodeName: node.name,
@@ -281,6 +279,7 @@ const TreeNode = forwardRef(
                       : 0
                   }
                   isChildren={true}
+                  projected={projected}
                 />
               ))}
             </ul>
@@ -294,11 +293,15 @@ const TreeNode = forwardRef(
 export const DragOverlayItem = forwardRef(
   (
     {
-      id,
+      activeItem,
       depth,
       indentationWidth,
       ...props
-    }: { id: string; depth: number; indentationWidth: number },
+    }: {
+      activeItem: FlattenedItem | null | undefined;
+      depth: number;
+      indentationWidth: number;
+    },
     ref: Ref<HTMLDivElement>
   ) => {
     return (
@@ -309,16 +312,19 @@ export const DragOverlayItem = forwardRef(
         style={{ cursor: 'grabbing' }}
       >
         <div
-          className={clsx(
-            'action-container d-flex align-items-center gap-8 px-2'
-          )}
+          className={clsx('action-container align-items-center gap-8 px-2')}
+          style={{
+            backgroundColor: 'white',
+            border: '1px solid black',
+            width: '100px',
+          }}
         >
           <div
             className={clsx(
               'flex-fill d-flex align-items-center text-truncate gap-8 py-8'
             )}
           >
-            <span className="text-truncate">{id}</span>
+            <span className="text-truncate">{activeItem?.name}</span>
           </div>
         </div>
       </div>

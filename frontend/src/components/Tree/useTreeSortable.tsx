@@ -17,32 +17,12 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
-function getDragDepth(offset: number, indentationWidth: number) {
-  return Math.round(offset / indentationWidth);
-}
-
-const flattenTree = (
-  tree: TreeItem[],
-  parentId: string | null,
-  depth = 0
-): FlattenedItem[] => {
-  return tree.reduce((acc, node) => {
-    acc.push({
-      id: node.id,
-      name: node.name,
-      parentId: parentId ?? null,
-      depth: depth ?? 0,
-      children: node.children,
-    });
-
-    if (node.children && node.children.length > 0) {
-      acc = acc.concat(flattenTree(node.children, node.id, depth + 1));
-    }
-
-    return acc;
-  }, [] as FlattenedItem[]);
-};
+import {
+  determineNewParentId,
+  flattenTree,
+  getDragDepth,
+  getIndicesToUpdate,
+} from './utils';
 
 export const useTreeSortable = ({
   nodes,
@@ -83,10 +63,6 @@ export const useTreeSortable = ({
   const activeItem = activeId
     ? flattenedTree.find(({ id }) => id === activeId)
     : null;
-
-  /* useEffect(() => {
-    if (nodes) setItems(nodes);
-  }, [nodes]); */
 
   const buildTree = (flatNodes: FlattenedItem[]): TreeItem[] => {
     const nodeMap = new Map<string, TreeItem>();
@@ -131,9 +107,7 @@ export const useTreeSortable = ({
     const projectedDepth = activeItem.depth + dragDepth;
     let depth = projectedDepth + activeItem.depth;
 
-    if (activeItem && activeItem.children && activeItem.children.length > 0) {
-      depth = 0;
-    } else if (!previousItem) {
+    if (!previousItem) {
       depth = 0;
     } else {
       depth = Math.max(0, Math.min(1, projectedDepth));
@@ -190,7 +164,7 @@ export const useTreeSortable = ({
     }
   }
 
-  function handleDragMove({ delta, active, over }: DragMoveEvent) {
+  function handleDragMove({ delta }: DragMoveEvent) {
     setOffsetLeft(delta.x);
   }
 
@@ -203,58 +177,60 @@ export const useTreeSortable = ({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    const overIndex = flattenedTree.findIndex(({ id }) => id === over?.id);
-    const activeIndex = flattenedTree.findIndex(({ id }) => id === active.id);
-    const parentOfChildIndex = flattenedTree.findIndex(
-      ({ id }) => id === projected?.previousItem?.parentId
+    const activeNodeIndex = flattenedTree.findIndex(
+      ({ id }) => id === active.id
     );
-    const overTreeItem = flattenedTree[overIndex];
-    const activeTreeItem = flattenedTree[activeIndex];
-    const parentOfChildItem = flattenedTree[parentOfChildIndex];
+    const overNodeIndex = over
+      ? flattenedTree.findIndex(({ id }) => id === over.id)
+      : -1;
+    const activeNode = flattenedTree[activeNodeIndex];
+    const overNode = overNodeIndex !== -1 ? flattenedTree[overNodeIndex] : null;
 
-    const isActiveParent =
-      activeTreeItem.children && activeTreeItem.children.length === 0;
-    const isMaxChilds =
-      projected?.previousItem?.children &&
-      projected.previousItem.children.length < 2;
-    const isParentMaxChilds =
-      (parentOfChildItem?.children && parentOfChildItem.children.length < 2) ||
-      parentOfChildItem?.children === undefined;
+    const newParentId = determineNewParentId(
+      active,
+      over,
+      activeNode,
+      overNode,
+      projected
+    );
 
-    const commonCondition = isActiveParent && isMaxChilds && isParentMaxChilds;
-
-    if (commonCondition) {
-      let parentId;
-      if (projected && projected.depth === 1) {
-        parentId = projected.parentId;
-      } else if (active.id !== over?.id) {
-        parentId =
-          overTreeItem.parentId === activeTreeItem.parentId
-            ? activeTreeItem.parentId
-            : overTreeItem.parentId;
-      }
-
-      if (parentId !== undefined) {
-        flattenedTree[activeIndex] = {
-          ...activeTreeItem,
-          parentId,
-        };
-      }
-    } else {
-      console.log(flattenedTree[activeIndex]);
-      flattenedTree[activeIndex] = { ...activeTreeItem, depth: 0 };
+    if (newParentId !== undefined) {
+      const indicesToUpdate = getIndicesToUpdate(
+        activeNode,
+        activeNodeIndex,
+        flattenedTree,
+        projected
+      );
+      updateParentIds(flattenedTree, indicesToUpdate, newParentId);
     }
 
-    const sortedItems = arrayMove(flattenedTree, activeIndex, overIndex);
-    const buildedTree = buildTree(sortedItems);
+    const updatedFlattenedTree = arrayMove(
+      flattenedTree,
+      activeNodeIndex,
+      overNodeIndex
+    );
+    const updatedTree = buildTree(updatedFlattenedTree);
 
-    setItems(buildedTree);
+    setItems(updatedTree);
     setActiveId(null);
     setOverId(null);
 
     onSortable({
       nodeId: active.id,
-      parentId: flattenedTree[activeIndex].parentId,
+      parentId: flattenedTree[activeNodeIndex].parentId,
+    });
+  }
+
+  function updateParentIds(
+    flattenedTree: any[],
+    indices: number[],
+    newParentId: string | null | undefined
+  ) {
+    indices.forEach((index) => {
+      flattenedTree[index] = {
+        ...flattenedTree[index],
+        parentId: newParentId,
+      };
     });
   }
 
@@ -382,10 +358,6 @@ export const useTreeSortable = ({
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  /* const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth)
-  ); */
 
   return {
     handleDragStart,
