@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 const mocks = vi.hoisted(() => ({
   handleOnGroupChange: vi.fn(),
   handleOnPrintComment: vi.fn(),
+  handleOnPrintWiki: vi.fn(),
   usePrintPage: vi.fn(),
   setOpenPrintModal: vi.fn(),
 }));
@@ -35,6 +36,7 @@ vi.mock('~/hooks/useCheckablePrint');
 const mockPrintModalHookValue = {
   handleOnGroupChange: mocks.handleOnGroupChange,
   handleOnPrintComment: mocks.handleOnPrintComment,
+  handleOnPrintWiki: mocks.handleOnPrintComment,
   printComment: false,
   printGroup: 'onePage' as PrintGroup,
 };

@@ -92,7 +92,7 @@ export const AppActions = () => {
       data-testid="print-button"
       variant="outline"
       icon={<Print />}
-      onClick={() => alert('print')}
+      onClick={() => setOpenPrintModal(true)}
     />
   );
 };

@@ -12,6 +12,7 @@ export default function PrintModal() {
   const {
     handleOnGroupChange,
     handleOnPrintComment,
+    handleOnPrintWiki,
     printComment,
     printGroup,
   } = useCheckablePrint();
@@ -63,7 +64,12 @@ export default function PrintModal() {
             {t('wiki.modal.print.page.cancel')}
           </Button>
 
-          <Button type="button" color="primary" variant="filled">
+          <Button
+            type="button"
+            color="primary"
+            variant="filled"
+            onClick={handleOnPrintWiki}
+          >
             {t('wiki.modal.print.button.print')}
           </Button>
         </Modal.Footer>
