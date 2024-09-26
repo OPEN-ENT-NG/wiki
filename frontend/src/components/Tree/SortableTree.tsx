@@ -49,11 +49,6 @@ export const SortableTree = ({
     useTreeView({
       data: nodes,
       externalSelectedNodeId,
-      draggedNode: {
-        isOver: true,
-        overId: activeId ?? undefined,
-        isTreeview: true,
-      },
       shouldExpandAllNodes,
       onTreeItemClick,
       // onTreeItemFold,
@@ -200,7 +195,7 @@ const TreeNode = forwardRef(
         ? null
         : isChildren
         ? depth === 1
-          ? '20px'
+          ? `${indentationWidth * depth}px`
           : '0px'
         : `${indentationWidth * depth}px`;
 
@@ -310,7 +305,7 @@ export const DragOverlayItem = forwardRef(
       <div
         ref={ref}
         {...props}
-        //className="opacity-0"
+        className="opacity-0"
         style={{ cursor: 'grabbing' }}
       >
         <div
@@ -323,7 +318,7 @@ export const DragOverlayItem = forwardRef(
               'flex-fill d-flex align-items-center text-truncate gap-8 py-8'
             )}
           >
-            <span className="text-truncate">{'c'}</span>
+            <span className="text-truncate">{id}</span>
           </div>
         </div>
       </div>

@@ -139,7 +139,7 @@ export const useTreeSortable = ({
       depth = Math.max(0, Math.min(1, projectedDepth));
     }
 
-    return { depth, parentId: getParentId(), activeId };
+    return { depth, parentId: getParentId(), activeId, previousItem };
 
     function getParentId() {
       if (depth === 0 || !previousItem) {
@@ -205,32 +205,44 @@ export const useTreeSortable = ({
 
     const overIndex = flattenedTree.findIndex(({ id }) => id === over?.id);
     const activeIndex = flattenedTree.findIndex(({ id }) => id === active.id);
+    const parentOfChildIndex = flattenedTree.findIndex(
+      ({ id }) => id === projected?.previousItem?.parentId
+    );
     const overTreeItem = flattenedTree[overIndex];
     const activeTreeItem = flattenedTree[activeIndex];
+    const parentOfChildItem = flattenedTree[parentOfChildIndex];
 
-    if (active.id !== over?.id) {
+    const isActiveParent =
+      activeTreeItem.children && activeTreeItem.children.length === 0;
+    const isMaxChilds =
+      projected?.previousItem?.children &&
+      projected.previousItem.children.length < 2;
+    const isParentMaxChilds =
+      (parentOfChildItem?.children && parentOfChildItem.children.length < 2) ||
+      parentOfChildItem?.children === undefined;
+
+    const commonCondition = isActiveParent && isMaxChilds && isParentMaxChilds;
+
+    if (commonCondition) {
+      let parentId;
       if (projected && projected.depth === 1) {
+        parentId = projected.parentId;
+      } else if (active.id !== over?.id) {
+        parentId =
+          overTreeItem.parentId === activeTreeItem.parentId
+            ? activeTreeItem.parentId
+            : overTreeItem.parentId;
+      }
+
+      if (parentId !== undefined) {
         flattenedTree[activeIndex] = {
           ...activeTreeItem,
-          parentId: projected.parentId,
-        };
-      } else {
-        console.log('test');
-        flattenedTree[activeIndex] = {
-          ...activeTreeItem,
-          parentId:
-            overTreeItem.parentId === activeTreeItem.parentId
-              ? activeTreeItem.parentId
-              : overTreeItem.parentId,
+          parentId,
         };
       }
     } else {
-      if (projected && projected.depth === 1) {
-        flattenedTree[activeIndex] = {
-          ...activeTreeItem,
-          parentId: projected.parentId,
-        };
-      }
+      console.log(flattenedTree[activeIndex]);
+      flattenedTree[activeIndex] = { ...activeTreeItem, depth: 0 };
     }
 
     const sortedItems = arrayMove(flattenedTree, activeIndex, overIndex);
