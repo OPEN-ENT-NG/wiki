@@ -486,7 +486,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			if (page.getInteger("position", null) != null) {
 				modifier.set("pages.$.position", page.getInteger("position"));
 			}
-			if (!page.getString("parentId", "").isEmpty()) {
+
+			if (page.getString("parentId") == null) {
+				modifier.unset("pages.$.parentId");
+			} else if (!page.getString("parentId", "").isEmpty()) {
 				modifier.set("pages.$.parentId", page.getString("parentId"));
 			}
 
