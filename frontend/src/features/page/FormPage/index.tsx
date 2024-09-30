@@ -9,6 +9,7 @@ import {
   useOdeClient,
 } from '@edifice-ui/react';
 import { Suspense } from 'react';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
@@ -21,60 +22,61 @@ import { Page } from '~/models';
 export const FormPage = ({ page }: { page?: Page }) => {
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
+
   const {
-    handleOnContentChange,
-    handleOnToggleChange,
-    handleOnTitleChange,
-    handleOnReset,
+    handleEditorChange,
+    register,
+    handleSubmit,
+    onSubmit,
     disableToggle,
-    isDisableButton,
-    contentTitle,
-    isSubmitting,
-    isModified,
-    isVisible,
     editorRef,
-    content,
-    isSubPage,
+    control,
+    isSubmitting,
+    isDirty,
+    isValid,
+    label,
+    placeholder,
+    save,
   } = useFormPage(page);
 
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
-    useCancelPage(isModified, page);
-
-  const label = isSubPage
-    ? 'wiki.createform.subpage.label'
-    : 'wiki.createform.page.label';
-
-  const placeholder = isSubPage
-    ? 'wiki.createform.subpage.placeholder'
-    : 'wiki.createform.page.placeholder';
-
-  const save = isSubPage
-    ? 'wiki.createform.subpage.save'
-    : 'wiki.createform.page.save';
+    useCancelPage(isDirty, page);
 
   return (
     <div className="ms-16 ms-lg-24 me-16 mt-24">
-      <Form id="myForm" method="post" role="form">
+      <Form id="pageForm" role="form" onSubmit={handleSubmit(onSubmit)}>
         <FormControl id="inputForm" isRequired>
           <Label>{t(label)}</Label>
           <Input
-            name="title"
             type="text"
+            {...register('title', {
+              required: true,
+              maxLength: MAX_TITLE_LENGTH,
+              pattern: {
+                value: /[^ ]/,
+                message: 'invalid title',
+              },
+            })}
             size="md"
             maxLength={MAX_TITLE_LENGTH}
             placeholder={t(placeholder)}
-            value={contentTitle}
-            onChange={handleOnTitleChange}
             autoFocus={true}
           ></Input>
         </FormControl>
+
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
-          <Toggle
+          <Controller
+            control={control}
             name="isVisible"
-            checked={isVisible}
-            onChange={handleOnToggleChange}
-            disabled={disableToggle()}
+            render={({ field: { onChange, value } }) => (
+              <Toggle
+                disabled={disableToggle()}
+                onChange={onChange}
+                checked={value}
+              />
+            )}
           />
+
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
             message={t('wiki.createform.toggle.message')}
@@ -83,17 +85,25 @@ export const FormPage = ({ page }: { page?: Page }) => {
             <InfoCircle className="c-pointer" height="18" />
           </Tooltip>
         </FormControl>
-        <div className="mt-16 page-content-editor">
-          <Editor
-            ref={editorRef}
-            content={page?.content ?? ''}
-            mode="edit"
-            visibility="protected"
-            onContentChange={handleOnContentChange}
-            focus={null}
-          ></Editor>
-          <input type="hidden" name="content" value={content} />
-        </div>
+
+        <FormControl id="content" className="mt-16 page-content-editor">
+          <Controller
+            control={control}
+            name="content"
+            render={({ field: { onChange, value } }) => (
+              <Editor
+                ref={editorRef}
+                content={value}
+                mode="edit"
+                visibility="protected"
+                onContentChange={({ editor }: any) =>
+                  handleEditorChange({ editor }, onChange)
+                }
+                focus={null}
+              ></Editor>
+            )}
+          />
+        </FormControl>
         <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
@@ -103,8 +113,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             variant="filled"
             leftIcon={<Save />}
             isLoading={isSubmitting}
-            disabled={isDisableButton}
-            onClick={handleOnReset}
+            disabled={isSubmitting || !isDirty || !isValid}
           >
             {t(save)}
           </Button>

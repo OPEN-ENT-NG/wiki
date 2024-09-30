@@ -2,15 +2,12 @@ import { Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useActionData } from 'react-router-dom';
+import { FormPageDataProps } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 import { useOpenConfirmVisibilityModal, useWikiActions } from '~/store';
 
 export default function ConfirmVisibilityModal({ page }: { page: Page }) {
-  const actionData = useActionData() as {
-    title: string;
-    content: string;
-    isVisible: boolean;
-  };
+  const actionData = useActionData() as FormPageDataProps;
 
   const { appCode } = useOdeClient();
   const { t } = useTranslation(appCode);
@@ -42,7 +39,6 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
           {t('wiki.page.editform.cancel')}
         </Button>
         <Form
-          action="confirmVisibility"
           method="post"
           onSubmit={() => setOpenConfirmVisibilityModal(false)}
         >
@@ -51,6 +47,7 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
             name="actionData"
             value={JSON.stringify(actionData)}
           />
+          <input type="hidden" name="isConfirmVisibilityForm" value="true" />
           <Button
             type="submit"
             color="primary"
