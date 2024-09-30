@@ -24,19 +24,18 @@ export const FormPage = ({ page }: { page?: Page }) => {
   const { t } = useTranslation(appCode);
 
   const {
-    handleEditorChange,
+    handleContentChange,
     register,
     handleSubmit,
     onSubmit,
     disableToggle,
-    editorRef,
     control,
     isSubmitting,
     isDirty,
     isValid,
-    label,
-    placeholder,
-    save,
+    PAGE_LABEL,
+    PAGE_PLACEHOLDER,
+    PAGE_SAVE,
   } = useFormPage(page);
 
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
@@ -46,7 +45,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     <div className="ms-16 ms-lg-24 me-16 mt-24">
       <Form id="pageForm" role="form" onSubmit={handleSubmit(onSubmit)}>
         <FormControl id="inputForm" isRequired>
-          <Label>{t(label)}</Label>
+          <Label>{t(PAGE_LABEL)}</Label>
           <Input
             type="text"
             {...register('title', {
@@ -59,7 +58,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             })}
             size="md"
             maxLength={MAX_TITLE_LENGTH}
-            placeholder={t(placeholder)}
+            placeholder={t(PAGE_PLACEHOLDER)}
             autoFocus={true}
           ></Input>
         </FormControl>
@@ -87,23 +86,16 @@ export const FormPage = ({ page }: { page?: Page }) => {
         </FormControl>
 
         <FormControl id="content" className="mt-16 page-content-editor">
-          <Controller
-            control={control}
-            name="content"
-            render={({ field: { onChange, value } }) => (
-              <Editor
-                ref={editorRef}
-                content={value}
-                mode="edit"
-                visibility="protected"
-                onContentChange={({ editor }: any) =>
-                  handleEditorChange({ editor }, onChange)
-                }
-                focus={null}
-              ></Editor>
-            )}
-          />
+          <Editor
+            content={page?.content ?? ''}
+            mode="edit"
+            visibility="protected"
+            onContentChange={handleContentChange}
+            focus={null}
+          ></Editor>
+          <input type="hidden" {...register('content')} />
         </FormControl>
+
         <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
@@ -115,7 +107,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             isLoading={isSubmitting}
             disabled={isSubmitting || !isDirty || !isValid}
           >
-            {t(save)}
+            {t(PAGE_SAVE)}
           </Button>
         </div>
       </Form>

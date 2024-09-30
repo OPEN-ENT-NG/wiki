@@ -1,5 +1,4 @@
-import { EditorRef } from '@edifice-ui/editor';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation, useParams, useSubmit } from 'react-router-dom';
 import { Page } from '~/models';
@@ -13,8 +12,9 @@ export type FormPageDataProps = {
 };
 
 export const useFormPage = (page?: Page) => {
+  const [content, setContent] = useState(page?.content);
+
   const location = useLocation();
-  const editorRef = useRef<EditorRef>(null);
   const params = useParams();
   const { data: wikiData } = useGetWiki(params.wikiId!);
   const submit = useSubmit();
@@ -48,6 +48,7 @@ export const useFormPage = (page?: Page) => {
   const {
     control,
     register,
+    setValue,
     handleSubmit,
     formState: { isSubmitting, isDirty, isValid },
   } = useForm<FormPageDataProps>({
@@ -57,6 +58,11 @@ export const useFormPage = (page?: Page) => {
       content: page?.content,
     },
   });
+
+  useEffect(() => {
+    setValue('content', content ?? '', { shouldDirty: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
 
   const disableToggle = useCallback(() => {
     if (isSubPage) {
@@ -70,12 +76,9 @@ export const useFormPage = (page?: Page) => {
     return false;
   }, [editionMode, isSubPage, wikiData, page, params]);
 
-  const handleEditorChange = (
-    { editor }: any,
-    onChange: (...event: any[]) => void
-  ) => {
+  const handleContentChange = ({ editor }: any) => {
     const updatedContent = editor.getHTML();
-    onChange(updatedContent);
+    setContent(updatedContent);
   };
 
   const onSubmit = (data: any) => {
@@ -84,21 +87,21 @@ export const useFormPage = (page?: Page) => {
     });
   };
 
-  const label = isSubPage
+  const PAGE_LABEL = isSubPage
     ? 'wiki.createform.subpage.label'
     : 'wiki.createform.page.label';
 
-  const placeholder = isSubPage
+  const PAGE_PLACEHOLDER = isSubPage
     ? 'wiki.createform.subpage.placeholder'
     : 'wiki.createform.page.placeholder';
 
-  const save = isSubPage
+  const PAGE_SAVE = isSubPage
     ? 'wiki.createform.subpage.save'
     : 'wiki.createform.page.save';
 
   return {
     register,
-    handleEditorChange,
+    handleContentChange,
     handleSubmit,
     onSubmit,
     disableToggle,
@@ -107,9 +110,8 @@ export const useFormPage = (page?: Page) => {
     isSubmitting,
     isDirty,
     isValid,
-    editorRef,
-    label,
-    placeholder,
-    save,
+    PAGE_LABEL,
+    PAGE_PLACEHOLDER,
+    PAGE_SAVE,
   };
 };
