@@ -17,6 +17,7 @@ export const useFormPage = (page?: Page) => {
   const editorRef = useRef<EditorRef>(null);
   const params = useParams();
   const { data: wikiData } = useGetWiki(params.wikiId!);
+  const submit = useSubmit();
 
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;
@@ -56,8 +57,6 @@ export const useFormPage = (page?: Page) => {
       content: page?.content,
     },
   });
-
-  const submit = useSubmit();
 
   const disableToggle = useCallback(() => {
     if (isSubPage) {
@@ -103,6 +102,7 @@ export const useFormPage = (page?: Page) => {
     handleSubmit,
     onSubmit,
     disableToggle,
+    getDefaultVisibleValue,
     control,
     isSubmitting,
     isDirty,
