@@ -6,7 +6,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 
-export * from './app/AppActions';
-export * from './app/AppHeader';
-export * from './wiki/DropdownTreeview';
-export * from './wiki/NewPage';
+export * from './app/AppActions/AppActions';
+export * from './app/AppHeader/AppHeader';
+export * from './wiki/DropdownTreeview/DropdownTreeview';
+export * from './wiki/NewPage/NewPage';
+export * from './wiki/WikiEmptyScreen/WikiEmptyScreen';

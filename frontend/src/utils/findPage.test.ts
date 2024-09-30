@@ -1,6 +1,6 @@
 import { test } from 'vitest';
-import { findPage } from './findPage';
 import { mockPage, mockWiki } from '~/mocks';
+import { findPage } from './findPage';
 
 describe('findPage utils tests', () => {
   test('Returns the page with given pageId from given wiki', () => {

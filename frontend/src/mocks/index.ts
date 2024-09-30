@@ -1,6 +1,7 @@
+import { Wiki } from '~/models';
 import { Revision } from '~/models/revision';
 
-export const mockWiki = {
+export const mockWiki: Wiki = {
   _id: 'f9853a14b354',
   title: 'Wiki',
   pages: [

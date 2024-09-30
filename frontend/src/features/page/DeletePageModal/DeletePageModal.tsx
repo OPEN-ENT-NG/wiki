@@ -2,10 +2,12 @@ import { Alert, Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useParams } from 'react-router-dom';
+import { Wiki } from '~/models';
 import { useGetWiki } from '~/services';
 import { useOpenDeleteModal, useWikiActions } from '~/store';
+import { findPage } from '~/utils/findPage';
 
-export default function DeleteModal() {
+export default function DeletePageModal() {
   const params = useParams();
   const openDeleteModal = useOpenDeleteModal();
 
@@ -15,9 +17,9 @@ export default function DeleteModal() {
   const { data: wiki } = useGetWiki(params.wikiId!);
 
   // Find current page
-  const findPage = wiki?.pages.find((page) => page._id === params.pageId);
+  const page = findPage(wiki as Wiki, params.pageId!);
   // Check if current page has children
-  const hasChildren = findPage?.children;
+  const pageChildren = page?.children;
 
   return createPortal(
     <Modal
@@ -26,17 +28,17 @@ export default function DeleteModal() {
       onModalClose={() => setOpenDeleteModal(false)}
     >
       <Modal.Header onModalClose={() => setOpenDeleteModal(false)}>
-        {hasChildren
+        {pageChildren
           ? t('wiki.modal.delete.pages.header')
           : t('wiki.modal.delete.page.header')}
       </Modal.Header>
       <Modal.Subtitle>
-        {hasChildren
+        {pageChildren
           ? t('wiki.modal.delete.pages.subtitle')
           : t('wiki.modal.delete.page.subtitle')}
       </Modal.Subtitle>
       <Modal.Body>
-        {hasChildren && (
+        {pageChildren && (
           <Alert type="warning">{t('wiki.modal.delete.pages.warning')}</Alert>
         )}
       </Modal.Body>
@@ -60,7 +62,7 @@ export default function DeleteModal() {
             name="destroy"
             value={user?.userId}
           >
-            {hasChildren
+            {pageChildren
               ? t('wiki.modal.delete.pages.btn')
               : t('wiki.modal.delete.page.btn')}
           </Button>

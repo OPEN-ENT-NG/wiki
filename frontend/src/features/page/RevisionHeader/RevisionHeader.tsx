@@ -1,4 +1,4 @@
-import { Wand, Undo } from '@edifice-ui/icons';
+import { Undo, Wand } from '@edifice-ui/icons';
 import {
   Avatar,
   Badge,
@@ -9,8 +9,8 @@ import {
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { useTranslation } from 'react-i18next';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import { Page } from '~/models';
-import { useRevision } from '~/hooks/useRevision';
 
 export const RevisionHeader = ({ page }: { page: Page }) => {
   const { formatDate } = useDate();

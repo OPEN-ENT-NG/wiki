@@ -11,8 +11,8 @@ import {
 
 import { mockPage, mockRevision } from '~/mocks';
 import '~/mocks/setup.msw';
-import { wikiQueryOptions } from '~/services';
 import { queryClient, wrapper } from '~/mocks/setup.vitest';
+import { wikiQueryOptions } from '~/services';
 
 const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries');
 const removeQueriesSpy = vi.spyOn(queryClient, 'removeQueries');

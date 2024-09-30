@@ -1,7 +1,7 @@
+import userEvent from '@testing-library/user-event';
+import { useCheckablePrint } from '~/hooks/useCheckablePrint/useCheckablePrint';
 import { render, screen } from '~/mocks/setup.vitest';
 import PrintModal from './PrintModal';
-import { useCheckablePrint } from '~/hooks/useCheckablePrint';
-import userEvent from '@testing-library/user-event';
 
 const mocks = vi.hoisted(() => ({
   handleOnGroupChange: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock('~/store/wiki', () => ({
   }),
 }));
 
-vi.mock('~/hooks/useCheckablePrint');
+vi.mock('~/hooks/useCheckablePrint/useCheckablePrint');
 
 const mockPrintModalHookValue = {
   handleOnGroupChange: mocks.handleOnGroupChange,

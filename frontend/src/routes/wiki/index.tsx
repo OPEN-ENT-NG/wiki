@@ -17,20 +17,21 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { AppHeader } from '~/features';
-import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
-import { NewPage } from '~/features/wiki/NewPage';
-import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
-import { useFeedData } from '~/hooks/useFeedData';
-import { useMenu } from '~/hooks/useMenu';
-import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
-import { useGetWiki, wikiQueryOptions } from '~/services';
-import { getUserRightsActions, useUserRights } from '~/store';
 import {
+  AppHeader,
+  DropdownTreeview,
+  NewPage,
+  WikiEmptyScreen,
+} from '~/features';
+import { useFeedData, useMenu, useRedirectDefaultPage } from '~/hooks';
+import { useGetWiki, wikiQueryOptions } from '~/services';
+import {
+  getUserRightsActions,
   useSelectedNodeId,
   useTreeActions,
   useTreeData,
-} from '~/store/treeview';
+  useUserRights,
+} from '~/store';
 import './index.css';
 
 export const loader =
@@ -62,6 +63,7 @@ export const Index = () => {
   const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
   const { setSelectedNodeId } = useTreeActions();
+
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const { data: menu, handleOnMenuClick } = useMenu({
