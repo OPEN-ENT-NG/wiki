@@ -37,19 +37,19 @@ describe('Wiki GET Methods', () => {
 describe('Wiki Page GET Methods', () => {
   test('makes a GET request to get one page of a wiki', async () => {
     const response = await wikiService.getPage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       pageId: mockPage.pages[0]._id,
     });
 
     expect(response).toBeDefined();
-    expect(response).toHaveProperty('_id');
+    expect(response).toHaveProperty('id');
     expect(response).toHaveProperty('pages');
     expect(response).toEqual(mockPage);
   });
 
   test('makes a GET request to get revisions of a page', async () => {
     const response = await wikiService.getRevisionsPage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       pageId: mockPage.pages[0]._id,
     });
 
@@ -59,7 +59,7 @@ describe('Wiki Page GET Methods', () => {
 
   test('makes a GET request to get one revision of a page', async () => {
     const response = await wikiService.getRevisionPage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       pageId: mockPage.pages[0]._id,
       revisionId: mockRevision[0]._id,
     });
@@ -72,7 +72,7 @@ describe('Wiki Page GET Methods', () => {
 describe('Wiki Page Mutation Methods', () => {
   test('makes a POST request to create a new page of a wiki', async () => {
     const response = await wikiService.createPage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       data: {
         title: "page d'accueil",
         content: 'test',
@@ -85,7 +85,7 @@ describe('Wiki Page Mutation Methods', () => {
 
   test('makes a PUT request to update a page of a wiki', async () => {
     const response = await wikiService.updatePage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       pageId: mockPage.pages[0]._id,
       data: {
         title: "page d'accueil",
@@ -98,7 +98,7 @@ describe('Wiki Page Mutation Methods', () => {
 
   test('makes a DELETE request to delete a page of a wiki', async () => {
     const response = await wikiService.deletePage({
-      wikiId: mockPage._id,
+      wikiId: mockPage.id,
       pageId: mockPage.pages[0]._id,
     });
 

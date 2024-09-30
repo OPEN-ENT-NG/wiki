@@ -1,7 +1,7 @@
 import { Button, Checkbox, Modal, Radio } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
-import { useCheckablePrint } from '~/hooks/useCheckablePrint';
 import { useTranslation } from 'react-i18next';
+import { useCheckablePrint } from '~/hooks';
 import { useOpenPrintModal, useWikiActions } from '~/store';
 
 export default function PrintModal() {

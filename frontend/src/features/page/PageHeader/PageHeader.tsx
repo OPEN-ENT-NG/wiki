@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { Page } from '~/models';
 import { useUserRights, useWikiActions } from '~/store';
-import { ActionDropdownMenuOptions } from '../../app/AppActions';
+import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
 
 export const PageHeader = ({
   page,

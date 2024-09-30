@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetWiki } from '~/services';
 import { useTreeActions } from '~/store';
-import { useFilterVisiblePage } from './useFilterVisiblePage';
+import { useFilterVisiblePage } from '../useFilterVisiblePage/useFilterVisiblePage';
 
 export const useFeedData = () => {
   const params = useParams();

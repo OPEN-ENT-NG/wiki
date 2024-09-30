@@ -150,7 +150,7 @@ export const mockWikis = [
 export const mockWikiPages = {
   pages: [
     {
-      _id: '668fa268f6b74f5fc8884cab',
+      id: '668fa268f6b74f5fc8884cab',
       title: 'page 01',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
@@ -160,7 +160,7 @@ export const mockWikiPages = {
       comments: undefined,
     },
     {
-      _id: '668fa274f6b74f5fc8884cac',
+      id: '668fa274f6b74f5fc8884cac',
       title: 'page 02',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
@@ -173,11 +173,11 @@ export const mockWikiPages = {
 };
 
 export const mockPage = {
-  _id: 'f9853a14b354',
+  id: 'f9853a14b354',
   title: 'Wiki',
   pages: [
     {
-      _id: '001',
+      id: '001',
       title: 'ma nouvelle page',
       content: '',
       contentPlain: 'test modification',

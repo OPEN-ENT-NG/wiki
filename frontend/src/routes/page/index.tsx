@@ -13,7 +13,7 @@ import {
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
-import { useRevision } from '~/hooks/useRevision';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import {
   pageQueryOptions,
   useCreateComment,
@@ -27,8 +27,8 @@ import {
   useTreeActions,
 } from '~/store';
 
-const DeleteModal = lazy(
-  async () => await import('~/features/page/DeleteModal')
+const DeletePageModal = lazy(
+  async () => await import('~/features/page/DeletePageModal/DeletePageModal')
 );
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal')
@@ -72,9 +72,7 @@ export const action =
       pageId: params.pageId!,
     });
 
-    /**
-     * We invalidate wiki and pages queries
-     */
+    // We remove the query from the deleted page
     queryClient.removeQueries(
       pageQueryOptions.findOne({
         wikiId: params.wikiId!,
@@ -96,9 +94,10 @@ export const Page = () => {
   const { getPageVersionFromRoute } = useRevision();
   const { isPending, error, data, showComments, isRevision } =
     getPageVersionFromRoute();
+
   useEffect(() => {
     if (data) {
-      setSelectedNodeId(data._id);
+      setSelectedNodeId(data.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -151,7 +150,7 @@ export const Page = () => {
         mode="read"
         variant="ghost"
         visibility="protected"
-      ></Editor>
+      />
 
       {showComments && (
         <CommentProvider
@@ -171,8 +170,8 @@ export const Page = () => {
       )}
 
       <Suspense fallback={<LoadingScreen position={false} />}>
-        {openDeleteModal && <DeleteModal />}
-        {openVersionsModal && <RevisionModal />}
+        {openDeleteModal && <DeletePageModal />}
+        {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
       </Suspense>
     </div>
   ) : null;

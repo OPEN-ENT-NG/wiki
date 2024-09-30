@@ -2,8 +2,8 @@ import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
 import { ActionFunctionArgs, redirect } from 'react-router-dom';
-import { FormPage } from '~/features/page/FormPage';
-import { useRevision } from '~/hooks/useRevision';
+import { FormPage } from '~/features/page/FormPage/FormPage';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
 
@@ -31,7 +31,7 @@ export const editAction =
     const wikiData = await queryClient.ensureQueryData(
       wikiQueryOptions.findOne(params.wikiId!)
     );
-    const pageData = wikiData.pages?.find((page) => page._id === params.pageId);
+    const pageData = wikiData.pages?.find((page) => page.id === params.pageId);
 
     const { setOpenConfirmVisibilityModal } = getWikiActions();
 

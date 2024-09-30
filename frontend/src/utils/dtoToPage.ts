@@ -1,9 +1,12 @@
 import { PageDto } from '~/models';
 
 export const dtoToPage = (dto: PageDto) => {
+  const { _id, ...rest } = dto;
+
   return {
-    ...dto,
-    comments: dto.comments?.map((comment) => ({
+    id: _id,
+    ...rest,
+    comments: rest.comments?.map((comment) => ({
       id: comment._id,
       comment: comment.comment,
       authorId: comment.author,

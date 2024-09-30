@@ -15,7 +15,7 @@ import {
   useOpenUpdateModal,
   useWikiActions,
 } from '~/store';
-import { AppActions } from './AppActions';
+import { AppActions } from '../AppActions/AppActions';
 
 /* Lazy Loaded Modals */
 const UpdateModal = lazy(
