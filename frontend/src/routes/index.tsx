@@ -7,7 +7,7 @@ import { PageError } from '~/routes/errors';
 import { NotFound } from '~/routes/errors/not-found';
 import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
-import { EditPage, confirmVisibilityAction, editAction } from './page/edit';
+import { EditPage, editAction } from './page/edit';
 import { Pages, loader as pagesLoader } from './page/list';
 import { Index, loader as wikiLoader } from './wiki';
 
@@ -56,11 +56,6 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'page/:pageId/edit',
             element: <EditPage />,
             action: editAction(queryClient),
-          },
-          {
-            path: 'page/:pageId/edit/confirmVisibility',
-            element: <EditPage />,
-            action: confirmVisibilityAction(queryClient),
           },
           {
             path: 'page/:pageId/subpage/create',

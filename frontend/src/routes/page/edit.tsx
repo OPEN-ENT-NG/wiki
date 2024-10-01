@@ -1,11 +1,13 @@
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
+import { useRevision } from '~/hooks/useRevision';
 import { ActionFunctionArgs, redirect } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
-import { useRevision } from '~/hooks/useRevision';
 import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
+import { getFormValue } from '~/utils/getFormValue';
+import { FormPageDataProps } from '~/hooks/useFormPage';
 
 const ConfirmVisibilityModal = lazy(
   async () => await import('~/features/page/ConfirmVisibilityModal')
@@ -23,68 +25,46 @@ const ConfirmVisibilityModal = lazy(
 export const editAction =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
-    const formData = await request.formData();
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const isVisible = formData.get('isVisible') === 'on';
+    const formData: FormData = await request.formData();
 
-    const wikiData = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!)
+    // submitting from confirm visibility modal form
+    const isConfirmVisibilityForm: string = getFormValue(
+      formData,
+      'isConfirmVisibilityForm'
     );
-    const pageData = wikiData.pages?.find((page) => page._id === params.pageId);
 
-    const { setOpenConfirmVisibilityModal } = getWikiActions();
+    const actionData: FormPageDataProps = isConfirmVisibilityForm
+      ? (JSON.parse(getFormValue(formData, 'actionData')) as FormPageDataProps)
+      : {
+          title: getFormValue(formData, 'title'),
+          content: getFormValue(formData, 'content'),
+          isVisible: getFormValue(formData, 'isVisible') === 'true',
+        };
 
-    // if current page has children we compare page visibility to toggle:
-    // if page visibility has changed then we show confirm modal
-    if (pageData?.children && pageData.isVisible !== isVisible) {
-      setOpenConfirmVisibilityModal(true);
-      return { title, content, isVisible };
-    } else {
-      // otherwise we call the updatePage service and redirect to current page.
-      await wikiService.updatePage({
-        wikiId: params.wikiId!,
-        pageId: params.pageId!,
-        data: {
-          title,
-          content,
-          isVisible,
-        },
-      });
-
-      await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
-      await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
-
-      return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
+    // if submitting from page edit form and page has subpages
+    // and visibility has changed then we show confirm modal
+    if (!isConfirmVisibilityForm) {
+      const wikiData = await queryClient.ensureQueryData(
+        wikiQueryOptions.findOne(params.wikiId!)
+      );
+      const pageData = wikiData.pages?.find(
+        (page) => page._id === params.pageId
+      );
+      if (pageData?.children && pageData.isVisible !== actionData.isVisible) {
+        getWikiActions().setOpenConfirmVisibilityModal(true);
+        return actionData;
+      }
     }
-  };
 
-/**
- * Action called when submitting the visibility confirmation modal.
- * @param queryClient
- * @returns redirect to current page.
- */
-export const confirmVisibilityAction =
-  (queryClient: QueryClient) =>
-  async ({ params, request }: ActionFunctionArgs) => {
-    // get the hidden input from the Confirm Modal
-    // the hidden input contains the page edit form data
-    const formData = await request.formData();
-    const { title, content, isVisible } = JSON.parse(
-      formData.get('actionData') as string
-    );
-
+    // otherwise we call the updatePage service and redirect to current page.
     await wikiService.updatePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-      data: {
-        title,
-        content,
-        isVisible,
-      },
+      data: actionData,
     });
 
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+    await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
 
     return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
   };

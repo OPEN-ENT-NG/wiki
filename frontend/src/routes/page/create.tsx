@@ -2,15 +2,16 @@ import { QueryClient } from '@tanstack/react-query';
 import { ActionFunctionArgs, redirect, useLocation } from 'react-router-dom';
 import { FormPage } from '~/features/page/FormPage';
 import { wikiQueryOptions, wikiService } from '~/services';
+import { getFormValue } from '~/utils/getFormValue';
 
 export const action =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData = await request.formData();
 
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const isVisible = formData.get('isVisible') === 'on';
+    const title = getFormValue(formData, 'title');
+    const content = getFormValue(formData, 'content');
+    const isVisible = getFormValue(formData, 'isVisible') === 'true';
 
     const data = await wikiService.createPage({
       wikiId: params.wikiId!,
