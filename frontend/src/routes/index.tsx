@@ -8,7 +8,11 @@ import { NotFound } from '~/routes/errors/not-found';
 import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, editAction } from './page/edit';
-import { Pages, loader as pagesLoader } from './page/list';
+import {
+  Pages,
+  action as deleteListAction,
+  loader as pagesLoader,
+} from './page/list';
 import { Index, loader as wikiLoader } from './wiki';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
@@ -37,6 +41,10 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'pages',
             element: <Pages />,
             loader: pagesLoader(queryClient),
+          },
+          {
+            path: 'pages/destroy',
+            action: deleteListAction(queryClient),
           },
           {
             path: 'page/:pageId',

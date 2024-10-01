@@ -8,8 +8,9 @@
 
 export * from './app/AppActions/AppActions';
 export * from './app/AppHeader/AppHeader';
+export * from './page//DeleteListModal/DeleteListModal';
 export * from './page/ConfirmVisibilityModal/ConfirmVisibilityModal';
-export * from './page/DeleteModal/DeleteModal';
+export * from './page/DeletePageModal/DeletePageModal';
 export * from './page/FormPage/FormPage';
 export * from './page/PageHeader/PageHeader';
 export * from './page/PrintModal/PrintModal';

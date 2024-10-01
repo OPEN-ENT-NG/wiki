@@ -5,7 +5,7 @@ import { Form, useParams } from 'react-router-dom';
 import { useGetWiki } from '~/services';
 import { useOpenDeleteModal, useWikiActions } from '~/store';
 
-export default function DeleteModal() {
+export default function DeletePageModal() {
   const params = useParams();
   const openDeleteModal = useOpenDeleteModal();
 

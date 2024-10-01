@@ -145,6 +145,7 @@
   "wiki.first.emptyscreen.title": "Créez une première page",
   "wiki.first.emptyscreen.text": "Votre première page peut être une introduction ou bien un récapitulatif de votre contenu",
   "wiki.read.author.avatar": "Avatar de l'auteur",
+  "wiki.read.author.publish.by": "Publié par [[author]]",
   "wiki.read.dated.updated": "Modifié le [[date]]",
   "wiki.read.notvisible": "Non visible",
   "explorer.searchbar.placeholder": "Rechercher un wiki",
@@ -186,6 +187,7 @@
   "wiki.modal.delete.pages.btn": "Supprimer les pages",
   "wiki.modal.delete.page.btn": "Supprimer la page",
   "wiki.modal.delete.page.cancel": "Annuler",
+  "wiki.modal.delete.listpage.warning": "Les pages dont vous n'êtes pas auteur ne seront pas supprimées.",
   "wiki.modal.print.header": "Imprimer",
   "wiki.modal.print.radio.page": "Imprimer la page actuelle",
   "wiki.modal.print.radio.pages": "Imprimer tout le wiki",
@@ -203,5 +205,11 @@
   "wiki.version.modal.title": "Historique des versions",
   "wiki.version.modal.tips": "Astuce :",
   "wiki.version.modal.alert.compare": "Sélectionner 2 versions pour activer la comparaison de versions.",
-  "wiki.version.modal.alert.invisible": "Afin de rendre plus lisible la liste, les modifications sur une page masquée ne sont pas listées."
+  "wiki.version.modal.alert.invisible": "Afin de rendre plus lisible la liste, les modifications sur une page masquée ne sont pas listées.",
+  "wiki.list.toolbar.action.read": "Consulter",
+  "wiki.list.toolbar.action.move": "Déplacer",
+  "wiki.list.toolbar.action.duplicate": "Duplicate",
+  "wiki.list.toolbar.action.history": "Voir l'historique",
+  "wiki.list.toolbar.action.print": "Imprimer",
+  "wiki.list.toolbar.action.delete": "Supprimer"
 }
