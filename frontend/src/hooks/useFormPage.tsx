@@ -1,18 +1,23 @@
-import { EditorRef } from '@edifice-ui/editor';
-import { useToggle } from '@uidotdev/usehooks';
-import { useCallback, useRef, useState } from 'react';
-import { useLocation, useNavigation, useParams } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useLocation, useParams, useSubmit } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetWiki } from '~/services';
 import { findPage } from '~/utils/findPage';
 
-export const useFormPage = (page?: Page) => {
-  const navigation = useNavigation();
-  const location = useLocation();
-  const editorRef = useRef<EditorRef>(null);
-  const params = useParams();
+export type FormPageDataProps = {
+  title: string;
+  isVisible: boolean;
+  content: string;
+};
 
+export const useFormPage = (page?: Page) => {
+  const [content, setContent] = useState(page?.content);
+
+  const location = useLocation();
+  const params = useParams();
   const { data: wikiData } = useGetWiki(params.wikiId!);
+  const submit = useSubmit();
 
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;
@@ -40,54 +45,24 @@ export const useFormPage = (page?: Page) => {
     return isVisible;
   }, [page, params, editionMode, isSubPage, wikiData]);
 
-  const [content, setContent] = useState(page?.content ?? '');
-  const [contentTitle, setContentTitle] = useState(page?.title ?? '');
-  const [isVisible, toggle] = useToggle(getDefaultVisibleValue());
-  const [isModified, setIsModified] = useState(false);
-  const [isDisableButton, setIsDisableButton] = useState(true);
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { isSubmitting, isDirty, isValid },
+  } = useForm<FormPageDataProps>({
+    defaultValues: {
+      title: page?.title,
+      isVisible: getDefaultVisibleValue(),
+      content: page?.content,
+    },
+  });
 
-  const isSubmitting = navigation.state === 'submitting';
-
-  const isModify = useCallback(() => {
-    if (!page) return !!content || !!contentTitle;
-    if (content) {
-      return (
-        page.content !== content ||
-        page.title !== contentTitle ||
-        page.isVisible !== isVisible
-      );
-    }
-    return false;
-  }, [content, contentTitle, isVisible, page]);
-
-  const updateModificationState = () => {
-    if (isModify()) {
-      setIsModified(true);
-      setIsDisableButton(false);
-    }
-  };
-
-  const handleOnTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setContentTitle(event.target.value);
-    updateModificationState();
-  };
-
-  const handleOnToggleChange = () => {
-    toggle();
-    updateModificationState();
-  };
-
-  const handleOnContentChange = ({ editor }: any) => {
-    const htmlContent = editor.getHTML();
-    setContent(htmlContent);
-    updateModificationState();
-  };
-
-  const handleOnReset = () => {
-    if (contentTitle.length > 0) {
-      setIsModified(false);
-    }
-  };
+  useEffect(() => {
+    setValue('content', content ?? '', { shouldDirty: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
 
   const disableToggle = useCallback(() => {
     if (isSubPage) {
@@ -101,20 +76,42 @@ export const useFormPage = (page?: Page) => {
     return false;
   }, [editionMode, isSubPage, wikiData, page, params]);
 
+  const handleContentChange = ({ editor }: any) => {
+    const updatedContent = editor.getHTML();
+    setContent(updatedContent);
+  };
+
+  const onSubmit = (data: any) => {
+    submit(data, {
+      method: 'post',
+    });
+  };
+
+  const PAGE_LABEL = isSubPage
+    ? 'wiki.createform.subpage.label'
+    : 'wiki.createform.page.label';
+
+  const PAGE_PLACEHOLDER = isSubPage
+    ? 'wiki.createform.subpage.placeholder'
+    : 'wiki.createform.page.placeholder';
+
+  const PAGE_SAVE = isSubPage
+    ? 'wiki.createform.subpage.save'
+    : 'wiki.createform.page.save';
+
   return {
-    handleOnContentChange,
-    handleOnToggleChange,
-    handleOnTitleChange,
-    handleOnReset,
+    register,
+    handleContentChange,
+    handleSubmit,
+    onSubmit,
     disableToggle,
     getDefaultVisibleValue,
-    isDisableButton,
+    control,
     isSubmitting,
-    contentTitle,
-    isModified,
-    editorRef,
-    isVisible,
-    content,
-    isSubPage,
+    isDirty,
+    isValid,
+    PAGE_LABEL,
+    PAGE_PLACEHOLDER,
+    PAGE_SAVE,
   };
 };

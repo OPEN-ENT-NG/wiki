@@ -7,16 +7,16 @@ import { findPage } from '~/utils/findPage';
 
 // Mocks
 const mocks = vi.hoisted(() => ({
-  useNavigation: vi.fn(),
   useLocation: vi.fn(),
   useParams: vi.fn(),
   useGetWiki: vi.fn(),
+  useSubmit: vi.fn(),
 }));
 
 vi.mock('react-router-dom', () => ({
-  useNavigation: mocks.useNavigation,
   useLocation: mocks.useLocation,
   useParams: mocks.useParams,
+  useSubmit: mocks.useSubmit,
 }));
 
 vi.mock('~/services', () => ({
@@ -25,18 +25,19 @@ vi.mock('~/services', () => ({
 
 describe('useFormPage hook tests', () => {
   const page = findPage(mockWiki, '001');
-  const mockNavigation = { state: 'idle' };
-  const mockLocation = {
-    pathname: `/wiki/id/${mockWiki._id}/page/${page?._id}`,
-  };
-  const mockParams = { wikiId: mockWiki._id, pageId: page?._id };
-  const mockWikiData = mockWiki;
 
   beforeEach(() => {
-    vi.mocked(mocks.useNavigation).mockReturnValue(mockNavigation);
-    vi.mocked(mocks.useLocation).mockReturnValue(mockLocation);
-    vi.mocked(mocks.useParams).mockReturnValue(mockParams);
-    vi.mocked(mocks.useGetWiki).mockReturnValue({ data: mockWikiData });
+    vi.mocked(mocks.useLocation).mockReturnValue({
+      pathname: `/wiki/id/${mockWiki._id}/page/${page?._id}`,
+    });
+    vi.mocked(mocks.useParams).mockReturnValue({
+      wikiId: mockWiki._id,
+      pageId: page?._id,
+    });
+    vi.mocked(mocks.useGetWiki).mockReturnValue({ data: mockWiki });
+    vi.mocked(mocks.useSubmit).mockReturnValue((data: any) => {
+      return;
+    });
   });
 
   afterEach(() => {

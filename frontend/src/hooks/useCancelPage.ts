@@ -6,20 +6,20 @@ import {
 } from 'react-router-dom';
 import { Page } from '~/models';
 
-export const useCancelPage = (isModified: boolean, page?: Page) => {
+export const useCancelPage = (isDirty: boolean, page?: Page) => {
   const params = useParams();
 
   const navigate = useNavigate();
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      isModified && currentLocation !== nextLocation
+      isDirty && currentLocation.pathname !== nextLocation.pathname
   );
 
   const isBlocked = blocker.state === 'blocked';
 
   useBeforeUnload((event) => {
-    if (isModified) {
+    if (isDirty) {
       event.preventDefault();
     }
   });
