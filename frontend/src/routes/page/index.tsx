@@ -27,8 +27,8 @@ import {
   useTreeActions,
 } from '~/store';
 
-const DeleteModal = lazy(
-  async () => await import('~/features/page/DeleteModal/DeleteModal')
+const DeletePageModal = lazy(
+  async () => await import('~/features/page/DeletePageModal/DeletePageModal')
 );
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal')
@@ -171,7 +171,7 @@ export const Page = () => {
       )}
 
       <Suspense fallback={<LoadingScreen position={false} />}>
-        {openDeleteModal && <DeleteModal />}
+        {openDeleteModal && <DeletePageModal />}
         {openVersionsModal && <RevisionModal />}
       </Suspense>
     </div>
