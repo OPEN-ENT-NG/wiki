@@ -1,26 +1,25 @@
 import { useEffect } from 'react';
 import { useMatch, useNavigate, useParams } from 'react-router-dom';
 import { useGetWiki } from '~/services';
+import { useUserRights } from '~/store';
+import { findDefaultPage } from '~/utils/findDefaultPage';
 
 export const useRedirectDefaultPage = () => {
   const params = useParams();
   const navigate = useNavigate();
   const match = useMatch('/id/:wikiId');
+  const userRights = useUserRights();
 
-  const { data } = useGetWiki(params.wikiId!);
+  const { data: wiki } = useGetWiki(params.wikiId!);
 
   useEffect(() => {
-    if (match && data && !!data.pages.length) {
-      const findIndexPage = data.pages.find((page) => page._id === data.index);
-      const firstPage = data.pages[0];
+    if (match && wiki && !!wiki.pages.length) {
+      const defaultPage = findDefaultPage(wiki, userRights);
 
-      if (findIndexPage) {
-        const pageId = findIndexPage?._id;
-        return navigate(`/id/${data?._id}/page/${pageId}`);
-      } else {
-        return navigate(`/id/${data?._id}/page/${firstPage._id}`);
+      if (defaultPage) {
+        return navigate(`/id/${wiki?._id}/page/${defaultPage._id}`);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, match]);
+  }, [wiki, match, userRights]);
 };
