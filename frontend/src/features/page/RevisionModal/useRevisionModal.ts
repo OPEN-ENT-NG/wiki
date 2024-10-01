@@ -1,6 +1,6 @@
 import { useDate } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useRevision } from '~/hooks/useRevision';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import { Revision } from '~/models/revision';
 import { useOpenRevisionModal, useUserRights, useWikiActions } from '~/store';
 

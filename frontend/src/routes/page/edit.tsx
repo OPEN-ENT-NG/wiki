@@ -1,16 +1,19 @@
 import { LoadingScreen } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
-import { useRevision } from '~/hooks/useRevision';
 import { ActionFunctionArgs, redirect } from 'react-router-dom';
-import { FormPage } from '~/features/page/FormPage';
+import { FormPage } from '~/features';
+import { FormPageDataProps } from '~/hooks';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
 import { getFormValue } from '~/utils/getFormValue';
-import { FormPageDataProps } from '~/hooks/useFormPage';
 
 const ConfirmVisibilityModal = lazy(
-  async () => await import('~/features/page/ConfirmVisibilityModal')
+  async () =>
+    await import(
+      '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'
+    )
 );
 
 /**

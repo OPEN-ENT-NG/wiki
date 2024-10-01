@@ -13,7 +13,7 @@ import {
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
-import { useRevision } from '~/hooks/useRevision';
+import { useRevision } from '~/hooks/useRevision/useRevision';
 import {
   pageQueryOptions,
   useCreateComment,
@@ -28,7 +28,7 @@ import {
 } from '~/store';
 
 const DeleteModal = lazy(
-  async () => await import('~/features/page/DeleteModal')
+  async () => await import('~/features/page/DeleteModal/DeleteModal')
 );
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal')
