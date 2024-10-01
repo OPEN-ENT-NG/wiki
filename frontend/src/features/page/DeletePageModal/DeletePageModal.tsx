@@ -2,10 +2,12 @@ import { Alert, Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useParams } from 'react-router-dom';
+import { Wiki } from '~/models';
 import { useGetWiki } from '~/services';
 import { useOpenDeleteModal, useWikiActions } from '~/store';
+import { findPage } from '~/utils/findPage';
 
-export default function DeletePageModal({ listPage }: { listPage?: boolean }) {
+export default function DeletePageModal() {
   const params = useParams();
   const openDeleteModal = useOpenDeleteModal();
 
@@ -15,9 +17,9 @@ export default function DeletePageModal({ listPage }: { listPage?: boolean }) {
   const { data: wiki } = useGetWiki(params.wikiId!);
 
   // Find current page
-  const findPage = wiki?.pages.find((page) => page._id === params.pageId);
+  const page = findPage(wiki as Wiki, params.pageId!);
   // Check if current page has children
-  const pageChildren = listPage ?? findPage?.children;
+  const pageChildren = page?.children;
 
   return createPortal(
     <Modal

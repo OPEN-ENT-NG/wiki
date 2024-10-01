@@ -5,9 +5,9 @@ import { useFetcher } from 'react-router-dom';
 import { useOpenDeleteModal, useUserRights, useWikiActions } from '~/store';
 
 export default function DeleteListModal({
-  selectedItems,
+  selectedPages,
 }: {
-  selectedItems: string[];
+  selectedPages: string[];
 }) {
   const openDeleteModal = useOpenDeleteModal();
   const userRights = useUserRights();
@@ -20,7 +20,7 @@ export default function DeleteListModal({
 
   return createPortal(
     <Modal
-      id="delete-page"
+      id="delete-list-page"
       isOpen={openDeleteModal}
       onModalClose={() => setOpenDeleteModal(false)}
     >
@@ -53,7 +53,7 @@ export default function DeleteListModal({
             color="danger"
             variant="filled"
             name="intent"
-            value={JSON.stringify(selectedItems)}
+            value={JSON.stringify(selectedPages)}
           >
             {t('wiki.modal.delete.page.btn')}
           </Button>

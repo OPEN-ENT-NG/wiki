@@ -22,7 +22,7 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetPage({
-          wikiId: mockPage.id,
+          wikiId: mockPage._id,
           pageId: mockPage.pages[0]._id,
         }),
       {
@@ -41,7 +41,7 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetRevisionsPage({
-          wikiId: mockPage.id,
+          wikiId: mockPage._id,
           pageId: mockPage.pages[0]._id,
         }),
       {
@@ -60,7 +60,7 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetRevisionPage({
-          wikiId: mockPage.id,
+          wikiId: mockPage._id,
           pageId: mockPage.pages[0]._id,
           revisionId: mockRevision[0]._id,
         }),

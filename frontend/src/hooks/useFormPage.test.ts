@@ -1,9 +1,9 @@
-import { test } from 'vitest';
-import { useFormPage } from './useFormPage';
-import { mockPage, mockWiki } from '~/mocks';
 import { renderHook } from '@testing-library/react';
+import { test } from 'vitest';
+import { mockPage, mockWiki } from '~/mocks';
 import { Providers } from '~/providers';
 import { findPage } from '~/utils/findPage';
+import { useFormPage } from './useFormPage/useFormPage';
 
 // Mocks
 const mocks = vi.hoisted(() => ({

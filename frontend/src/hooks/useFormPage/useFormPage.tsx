@@ -17,7 +17,7 @@ export const useFormPage = (page?: Page) => {
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;
 
-  const editionMode = !!page?._id;
+  const editionMode = !!page?.id;
 
   /**
    * Return visibility toggle default value.

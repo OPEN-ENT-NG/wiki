@@ -17,20 +17,21 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { AppHeader } from '~/features';
-import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
-import { NewPage } from '~/features/wiki/NewPage';
-import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
-import { useFeedData } from '~/hooks';
-import { useMenu } from '~/hooks/useMenu/useMenu';
-import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage/useRedirectDefaultPage';
-import { useGetWiki, wikiQueryOptions } from '~/services';
-import { getUserRightsActions, useUserRights } from '~/store';
 import {
+  AppHeader,
+  DropdownTreeview,
+  NewPage,
+  WikiEmptyScreen,
+} from '~/features';
+import { useFeedData, useMenu, useRedirectDefaultPage } from '~/hooks';
+import { useGetWiki, wikiQueryOptions } from '~/services';
+import {
+  getUserRightsActions,
   useSelectedNodeId,
   useTreeActions,
   useTreeData,
-} from '~/store/treeview';
+  useUserRights,
+} from '~/store';
 import './index.css';
 
 export const loader =

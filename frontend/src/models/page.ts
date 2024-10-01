@@ -23,7 +23,7 @@ export interface PageDto {
 }
 
 export interface Page {
-  id: string;
+  _id: string;
   title: string;
   content: string;
   contentPlain: string;

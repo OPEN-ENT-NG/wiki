@@ -1,6 +1,7 @@
+import { Wiki } from '~/models';
 import { Revision } from '~/models/revision';
 
-export const mockWiki = {
+export const mockWiki: Wiki = {
   _id: 'f9853a14b354',
   title: 'Wiki',
   pages: [
@@ -150,7 +151,7 @@ export const mockWikis = [
 export const mockWikiPages = {
   pages: [
     {
-      id: '668fa268f6b74f5fc8884cab',
+      _id: '668fa268f6b74f5fc8884cab',
       title: 'page 01',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
@@ -160,7 +161,7 @@ export const mockWikiPages = {
       comments: undefined,
     },
     {
-      id: '668fa274f6b74f5fc8884cac',
+      _id: '668fa274f6b74f5fc8884cac',
       title: 'page 02',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
@@ -173,11 +174,11 @@ export const mockWikiPages = {
 };
 
 export const mockPage = {
-  id: 'f9853a14b354',
+  _id: 'f9853a14b354',
   title: 'Wiki',
   pages: [
     {
-      id: '001',
+      _id: '001',
       title: 'ma nouvelle page',
       content: '',
       contentPlain: 'test modification',

@@ -8,5 +8,6 @@
 
 export * from './app/AppActions/AppActions';
 export * from './app/AppHeader/AppHeader';
-export * from './wiki/DropdownTreeview';
-export * from './wiki/NewPage';
+export * from './wiki/DropdownTreeview/DropdownTreeview';
+export * from './wiki/NewPage/NewPage';
+export * from './wiki/WikiEmptyScreen/WikiEmptyScreen';
