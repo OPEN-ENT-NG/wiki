@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { ActionFunctionArgs, redirect, useLocation } from 'react-router-dom';
-import { FormPage } from '~/features/page/FormPage';
+import { FormPage } from '~/features';
 import { wikiQueryOptions, wikiService } from '~/services';
 import { getFormValue } from '~/utils/getFormValue';
 

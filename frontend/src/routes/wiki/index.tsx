@@ -17,10 +17,12 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { AppHeader } from '~/features';
-import { DropdownTreeview } from '~/features/wiki/DropdownTreeview';
-import { NewPage } from '~/features/wiki/NewPage';
-import WikiEmptyScreen from '~/features/wiki/WikiEmptyScreen';
+import {
+  AppHeader,
+  DropdownTreeview,
+  NewPage,
+  WikiEmptyScreen,
+} from '~/features';
 import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
