@@ -3,7 +3,7 @@ import {
   mockPage,
   mockRevision,
   mockWiki,
-  mockWikiPages,
+  mockWikiPagesWithoutContent,
   mockWikis,
 } from '~/mocks';
 import { wikiService } from '..';
@@ -17,13 +17,6 @@ describe('Wiki GET Methods', () => {
     expect(response).toBeDefined();
     expect(response).toHaveLength(2);
     expect(response).toStrictEqual(mockWikis);
-  });
-
-  test('makes a GET request to get pages from a wiki', async () => {
-    const response = await wikiService.getWikiPages(mockWiki._id, false);
-
-    expect(response).toBeDefined();
-    expect(response).toStrictEqual(mockWikiPages.pages);
   });
 
   test('makes a GET request to get one wiki with pages', async () => {
@@ -45,6 +38,23 @@ describe('Wiki Page GET Methods', () => {
     expect(response).toHaveProperty('_id');
     expect(response).toHaveProperty('pages');
     expect(response).toEqual(mockPage);
+  });
+
+  test('makes a GET request to get pages of a wiki with content', async () => {
+    const response = await wikiService.getWikiPages(mockWiki._id, true);
+
+    expect(response).toBeDefined();
+    expect(response).toEqual(mockWiki.pages);
+  });
+
+  test('makes a GET request to get pages of a wiki without content', async () => {
+    const response = await wikiService.getWikiPages(
+      mockWikiPagesWithoutContent._id,
+      false
+    );
+
+    expect(response).toBeDefined();
+    expect(response).toEqual(mockWikiPagesWithoutContent.pages);
   });
 
   test('makes a GET request to get revisions of a page', async () => {

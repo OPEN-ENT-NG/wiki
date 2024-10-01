@@ -19,13 +19,13 @@ importers:
         version: 3.2.2(react@18.2.0)
       '@edifice-ui/editor':
         specifier: develop-pedago
-        version: 1.5.22-develop-pedago.1(@edifice-ui/icons@1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@edifice-ui/react@1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq))(@react-spring/web@9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(katex@0.16.11)(react-dom@18.2.0(react@18.2.0))(react-i18next@14.1.0(i18next@23.8.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        version: 1.5.22-develop-pedago.3(@edifice-ui/icons@1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@edifice-ui/react@1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq))(@react-spring/web@9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(katex@0.16.11)(react-dom@18.2.0(react@18.2.0))(react-i18next@14.1.0(i18next@23.8.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@edifice-ui/icons':
         specifier: develop-pedago
         version: 1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@edifice-ui/react':
         specifier: develop-pedago
-        version: 1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq)
+        version: 1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq)
       '@tanstack/react-query':
         specifier: 5.8.4
         version: 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -43,7 +43,7 @@ importers:
         version: 2.4.2
       ode-explorer:
         specifier: develop-pedago
-        version: 1.4.18-develop-pedago.202409241537(giqlegg6trtbpb6s7qog263x4m)
+        version: 1.4.18-develop-pedago.202410071739(giqlegg6trtbpb6s7qog263x4m)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -996,8 +996,8 @@ packages:
       '@tiptap/core': 2.3.0
       '@tiptap/pm': 2.3.0
 
-  '@edifice-ui/editor@1.5.22-develop-pedago.1':
-    resolution: {integrity: sha512-Mydl5q3k4dBmhg2k7ifIyHmECgpRYq04R4RiyUvVWemN/BCDQPeK9wnf43lYIwDhN4NnAiJkJlhWEHpiCBzhyQ==}
+  '@edifice-ui/editor@1.5.22-develop-pedago.3':
+    resolution: {integrity: sha512-ceKPfQUwVbaauD4/djvoboFm8kHDAHosBnp/KIGNkGSA7pPo22sWwfFP6IReBZGt4sGTvvmyXA1AnYhllmfMPw==}
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@edifice-ui/react': '*'
@@ -1012,8 +1012,8 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@edifice-ui/react@1.5.22-develop-pedago.1':
-    resolution: {integrity: sha512-eql8GI3ET8Xr9T5WuloMlqrlLORL2S9ItDt8RjATEWqZlvQN8/tONaJik51/drdMNb0t6gr/pXvNBeLf3J9kcQ==}
+  '@edifice-ui/react@1.5.22-develop-pedago.3':
+    resolution: {integrity: sha512-436ujz6rmibXxzquKiERbJTjMqOnIQmzh1T/ilqlgDzALpQHd6aNGUYCQ8lhhNmHYXPShqDhdmATEnX8XWnK9A==}
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@react-spring/web': ^9.7.3
@@ -2438,8 +2438,8 @@ packages:
   '@types/node@18.16.9':
     resolution: {integrity: sha512-IeB32oIV4oGArLrd7znD2rkHQ6EDCM+2Sr76dJnrHwv9OHBTTM6nuDLK9bmikXzPa0ZlWMWtRGo/Uw4mrzQedA==}
 
-  '@types/node@22.7.4':
-    resolution: {integrity: sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==}
+  '@types/node@22.7.5':
+    resolution: {integrity: sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -3255,8 +3255,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.32:
-    resolution: {integrity: sha512-M+7ph0VGBQqqpTT2YrabjNKSQ2fEl9PVx6AK3N558gDH9NO8O6XN9SXXFWRo9u9PbEg/bWq+tjXQr+eXmxubCw==}
+  electron-to-chromium@1.5.34:
+    resolution: {integrity: sha512-/TZAiChbAflBNjCg+VvstbcwAtIL/VdMFO3NgRFIzBjpvPzWOTIbbO8kNb6RwU4bt9TP7K+3KqBKw/lOU+Y+GA==}
 
   emoji-picker-react@4.5.2:
     resolution: {integrity: sha512-08v+yyFizoR9rEtLjuodTdlYQbkk0QWeKm6er0RQjks+b6Bfpw1UX9XheLcXreEAve7VVE7Tcu/kSAIm54V4zA==}
@@ -3681,8 +3681,8 @@ packages:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
 
-  goober@2.1.14:
-    resolution: {integrity: sha512-4UpC0NdGyAFqLNPnhCT2iHpza2q+RAY3GV85a/mRPdzyPQMsj0KmMMuetdIkzWRbJ+Hgau1EZztq8ImmiMGhsg==}
+  goober@2.1.15:
+    resolution: {integrity: sha512-LP0xChUqgLlr5ORa1m4LobVy++/dhP4Kta2gVla9i2pc30XvtpEFrye4JtcD265g1tEFLOjYIQEiTa+9bGGQ/g==}
     peerDependencies:
       csstype: ^3.0.10
 
@@ -4414,8 +4414,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  ode-explorer@1.4.18-develop-pedago.202409241537:
-    resolution: {integrity: sha512-v/Fh0ta/vicCc3BXWsDCPBUYxjPx08t1tScQN/uDAnedZiLt0yYWX0y+4j4etU8tHT3vVV0Ud/VyvB0DdPLXXw==}
+  ode-explorer@1.4.18-develop-pedago.202410071739:
+    resolution: {integrity: sha512-AIEuPuRW/ce9eLJmsv2Ssoce4BGILKpVM9FtHMtpywjjhoj8Hy6Rfa8tmZDBYNiQ4rCwhZ7RE57qvjPxOkh+Xw==}
     engines: {node: 18 || 20}
 
   ohash@1.1.3:
@@ -4565,8 +4565,8 @@ packages:
   pixi.js@7.4.2:
     resolution: {integrity: sha512-TifqgHGNofO7UCEbdZJOpUu7dUnpu4YZ0o76kfCqxDa4RS8ITc9zjECCbtalmuNXkVhSEZmBKQvE7qhHMqw/xg==}
 
-  pkg-types@1.2.0:
-    resolution: {integrity: sha512-+ifYuSSqOQ8CqP4MbZA5hDpb97n3E8SVWdJe+Wms9kj745lmd3b7EZJiqvmLwAlmRfjrI7Hi5z3kdBJ93lFNPA==}
+  pkg-types@1.2.1:
+    resolution: {integrity: sha512-sQoqa8alT3nHjGuTjuKgOnvjo4cljkufdtLMnO2LBP/wRwuDlo1tkaEdMxCRhyGRPacv/ztlZgDPm2b7FAmEvw==}
 
   portfinder@1.0.32:
     resolution: {integrity: sha512-on2ZJVVDXRADWE6jnQaX0ioEylzgBpQk8r55NE4wjXW1ZxO+BgDlY6DXwj20i0V8eB4SenDQ00WEaxfiIQPcxg==}
@@ -6647,7 +6647,7 @@ snapshots:
       '@tiptap/core': 2.3.0(@tiptap/pm@2.3.0)
       '@tiptap/pm': 2.3.0
 
-  '@edifice-ui/editor@1.5.22-develop-pedago.1(@edifice-ui/icons@1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@edifice-ui/react@1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq))(@react-spring/web@9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(katex@0.16.11)(react-dom@18.2.0(react@18.2.0))(react-i18next@14.1.0(i18next@23.8.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+  '@edifice-ui/editor@1.5.22-develop-pedago.3(@edifice-ui/icons@1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@edifice-ui/react@1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq))(@react-spring/web@9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(katex@0.16.11)(react-dom@18.2.0(react@18.2.0))(react-i18next@14.1.0(i18next@23.8.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@edifice-tiptap-extensions/extension-alert': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))(@tiptap/pm@2.3.0)
       '@edifice-tiptap-extensions/extension-attachment': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))(@tiptap/pm@2.3.0)
@@ -6664,7 +6664,7 @@ snapshots:
       '@edifice-tiptap-extensions/extension-table-cell': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))(@tiptap/pm@2.3.0)
       '@edifice-tiptap-extensions/extension-video': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))(@tiptap/pm@2.3.0)
       '@edifice-ui/icons': 1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@edifice-ui/react': 1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq)
+      '@edifice-ui/react': 1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq)
       '@react-spring/web': 9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tiptap-pro/extension-mathematics': 2.2.1(@tiptap/core@2.3.0(@tiptap/pm@2.3.0))(@tiptap/pm@2.3.0)(katex@0.16.11)
       '@tiptap/core': 2.3.0(@tiptap/pm@2.3.0)
@@ -6704,7 +6704,7 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@edifice-ui/react@1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq)':
+  '@edifice-ui/react@1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq)':
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@edifice-ui/icons': 1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -6898,7 +6898,7 @@ snapshots:
       '@inquirer/figures': 1.0.7
       '@inquirer/type': 2.0.0
       '@types/mute-stream': 0.0.4
-      '@types/node': 22.7.4
+      '@types/node': 22.7.5
       '@types/wrap-ansi': 3.0.0
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
@@ -8272,11 +8272,11 @@ snapshots:
 
   '@types/mute-stream@0.0.4':
     dependencies:
-      '@types/node': 22.7.4
+      '@types/node': 18.16.9
 
   '@types/node@18.16.9': {}
 
-  '@types/node@22.7.4':
+  '@types/node@22.7.5':
     dependencies:
       undici-types: 6.19.8
 
@@ -8814,7 +8814,7 @@ snapshots:
   browserslist@4.24.0:
     dependencies:
       caniuse-lite: 1.0.30001667
-      electron-to-chromium: 1.5.32
+      electron-to-chromium: 1.5.34
       node-releases: 2.0.18
       update-browserslist-db: 1.1.1(browserslist@4.24.0)
 
@@ -9200,7 +9200,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.32: {}
+  electron-to-chromium@1.5.34: {}
 
   emoji-picker-react@4.5.2(react@18.2.0):
     dependencies:
@@ -9765,7 +9765,7 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
-  goober@2.1.14(csstype@3.1.3):
+  goober@2.1.15(csstype@3.1.3):
     dependencies:
       csstype: 3.1.3
 
@@ -10249,7 +10249,7 @@ snapshots:
   local-pkg@0.5.0:
     dependencies:
       mlly: 1.7.2
-      pkg-types: 1.2.0
+      pkg-types: 1.2.1
 
   locate-path@6.0.0:
     dependencies:
@@ -10393,7 +10393,7 @@ snapshots:
     dependencies:
       acorn: 8.12.1
       pathe: 1.1.2
-      pkg-types: 1.2.0
+      pkg-types: 1.2.1
       ufo: 1.5.4
 
   mrmime@2.0.0: {}
@@ -10560,12 +10560,12 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  ode-explorer@1.4.18-develop-pedago.202409241537(giqlegg6trtbpb6s7qog263x4m):
+  ode-explorer@1.4.18-develop-pedago.202410071739(giqlegg6trtbpb6s7qog263x4m):
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@dnd-kit/modifiers': 7.0.0(@dnd-kit/core@6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@edifice-ui/icons': 1.5.22-develop-pedago.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@edifice-ui/react': 1.5.22-develop-pedago.1(vbwqme2vf7xwfzsq37jbhwhijq)
+      '@edifice-ui/react': 1.5.22-develop-pedago.3(vbwqme2vf7xwfzsq37jbhwhijq)
       '@react-spring/web': 9.7.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tanstack/react-query': 5.8.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       clsx: 2.1.0
@@ -10764,7 +10764,7 @@ snapshots:
       '@pixi/text-bitmap': 7.4.2(@pixi/assets@7.4.2(@pixi/core@7.4.2))(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/mesh@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
       '@pixi/text-html': 7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2)))(@pixi/text@7.4.2(@pixi/core@7.4.2)(@pixi/sprite@7.4.2(@pixi/core@7.4.2)(@pixi/display@7.4.2(@pixi/core@7.4.2))))
 
-  pkg-types@1.2.0:
+  pkg-types@1.2.1:
     dependencies:
       confbox: 0.1.8
       mlly: 1.7.2
@@ -10963,7 +10963,7 @@ snapshots:
 
   react-hot-toast@2.4.1(csstype@3.1.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
-      goober: 2.1.14(csstype@3.1.3)
+      goober: 2.1.15(csstype@3.1.3)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:

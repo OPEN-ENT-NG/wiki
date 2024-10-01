@@ -12,6 +12,9 @@ export const mockWiki = {
       contentPlain: 'test modification',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1718207454421,
       },
@@ -26,6 +29,9 @@ export const mockWiki = {
       contentPlain: 'rgrgrg aaz',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1718207659179,
       },
@@ -40,6 +46,9 @@ export const mockWiki = {
       contentPlain: 'ma super page',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720193036074,
       },
@@ -52,6 +61,9 @@ export const mockWiki = {
       contentPlain: 'zefzefzef',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720195498738,
       },
@@ -64,6 +76,9 @@ export const mockWiki = {
       contentPlain: 'ma page parent 005 masquée',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720195498738,
       },
@@ -76,6 +91,9 @@ export const mockWiki = {
       contentPlain: 'ma sous page 006 masquée de page parent 005 masquée',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720195498738,
       },
@@ -89,6 +107,9 @@ export const mockWiki = {
       contentPlain: 'ma page parent 007 visible',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720195498738,
       },
@@ -101,6 +122,9 @@ export const mockWiki = {
       contentPlain: 'ma sous page 008 visible de page parent 007 visible',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1720195498738,
       },
@@ -108,6 +132,9 @@ export const mockWiki = {
       parentId: '007',
     },
   ],
+  created: {
+    $date: 1718207454421,
+  },
   modified: {
     $date: 1718207659179,
   },
@@ -269,6 +296,10 @@ export const mockWikiPages = {
       title: 'page 01',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
+      isVisible: false,
+      created: {
+        $date: 1728397756331,
+      },
       modified: {
         $date: 1720689256171,
       },
@@ -279,12 +310,74 @@ export const mockWikiPages = {
       title: 'page 02',
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
+      isVisible: true,
       modified: {
         $date: 1720689268906,
       },
       comments: undefined,
+      lastContributer: 'f6c5ea40-5405-4cea-a755-8a0170bc6741',
+      lastContributerName: 'admc author',
     },
   ],
+};
+
+export const mockWikiPagesWithoutContent = {
+  _id: '123',
+  title: 'Wiki',
+  pages: [
+    {
+      _id: '66dab5f5812656287f15fd41',
+      title: 'page isa fricot',
+      author: '0738b742-8e00-481e-bdcc-8e0f18bf0d79',
+      authorName: 'author',
+      isVisible: false,
+      modified: {
+        $date: 1725609461393,
+      },
+      comments: [],
+    },
+    {
+      title: 'bbb',
+      isVisible: true,
+      _id: '670541bc088c9c7ceeca2c3f',
+      author: 'f6c5ea40-5405-4cea-a755-8a0170bc6741',
+      authorName: 'admc author',
+      modified: {
+        $date: 1728397756331,
+      },
+      created: {
+        $date: 1728397756331,
+      },
+    },
+    {
+      title: 'ma page 2',
+      isVisible: true,
+      _id: '670541c7088c9c7ceeca2c40',
+      author: 'f6c5ea40-5405-4cea-a755-8a0170bc6741',
+      authorName: 'admc author',
+      modified: {
+        $date: 1728397872354,
+      },
+      created: {
+        $date: 1728397767672,
+      },
+      lastContributer: 'f6c5ea40-5405-4cea-a755-8a0170bc6741',
+      lastContributerName: 'admc author',
+    },
+  ],
+  created: {
+    $date: 1718207454421,
+  },
+  modified: {
+    $date: 1718207659179,
+  },
+  owner: {
+    userId: '123456789',
+    displayName: 'Author',
+  },
+  index: '004',
+  rights: [],
+  thumbnail: 'wikiThumbnail.jpg',
 };
 
 export const mockPage = {
@@ -298,6 +391,9 @@ export const mockPage = {
       contentPlain: 'test modification',
       author: '123456789',
       authorName: 'Author',
+      created: {
+        $date: 1718207454421,
+      },
       modified: {
         $date: 1718207454421,
       },

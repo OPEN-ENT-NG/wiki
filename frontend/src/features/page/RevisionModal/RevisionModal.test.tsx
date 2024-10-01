@@ -63,7 +63,7 @@ describe('RevisionModal', () => {
 
     vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
       data: mockRevision,
-      isLoading: false,
+      isPending: false,
     });
   });
 
@@ -78,7 +78,7 @@ describe('RevisionModal', () => {
   it('should render LoadingScreen when data is loading', async () => {
     vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
       data: mockRevision,
-      isLoading: true,
+      isPending: true,
     });
 
     renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);

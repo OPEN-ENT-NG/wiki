@@ -31,6 +31,7 @@ import {
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal')
 );
+
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal')
 );
@@ -101,8 +102,10 @@ export const Page = () => {
   const { setSelectedNodeId } = useTreeActions();
 
   const { getPageVersionFromRoute } = useRevision();
+
   const { isPending, error, data, showComments, isRevision } =
     getPageVersionFromRoute();
+
   useEffect(() => {
     if (data) {
       setSelectedNodeId(data._id);
@@ -152,13 +155,14 @@ export const Page = () => {
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
       {isRevision ? <RevisionHeader page={data} /> : <PageHeader page={data} />}
+
       <Editor
         ref={editorRef}
         content={data.content}
         mode="read"
         variant="ghost"
         visibility="protected"
-      ></Editor>
+      />
 
       {showComments && (
         <CommentProvider
@@ -179,7 +183,7 @@ export const Page = () => {
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeletePageModal />}
-        {openVersionsModal && <RevisionModal pageId={data._id} />}
+        {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
       </Suspense>
     </div>
   ) : null;
