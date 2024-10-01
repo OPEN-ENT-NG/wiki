@@ -6,5 +6,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 
+export * from './useFilterVisiblePage';
 export * from './useFormPage/useFormPage';
 export * from './useRevision/useRevision';

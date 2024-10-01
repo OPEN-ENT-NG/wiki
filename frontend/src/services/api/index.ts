@@ -45,7 +45,7 @@ const createWikiService = (baseURL: string) => ({
    * @param wikiId string
    * @returns get wiki pages by wiki id
    */
-  async getWikiPages(wikiId: string, content: boolean) {
+  async getWikiPages(wikiId: string, content: boolean): Promise<Page[]> {
     const response = await odeServices
       .http()
       .get<WikiDto>(`${baseURL}/${wikiId}/pages?content=${content}`);

@@ -7,20 +7,20 @@ import {
   Modal,
   Table,
 } from '@edifice-ui/react';
+import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCheckableTable } from '~/hooks/useCheckableTable';
 import { Revision } from '~/models/revision';
 import { useGetRevisionsPage } from '~/services';
 import { useRevisionModal } from './useRevisionModal';
-import { useCallback } from 'react';
 
-const RevisionModal = () => {
+const RevisionModal = ({ pageId }: { pageId: string }) => {
   const params = useParams();
   const navigate = useNavigate();
   const { data, isLoading } = useGetRevisionsPage({
     wikiId: params.wikiId!,
-    pageId: params.pageId!,
+    pageId,
   });
 
   const {
@@ -41,12 +41,13 @@ const RevisionModal = () => {
     disabledRestoreButton,
     restoreSelection,
   } = useRevisionModal({ data, selectedItems });
+
   const handleOnOpen = useCallback(
     (id: string) => {
       setOpenRevisionModal(false);
-      navigate(`/id/${params.wikiId}/page/${params.pageId}/version/${id}`);
+      navigate(`/id/${params.wikiId}/page/${pageId}/version/${id}`);
     },
-    [setOpenRevisionModal, params, navigate]
+    [setOpenRevisionModal, navigate, params.wikiId, pageId]
   );
 
   if (isLoading) return <LoadingScreen />;
