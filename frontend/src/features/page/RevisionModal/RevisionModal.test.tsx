@@ -72,7 +72,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
@@ -90,7 +90,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     expect(screen.getByAltText('loading')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();
@@ -131,7 +131,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();
@@ -148,7 +148,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const compareButton = screen.getByTestId('compare-button');
@@ -167,7 +167,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const compareButton = screen.getByTestId('compare-button');
@@ -181,7 +181,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const restoreButton = screen.getByTestId('restore-button');
@@ -198,7 +198,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();
@@ -222,7 +222,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();
@@ -241,7 +241,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const checkbox = screen.getByTestId('th-checkbox');
@@ -258,7 +258,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();
@@ -275,7 +275,7 @@ describe('RevisionModal', () => {
       '/',
       `/`,
 
-      <RevisionModal />
+      <RevisionModal pageId={mockPage._id} />
     );
 
     const user = userEvent.setup();

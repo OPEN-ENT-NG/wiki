@@ -17,6 +17,7 @@ export interface PageDto {
     {
       _id: string;
       title: string;
+      isVisible: boolean;
     }
   ];
   parentId?: string;
