@@ -15,8 +15,8 @@ import { Form } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config';
+import { useFormPage } from '~/hooks';
 import { useCancelPage } from '~/hooks/useCancelPage';
-import { useFormPage } from '~/hooks/useFormPage';
 import { Page } from '~/models';
 
 export const FormPage = ({ page }: { page?: Page }) => {
