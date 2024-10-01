@@ -1,3 +1,4 @@
+import { RightRole } from 'edifice-ts-client';
 import { Revision } from '~/models/revision';
 
 export const mockWiki = {
@@ -115,6 +116,120 @@ export const mockWiki = {
     displayName: 'Author',
   },
   index: '004',
+  rights: [],
+  thumbnail: 'wikiThumbnail.jpg',
+};
+
+export const mockWikiWithHiddenIndexPage = {
+  _id: 'f9853a14b355',
+  title: 'Wiki With Hidden Index Page',
+  pages: [
+    {
+      _id: '001',
+      title: 'ma nouvelle page',
+      content: 'test modification',
+      contentPlain: 'test modification',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1718207454421,
+      },
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
+      isVisible: false,
+    },
+    {
+      _id: '002',
+      title: 'aaaa',
+      content: 'rgrgrg aaz',
+      contentPlain: 'rgrgrg aaz',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1718207659179,
+      },
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
+      isVisible: false,
+    },
+    {
+      _id: '003',
+      title: 'test gras',
+      content: 'ma super page',
+      contentPlain: 'ma super page',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720193036074,
+      },
+      isVisible: true,
+    },
+  ],
+  modified: {
+    $date: 1718207659179,
+  },
+  owner: {
+    userId: '123456789',
+    displayName: 'Author',
+  },
+  index: '001',
+  rights: [],
+  thumbnail: 'wikiThumbnail.jpg',
+};
+
+export const mockWikiWithOnlyHiddenPages = {
+  _id: 'f9853a14b356',
+  title: 'Wiki With Only Hidden Pages',
+  pages: [
+    {
+      _id: '001',
+      title: 'ma nouvelle page',
+      content: 'test modification',
+      contentPlain: 'test modification',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1718207454421,
+      },
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
+      isVisible: false,
+    },
+    {
+      _id: '002',
+      title: 'aaaa',
+      content: 'rgrgrg aaz',
+      contentPlain: 'rgrgrg aaz',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1718207659179,
+      },
+      lastContributer: '123456789',
+      lastContributerName: 'Author',
+      isVisible: false,
+    },
+    {
+      _id: '003',
+      title: 'test gras',
+      content: 'ma super page',
+      contentPlain: 'ma super page',
+      author: '123456789',
+      authorName: 'Author',
+      modified: {
+        $date: 1720193036074,
+      },
+      isVisible: false,
+    },
+  ],
+  modified: {
+    $date: 1718207659179,
+  },
+  owner: {
+    userId: '123456789',
+    displayName: 'Author',
+  },
+  index: '001',
   rights: [],
   thumbnail: 'wikiThumbnail.jpg',
 };
@@ -238,3 +353,31 @@ export const mockRevision: Revision[] = [
     },
   },
 ];
+
+export const mockUserCreator: Record<RightRole, boolean> = {
+  creator: true,
+  manager: true,
+  read: true,
+  contrib: true,
+};
+
+export const mockUserManager: Record<RightRole, boolean> = {
+  creator: false,
+  manager: true,
+  read: true,
+  contrib: true,
+};
+
+export const mockUserRead: Record<RightRole, boolean> = {
+  creator: false,
+  manager: false,
+  read: true,
+  contrib: false,
+};
+
+export const mockUserContrib: Record<RightRole, boolean> = {
+  creator: false,
+  manager: false,
+  read: true,
+  contrib: true,
+};
