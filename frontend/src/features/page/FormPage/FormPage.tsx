@@ -38,6 +38,8 @@ export const FormPage = ({ page }: { page?: Page }) => {
     PAGE_SAVE,
   } = useFormPage(page);
 
+  const isToggleDisabled = disableToggle();
+
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isDirty, page);
 
@@ -69,7 +71,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             name="isVisible"
             render={({ field: { onChange, value } }) => (
               <Toggle
-                disabled={disableToggle()}
+                disabled={isToggleDisabled}
                 onChange={onChange}
                 checked={value}
               />
@@ -78,7 +80,11 @@ export const FormPage = ({ page }: { page?: Page }) => {
 
           <Label>{t('wiki.createform.toggle.title')}</Label>
           <Tooltip
-            message={t('wiki.createform.toggle.message')}
+            message={
+              isToggleDisabled
+                ? t('wiki.createform.toggle.message.disabled')
+                : t('wiki.createform.toggle.message')
+            }
             placement="bottom-start"
           >
             <InfoCircle className="c-pointer" height="18" />
