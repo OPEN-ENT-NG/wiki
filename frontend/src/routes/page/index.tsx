@@ -77,20 +77,17 @@ export const loader =
 export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
-    await wikiService.deletePage({
+    const pageParams = {
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-    });
+    };
 
-    /**
-     * We invalidate wiki and pages queries
-     */
-    queryClient.removeQueries(
-      pageQueryOptions.findOne({
-        wikiId: params.wikiId!,
-        pageId: params.pageId!,
-      })
-    );
+    const deletedPageOptions = pageQueryOptions.findOne(pageParams);
+
+    await wikiService.deletePage(pageParams);
+
+    queryClient.removeQueries(deletedPageOptions);
+    queryClient.invalidateQueries(deletedPageOptions);
 
     return redirect(`/id/${params.wikiId}`);
   };
