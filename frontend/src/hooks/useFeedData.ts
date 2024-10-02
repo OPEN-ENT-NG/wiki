@@ -16,32 +16,33 @@ export const useFeedData = () => {
 
   useEffect(() => {
     if (data) {
-      const filteredPages = data.pages.filter(
-        (page) => filterParentPage(page) && filterVisiblePage(page)
-      );
-
       setTreeData(
-        filteredPages.map((page) => {
-          if (page.children) {
-            const childPages = page.children.map((child) => {
+        data.pages
+          .filter((page) => filterParentPage(page) && filterVisiblePage(page))
+          .map((page) => {
+            if (page.children) {
+              const childPages = page.children
+                .filter((child) => filterVisiblePage(child as Page))
+                .map((child) => {
+                  return {
+                    id: child._id,
+                    name: child.title,
+                    isVisible: child.isVisible,
+                  };
+                });
               return {
-                id: child._id,
-                name: child.title,
+                id: page._id,
+                name: page.title,
+                section: true,
+                children: childPages,
               };
-            });
+            }
             return {
               id: page._id,
               name: page.title,
               section: true,
-              children: childPages,
             };
-          }
-          return {
-            id: page._id,
-            name: page.title,
-            section: true,
-          };
-        })
+          })
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
