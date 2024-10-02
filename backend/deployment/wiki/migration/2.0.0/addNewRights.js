@@ -15,3 +15,20 @@ db.wiki.updateMany(
     ],
   }
 );
+db.wiki.updateMany(
+  {
+    "shared.net-atos-entng-wiki-controllers-WikiController|updatePage": true,
+  },
+  {
+    $set: {
+      "shared.$[elem].net-atos-entng-wiki-controllers-WikiController|updatePageList": true,
+    },
+  },
+  {
+    arrayFilters: [
+      {
+        "elem.net-atos-entng-wiki-controllers-WikiController|updatePage": true,
+      },
+    ],
+  }
+);

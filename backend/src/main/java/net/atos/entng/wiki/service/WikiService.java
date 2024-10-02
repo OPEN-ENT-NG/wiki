@@ -23,6 +23,8 @@ import java.util.Optional;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
+import net.atos.entng.wiki.to.PageListRequest;
+import net.atos.entng.wiki.to.PageListResponse;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -56,6 +58,8 @@ public interface WikiService {
 			, Handler<Either<String, JsonObject>> handler);
 
 	public void updatePage(UserInfos user, String idWiki, String idPage, JsonObject pagePayload, HttpServerRequest request, Handler<Either<String, JsonObject>> handler);
+
+	Future<PageListResponse> updatePageList(UserInfos user, String idWiki, PageListRequest pageList);
 
 	public void deletePage(UserInfos user, String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);

@@ -36,6 +36,9 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
+import net.atos.entng.wiki.to.PageListEntryFlat;
+import net.atos.entng.wiki.to.PageListRequest;
+import net.atos.entng.wiki.to.PageListResponse;
 import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -567,6 +570,31 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				}
 			});
 		});
+	}
+
+	@Override
+	public Future<PageListResponse> updatePageList(UserInfos user, String idWiki, PageListRequest pageList) {
+		if(pageList.getPages().isEmpty()){
+			return Future.succeededFuture(new PageListResponse(Collections.emptyList()));
+		}
+		final Promise<PageListResponse> promise = Promise.promise();
+		final JsonArray commmands = new JsonArray();
+		for(final PageListEntryFlat entry : pageList.getPages()){
+			final JsonObject criteria = new JsonObject().put("_id", idWiki).put("pages._id", entry.getId());
+			final JsonObject set = new MongoUpdateBuilder()
+					.set("pages.$.position", entry.getPosition())
+					.set("pages.$.parentId", entry.getParentId()).build();
+			commmands.add(new JsonObject().put("operation", "update").put("document", set).put("criteria", criteria));
+		}
+		mongo.bulk(collection, commmands, result -> {
+			if ("ok".equals(result.body().getString("status"))) {
+				final PageListResponse response = new PageListResponse(pageList);
+				promise.complete(response);
+			} else {
+				promise.fail(result.body().getString("message"));
+			}
+		});
+		return promise.future();
 	}
 
 	/**
