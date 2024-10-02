@@ -32,6 +32,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 
+import net.atos.entng.wiki.to.PageListRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
@@ -392,7 +393,6 @@ public class WikiController extends MongoDbControllerHelper {
 				unauthorized(request);
 			}
 		});
-
 	}
 
 	@Delete("/:id/page/:idpage")
@@ -416,6 +416,20 @@ public class WikiController extends MongoDbControllerHelper {
 			} else {
 				unauthorized(request);
 			}
+		});
+	}
+
+	@Put("/:id/pages")
+	@ApiDoc("Update page list")
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
+	public void updatePageList(final HttpServerRequest request) {
+		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
+			RequestUtils.bodyToJson(request, pathPrefix + "pageUpdateList", pagePayload -> {
+				final PageListRequest list = PageListRequest.fromJson(pagePayload);
+				wikiService.updatePageList(user, request.params().get("id"), list)
+						.onSuccess(res -> renderJson(request, res.toJson()))
+						.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
+			});
 		});
 	}
 
