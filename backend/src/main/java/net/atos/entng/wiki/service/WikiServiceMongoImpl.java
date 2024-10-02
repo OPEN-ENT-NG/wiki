@@ -112,7 +112,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						final JsonObject parentPageJO = (JsonObject) parentPage.get();
 						final JsonObject childPageJO = new JsonObject()
 								.put("_id", pageJO.getString("_id"))
-								.put("title", pageJO.getString("title"));
+								.put("title", pageJO.getString("title"))
+								.put("isVisible", pageJO.getBoolean("isVisible"));
 						if (parentPageJO.getJsonArray("children") != null) {
 							parentPageJO.getJsonArray("children").add(childPageJO);
 						} else {

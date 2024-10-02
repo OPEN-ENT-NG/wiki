@@ -1,5 +1,5 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { LoadingScreen } from '@edifice-ui/react';
+import { checkUserRight, LoadingScreen } from '@edifice-ui/react';
 import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
@@ -19,6 +19,7 @@ import {
   useCreateComment,
   useDeleteComment,
   useUpdateComment,
+  wikiQueryOptions,
   wikiService,
 } from '~/services';
 import {
@@ -37,7 +38,7 @@ const RevisionModal = lazy(
 export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
-    const data = await queryClient.ensureQueryData(
+    const pageData = await queryClient.ensureQueryData(
       pageQueryOptions.findOne({
         wikiId: params.wikiId!,
         pageId: params.pageId!,
@@ -51,6 +52,15 @@ export const loader =
       });
     }
 
+    // If user is not manager and page is not visible then we return a 401.
+    const wikiData = await queryClient.ensureQueryData(
+      wikiQueryOptions.findOne(params.wikiId!)
+    );
+    const userRights = await checkUserRight(wikiData.rights);
+    if (!userRights.manager && !pageData.isVisible) {
+      throw new Response('', { status: 401 });
+    }
+
     if (params.versionId) {
       await queryClient.ensureQueryData(
         pageQueryOptions.findOneRevision({
@@ -61,7 +71,7 @@ export const loader =
       );
     }
 
-    return data;
+    return pageData;
   };
 
 export const action =
