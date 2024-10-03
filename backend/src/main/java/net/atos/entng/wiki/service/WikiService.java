@@ -20,6 +20,7 @@
 package net.atos.entng.wiki.service;
 
 import java.util.Optional;
+import java.util.Set;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
@@ -63,6 +64,8 @@ public interface WikiService {
 
 	public void deletePage(UserInfos user, String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
+
+	Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages);
 
 	/**
 	 * Unset field "index" if "idPage" is the index

@@ -22,6 +22,7 @@ package net.atos.entng.wiki.controllers;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import fr.wseduc.webutils.I18n;
 import io.vertx.core.AsyncResult;
@@ -416,6 +417,24 @@ public class WikiController extends MongoDbControllerHelper {
 			} else {
 				unauthorized(request);
 			}
+		});
+	}
+
+
+
+	@Delete("/:id/pages")
+	@ApiDoc("Delete a list of page")
+	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
+	@ResourceFilter(OwnerAuthorOrSharedPage.class)
+	public void deletePageList(final HttpServerRequest request) {
+		final String idWiki = request.params().get("id");
+		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
+			RequestUtils.bodyToJson(request, pathPrefix + "pageDeleteList", pagePayload -> {
+				final Set<String> ids = pagePayload.getJsonArray("ids").stream().map(id -> id.toString()).collect(Collectors.toSet());
+				wikiService.deletePages(user, idWiki, ids)
+						.onSuccess(res -> notEmptyResponseHandler(request, 200))
+						.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
+			});
 		});
 	}
 
