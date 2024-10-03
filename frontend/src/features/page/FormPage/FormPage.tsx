@@ -68,7 +68,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
         <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
           <Controller
             control={control}
-            name="isVisible"
+            name="isHidden"
             render={({ field: { onChange, value } }) => (
               <Toggle
                 disabled={isToggleDisabled}
@@ -82,8 +82,8 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Tooltip
             message={
               isToggleDisabled
-                ? t('wiki.createform.toggle.message.disabled')
-                : t('wiki.createform.toggle.message')
+                ? t('wiki.createform.toggle.tooltip.disabled')
+                : t('wiki.createform.toggle.tooltip')
             }
             placement="bottom-start"
           >
