@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
-import { FlattenedItem, TreeItem } from './types';
+import { useEffect, useMemo, useState } from 'react';
+import { FlattenedItem, TreeItem, UpdateData } from './types';
 import {
   Announcements,
   defaultDropAnimation,
   DragEndEvent,
   DragMoveEvent,
+  DragOverEvent,
   DragStartEvent,
   DropAnimation,
   KeyboardSensor,
@@ -20,8 +21,11 @@ import { CSS } from '@dnd-kit/utilities';
 import {
   determineNewParentId,
   flattenTree,
+  generateUpdateData,
+  getActiveAndOverNodes,
   getDragDepth,
   getIndicesToUpdate,
+  updateParentIds,
 } from './utils';
 
 export const useTreeSortable = ({
@@ -29,13 +33,7 @@ export const useTreeSortable = ({
   onSortable,
 }: {
   nodes: TreeItem[];
-  onSortable: ({
-    nodeId,
-    parentId,
-  }: {
-    nodeId: string | UniqueIdentifier;
-    parentId: string | null;
-  }) => void;
+  onSortable: (updateArray: UpdateData[]) => void;
 }) => {
   const [items, setItems] = useState<TreeItem[]>(() => nodes);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -45,6 +43,10 @@ export const useTreeSortable = ({
     parentId: UniqueIdentifier | null;
     overId: UniqueIdentifier;
   } | null>(null);
+
+  useEffect(() => {
+    setItems(nodes);
+  }, [nodes]);
 
   const activationConstraint = {
     delay: 250,
@@ -69,7 +71,12 @@ export const useTreeSortable = ({
 
     // Initialiser la map avec chaque nœud
     flatNodes.forEach((node) => {
-      nodeMap.set(node.id, { id: node.id, name: node.name, children: [] });
+      nodeMap.set(node.id, {
+        id: node.id,
+        name: node.name,
+        children: [],
+        position: node.position,
+      });
     });
 
     const tree: TreeItem[] = [];
@@ -168,7 +175,7 @@ export const useTreeSortable = ({
     setOffsetLeft(delta.x);
   }
 
-  function handleDragOver(event: DragEndEvent) {
+  function handleDragOver(event: DragOverEvent) {
     const { over } = event;
 
     setOverId(over?.id as unknown as string);
@@ -177,14 +184,8 @@ export const useTreeSortable = ({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    const activeNodeIndex = flattenedTree.findIndex(
-      ({ id }) => id === active.id
-    );
-    const overNodeIndex = over
-      ? flattenedTree.findIndex(({ id }) => id === over.id)
-      : -1;
-    const activeNode = flattenedTree[activeNodeIndex];
-    const overNode = overNodeIndex !== -1 ? flattenedTree[overNodeIndex] : null;
+    const { activeNode, activeNodeIndex, overNode, overNodeIndex } =
+      getActiveAndOverNodes(flattenedTree, active.id, over?.id);
 
     const newParentId = determineNewParentId(
       active,
@@ -194,44 +195,30 @@ export const useTreeSortable = ({
       projected
     );
 
-    if (newParentId !== undefined) {
-      const indicesToUpdate = getIndicesToUpdate(
-        activeNode,
-        activeNodeIndex,
-        flattenedTree,
-        projected
-      );
-      updateParentIds(flattenedTree, indicesToUpdate, newParentId);
-    }
+    const indicesToUpdate = getIndicesToUpdate(
+      activeNode,
+      activeNodeIndex,
+      flattenedTree,
+      projected
+    );
+
+    updateParentIds(flattenedTree, indicesToUpdate, newParentId);
 
     const updatedFlattenedTree = arrayMove(
       flattenedTree,
       activeNodeIndex,
       overNodeIndex
     );
-    const updatedTree = buildTree(updatedFlattenedTree);
+    const { updateArray, updatedTreeData } =
+      generateUpdateData(updatedFlattenedTree);
+
+    const updatedTree = buildTree(updatedTreeData);
 
     setItems(updatedTree);
     setActiveId(null);
     setOverId(null);
 
-    onSortable({
-      nodeId: active.id,
-      parentId: flattenedTree[activeNodeIndex].parentId,
-    });
-  }
-
-  function updateParentIds(
-    flattenedTree: any[],
-    indices: number[],
-    newParentId: string | null | undefined
-  ) {
-    indices.forEach((index) => {
-      flattenedTree[index] = {
-        ...flattenedTree[index],
-        parentId: newParentId,
-      };
-    });
+    onSortable(updateArray as UpdateData[]);
   }
 
   const sortedIds = useMemo(

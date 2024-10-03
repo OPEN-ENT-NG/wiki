@@ -42,8 +42,10 @@ export interface Page {
       _id: string;
       title: string;
       isVisible: boolean;
+      position: number;
     },
   ];
+  position: number;
   parentId?: string;
 }
 

@@ -4,6 +4,7 @@ import { ComponentPropsWithRef } from 'react';
 export type TreeItem = {
   id: string;
   name: string;
+  position: number;
   section?: boolean;
   children?: TreeItem[];
 };
@@ -64,13 +65,7 @@ export interface SortableTreeProps extends TreeProps {
    * @param parentId current parentId or new parentId if move inside a new item
    * @returns gets nodeId and parentId to update via a service
    */
-  onSortable: ({
-    nodeId,
-    parentId,
-  }: {
-    nodeId: string | UniqueIdentifier;
-    parentId: string | null;
-  }) => void;
+  onSortable: (updateArray: UpdateData[]) => void;
 }
 
 export interface SharedTreeProps {
@@ -153,4 +148,10 @@ export interface FlattenedItem extends TreeItem {
 export interface TreeViewHandlers {
   unselect: () => void;
   select: (nodeId: string) => void;
+}
+
+export interface UpdateData {
+  _id: string;
+  parentId: string;
+  position: number | null;
 }
