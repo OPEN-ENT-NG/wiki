@@ -4,6 +4,7 @@ import {
   PageDto,
   PagePostPayload,
   PagePutPayload,
+  PagesPutPayload,
   PickedWiki,
   Wiki,
   WikiDto,
@@ -143,6 +144,24 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .put<Page>(`${baseURL}/${wikiId}/page/${pageId}`, data);
+    return response;
+  },
+
+  /**
+   *
+   * @param wikiId
+   * @updates pages
+   */
+  async updatePages({
+    wikiId,
+    data,
+  }: {
+    wikiId: string;
+    data: PagesPutPayload;
+  }) {
+    const response = await odeServices
+      .http()
+      .put<Page[]>(`${baseURL}/${wikiId}/pages`, data);
     return response;
   },
 

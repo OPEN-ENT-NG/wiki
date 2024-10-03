@@ -1,4 +1,4 @@
-import { Active, Over } from '@dnd-kit/core';
+import { Active, Over, UniqueIdentifier } from '@dnd-kit/core';
 import { FlattenedItem, Projected, TreeItem } from './types';
 
 export function getDragDepth(offset: number, indentationWidth: number) {
@@ -42,6 +42,19 @@ export function determineNewParentId(
   return undefined;
 }
 
+export function getActiveAndOverNodes(
+  tree: FlattenedItem[],
+  activeId: UniqueIdentifier,
+  overId?: UniqueIdentifier | undefined
+) {
+  const activeNodeIndex = tree.findIndex(({ id }) => id === activeId);
+  const overNodeIndex = overId ? tree.findIndex(({ id }) => id === overId) : -1;
+  const activeNode = tree[activeNodeIndex];
+  const overNode = overNodeIndex !== -1 ? tree[overNodeIndex] : null;
+
+  return { activeNode, activeNodeIndex, overNode, overNodeIndex };
+}
+
 export function getIndicesToUpdate(
   activeNode: FlattenedItem,
   activeNodeIndex: number,
@@ -69,6 +82,7 @@ export function flattenTree(
       id: node.id,
       name: node.name,
       parentId: parentId ?? null,
+      position: node.position ?? null,
       depth: depth ?? 0,
       children: node.children,
     });
@@ -79,4 +93,49 @@ export function flattenTree(
 
     return acc;
   }, [] as FlattenedItem[]);
+}
+
+export function updateParentIds(
+  flattenedTree: any[],
+  indices: number[],
+  newParentId: string | null | undefined
+) {
+  indices.forEach((index) => {
+    flattenedTree[index] = {
+      ...flattenedTree[index],
+      parentId: newParentId,
+    };
+  });
+}
+
+export function findItemIndexInTree(
+  tree: any[],
+  itemId: string
+): number | null {
+  for (let i = 0; i < tree.length; i++) {
+    const node = tree[i];
+    if (node.id === itemId) {
+      return i;
+    }
+    if (node.children && node.children.length > 0) {
+      const result = findItemIndexInTree(node.children, itemId);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return 0;
+}
+
+export function generateUpdateData(updatedFlattenedTree: FlattenedItem[]) {
+  const updateArray = updatedFlattenedTree.map((item, index) => {
+    item.position = index;
+    return {
+      _id: item.id,
+      position: index,
+      parentId: item.parentId ?? undefined,
+    };
+  });
+
+  return { updateArray, updatedTreeData: updatedFlattenedTree };
 }

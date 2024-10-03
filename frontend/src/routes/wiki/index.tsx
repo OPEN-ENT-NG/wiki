@@ -1,6 +1,6 @@
 import { Plus } from '@edifice-ui/icons';
 import { checkUserRight, Dropdown, Grid, Menu } from '@edifice-ui/react';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
@@ -61,7 +61,6 @@ export const Index = () => {
   const selectedNodeId = useSelectedNodeId();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
-  const queryClient = useQueryClient();
 
   const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
@@ -130,11 +129,10 @@ export const Index = () => {
 
             {!isOnlyRead && <NewPage />}
 
-            {treeData.length > 0 && (
+            {treeData && (
               <SortableTree
                 nodes={treeData}
                 selectedNodeId={selectedNodeId}
-                // isDisabled={(nodeId) => disabledIds.includes(nodeId)}
                 renderNode={({ nodeId, nodeName }) => (
                   <div className="d-flex flex-fill align-items-center justify-content-between">
                     <span>{nodeName}</span>
@@ -149,30 +147,16 @@ export const Index = () => {
                     </button>
                   </div>
                 )}
-                onSortable={async ({ nodeId, parentId }) => {
-                  const page = await wikiService.getPage({
+                onSortable={async (updateArray) => {
+                  await wikiService.updatePages({
                     wikiId: params.wikiId!,
-                    pageId: nodeId as string,
-                  });
-
-                  if (!page) return;
-
-                  await wikiService.updatePage({
-                    wikiId: params.wikiId!,
-                    pageId: nodeId as string,
-                    data: {
-                      title: page.title,
-                      content: page.content ?? '',
-                      isVisible: page.isVisible,
-                      ...(parentId
-                        ? {
-                            parentId: parentId,
-                          }
-                        : undefined),
-                    },
+                    data: { pages: updateArray },
                   });
                 }}
                 onTreeItemClick={handleOnTreeItemClick}
+                /* onTreeItemAction={
+                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                } */
               />
             )}
           </Grid.Col>
