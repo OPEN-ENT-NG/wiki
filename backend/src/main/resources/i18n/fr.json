@@ -48,6 +48,7 @@
   "wiki.createform.subpage.placeholder": "Entrez le titre de votre sous-page",
   "wiki.createform.toggle.title": "Page visible pour tous",
   "wiki.createform.toggle.message": "Par défaut, cette page est visible par toutes les personnes à qui vous avez partagé le wiki.",
+  "wiki.createform.toggle.message.disabled": "Cette sous page ne peut pas être rendue visible tant que la page à laquelle elle est rattachée est masquée.",
   "wiki.createform.titlealreadyexist.error": "Vous avez déjà créé un wiki avec ce titre",
   "wiki.createform.page.save": "Enregistrer la page",
   "wiki.createform.subpage.save": "Enregistrer la sous-page",
