@@ -1,3 +1,5 @@
+import { UpdateData } from '~/components/Tree/types';
+
 export interface PagePostPayload {
   title: string;
   content: string;
@@ -12,6 +14,12 @@ export interface PagePutPayload {
   isIndex?: boolean;
   wasIndex?: boolean;
   isVisible?: boolean;
+  parentId?: string;
+  position: number | undefined;
+}
+
+export interface PagesPutPayload {
+  pages: UpdateData[];
 }
 
 export interface CommentPostPayload {

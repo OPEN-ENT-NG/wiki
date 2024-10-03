@@ -1,27 +1,21 @@
 import { TextPage } from '@edifice-ui/icons';
-import {
-  Dropdown,
-  IconButtonProps,
-  Menu,
-  TreeData,
-  TreeView,
-} from '@edifice-ui/react';
+import { Dropdown, IconButtonProps, Menu } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
+import { Tree } from '~/components/Tree/Tree';
 import { useMenu } from '~/hooks/useMenu';
-import { useTreeActions } from '~/store';
+import { useTreeActions, useTreeData } from '~/store';
 
 export const DropdownTreeview = ({
-  treeData,
   selectedNodeId,
   onTreeItemClick,
   onTreeItemAction,
 }: {
-  treeData: TreeData[];
-  selectedNodeId: string | undefined;
+  selectedNodeId?: string | null;
   onTreeItemClick: (pageId: ID) => void;
   onTreeItemAction?: (pageId: ID) => void;
 }) => {
+  const treeData = useTreeData();
   const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
     onMenuClick: setSelectedNodeId,
@@ -56,16 +50,17 @@ export const DropdownTreeview = ({
                 </Menu.Item>
               </Menu>
               <Dropdown.Separator />
-              <TreeView
-                data={treeData}
-                showIcon={false}
+              <Tree
+                nodes={treeData}
                 selectedNodeId={selectedNodeId}
-                allExpandedNodes={true}
+                shouldExpandAllNodes
                 onTreeItemClick={(pageId) => {
                   onTreeItemClick(pageId);
                   setVisible(false);
                 }}
-                onTreeItemAction={onTreeItemAction}
+                /* onTreeItemAction={
+                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                } */
               />
             </Dropdown.Menu>
           </>
