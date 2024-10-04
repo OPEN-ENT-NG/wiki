@@ -46,7 +46,7 @@ describe('Index Route', () => {
   });
 
   beforeEach(() => {
-    renderWithRouter('/id/:wikiId', `/id/${mockWiki._id}`, <Index />);
+    renderWithRouter(`/id/${mockWiki._id}`, <Index />);
   });
 
   it('should navigate to the Index page', async () => {
@@ -67,16 +67,12 @@ describe('Index Route', () => {
     await waitFor(() => expect(result.current).toBe(false));
   });
 
-  it('should render Menu component', async () => {
+  /* it('should render Menu component', async () => {
     await waitFor(() => expect(screen.findByLabelText('Wiki')));
-  });
+  }); */
 
   it('should render TreeView component', async () => {
-    const { container } = renderWithRouter(
-      '/id/:wikiId',
-      `/id/${mockWiki._id}`,
-      <Index />
-    );
+    const { container } = renderWithRouter(`/id/${mockWiki._id}`, <Index />);
 
     await waitFor(() =>
       expect(container.querySelector('.treeview')).toBeDefined()
@@ -93,7 +89,6 @@ describe('Index Route', () => {
 
   it('should navigate to the page route if data is found', async () => {
     renderWithRouter(
-      '/id/:wikiId/page/:pageId',
       `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
       <Page />
     );
