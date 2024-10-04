@@ -17,11 +17,7 @@ const customRender = (
  * We use Memory Router with its "data router" form to make asumptions
  * Useful when we want to test navigation or redirection
  */
-export const renderWithRouter = (
-  path = '/',
-  target: string,
-  element: JSX.Element
-) => {
+export const renderWithRouter = (path = '/', element: JSX.Element) => {
   const routes = [
     {
       path,
@@ -30,7 +26,7 @@ export const renderWithRouter = (
   ];
 
   const router = createMemoryRouter(routes, {
-    initialEntries: [target],
+    initialEntries: [path],
   });
 
   return {
@@ -42,4 +38,4 @@ export const renderWithRouter = (
 };
 export const wrapper = Providers;
 export * from '@testing-library/react';
-export { customRender as render, queryClient };
+export { queryClient, customRender as render };
