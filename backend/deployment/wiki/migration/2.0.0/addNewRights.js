@@ -32,3 +32,20 @@ db.wiki.updateMany(
     ],
   }
 );
+db.wiki.updateMany(
+  {
+    "shared.net-atos-entng-wiki-controllers-WikiController|deletePage": true,
+  },
+  {
+    $set: {
+      "shared.$[elem].net-atos-entng-wiki-controllers-WikiController|deletePageList": true,
+    },
+  },
+  {
+    arrayFilters: [
+      {
+        "elem.net-atos-entng-wiki-controllers-WikiController|deletePage": true,
+      },
+    ],
+  }
+);
