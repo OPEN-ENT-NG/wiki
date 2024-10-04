@@ -12,13 +12,13 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { SortableTree } from '~/components/Tree/SortableTree';
 import {
   AppHeader,
   DropdownTreeview,
   NewPage,
   WikiEmptyScreen,
 } from '~/features';
-import { SortableTree } from '~/components/Tree/SortableTree';
 import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
@@ -141,10 +141,14 @@ export const Index = () => {
                     <span>{nodeName}</span>
                     <button
                       className="tree-btn mx-8"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleOnTreeItemCreateChildren(nodeId);
-                      }}
+                      onClick={
+                        !isOnlyRead
+                          ? (event) => {
+                              event.stopPropagation();
+                              handleOnTreeItemCreateChildren(nodeId);
+                            }
+                          : undefined
+                      }
                     >
                       <Plus height={16} width={16} />
                     </button>
@@ -157,9 +161,6 @@ export const Index = () => {
                   });
                 }}
                 onTreeItemClick={handleOnTreeItemClick}
-                /* onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                } */
               />
             )}
           </Grid.Col>

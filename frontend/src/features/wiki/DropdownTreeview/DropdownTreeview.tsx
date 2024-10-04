@@ -1,10 +1,11 @@
-import { TextPage } from '@edifice-ui/icons';
+import { Plus, TextPage } from '@edifice-ui/icons';
 import { Dropdown, IconButtonProps, Menu } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tree } from '~/components/Tree/Tree';
 import { useMenu } from '~/hooks/useMenu';
-import { useTreeActions, useTreeData } from '~/store';
+import { useTreeActions, useTreeData, useUserRights } from '~/store';
 
 export const DropdownTreeview = ({
   selectedNodeId,
@@ -16,10 +17,22 @@ export const DropdownTreeview = ({
   onTreeItemAction?: (pageId: ID) => void;
 }) => {
   const treeData = useTreeData();
+  const userRights = useUserRights();
+  const navigate = useNavigate();
+
   const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
     onMenuClick: setSelectedNodeId,
   });
+
+  const isOnlyRead =
+    userRights.read &&
+    !userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
+
+  const handleOnTreeItemCreateChildren = (pageId: ID) =>
+    navigate(`page/${pageId}/subpage/create`);
 
   return (
     <div className="dropdown-treeview w-100 mb-16">
@@ -58,9 +71,24 @@ export const DropdownTreeview = ({
                   onTreeItemClick(pageId);
                   setVisible(false);
                 }}
-                /* onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                } */
+                renderNode={({ nodeId, nodeName }) => (
+                  <div className="d-flex flex-fill align-items-center justify-content-between">
+                    <span>{nodeName}</span>
+                    <button
+                      className="tree-btn mx-8"
+                      onClick={
+                        !isOnlyRead
+                          ? (event) => {
+                              event.stopPropagation();
+                              handleOnTreeItemCreateChildren(nodeId);
+                            }
+                          : undefined
+                      }
+                    >
+                      <Plus height={16} width={16} />
+                    </button>
+                  </div>
+                )}
               />
             </Dropdown.Menu>
           </>
