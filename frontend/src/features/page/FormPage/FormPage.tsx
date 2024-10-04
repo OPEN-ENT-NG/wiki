@@ -44,7 +44,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     useCancelPage(isDirty, page);
 
   return (
-    <div className="ms-16 ms-lg-24 me-16 mt-24">
+    <div className="ms-lg-24 me-lg-16 mt-md-24">
       <Form id="pageForm" role="form" onSubmit={handleSubmit(onSubmit)}>
         <FormControl id="inputForm" isRequired>
           <Label>{t(PAGE_LABEL)}</Label>
