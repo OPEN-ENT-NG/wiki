@@ -636,14 +636,26 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		return promise.future();
 	}
-
 	@Override
 	public void deletePage(UserInfos user, String idWiki, String idPage,
-			Handler<Either<String, JsonObject>> handler) {
+						   Handler<Either<String, JsonObject>> handler) {
+		final Set<String> idPages = new HashSet<>();
+		idPages.add(idPage);
+		deletePages(user, idWiki, idPages)
+			.onSuccess(res -> {
+				handler.handle(new Either.Right<>(new JsonObject().put("result", "ok")));
+			})
+			.onFailure(err -> {
+				handler.handle(new Either.Left<>(err.getMessage()));
+			});
+	}
+
+	@Override
+	public Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages) {
 		// Page IDs to delete
 		final List<String> pageIDsToDelete = new ArrayList<>();
 		// For sure, we will delete the page with given idPage
-		pageIDsToDelete.add(idPage);
+		pageIDsToDelete.addAll(idPages);
 
 		// Subpages IDs that will become a page
 		final List<String> subpageIDsToPage = new ArrayList<>();
@@ -654,9 +666,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// - if contrib:
 		//   => delete subpages only if user is author
 		//   => non authored subpages will become pages
+		final Promise<Void> promise = Promise.promise();
 		this.getWiki(idWiki, getWikiRes -> {
 			final JsonObject wiki = getWikiRes.right().getValue();
-			final JsonArray subpages = getSubPages(wiki, idPage);
+			final JsonArray subpages = getSubPages(wiki, idPages);
 			if (!subpages.isEmpty()) {
 				if (isManager(wiki, user)) {
 					pageIDsToDelete.addAll(
@@ -732,16 +745,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			} else {
 				subpagesToPagesPromise.complete();
 			}
-
-			CompositeFuture
-					.all(futures)
-					.onSuccess(res -> {
-						handler.handle(new Either.Right<>(new JsonObject().put("result", "ok")));
-					})
-					.onFailure(err -> {
-						handler.handle(new Either.Left<>(err.getMessage()));
-					});
+			CompositeFuture.all(futures).mapEmpty()
+					.onSuccess(res -> promise.complete())
+					.onFailure(err -> promise.fail(err.getMessage()));
 		});
+		return promise.future();
 	}
 
 	/**
@@ -916,10 +924,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	/**
 	 * Return Subpages from a Page with given pageId.
 	 * @param wiki the wiki containing the page we want to get subpages
-	 * @param pageId the page ID we want to get subpages
-	 * @return List<String> page subpages IDs
+	 * @param pageIds the page IDs we want to get subpages
+	 * @return Collection<String> page subpages IDs
 	 */
-	public static JsonArray getSubPages(final JsonObject wiki, final String pageId) {
+	public static JsonArray getSubPages(final JsonObject wiki, final Collection<String> pageIds) {
 		JsonArray subPages = new JsonArray();
 
 		if (wiki != null) {
@@ -928,7 +936,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject pageJO = (JsonObject) page;
 				final String parentId = pageJO.getString("parentId");
 
-				if (!StringUtils.isEmpty(parentId) && parentId.equals(pageId)) {
+				if (!StringUtils.isEmpty(parentId) && pageIds.contains(parentId)) {
 					subPages.add(pageJO);
 				}
 			});

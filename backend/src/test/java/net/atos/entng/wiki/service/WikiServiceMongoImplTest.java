@@ -8,6 +8,7 @@ import org.entcore.common.user.UserInfos;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @RunWith(VertxUnitRunner.class)
@@ -137,7 +138,7 @@ public class WikiServiceMongoImplTest {
         final JsonObject wiki = new JsonObject()
                 .put("pages", pages);
 
-        final JsonArray subPages = WikiServiceMongoImpl.getSubPages(wiki, "pageParent1");
+        final JsonArray subPages = WikiServiceMongoImpl.getSubPages(wiki, Arrays.asList("pageParent1"));
         context.assertEquals(subPages.size(), 1);
     }
 
@@ -156,7 +157,7 @@ public class WikiServiceMongoImplTest {
         final JsonObject wiki = new JsonObject()
                 .put("pages", pages);
 
-        final JsonArray subPages = WikiServiceMongoImpl.getSubPages(wiki, "page1");
+        final JsonArray subPages = WikiServiceMongoImpl.getSubPages(wiki, Arrays.asList("page1"));
         context.assertEquals(subPages.size(), 0);
     }
 }
