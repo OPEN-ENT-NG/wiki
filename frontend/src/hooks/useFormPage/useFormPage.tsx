@@ -7,7 +7,7 @@ import { findPage } from '~/utils/findPage';
 
 export type FormPageDataProps = {
   title: string;
-  isVisible: boolean;
+  isHidden: boolean;
   content: string;
 };
 
@@ -25,24 +25,24 @@ export const useFormPage = (page?: Page) => {
   const editionMode = !!page?._id;
 
   /**
-   * Return visibility toggle default value.
+   * Return hidden toggle default value.
    */
-  const getDefaultVisibleValue = useCallback(() => {
-    let isVisible: boolean | undefined = false;
+  const getDefaultHiddenToggleValue = useCallback(() => {
+    let isHidden: boolean | undefined = false;
 
     // In edition mode, return current page visibility
     if (editionMode) {
-      isVisible = page?.isVisible;
+      isHidden = !page?.isVisible;
     } else if (isSubPage) {
       // In subpage creation mode, visibility must be the same as parent page visibility
       const parentPage = findPage(wikiData!, params.pageId!);
-      isVisible = parentPage?.isVisible;
+      isHidden = !parentPage?.isVisible;
     } else {
-      // In page creation mode, visibility is true by default
-      isVisible = true;
+      // In page creation mode, hidden is false by default
+      isHidden = false;
     }
 
-    return isVisible;
+    return isHidden;
   }, [page, params, editionMode, isSubPage, wikiData]);
 
   const {
@@ -54,7 +54,7 @@ export const useFormPage = (page?: Page) => {
   } = useForm<FormPageDataProps>({
     defaultValues: {
       title: page?.title,
-      isVisible: getDefaultVisibleValue(),
+      isHidden: getDefaultHiddenToggleValue(),
       content: page?.content,
     },
   });
@@ -105,7 +105,7 @@ export const useFormPage = (page?: Page) => {
     handleSubmit,
     onSubmit,
     disableToggle,
-    getDefaultVisibleValue,
+    getDefaultHiddenToggleValue,
     control,
     isSubmitting,
     isDirty,
