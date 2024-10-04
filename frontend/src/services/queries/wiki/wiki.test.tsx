@@ -2,7 +2,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useGetWiki, useGetWikis } from './wiki';
 
 import { mockWiki, mockWikis } from '~/mocks';
-import '~/mocks/setup.msw';
 import { wrapper } from '~/mocks/setup.vitest';
 
 describe('Wiki GET Queries', () => {
