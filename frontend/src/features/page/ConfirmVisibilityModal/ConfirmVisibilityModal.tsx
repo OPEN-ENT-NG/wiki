@@ -2,7 +2,7 @@ import { Button, Modal, useOdeClient } from '@edifice-ui/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useActionData } from 'react-router-dom';
-import { FormPageDataProps } from '~/hooks/useFormPage';
+import { FormPageDataProps } from '~/hooks';
 import { Page } from '~/models';
 import { useOpenConfirmVisibilityModal, useWikiActions } from '~/store';
 

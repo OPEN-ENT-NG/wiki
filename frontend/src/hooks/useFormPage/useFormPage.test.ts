@@ -88,25 +88,25 @@ describe('useFormPage hook tests', () => {
     expect(result.current.disableToggle()).toBe(false);
   });
 
-  test('New page creation form toggle is ON', () => {
+  test('New page creation form toggle is OFF (page is visible)', () => {
     const { result } = renderHook(() => useFormPage(), {
       wrapper: Providers,
     });
 
-    expect(result.current.getDefaultVisibleValue()).toBe(true);
+    expect(result.current.getDefaultHiddenToggleValue()).toBe(false);
   });
 
-  test('Existing visible page edition form toggle is ON', () => {
+  test('Existing visible page edition form toggle is OFF (page is visible)', () => {
     const page = findPage(mockWiki, '001');
 
     const { result } = renderHook(() => useFormPage(page), {
       wrapper: Providers,
     });
 
-    expect(result.current.getDefaultVisibleValue()).toBe(true);
+    expect(result.current.getDefaultHiddenToggleValue()).toBe(false);
   });
 
-  test('New subpage creation from a visible parent page has toggle ON', () => {
+  test('New subpage creation from a visible parent page has toggle OFF (page is visible)', () => {
     const visibleParentPage = findPage(mockWiki, '007');
 
     mocks.useLocation.mockReturnValue({
@@ -121,10 +121,10 @@ describe('useFormPage hook tests', () => {
       wrapper: Providers,
     });
 
-    expect(result.current.getDefaultVisibleValue()).toBe(true);
+    expect(result.current.getDefaultHiddenToggleValue()).toBe(false);
   });
 
-  test('New subpage creation from a non visible parent page has toggle OFF', () => {
+  test('New subpage creation from a non visible parent page has toggle ON (page is not visible)', () => {
     const nonvisibleParentPage = findPage(mockWiki, '005');
 
     mocks.useLocation.mockReturnValue({
@@ -139,6 +139,6 @@ describe('useFormPage hook tests', () => {
       wrapper: Providers,
     });
 
-    expect(result.current.getDefaultVisibleValue()).toBe(false);
+    expect(result.current.getDefaultHiddenToggleValue()).toBe(true);
   });
 });

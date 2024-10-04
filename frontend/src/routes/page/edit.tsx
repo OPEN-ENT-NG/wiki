@@ -41,7 +41,7 @@ export const editAction =
       : {
           title: getFormValue(formData, 'title'),
           content: getFormValue(formData, 'content'),
-          isVisible: getFormValue(formData, 'isVisible') === 'true',
+          isHidden: getFormValue(formData, 'isHidden') === 'true',
         };
 
     // if submitting from page edit form and page has subpages
@@ -53,7 +53,7 @@ export const editAction =
       const pageData = wikiData.pages?.find(
         (page) => page._id === params.pageId
       );
-      if (pageData?.children && pageData.isVisible !== actionData.isVisible) {
+      if (pageData?.children && pageData.isVisible === actionData.isHidden) {
         getWikiActions().setOpenConfirmVisibilityModal(true);
         return actionData;
       }
@@ -63,7 +63,11 @@ export const editAction =
     await wikiService.updatePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
-      data: actionData,
+      data: {
+        title: actionData.title,
+        content: actionData.content,
+        isVisible: !actionData.isHidden,
+      },
     });
 
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });

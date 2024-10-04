@@ -11,7 +11,7 @@ export const action =
 
     const title = getFormValue(formData, 'title');
     const content = getFormValue(formData, 'content');
-    const isVisible = getFormValue(formData, 'isVisible') === 'true';
+    const isVisible = getFormValue(formData, 'isHidden') === 'false';
 
     const data = await wikiService.createPage({
       wikiId: params.wikiId!,
