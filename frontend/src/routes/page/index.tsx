@@ -179,7 +179,7 @@ export const Page = () => {
 
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeletePageModal />}
-        {openVersionsModal && <RevisionModal />}
+        {openVersionsModal && <RevisionModal pageId={data._id} />}
       </Suspense>
     </div>
   ) : null;
