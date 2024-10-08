@@ -85,9 +85,13 @@ export const Pages = () => {
         <p className="text-truncate text-truncate-2">{node.title}</p>
       </div>
       <em className="text-gray-700 g-col-3 text-truncate">
-        {t('wiki.read.author.publish.by', {
-          author: node.authorName,
-        })}
+        {node.lastContributerName
+          ? t('wiki.read.author.update.by', {
+              author: node.lastContributerName,
+            })
+          : t('wiki.read.author.publish.by', {
+              author: node.authorName,
+            })}
       </em>
       <span className="g-col-1">{formatDate(node.modified.$date)}</span>
       <div className="g-col-1 d-inline-grid">
