@@ -25,6 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import fr.wseduc.webutils.I18n;
+import fr.wseduc.webutils.http.Renders;
 import io.vertx.core.AsyncResult;
 import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.config.WikiConfig;
@@ -424,15 +425,16 @@ public class WikiController extends MongoDbControllerHelper {
 
 	@Delete("/:id/pages")
 	@ApiDoc("Delete a list of page")
-	@SecuredAction(value = "wiki.manager", type = ActionType.RESOURCE)
-	@ResourceFilter(OwnerAuthorOrSharedPage.class)
+	// a contributor can delete a page on which he is the owner => so only check whether use is a contributor
+	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void deletePageList(final HttpServerRequest request) {
 		final String idWiki = request.params().get("id");
 		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + "pageDeleteList", pagePayload -> {
 				final Set<String> ids = pagePayload.getJsonArray("ids").stream().map(id -> id.toString()).collect(Collectors.toSet());
+				// delete pages and check whether he is manager or contributor of each pages
 				wikiService.deletePages(user, idWiki, ids)
-						.onSuccess(res -> notEmptyResponseHandler(request, 200))
+						.onSuccess(res -> noContent(request))
 						.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
 			});
 		});
