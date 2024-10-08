@@ -654,36 +654,36 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages) {
 		// Page IDs to delete
 		final List<String> pageIDsToDelete = new ArrayList<>();
-		// For sure, we will delete the page with given idPage
-		pageIDsToDelete.addAll(idPages);
 
 		// Subpages IDs that will become a page
 		final List<String> subpageIDsToPage = new ArrayList<>();
 
-		// We check if page has subpages to implement the following rules:
+		// We implement the following rules:
 		// - if manager:
-		//   => delete all subpages
+		//   => delete all subpages + pages matching idPages
 		// - if contrib:
-		//   => delete subpages only if user is author
-		//   => non authored subpages will become pages
+		//   => if user is author: delete subpages + pages matching idPages
+		//   => if user is NOT author:  subpages will become pages
 		final Promise<Void> promise = Promise.promise();
 		this.getWiki(idWiki, getWikiRes -> {
 			final JsonObject wiki = getWikiRes.right().getValue();
+			final JsonArray pages = getPages(wiki, idPages);
 			final JsonArray subpages = getSubPages(wiki, idPages);
-			if (!subpages.isEmpty()) {
+			final JsonArray toDeletePages = new JsonArray().addAll(pages).addAll(subpages);
+			if (!toDeletePages.isEmpty()) {
 				if (isManager(wiki, user)) {
 					pageIDsToDelete.addAll(
-							subpages
+							toDeletePages
 									.stream()
 									.map(page -> ((JsonObject) page).getString("_id"))
 									.collect(Collectors.toList()));
 				} else if (isContrib(wiki, user)) {
-					subpages.forEach(subpage -> {
-						JsonObject subpageJO = (JsonObject) subpage;
-						if (isPageAuthor(subpageJO, user)) {
-							pageIDsToDelete.add(subpageJO.getString("_id"));
+					toDeletePages.forEach(page -> {
+						JsonObject pageJson = (JsonObject) page;
+						if (isPageAuthor(pageJson, user)) {
+							pageIDsToDelete.add(pageJson.getString("_id"));
 						} else {
-							subpageIDsToPage.add(subpageJO.getString("_id"));
+							subpageIDsToPage.add(pageJson.getString("_id"));
 						}
 					});
 				}
@@ -925,7 +925,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	 * Return Subpages from a Page with given pageId.
 	 * @param wiki the wiki containing the page we want to get subpages
 	 * @param pageIds the page IDs we want to get subpages
-	 * @return Collection<String> page subpages IDs
+	 * @return JsonArray<Page> page subpages IDs
 	 */
 	public static JsonArray getSubPages(final JsonObject wiki, final Collection<String> pageIds) {
 		JsonArray subPages = new JsonArray();
@@ -942,6 +942,28 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			});
 		}
 		return subPages;
+	}
+	/**
+	 * Return pages from a Page with given _id.
+	 * @param wiki the wiki containing the page we want to get subpages
+	 * @param pageIds the page IDs we want to get
+	 * @return JsonArray<Page> page IDs
+	 */
+	public static JsonArray getPages(final JsonObject wiki, final Collection<String> pageIds) {
+		JsonArray matchingPages = new JsonArray();
+
+		if (wiki != null) {
+			final JsonArray pages = wiki.getJsonArray("pages");
+			pages.forEach(page -> {
+				final JsonObject pageJO = (JsonObject) page;
+				final String _id = pageJO.getString("_id");
+
+				if (!StringUtils.isEmpty(_id) && pageIds.contains(_id)) {
+					matchingPages.add(pageJO);
+				}
+			});
+		}
+		return matchingPages;
 	}
 
 	// TODO: this method is coming from Explorer project -> centralize this in entcore
