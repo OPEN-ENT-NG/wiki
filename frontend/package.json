@@ -10,10 +10,10 @@
     "pre-commit": "lint-staged",
     "prepare": "cd .. && husky frontend/.husky || true",
     "test": "nx test",
+    "lint": "nx lint",
     "format": "pnpm format:check && pnpm format:write",
-    "format:check": "npx prettier --check .",
-    "format:write": "npx prettier --write .",
-    "lint": "eslint ."
+    "format:check": "npx prettier --check 'src/**/*.{tsx,ts}'",
+    "format:write": "npx prettier --write 'src/**/*.{tsx,ts}'"
   },
   "husky": {
     "hooks": {
@@ -22,7 +22,7 @@
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
-      "nx format",
+      "pnpm run format",
       "nx lint --fix"
     ]
   },
