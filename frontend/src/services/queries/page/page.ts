@@ -60,13 +60,12 @@ export const pageQueryOptions = {
         { id: revisionId },
       ] as const,
       queryFn: async () => {
-        const r = await wikiService.getRevisionPage({
+        const response = await wikiService.getRevisionPage({
           wikiId,
           pageId,
           revisionId: revisionId!,
         });
-        console.log('R', r);
-        return r;
+        return response;
       },
       staleTime: 5000,
     }),

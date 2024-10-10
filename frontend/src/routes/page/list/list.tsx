@@ -3,10 +3,10 @@ import {
   Heading,
   List,
   LoadingScreen,
+  useBreakpoint,
   useDate,
 } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
-import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +15,9 @@ import {
   LoaderFunctionArgs,
   useParams,
 } from 'react-router-dom';
-import { useFilterVisiblePage } from '~/hooks';
+import { useFilterVisiblePage, useListPage } from '~/hooks';
 import { Page } from '~/models';
-import { useGetPagesFromWiki, wikiQueryOptions } from '~/services';
+import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
 import { useOpenDeleteModal, useOpenRevisionModal } from '~/store';
 
 const RevisionModal = lazy(
@@ -43,25 +43,29 @@ export const action =
   async ({ params, request }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const intent = formData.get('intent');
+    const ids = JSON.parse(intent as string);
 
-    console.log({ formData, intent: JSON.parse(intent) });
+    await wikiService.deletePages({
+      wikiId: params.wikiId!,
+      ids,
+    });
+
+    queryClient.invalidateQueries();
   };
 
-export const Pages = () => {
+export const PageList = () => {
   const params = useParams();
   const filterVisiblePage = useFilterVisiblePage();
   const openVersionsModal = useOpenRevisionModal();
   const openDeleteModal = useOpenDeleteModal();
 
-  const isDesktopDevice = useMediaQuery('only screen and (min-width: 1024px)');
+  const [selectedPages, setSelectedPages] = useState<string[]>([]);
 
-  const [selectedPages] = useState<string[]>([]);
-
+  const { lg } = useBreakpoint();
   const { isPending, data, error } = useGetPagesFromWiki({
     wikiId: params.wikiId!,
     content: false,
   });
-
   const { t } = useTranslation('wiki');
   const { formatDate } = useDate();
 
@@ -69,13 +73,16 @@ export const Pages = () => {
     ?.filter((page) => filterVisiblePage(page))
     .sort((a, b) => b.modified.$date - a.modified.$date);
 
+  const selectedPagesCount = selectedPages.length;
+  const items = useListPage({ selectedPages, pagesCount: selectedPagesCount });
+
   const renderDesktopNode = (
     node: Page,
     checkbox: JSX.Element | undefined,
     checked: boolean | undefined
   ) => (
     <div
-      className={clsx('grid gap-24 px-12 py-8 mb-2', {
+      className={clsx('grid gap-24 px-12 py-8 mb-2 align-items: center', {
         'bg-secondary-200 rounded': checked,
       })}
       style={{ '--edifice-columns': 8 } as React.CSSProperties}
@@ -155,7 +162,9 @@ export const Pages = () => {
       <div className="px-md-16">
         <List
           data={filteredData}
-          renderNode={isDesktopDevice ? renderDesktopNode : renderMobileNode}
+          items={items}
+          renderNode={lg ? renderDesktopNode : renderMobileNode}
+          onSelectedItems={setSelectedPages}
         />
         <Suspense fallback={<LoadingScreen position={false} />}>
           {openVersionsModal && <RevisionModal pageId={selectedPages[0]} />}

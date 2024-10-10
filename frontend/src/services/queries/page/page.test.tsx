@@ -4,12 +4,13 @@ import {
   useCreatePage,
   useDeletePage,
   useGetPage,
+  useGetPagesFromWiki,
   useGetRevisionPage,
   useGetRevisionsPage,
   useUpdatePage,
 } from './page';
 
-import { mockPage, mockRevision } from '~/mocks';
+import { mockPage, mockRevision, mockWikiPagesWithoutContent } from '~/mocks';
 import { queryClient, wrapper } from '~/mocks/setup.vitest';
 import { wikiQueryOptions } from '~/services';
 
@@ -33,6 +34,25 @@ describe('Wiki Page GET Queries', () => {
       expect(result.current.isSuccess).toBe(true);
       expect(result.current.data).toBeDefined();
       expect(result.current.data).toEqual(mockPage);
+    });
+  });
+
+  test('use useGetPagesFromWiki hook to get pages of a wiki', async () => {
+    const { result } = renderHook(
+      () =>
+        useGetPagesFromWiki({
+          wikiId: mockWikiPagesWithoutContent._id,
+          content: false,
+        }),
+      {
+        wrapper,
+      }
+    );
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toEqual(mockWikiPagesWithoutContent.pages);
     });
   });
 

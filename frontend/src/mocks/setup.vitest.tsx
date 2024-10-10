@@ -1,16 +1,37 @@
 import '@testing-library/jest-dom';
 import { RenderOptions, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ReactElement } from 'react';
-
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import '../i18n';
 import { Providers, queryClient } from '../providers';
 import './setup.msw';
 
+beforeEach(() => {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+});
+
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) => render(ui, { wrapper: Providers, ...options });
+) => {
+  return {
+    user: userEvent.setup(),
+    ...render(ui, { wrapper: Providers, ...options }),
+  };
+};
 
 /**
  * https://reactrouter.com/en/main/routers/create-memory-router
@@ -36,6 +57,7 @@ export const renderWithRouter = (path = '/', element: JSX.Element) => {
     ...customRender(<RouterProvider router={router} />),
   };
 };
+
 export const wrapper = Providers;
 export * from '@testing-library/react';
 export { queryClient, customRender as render };

@@ -1,7 +1,13 @@
-import { HttpResponse, http } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { baseURL } from '~/services';
-import { mockPage, mockRevision, mockWiki, mockWikiPages, mockWikis } from '.';
+import {
+  mockPage,
+  mockRevision,
+  mockWiki,
+  mockWikiPagesWithoutContent,
+  mockWikis,
+} from '.';
 
 const defaultHandlers = [
   http.get('/userbook/preference/apps', () => {
@@ -63,7 +69,7 @@ const defaultHandlers = [
   }),
 
   http.get('/locale', () => {
-    return HttpResponse.text('fr');
+    return HttpResponse.json({ locale: 'fr' });
   }),
 
   http.get('/directory/userbook/a1b2c3d4', () => {
@@ -236,8 +242,15 @@ const handlers = [
   http.get(`${baseURL}/:wikiId`, () => {
     return HttpResponse.json(mockWiki, { status: 200 });
   }),
-  http.get(`${baseURL}/:wikiId/pages`, () => {
-    return HttpResponse.json(mockWikiPages, { status: 200 });
+  http.get(`${baseURL}/:wikiId/pages`, ({ request }) => {
+    const url = new URL(request.url);
+    const content = url.searchParams.get('content');
+
+    if (content === 'true') {
+      return HttpResponse.json(mockWiki, { status: 200 });
+    } else {
+      return HttpResponse.json(mockWikiPagesWithoutContent, { status: 200 });
+    }
   }),
   http.get(`${baseURL}/:wikiId/page/:pageId`, () => {
     return HttpResponse.json(mockPage);

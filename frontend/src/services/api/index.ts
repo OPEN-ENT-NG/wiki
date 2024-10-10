@@ -161,6 +161,15 @@ const createWikiService = (baseURL: string) => ({
     return response;
   },
 
+  async deletePages({ wikiId, ids }: { wikiId: string; ids: string[] }) {
+    const response = await odeServices
+      .http()
+      .deleteJson<Page[]>(`${baseURL}/${wikiId}/pages`, {
+        ids,
+      });
+    return response;
+  },
+
   /**
    * Create a new comment
    *

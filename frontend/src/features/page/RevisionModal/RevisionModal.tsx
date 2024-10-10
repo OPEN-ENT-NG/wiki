@@ -18,9 +18,9 @@ import { useRevisionModal } from './useRevisionModal';
 const RevisionModal = ({ pageId }: { pageId: string }) => {
   const params = useParams();
   const navigate = useNavigate();
-  const { data, isLoading } = useGetRevisionsPage({
+  const { data, isPending } = useGetRevisionsPage({
     wikiId: params.wikiId!,
-    pageId,
+    pageId: pageId!,
   });
 
   const {
@@ -50,7 +50,7 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
     [setOpenRevisionModal, navigate, params.wikiId, pageId]
   );
 
-  if (isLoading) return <LoadingScreen />;
+  if (isPending) return <LoadingScreen />;
 
   return createPortal(
     <Modal

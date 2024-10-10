@@ -210,7 +210,7 @@
   "wiki.version.modal.alert.invisible": "Afin de rendre plus lisible la liste, les modifications sur une page masquée ne sont pas listées.",
   "wiki.list.toolbar.action.read": "Consulter",
   "wiki.list.toolbar.action.move": "Déplacer",
-  "wiki.list.toolbar.action.duplicate": "Duplicate",
+  "wiki.list.toolbar.action.duplicate": "Dupliquer",
   "wiki.list.toolbar.action.history": "Voir l'historique",
   "wiki.list.toolbar.action.print": "Imprimer",
   "wiki.list.toolbar.action.delete": "Supprimer"
