@@ -34,6 +34,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 
+import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import net.atos.entng.wiki.to.PageListRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -407,12 +408,26 @@ public class WikiController extends MongoDbControllerHelper {
 
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
-				wikiService.deletePage(user, idWiki, idPage, res -> {
-					if (res.isRight()) {
-						deleteRevisions(idWiki, idPage);
-						wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
+				// get wiki information before deleting: wiki information will be used in deleted page author notification
+				// (in case author is different from logged user)
+				wikiService.getWiki(idWiki, wikiRes -> {
+					if (wikiRes.isRight()) {
+						final JsonObject wiki = wikiRes.right().getValue();
+
+						wikiService.deletePage(user, wiki, idPage)
+								.onSuccess(notifyAuthorMap -> {
+									deleteRevisions(idWiki, idPage);
+									wikiService.unsetIndex(idWiki, idPage, notEmptyResponseHandler(request));
+
+									// notify author of page deletion
+									if (notifyAuthorMap != null && !notifyAuthorMap.isEmpty()) {
+										final String authorId = notifyAuthorMap.entrySet().iterator().next().getKey();
+										this.notifyPageDeleted(wiki, idPage, user, authorId, request);
+									}
+								})
+								.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
 					} else {
-						renderJson(request, new JsonObject().put("error", res.left().getValue()), 400);
+						renderJson(request, new JsonObject().put("error", "wiki with id " + idWiki + " was not found"), 400);
 					}
 				});
 			} else {
@@ -429,13 +444,44 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void deletePageList(final HttpServerRequest request) {
 		final String idWiki = request.params().get("id");
+
 		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
 			RequestUtils.bodyToJson(request, pathPrefix + "pageDeleteList", pagePayload -> {
-				final Set<String> ids = pagePayload.getJsonArray("ids").stream().map(id -> id.toString()).collect(Collectors.toSet());
-				// delete pages and check whether he is manager or contributor of each pages
-				wikiService.deletePages(user, idWiki, ids)
-						.onSuccess(res -> noContent(request))
-						.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
+				final Set<String> toDeletePageIDs = pagePayload.getJsonArray("ids")
+						.stream()
+						.map(Object::toString)
+						.collect(Collectors.toSet());
+
+				// get wiki information before deleting,
+				// in order to send wiki and page notification info to author, in case author is different from logged user
+				wikiService.getWiki(idWiki, wikiRes -> {
+					if (wikiRes.isRight()) {
+						final JsonObject wiki = wikiRes.right().getValue();
+
+						// delete pages
+						wikiService.deletePages(user, wiki, toDeletePageIDs)
+								.onSuccess(notifyAuthorMap -> {
+									// notifyMapRes contains map of author and page ids to notify
+									notifyAuthorMap.forEach((authorId, pageIDs) -> {
+										// if only one page is concerned for an author then send a notification with page info
+										if (pageIDs != null && pageIDs.size() == 1) {
+											this.notifyPageDeleted(wiki, pageIDs.get(0), user, authorId, request);
+										}
+										// else send a notification for all pages (without pages info)
+										else {
+											this.notifyPageDeleted(wiki, null, user, authorId, request);
+										}
+									});
+
+									noContent(request);
+								})
+								.onFailure(err -> renderJson(request,
+										new JsonObject().put("error", err.getMessage()), 400));
+					} else {
+						renderJson(request,
+								new JsonObject().put("error", "wiki with id " + idWiki + " was not found"), 400);
+					}
+				});
 			});
 		});
 	}
@@ -775,20 +821,84 @@ public class WikiController extends MongoDbControllerHelper {
 			String notificationName = isCreatePage ? "page-created" : "comment-added";
 			String pushNotifTitle = isCreatePage ? "wiki.push.notif.page-created" : "wiki.push.notif.comment-added";
 			String pushNotifBody = isCreatePage
-					? I18n.getInstance().translate("wiki.push.notif.page-created",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					wiki.getString("title"))
-					: I18n.getInstance().translate("wiki.push.notif.comment-added",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					pageTitle);
+					? I18n.getInstance().translate(
+							"wiki.push.notif.page-created",
+								getHost(request),
+								I18n.acceptLanguage(request),
+								user.getUsername(),
+								wiki.getString("title"))
+					: I18n.getInstance().translate(
+							"wiki.push.notif.comment-added",
+								getHost(request),
+								I18n.acceptLanguage(request),
+								user.getUsername(),
+								pageTitle);
 
 			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
 			notification.notifyTimeline(request, "wiki." + notificationName, user, recipients, idResource, params);
 		}
 
+	}
+
+	/**
+	 * Notify author of page deletion.
+	 *
+	 * Note: page creation and page comment notification are handled in sendNotification method,
+	 * but this method is already complex to read so in order to keep it simple,
+	 * we handle page deletion notification here.
+	 *
+	 * @param wiki wiki information
+	 * @param pageId if pageId is provided then get page info to send in notification
+	 * @param user user who deleted the page
+	 * @param authorId author of page to send notification
+	 * @param request http request to get host and language for notification message
+	 */
+	private void notifyPageDeleted(final JsonObject wiki, final String pageId, final UserInfos user,
+								   final String authorId, final HttpServerRequest request) {
+		final String wikiTitle = wiki.getString("title");
+
+		final JsonObject params = new JsonObject()
+				.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+				.put("username", user.getUsername())
+				.put("wikiTitle", wikiTitle);
+
+		JsonObject pushNotif = new JsonObject()
+				.put("title", "wiki.push.notif.page-deleted.title");
+
+		// if pageId is provided then get page info to send in notification
+		if (pageId != null) {
+			final String pageTitle = WikiServiceMongoImpl.getPageTitle(wiki, pageId);
+
+			params.put("pageTitle", pageTitle);
+
+			pushNotif.put("body", I18n.getInstance().translate(
+					"wiki.push.notif.page-deleted.body",
+					getHost(request),
+					I18n.acceptLanguage(request),
+					user.getUsername(),
+					pageTitle,
+					wikiTitle));
+		} else {
+			params.put("pageTitle", I18n.getInstance().translate(
+					"timeline.wiki.has.deleted.page.multiple",
+					getHost(request),
+					I18n.acceptLanguage(request)));
+
+			pushNotif.put("body", I18n.getInstance().translate(
+					"wiki.push.notif.pages-deleted.body",
+					getHost(request),
+					I18n.acceptLanguage(request),
+					user.getUsername(),
+					wikiTitle));
+		}
+
+		params.put("pushNotif", pushNotif);
+
+		notification.notifyTimeline(request,
+				"wiki.page-deleted",
+				user,
+				Collections.singletonList(authorId),
+				pageId,
+				params);
 	}
 }
