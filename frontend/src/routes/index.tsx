@@ -9,10 +9,10 @@ import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, editAction } from './page/edit';
 import {
-  Pages,
+  PageList,
   action as deleteListAction,
   loader as pagesLoader,
-} from './page/list';
+} from './page/list/list';
 import { Index, loader as wikiLoader } from './wiki';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
@@ -39,7 +39,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
         children: [
           {
             path: 'pages',
-            element: <Pages />,
+            element: <PageList />,
             loader: pagesLoader(queryClient),
           },
           {

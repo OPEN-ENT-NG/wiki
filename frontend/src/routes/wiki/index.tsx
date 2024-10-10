@@ -71,6 +71,7 @@ export const Index = () => {
   });
 
   const { data } = useGetWiki(params.wikiId!);
+  const hasPages = data && data?.pages?.length > 0;
 
   const isOnlyRead =
     userRights.read &&
@@ -117,18 +118,22 @@ export const Index = () => {
             className="border-end pt-16 pe-16 d-none d-lg-block"
             as="aside"
           >
-            <Menu label={menu.children}>
-              <Menu.Item>
-                <Menu.Button
-                  onClick={handleOnMenuClick}
-                  leftIcon={menu.leftIcon}
-                  selected={menu.selected}
-                >
-                  {menu.children}
-                </Menu.Button>
-              </Menu.Item>
-            </Menu>
-            <Dropdown.Separator />
+            {hasPages ? (
+              <>
+                <Menu label={menu.children}>
+                  <Menu.Item>
+                    <Menu.Button
+                      onClick={handleOnMenuClick}
+                      leftIcon={menu.leftIcon}
+                      selected={menu.selected}
+                    >
+                      {menu.children}
+                    </Menu.Button>
+                  </Menu.Item>
+                </Menu>
+                <Dropdown.Separator />
+              </>
+            ) : null}
             {!isOnlyRead && <NewPage />}
             {treeData && (
               <TreeView

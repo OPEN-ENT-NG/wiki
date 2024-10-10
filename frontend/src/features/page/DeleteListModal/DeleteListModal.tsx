@@ -4,23 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { useFetcher } from 'react-router-dom';
 import { useOpenDeleteModal, useUserRights, useWikiActions } from '~/store';
 
-export default function DeleteListModal({
-  selectedPages,
-}: {
-  selectedPages: string[];
-}) {
+const DeleteListModal = ({ selectedPages }: { selectedPages: string[] }) => {
   const openDeleteModal = useOpenDeleteModal();
   const userRights = useUserRights();
 
   const { t } = useTranslation('wiki');
   const { setOpenDeleteModal } = useWikiActions();
-  const fetcher = useFetcher();
 
+  const fetcher = useFetcher();
   const canManage = userRights.manager;
 
   return createPortal(
     <Modal
-      id="delete-list-page"
+      id="delete-pages-list"
       isOpen={openDeleteModal}
       onModalClose={() => setOpenDeleteModal(false)}
     >
@@ -40,6 +36,7 @@ export default function DeleteListModal({
           color="tertiary"
           variant="ghost"
           onClick={() => setOpenDeleteModal(false)}
+          data-testid="cancel-button"
         >
           {t('wiki.modal.delete.page.cancel')}
         </Button>
@@ -54,6 +51,7 @@ export default function DeleteListModal({
             variant="filled"
             name="intent"
             value={JSON.stringify(selectedPages)}
+            data-testid="delete-button"
           >
             {t('wiki.modal.delete.page.btn')}
           </Button>
@@ -62,4 +60,6 @@ export default function DeleteListModal({
     </Modal>,
     document.getElementById('portal') as HTMLElement
   );
-}
+};
+
+export default DeleteListModal;

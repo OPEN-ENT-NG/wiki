@@ -1,4 +1,3 @@
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render, renderWithRouter, screen } from '~/mocks/setup.vitest';
 import { CreatePage } from '~/routes/page/create';
@@ -47,16 +46,14 @@ describe('NewPage component', () => {
     /**
      * Mock useMatch with null value
      */
-    vi.mocked(mocks.useMatch).mockReturnValue(null);
+    mocks.useMatch.mockReturnValue(null);
     /**
      * We are getting a 'user' with @testing-library/user-event
      */
-    const user = userEvent.setup();
-
     /**
      * As we mocked useNavigate, we can just render the component
      */
-    render(<NewPage />);
+    const { user } = render(<NewPage />);
 
     /**
      * We find the button in the component by role (better than by test-id)
@@ -84,7 +81,7 @@ describe('NewPage component', () => {
     /**
      * Mock useMatch with a value
      */
-    vi.mocked(mocks.useMatch).mockReturnValue({
+    mocks.useMatch.mockReturnValue({
       params: {
         wikiId: '123',
       },

@@ -16,8 +16,9 @@ export const useFormPage = (page?: Page) => {
 
   const location = useLocation();
   const params = useParams();
-  const { data: wikiData } = useGetWiki(params.wikiId!);
   const submit = useSubmit();
+
+  const { data: wikiData } = useGetWiki(params.wikiId!);
 
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;

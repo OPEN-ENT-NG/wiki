@@ -67,9 +67,9 @@ describe('Index Route', () => {
     await waitFor(() => expect(result.current).toBe(false));
   });
 
-  /* it('should render Menu component', async () => {
+  it('should render Menu component', async () => {
     await waitFor(() => expect(screen.findByLabelText('Wiki')));
-  }); */
+  });
 
   it('should render TreeView component', async () => {
     const { container } = renderWithRouter(`/id/${mockWiki._id}`, <Index />);
