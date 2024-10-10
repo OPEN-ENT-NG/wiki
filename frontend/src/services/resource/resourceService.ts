@@ -41,7 +41,7 @@ export class WikiResourceService extends ResourceService {
    * (optional) Must be use to redirect to angularjs route to create a resource
    * @param folderId
    */
-  getFormUrl(folderId?: string | undefined): string {
+  getFormUrl(): string {
     // TODO ?
     throw new Error('Method not implemented.');
   }
@@ -50,7 +50,7 @@ export class WikiResourceService extends ResourceService {
    * (optional) Must be use to redirect to angularjs route to edit a resource
    * @param resourceId
    */
-  getEditUrl(resourceId?: string | undefined): string {
+  getEditUrl(): string {
     // TODO ?
     throw new Error('Method not implemented.');
   }

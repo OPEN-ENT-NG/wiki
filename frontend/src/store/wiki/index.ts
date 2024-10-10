@@ -37,7 +37,7 @@ const initialState = {
   openPrintModal: false,
 };
 
-const store = createStore<State & Action>()((set, get) => ({
+const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
     setOpenUpdateModal: (openUpdateModal: boolean) => set({ openUpdateModal }),

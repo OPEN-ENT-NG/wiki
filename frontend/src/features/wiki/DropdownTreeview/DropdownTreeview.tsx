@@ -31,10 +31,10 @@ export const DropdownTreeview = ({
     <div className="dropdown-treeview w-100 mb-16">
       <Dropdown block>
         {(
-          triggerProps: JSX.IntrinsicAttributes &
+          _triggerProps: JSX.IntrinsicAttributes &
             Omit<IconButtonProps, 'ref'> &
             RefAttributes<HTMLButtonElement>,
-          itemRefs,
+          _itemRefs,
           setVisible
         ) => (
           <>

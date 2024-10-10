@@ -262,7 +262,7 @@ const handlers = [
     const newPage = await request.json();
     return HttpResponse.json(newPage, { status: 201 });
   }),
-  http.put(`${baseURL}/:wikiId/page/:pageId`, async ({ request }) => {
+  http.put(`${baseURL}/:wikiId/page/:pageId`, async () => {
     return HttpResponse.json({ number: 1 }, { status: 200 });
   }),
   http.delete(`wiki/:wikiId/page/:pageId`, () => {
