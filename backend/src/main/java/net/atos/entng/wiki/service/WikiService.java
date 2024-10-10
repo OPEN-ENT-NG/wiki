@@ -19,6 +19,7 @@
 
 package net.atos.entng.wiki.service;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public interface WikiService {
 	public void deletePage(UserInfos user, String idWiki, String idPage,
 			Handler<Either<String, JsonObject>> handler);
 
-	Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages);
+	Future<Map<String, String>> deletePages(UserInfos user, String idWiki, Set<String> idPages);
 
 	/**
 	 * Unset field "index" if "idPage" is the index

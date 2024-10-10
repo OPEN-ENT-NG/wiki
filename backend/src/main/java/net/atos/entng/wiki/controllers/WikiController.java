@@ -434,7 +434,45 @@ public class WikiController extends MongoDbControllerHelper {
 				final Set<String> ids = pagePayload.getJsonArray("ids").stream().map(id -> id.toString()).collect(Collectors.toSet());
 				// delete pages and check whether he is manager or contributor of each pages
 				wikiService.deletePages(user, idWiki, ids)
-						.onSuccess(res -> noContent(request))
+						.onSuccess(res -> {
+							res.forEach((authorId, pageId) -> {
+									JsonObject params = new JsonObject();
+									params.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType());
+									params.put("username", user.getUsername())
+											.put("pageTitle", pageTitle)
+											.put("wikiTitle", wiki.getString("title"))
+											.put("pageUri", "/wiki/id/" + idWiki + "/page" + "/" + idPage);
+									params.put("resourceUri", params.getString("pageUri"));
+
+									if(!isCreatePage && comment!=null && !comment.isEmpty()) {
+										if(comment.length() > OVERVIEW_LENGTH) {
+											comment = comment.substring(0, OVERVIEW_LENGTH) + " [...]";
+										}
+										params.put("overview", comment);
+									}
+
+									String notificationName = isCreatePage ? "page-created" : "comment-added";
+									String pushNotifTitle = isCreatePage ? "wiki.push.notif.page-created" : "wiki.push.notif.comment-added";
+									String pushNotifBody = isCreatePage
+											? I18n.getInstance().translate(
+											"wiki.push.notif.page-created",
+											getHost(request),
+											I18n.acceptLanguage(request),
+											user.getUsername(),
+											wiki.getString("title"))
+											: I18n.getInstance().translate(
+											"wiki.push.notif.comment-added",
+											getHost(request),
+											I18n.acceptLanguage(request),
+											user.getUsername(),
+											pageTitle);
+
+									params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
+									notification.notifyTimeline(request, "wiki." + notificationName, user, recipients, idResource, params);
+							});
+							// TODO send non author delete notification
+							noContent(request);
+						})
 						.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
 			});
 		});
@@ -775,16 +813,18 @@ public class WikiController extends MongoDbControllerHelper {
 			String notificationName = isCreatePage ? "page-created" : "comment-added";
 			String pushNotifTitle = isCreatePage ? "wiki.push.notif.page-created" : "wiki.push.notif.comment-added";
 			String pushNotifBody = isCreatePage
-					? I18n.getInstance().translate("wiki.push.notif.page-created",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					wiki.getString("title"))
-					: I18n.getInstance().translate("wiki.push.notif.comment-added",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					pageTitle);
+					? I18n.getInstance().translate(
+							"wiki.push.notif.page-created",
+								getHost(request),
+								I18n.acceptLanguage(request),
+								user.getUsername(),
+								wiki.getString("title"))
+					: I18n.getInstance().translate(
+							"wiki.push.notif.comment-added",
+								getHost(request),
+								I18n.acceptLanguage(request),
+								user.getUsername(),
+								pageTitle);
 
 			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
 			notification.notifyTimeline(request, "wiki." + notificationName, user, recipients, idResource, params);

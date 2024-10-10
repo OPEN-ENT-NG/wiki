@@ -22,7 +22,6 @@ package net.atos.entng.wiki.service;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
@@ -651,12 +650,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages) {
+	public Future<Map<String, String>> deletePages(UserInfos user, String idWiki, Set<String> idPages) {
 		// Page IDs to delete
 		final List<String> pageIDsToDelete = new ArrayList<>();
 
 		// Subpages IDs that will become a page
 		final List<String> subpageIDsToPage = new ArrayList<>();
+
+		// Map of authorId and pageId, used to send notification if manager deletes their page
+		final Map<String, String> authorIdAndPageIdNotifyMap = new HashMap<>();
 
 		// We implement the following rules:
 		// - if manager:
@@ -664,29 +666,35 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// - if contrib:
 		//   => if user is author: delete subpages + pages matching idPages
 		//   => if user is NOT author:  subpages will become pages
-		final Promise<Void> promise = Promise.promise();
+		final Promise<Map<String, String>> promise = Promise.promise();
 		this.getWiki(idWiki, getWikiRes -> {
 			final JsonObject wiki = getWikiRes.right().getValue();
-			final JsonArray pages = getPages(wiki, idPages);
-			final JsonArray subpages = getSubPages(wiki, idPages);
-			final JsonArray toDeletePages = new JsonArray().addAll(pages).addAll(subpages);
+			final JsonArray toDeletePages = new JsonArray();
+
+			toDeletePages.addAll(getPages(wiki, idPages));
+			toDeletePages.addAll(getSubPages(wiki,idPages));
+
 			if (!toDeletePages.isEmpty()) {
-				if (isManager(wiki, user)) {
-					pageIDsToDelete.addAll(
-							toDeletePages
-									.stream()
-									.map(page -> ((JsonObject) page).getString("_id"))
-									.collect(Collectors.toList()));
-				} else if (isContrib(wiki, user)) {
-					toDeletePages.forEach(page -> {
-						JsonObject pageJson = (JsonObject) page;
-						if (isPageAuthor(pageJson, user)) {
-							pageIDsToDelete.add(pageJson.getString("_id"));
-						} else {
-							subpageIDsToPage.add(pageJson.getString("_id"));
-						}
-					});
-				}
+				toDeletePages.stream()
+						.map(page -> (JsonObject) page)
+						.forEach(jsonPage -> {
+							String pageId = jsonPage.getString("_id");
+							String authorId = jsonPage.getString("author");
+
+							if (isManager(wiki, user)) {
+								pageIDsToDelete.add(pageId);
+								if (!isPageAuthor(jsonPage, user)) {
+									// if manager is not author then add author and page to the delete notif map
+									authorIdAndPageIdNotifyMap.put(authorId, pageId);
+								}
+							} else if (isContrib(wiki, user)) {
+								if (isPageAuthor(jsonPage, user)) {
+									pageIDsToDelete.add(pageId);
+								} else {
+									subpageIDsToPage.add(pageId);
+								}
+							}
+						});
 			}
 
 			final List<Future> futures = new ArrayList<>();
@@ -746,7 +754,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				subpagesToPagesPromise.complete();
 			}
 			CompositeFuture.all(futures).mapEmpty()
-					.onSuccess(res -> promise.complete())
+					.onSuccess(res -> promise.complete(authorIdAndPageIdNotifyMap))
 					.onFailure(err -> promise.fail(err.getMessage()));
 		});
 		return promise.future();
