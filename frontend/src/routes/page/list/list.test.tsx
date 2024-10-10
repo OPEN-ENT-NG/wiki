@@ -50,7 +50,7 @@ describe('Pages List', () => {
       lg: true,
     });
 
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
       isPending: false,
     });
@@ -62,7 +62,7 @@ describe('Pages List', () => {
   });
 
   it('should render LoadingScreen when data is loading', async () => {
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
       isPending: true,
     });
@@ -73,7 +73,7 @@ describe('Pages List', () => {
   });
 
   it('should render error message when there is an error', async () => {
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: null,
       isPending: false,
       error: new Error('Test error'),
@@ -85,7 +85,7 @@ describe('Pages List', () => {
   });
 
   it('should render desktop view with List component', async () => {
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
       isPending: false,
     });
@@ -99,9 +99,9 @@ describe('Pages List', () => {
   });
 
   it('should render mobile view with List component', async () => {
-    vi.mocked(mocks.useBreakpoint).mockReturnValue({ lg: false });
+    mocks.useBreakpoint.mockReturnValue({ lg: false });
 
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
       isPending: false,
     });
@@ -118,9 +118,9 @@ describe('Pages List', () => {
   });
 
   it('should render a list of actions', async () => {
-    vi.mocked(mocks.useBreakpoint).mockReturnValue({ lg: false });
+    mocks.useBreakpoint.mockReturnValue({ lg: false });
 
-    vi.mocked(mocks.useGetPagesFromWiki).mockReturnValue({
+    mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
       isPending: false,
     });

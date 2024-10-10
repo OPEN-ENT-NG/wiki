@@ -8,7 +8,6 @@ const mocks = vi.hoisted(() => ({
   handleOnSelectAllItems: vi.fn(),
   handleOnSelectItem: vi.fn(),
   useGetRevisionsPage: vi.fn(),
-  useCheckableTable: vi.fn(),
   useGetPage: vi.fn(),
   useGetRevisionPage: vi.fn(),
   setOpenRevisionModal: vi.fn(),
@@ -61,7 +60,7 @@ describe('RevisionModal', () => {
 
     vi.mocked(useCheckableTable).mockReturnValue(mockRevisionTableHookValue);
 
-    vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
+    mocks.useGetRevisionsPage.mockReturnValue({
       data: mockRevision,
       isPending: false,
     });
@@ -76,7 +75,7 @@ describe('RevisionModal', () => {
   });
 
   it('should render LoadingScreen when data is loading', async () => {
-    vi.mocked(mocks.useGetRevisionsPage).mockReturnValue({
+    mocks.useGetRevisionsPage.mockReturnValue({
       data: mockRevision,
       isPending: true,
     });

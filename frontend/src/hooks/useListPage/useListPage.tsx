@@ -6,8 +6,7 @@ import {
   Print,
   See,
 } from '@edifice-ui/icons';
-import { ToolbarItem } from '@edifice-ui/react';
-import { useMediaQuery } from '@uidotdev/usehooks';
+import { ToolbarItem, useBreakpoint } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUserRights, useWikiActions } from '~/store';
@@ -22,8 +21,7 @@ export const useListPage = ({
   const params = useParams();
   const navigate = useNavigate();
 
-  // const { lg } = useBreakpoint();
-  const isDesktopDevice = useMediaQuery('only screen and (min-width: 1024px)');
+  const { lg } = useBreakpoint();
   const userRights = useUserRights();
   const isOnlyRead =
     userRights.read &&
@@ -36,30 +34,28 @@ export const useListPage = ({
 
   const itemsTranslation = {
     read: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.read') : null,
-      responsive: !isDesktopDevice ? t('wiki.list.toolbar.action.read') : '',
+      desktop: lg ? t('wiki.list.toolbar.action.read') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.read') : '',
     },
     move: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.move') : null,
-      responsive: !isDesktopDevice ? t('wiki.list.toolbar.action.move') : '',
+      desktop: lg ? t('wiki.list.toolbar.action.move') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.move') : '',
     },
     duplicate: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.duplicate') : null,
-      responsive: !isDesktopDevice
-        ? t('wiki.list.toolbar.action.duplicate')
-        : '',
+      desktop: lg ? t('wiki.list.toolbar.action.duplicate') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.duplicate') : '',
     },
     history: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.history') : null,
-      responsive: !isDesktopDevice ? t('wiki.list.toolbar.action.history') : '',
+      desktop: lg ? t('wiki.list.toolbar.action.history') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.history') : '',
     },
     print: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.print') : null,
-      responsive: !isDesktopDevice ? t('wiki.list.toolbar.action.print') : '',
+      desktop: lg ? t('wiki.list.toolbar.action.print') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.print') : '',
     },
     delete: {
-      desktop: isDesktopDevice ? t('wiki.list.toolbar.action.delete') : null,
-      responsive: !isDesktopDevice ? t('wiki.list.toolbar.action.delete') : '',
+      desktop: lg ? t('wiki.list.toolbar.action.delete') : null,
+      responsive: !lg ? t('wiki.list.toolbar.action.delete') : '',
     },
   };
 

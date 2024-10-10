@@ -59,12 +59,6 @@ const initialRights = {
 const selectedPages = [mockWikiPages.pages[0]._id, mockWikiPages.pages[1]._id];
 
 describe('DeleteListModal', () => {
-  beforeAll(() => {
-    window.addEventListener('submit', (event) => {
-      event.preventDefault();
-    });
-  });
-
   beforeEach(() => {
     mocks.useUserRights.mockReturnValue(initialRights);
   });
@@ -132,6 +126,10 @@ describe('DeleteListModal', () => {
   });
 
   it('should render fetcher.Form and submit form', async () => {
+    window.addEventListener('submit', (event) => {
+      event.preventDefault();
+    });
+
     render(<DeleteListModal selectedPages={selectedPages} />);
 
     const user = userEvent.setup();
