@@ -40,7 +40,7 @@ const initialState = {
   selectedNodeId: '',
 };
 
-const store = createStore<State & Action>()((set, get) => ({
+const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
     setTreeData: (treeData: TreeData[]) => set(() => ({ treeData })),

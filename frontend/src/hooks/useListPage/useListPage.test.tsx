@@ -1,6 +1,6 @@
 import { ToolbarButtonItem } from '@edifice-ui/react';
 import { mockWikiPages } from '~/mocks';
-import { renderHook } from '~/mocks/setup.vitest';
+import { renderHook } from '../../mocks/setup.vitest';
 import { useListPage } from './useListPage';
 
 const mocks = vi.hoisted(() => ({
