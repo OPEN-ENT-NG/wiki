@@ -84,7 +84,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		JsonObject projection = new JsonObject()
 				.put("pages.content", 0)
-				.put("pages.contentPlain", 0)
 				.put("pages.jsonContent", 0)
 				.put("pages.contentVersion", 0);
 
@@ -181,12 +180,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("created", 0)
 				.put("modified", 0)
 				.put("owner", 0)
-				.put("index", 0);
+				.put("index", 0)
+				.put("pages.oldContent", 0);
 
 		if (!Boolean.parseBoolean(getContent)) {
 			projection
 					.put("pages.content", 0)
-					.put("pages.contentPlain", 0)
 					.put("pages.jsonContent", 0)
 					.put("pages.contentVersion", 0);
 		}
@@ -285,8 +284,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void getPage(final String idWiki, final String idPage, final HttpServerRequest request,
-			final Handler<Either<String, JsonObject>> handler) {
+	public void getPage(final String idWiki, final String idPage, final HttpServerRequest request, boolean originalFormat, final Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder
 				.start("_id").is(idWiki)
 				.put("pages._id").is(idPage);
@@ -294,7 +292,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// Projection
 		JsonObject projection = new JsonObject()
 				.put("_id", 0)
-				.put("pages.$", 1);
+				.put("pages.$", 1)
+				.put("pages.oldContent", 0);
 
 		// Find page
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection, res -> {
@@ -307,64 +306,69 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				handler.handle(new Either.Left<>("No page found with id: " + idPage));
 				return;
 			}
-
 			final JsonObject page = res.body().getJsonObject("result").getJsonArray("pages").getJsonObject(0);
-
 			// Tiptap Transformer
-			Future<ContentTransformerResponse> contentTransformerResponseFuture;
-			if (page.containsKey("jsonContent")) {
-				log.debug("Page has already been transformed, nothing to do.");
-				contentTransformerResponseFuture = Future.succeededFuture();
-			} else {
-				Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
-				desiredFormats.add(ContentTransformerFormat.HTML);
-				desiredFormats.add(ContentTransformerFormat.JSON);
-				desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
+			handleOldContent(idWiki, idPage, page, originalFormat, request)
+					.onFailure(fail -> handler.handle(new Either.Left<>(fail.getMessage())))
+					.onSuccess(success -> handler.handle(new Either.Right<>(success)));
+		});
+	}
 
-				ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
-						desiredFormats,
-						0,
-						page.getString("content"),
-						null
-				);
-
-				contentTransformerResponseFuture = contentTransformerClient.transform(transformerRequest, request);
+	/**
+	 * If {@code page} does not have contentVersion or if version is 0 then old content is transformed to new content.<br />
+	 * Otherwise, nothing is done
+	 * @param idWiki ID of the wiki whose page could be transformed
+	 * @param idPage ID of Page whose content could be transformed
+	 * @param page Page whose content could be transformed
+	 * @return The modified page (actually the same as {@code page})
+	 */
+	private Future<JsonObject> handleOldContent(final String idWiki, final String idPage, final JsonObject page, final boolean originalFormatRequested,
+												final HttpServerRequest request) {
+		final Promise<JsonObject> promise = Promise.promise();
+		final JsonObject oldPage = page.copy();
+		if (page.containsKey("jsonContent")) {
+			log.debug("Page has already been transformed, nothing to do.");
+			promise.complete(page);
+		} else {
+			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
+			desiredFormats.add(ContentTransformerFormat.HTML);
+			desiredFormats.add(ContentTransformerFormat.JSON);
+			final ContentTransformerRequest transformerRequest = new ContentTransformerRequest(desiredFormats, 0, page.getString("content"), null);
+			contentTransformerClient.transform(transformerRequest, request)
+					.onComplete(response -> {
+						if (response.failed()) {
+							log.error("Content transformation failed", response.cause());
+							promise.fail("content.transformation.failed");
+						} else if (response.result() == null) {
+							log.info("No content transformed");
+							promise.complete(page);
+						} else {
+							// contentVersion set to 0 to indicate that content has been transformed for the first time.
+							final ContentTransformerResponse transformedContent = response.result();
+							page.put("contentVersion", 0)
+									.put("jsonContent", transformedContent.getJsonContent())
+									.put("oldContent", page.getString("content"))
+									.put("content", transformedContent.getCleanHtml());
+							// Update query
+							final BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
+							final QueryBuilder queryUpdatePage = QueryBuilder.start("_id").is(idWiki).put("pages")
+									.elemMatch(idPageDBO);
+							final MongoUpdateBuilder modifier = new MongoUpdateBuilder()
+									.set("pages.$.contentVersion", page.getInteger("contentVersion"))
+									.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
+									.set("pages.$.content", page.getString("content"))
+									.set("pages.$.oldContent", page.getString("oldContent"));
+							mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(),e -> {
+								promise.complete(page);
+							});
+						}
+					});
+		}
+		return promise.future().map(fetchedPage -> {
+			if(originalFormatRequested && oldPage.containsKey("oldContent")) {
+				fetchedPage.put("content", oldPage.getString("oldContent"));
 			}
-
-			contentTransformerResponseFuture.onComplete(transformerResponse -> {
-				if (transformerResponse.failed()) {
-					log.error("Content transformation failed", transformerResponse.cause());
-					handler.handle(new Either.Left<>(transformerResponse.cause().getMessage()));
-					return;
-				} else {
-					if (transformerResponse.result() == null) {
-						log.info("No content transformed");
-						handler.handle(new Either.Right<>(page));
-						return;
-					} else {
-						// contentVersion set to 0 to indicate that content has been transformed for the first time.
-						page
-								.put("contentVersion", 0)
-								.put("jsonContent", transformerResponse.result().getJsonContent())
-								.put("content", transformerResponse.result().getCleanHtml())
-								.put("contentPlain", transformerResponse.result().getPlainTextContent());
-
-						// Update query
-						BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
-						QueryBuilder queryUpdatePage = QueryBuilder.start("_id").is(idWiki).put("pages")
-								.elemMatch(idPageDBO);
-						MongoUpdateBuilder modifier = new MongoUpdateBuilder()
-								.set("pages.$.contentVersion", page.getInteger("contentVersion"))
-								.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
-								.set("pages.$.content", page.getString("content"))
-								.set("pages.$.contentPlain", page.getString("contentPlain"));
-
-						mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(), event -> {
-							handler.handle(new Either.Right<>(page));
-						});
-					}
-				}
-			});
+			return fetchedPage;
 		});
 	}
 
@@ -387,7 +391,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 			desiredFormats.add(ContentTransformerFormat.HTML);
 			desiredFormats.add(ContentTransformerFormat.JSON);
-			desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
 
 			// request to transform page "content" to desiredFormats
 			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
@@ -413,7 +416,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					page.put("contentVersion", transformerResponse.result().getContentVersion());
 					page.put("content", transformerResponse.result().getCleanHtml());
 					page.put("jsonContent", transformerResponse.result().getJsonContent());
-					page.put("contentPlain", transformerResponse.result().getPlainTextContent());
 				}
 			}
 
@@ -442,7 +444,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 			desiredFormats.add(ContentTransformerFormat.HTML);
 			desiredFormats.add(ContentTransformerFormat.JSON);
-			desiredFormats.add(ContentTransformerFormat.PLAINTEXT);
 
 			// request to transform page "content" to desiredFormats
 			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
@@ -476,7 +477,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					modifier.set("pages.$.content", transformerResponse.result().getCleanHtml());
 					modifier.set("pages.$.contentVersion", transformerResponse.result().getContentVersion());
 					modifier.set("pages.$.jsonContent", transformerResponse.result().getJsonContent());
-					modifier.set("pages.$.contentPlain", transformerResponse.result().getPlainTextContent());
+					modifier.unset("pages.$.oldContent");
 				}
 			}
 
@@ -514,7 +515,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 			// before updating the page with new values,
 			// we get the previous page values from database to manage visibility update and revision creation
-			this.getPage(idWiki, idPage, request, getPageRes -> {
+			this.getPage(idWiki, idPage, request, false, getPageRes -> {
 				if (getPageRes.isRight()) {
 					JsonObject dbPage = getPageRes.right().getValue();
 
@@ -898,7 +899,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void listRevisions(String wikiId, String pageId, Handler<Either<String, JsonArray>> handler) {
 		QueryBuilder query = QueryBuilder.start("wikiId").is(wikiId).put("pageId").is(pageId);
 		JsonObject sort = new JsonObject().put("date", -1);
-		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, null,
+		JsonObject projection = new JsonObject().put("oldContent", 0);
+		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, projection,
 				MongoDbResult.validResultsHandler(handler));
 	}
 
@@ -908,7 +910,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void getRevisionById(String revisionId, Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(revisionId);
-		mongo.findOne(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), null, null,
+		JsonObject projection = new JsonObject().put("oldContent", 0);
+		mongo.findOne(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), projection, null,
 				MongoDbResult.validResultHandler(handler));
 	}
 

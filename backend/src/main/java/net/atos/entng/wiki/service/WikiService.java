@@ -49,8 +49,7 @@ public interface WikiService {
 	public void deleteWiki(UserInfos user, String idWiki,
 			Handler<Either<String, JsonObject>> handler);
 
-	public void getPage(String idWiki, String idPage, HttpServerRequest request,
-			Handler<Either<String, JsonObject>> handler);
+	void getPage(String idWiki, String idPage, HttpServerRequest request, boolean originalFormat, Handler<Either<String, JsonObject>> handler);
 
 	public void getPages(String idWiki, String getContent,
 						 Handler<Either<String, JsonObject>> handler);

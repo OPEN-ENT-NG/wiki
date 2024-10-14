@@ -213,5 +213,7 @@
   "wiki.list.toolbar.action.duplicate": "Dupliquer",
   "wiki.list.toolbar.action.history": "Voir l'historique",
   "wiki.list.toolbar.action.print": "Imprimer",
-  "wiki.list.toolbar.action.delete": "Supprimer"
+  "wiki.list.toolbar.action.delete": "Supprimer",
+  "wiki.oldFormat.open": "Voir l'ancienne version",
+  "wiki.oldFormat.text": "Le contenu de cette page a été créé avec l’ancienne version de wiki. S’il ne s’affiche pas correctement, vous pouvez voir l’ancienne version."
 }

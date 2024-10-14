@@ -322,8 +322,12 @@ public class WikiController extends MongoDbControllerHelper {
 	public void getPage(final HttpServerRequest request) {
 		final String idWiki = request.params().get("id");
 		final String idPage = request.params().get("idpage");
-
-		wikiService.getPage(idWiki, idPage, request, notEmptyResponseHandler(request));
+		final boolean originalFormat = "true".equalsIgnoreCase(request.params().get("originalformat"));
+		if (StringUtils.isEmpty(idWiki) || StringUtils.isEmpty(idPage)) {
+			badRequest(request);
+			return;
+		}
+		wikiService.getPage(idWiki, idPage, request, originalFormat, notEmptyResponseHandler(request));
 	}
 
 	@Post("/:id/page")

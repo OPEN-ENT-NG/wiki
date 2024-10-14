@@ -12,10 +12,22 @@ import { wikiQueryOptions, wikiService } from '~/services';
  */
 export const pageQueryOptions = {
   base: ['page'] as const,
-  findOne: ({ wikiId, pageId }: { wikiId: string; pageId: string }) =>
+  findOne: ({
+    wikiId,
+    pageId,
+    originalformat,
+  }: {
+    wikiId: string;
+    pageId: string;
+    originalformat?: boolean;
+  }) =>
     queryOptions({
-      queryKey: [...pageQueryOptions.base, { id: pageId }] as const,
-      queryFn: () => wikiService.getPage({ wikiId, pageId }),
+      queryKey: [
+        ...pageQueryOptions.base,
+        { id: pageId },
+        { originalformat },
+      ] as const,
+      queryFn: () => wikiService.getPage({ wikiId, pageId, originalformat }),
       staleTime: 5000,
     }),
   findAllFromWiki: ({
@@ -78,11 +90,13 @@ export const pageQueryOptions = {
 export const useGetPage = ({
   wikiId,
   pageId,
+  originalformat,
 }: {
   wikiId: string;
   pageId: string;
+  originalformat?: boolean;
 }) => {
-  return useQuery(pageQueryOptions.findOne({ wikiId, pageId }));
+  return useQuery(pageQueryOptions.findOne({ wikiId, pageId, originalformat }));
 };
 
 export const useGetPagesFromWiki = ({

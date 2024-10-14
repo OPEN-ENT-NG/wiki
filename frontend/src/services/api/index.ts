@@ -59,10 +59,20 @@ const createWikiService = (baseURL: string) => ({
    * @param pageId string
    * @returns get a page of a wiki by id
    */
-  async getPage({ wikiId, pageId }: { wikiId: string; pageId: string }) {
+  async getPage({
+    wikiId,
+    pageId,
+    originalformat,
+  }: {
+    wikiId: string;
+    pageId: string;
+    originalformat?: boolean;
+  }) {
     const response = await odeServices
       .http()
-      .get<PageDto>(`${baseURL}/${wikiId}/page/${pageId}`);
+      .get<PageDto>(
+        `${baseURL}/${wikiId}/page/${pageId}?originalformat=${originalformat || false}`,
+      );
 
     return dtoToPage(response);
   },
