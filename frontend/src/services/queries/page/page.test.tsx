@@ -11,7 +11,8 @@ import {
 } from './page';
 
 import { mockPage, mockRevision, mockWikiPagesWithoutContent } from '~/mocks';
-import { queryClient, wrapper } from '~/mocks/setup.vitest';
+import { wrapper } from '~/mocks/setup';
+import { queryClient } from '~/providers';
 import { wikiQueryOptions } from '~/services';
 
 const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries');
@@ -27,7 +28,7 @@ describe('Wiki Page GET Queries', () => {
         }),
       {
         wrapper,
-      }
+      },
     );
 
     await waitFor(() => {
@@ -46,7 +47,7 @@ describe('Wiki Page GET Queries', () => {
         }),
       {
         wrapper,
-      }
+      },
     );
 
     await waitFor(() => {
@@ -65,7 +66,7 @@ describe('Wiki Page GET Queries', () => {
         }),
       {
         wrapper,
-      }
+      },
     );
 
     await waitFor(() => {
@@ -85,7 +86,7 @@ describe('Wiki Page GET Queries', () => {
         }),
       {
         wrapper,
-      }
+      },
     );
 
     await waitFor(() => {

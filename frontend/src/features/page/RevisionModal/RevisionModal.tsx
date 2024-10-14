@@ -47,7 +47,7 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
       setOpenRevisionModal(false);
       navigate(`/id/${params.wikiId}/page/${pageId}/version/${id}`);
     },
-    [setOpenRevisionModal, navigate, params.wikiId, pageId]
+    [setOpenRevisionModal, navigate, params.wikiId, pageId],
   );
 
   if (isPending) return <LoadingScreen />;
@@ -168,7 +168,7 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
         </Button>
       </Modal.Footer>
     </Modal>,
-    document.getElementById('portal') as HTMLElement
+    document.getElementById('portal') as HTMLElement,
   );
 };
 

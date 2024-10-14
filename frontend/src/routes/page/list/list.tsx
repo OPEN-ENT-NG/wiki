@@ -21,18 +21,18 @@ import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
 import { useOpenDeleteModal, useOpenRevisionModal } from '~/store';
 
 const RevisionModal = lazy(
-  async () => await import('~/features/page/RevisionModal/RevisionModal')
+  async () => await import('~/features/page/RevisionModal/RevisionModal'),
 );
 
 const DeleteListModal = lazy(
-  async () => await import('~/features/page/DeleteListModal/DeleteListModal')
+  async () => await import('~/features/page/DeleteListModal/DeleteListModal'),
 );
 
 export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
     const data = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!)
+      wikiQueryOptions.findOne(params.wikiId!),
     );
 
     return data;
@@ -79,7 +79,7 @@ export const PageList = () => {
   const renderDesktopNode = (
     node: Page,
     checkbox: JSX.Element | undefined,
-    checked: boolean | undefined
+    checked: boolean | undefined,
   ) => (
     <div
       className={clsx('grid gap-24 px-12 py-8 mb-2 align-items: center', {
@@ -120,7 +120,7 @@ export const PageList = () => {
   const renderMobileNode = (
     node: Page,
     checkbox: JSX.Element | undefined,
-    checked: boolean | undefined
+    checked: boolean | undefined,
   ) => (
     <div
       className={clsx('grid px-12 py-8 mb-2 gap-2', {

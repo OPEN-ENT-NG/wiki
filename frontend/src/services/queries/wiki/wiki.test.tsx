@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useGetWiki, useGetWikis } from './wiki';
 
 import { mockWiki, mockWikis } from '~/mocks';
-import { wrapper } from '~/mocks/setup.vitest';
+import { wrapper } from '~/mocks/setup';
 
 describe('Wiki GET Queries', () => {
   test('use useGetWikis hook to get wikis', async () => {
@@ -22,7 +22,7 @@ describe('Wiki GET Queries', () => {
       () => useGetWiki('6e3d23f6-890f-4453-af19-f9853a14b354'),
       {
         wrapper,
-      }
+      },
     );
 
     await waitFor(() => {

@@ -19,11 +19,11 @@ import { AppActions } from '../AppActions/AppActions';
 
 /* Lazy Loaded Modals */
 const UpdateModal = lazy(
-  async () => await import('~/components/ResourceModal')
+  async () => await import('~/components/ResourceModal'),
 );
 const ShareModal = lazy(async () => await import('~/components/ShareModal'));
 const PrintModal = lazy(
-  async () => await import('~/features/page/PrintModal/PrintModal')
+  async () => await import('~/features/page/PrintModal/PrintModal'),
 );
 
 export const AppHeader = () => {

@@ -43,7 +43,7 @@ function generatePackage(content) {
         process.exit(1);
       }
       console.log(`version generated: ${content.version}`);
-    }
+    },
   );
 }
 

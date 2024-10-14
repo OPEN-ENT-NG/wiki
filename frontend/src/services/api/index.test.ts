@@ -1,4 +1,3 @@
-import { test } from 'vitest';
 import {
   mockPage,
   mockRevision,
@@ -7,8 +6,6 @@ import {
   mockWikis,
 } from '~/mocks';
 import { wikiService } from '..';
-
-import '~/mocks/setup.msw';
 
 describe('Wiki GET Methods', () => {
   test('makes a GET request to get all wikis without pages', async () => {
@@ -50,7 +47,7 @@ describe('Wiki Page GET Methods', () => {
   test('makes a GET request to get pages of a wiki without content', async () => {
     const response = await wikiService.getWikiPages(
       mockWikiPagesWithoutContent._id,
-      false
+      false,
     );
 
     expect(response).toBeDefined();

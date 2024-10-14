@@ -1,6 +1,6 @@
 import { ToolbarButtonItem } from '@edifice-ui/react';
 import { mockWikiPages } from '~/mocks';
-import { renderHook } from '../../mocks/setup.vitest';
+import { renderHook } from '~/mocks/setup';
 import { useListPage } from './useListPage';
 
 const mocks = vi.hoisted(() => ({
@@ -56,7 +56,7 @@ describe('useListPage', () => {
 
   it('should return correct items for desktop view', () => {
     const { result } = renderHook(() =>
-      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 })
+      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 }),
     );
 
     expect(result.current).toHaveLength(6);
@@ -70,7 +70,7 @@ describe('useListPage', () => {
 
   it('should disable buttons when no pages are selected', () => {
     const { result } = renderHook(() =>
-      useListPage({ selectedPages: [], pagesCount: 0 })
+      useListPage({ selectedPages: [], pagesCount: 0 }),
     );
 
     result.current.forEach((item: any) => {
@@ -83,7 +83,7 @@ describe('useListPage', () => {
       useListPage({
         selectedPages: [selectedPages[0], selectedPages[1]],
         pagesCount: 2,
-      })
+      }),
     );
 
     expect((result.current[0] as ToolbarButtonItem).props.disabled).toBe(true); // read
@@ -103,7 +103,7 @@ describe('useListPage', () => {
     });
 
     const { result } = renderHook(() =>
-      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 })
+      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 }),
     );
 
     expect(result.current).toHaveLength(6);
@@ -116,7 +116,7 @@ describe('useListPage', () => {
 
   it('should open revision modal when history button is clicked', () => {
     const { result } = renderHook(() =>
-      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 })
+      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 }),
     );
 
     ((result.current[3] as ToolbarButtonItem).props.onClick as () => void)();
@@ -125,7 +125,7 @@ describe('useListPage', () => {
 
   it('should open delete modal when delete button is clicked', () => {
     const { result } = renderHook(() =>
-      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 })
+      useListPage({ selectedPages: [selectedPages[0]], pagesCount: 1 }),
     );
 
     ((result.current[5] as ToolbarButtonItem).props.onClick as () => void)();

@@ -59,6 +59,6 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
         </Form>
       </Modal.Footer>
     </Modal>,
-    document.getElementById('portal') as HTMLElement
+    document.getElementById('portal') as HTMLElement,
   );
 }

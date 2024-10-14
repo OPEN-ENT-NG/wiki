@@ -39,7 +39,7 @@ export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
     const data = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!)
+      wikiQueryOptions.findOne(params.wikiId!),
     );
 
     // TODO: wait normalized rights

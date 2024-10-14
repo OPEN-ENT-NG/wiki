@@ -1,5 +1,5 @@
 import { mockPage } from '~/mocks';
-import { render, screen } from '~/mocks/setup.vitest';
+import { render, screen } from '~/mocks/setup';
 import { RevisionHeader } from './RevisionHeader';
 
 /**
@@ -19,9 +19,10 @@ const initialRights = {
 const mockedUseNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {
-  const router = await vi.importActual<typeof import('react-router-dom')>(
-    'react-router-dom'
-  );
+  const router =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
   return {
     ...router,
     useNavigate: () => mockedUseNavigate,

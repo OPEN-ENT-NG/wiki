@@ -24,14 +24,14 @@ export const printLoader =
           pageQueryOptions.findOne({
             wikiId: params.wikiId!,
             pageId: printPageId,
-          })
+          }),
         );
       }
       return await queryClient.fetchQuery(
         pageQueryOptions.findAllFromWiki({
           wikiId: params.wikiId!,
           content: true,
-        })
+        }),
       );
     };
 

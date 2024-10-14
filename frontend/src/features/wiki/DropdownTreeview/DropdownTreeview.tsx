@@ -35,7 +35,7 @@ export const DropdownTreeview = ({
             Omit<IconButtonProps, 'ref'> &
             RefAttributes<HTMLButtonElement>,
           _itemRefs,
-          setVisible
+          setVisible,
         ) => (
           <>
             <Dropdown.Trigger label="Pages" icon={<TextPage />} />

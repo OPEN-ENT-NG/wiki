@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { test } from 'vitest';
 import { mockPage, mockWiki } from '~/mocks';
 import { Providers } from '~/providers';
 import { findPage } from '~/utils/findPage';
@@ -35,7 +34,7 @@ describe('useFormPage hook tests', () => {
       pageId: page?._id,
     });
     mocks.useGetWiki.mockReturnValue({ data: mockWiki });
-    mocks.useSubmit.mockReturnValue((data: any) => {
+    mocks.useSubmit.mockReturnValue(() => {
       return;
     });
   });

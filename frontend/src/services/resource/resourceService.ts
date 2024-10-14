@@ -114,5 +114,5 @@ export class WikiResourceService extends ResourceService {
  */
 ResourceService.register(
   { application: APP, resourceType: RESOURCE },
-  (context) => new WikiResourceService(context)
+  (context) => new WikiResourceService(context),
 );

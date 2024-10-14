@@ -1,4 +1,4 @@
-import { render, screen } from '~/mocks/setup.vitest';
+import { render, screen } from '~/mocks/setup';
 import WikiEmptyScreen from './WikiEmptyScreen';
 
 const src = '/src/assets/illu-wiki.svg';
@@ -26,7 +26,7 @@ describe('WikiEmptyScreen', () => {
 
   it('should render a text', () => {
     expect(screen.getByRole('paragraph')).toHaveTextContent(
-      'wiki.first.emptyscreen.text'
+      'wiki.first.emptyscreen.text',
     );
   });
 
