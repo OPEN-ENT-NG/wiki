@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import { ReactNode } from 'react';
 import { mockWikiPages } from '~/mocks';
-import { render, screen } from '~/mocks/setup.vitest';
+import { render, screen } from '~/mocks/setup';
 import DeleteListModal from './DeleteListModal';
 
 const mocks = vi.hoisted(() => ({
@@ -22,9 +22,10 @@ vi.mock('react-dom', async () => {
 });
 
 vi.mock('react-router-dom', async () => {
-  const router = await vi.importActual<typeof import('react-router-dom')>(
-    'react-router-dom'
-  );
+  const router =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
   return {
     ...router,
     useFetcher: () => ({
@@ -69,7 +70,7 @@ describe('DeleteListModal', () => {
 
   it('should render component', () => {
     const { baseElement } = render(
-      <DeleteListModal selectedPages={selectedPages} />
+      <DeleteListModal selectedPages={selectedPages} />,
     );
     expect(baseElement).toBeTruthy();
   });
@@ -78,7 +79,7 @@ describe('DeleteListModal', () => {
     render(<DeleteListModal selectedPages={selectedPages} />);
 
     expect(
-      screen.getByText('wiki.modal.delete.page.header')
+      screen.getByText('wiki.modal.delete.page.header'),
     ).toBeInTheDocument();
     expect(screen.getByRole('heading')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();

@@ -29,11 +29,11 @@ import {
 } from '~/store';
 
 const DeletePageModal = lazy(
-  async () => await import('~/features/page/DeletePageModal/DeletePageModal')
+  async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
 );
 
 const RevisionModal = lazy(
-  async () => await import('~/features/page/RevisionModal/RevisionModal')
+  async () => await import('~/features/page/RevisionModal/RevisionModal'),
 );
 
 export const loader =
@@ -43,7 +43,7 @@ export const loader =
       pageQueryOptions.findOne({
         wikiId: params.wikiId!,
         pageId: params.pageId!,
-      })
+      }),
     );
 
     if (odeServices.http().isResponseError()) {
@@ -55,7 +55,7 @@ export const loader =
 
     // If user is not manager and page is not visible then we return a 401.
     const wikiData = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!)
+      wikiQueryOptions.findOne(params.wikiId!),
     );
     const userRights = await checkUserRight(wikiData.rights);
     if (!userRights.manager && !pageData.isVisible) {
@@ -68,7 +68,7 @@ export const loader =
           wikiId: params.wikiId!,
           pageId: params.pageId!,
           revisionId: params.versionId!,
-        })
+        }),
       );
     }
 

@@ -115,7 +115,7 @@ export const useGetRevisionPage = ({
   revisionId?: string;
 }) => {
   return useQuery(
-    pageQueryOptions.findOneRevision({ wikiId, pageId, revisionId })
+    pageQueryOptions.findOneRevision({ wikiId, pageId, revisionId }),
   );
 };
 

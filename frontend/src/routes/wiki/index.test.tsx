@@ -1,10 +1,6 @@
 import { mockWiki } from '~/mocks';
-import {
-  renderHook,
-  renderWithRouter,
-  screen,
-  waitFor,
-} from '~/mocks/setup.vitest';
+import { renderWithRouter } from '~/mocks/renderWithRouter';
+import { renderHook, screen, waitFor } from '~/mocks/setup';
 import { Page } from '~/routes/page';
 import { Index } from '~/routes/wiki';
 
@@ -12,9 +8,10 @@ const mockedUseNavigate = vi.fn();
 const mockedUseMatch = vi.fn();
 
 vi.mock('react-router-dom', async () => {
-  const router = await vi.importActual<typeof import('react-router-dom')>(
-    'react-router-dom'
-  );
+  const router =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
   return {
     ...router,
     useLoaderData: () => mockWiki,
@@ -75,14 +72,14 @@ describe('Index Route', () => {
     const { container } = renderWithRouter(`/id/${mockWiki._id}`, <Index />);
 
     await waitFor(() =>
-      expect(container.querySelector('.treeview')).toBeDefined()
+      expect(container.querySelector('.treeview')).toBeDefined(),
     );
   });
 
   it('should trigger a navigation if the data has an indexed/default page', async () => {
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
-        `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`
+        `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
       );
     });
   });
@@ -90,7 +87,7 @@ describe('Index Route', () => {
   it('should navigate to the page route if data is found', async () => {
     renderWithRouter(
       `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
-      <Page />
+      <Page />,
     );
   });
 });

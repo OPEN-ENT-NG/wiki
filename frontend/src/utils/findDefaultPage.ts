@@ -5,7 +5,7 @@ type UserRights = Record<RightRole, boolean>;
 
 export const findDefaultPage = (
   wiki: Wiki,
-  userRights: UserRights
+  userRights: UserRights,
 ): Page | undefined => {
   const { pages, index } = wiki;
   const indexPage = pages.find((page) => page._id === index);

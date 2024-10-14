@@ -1,7 +1,11 @@
-/// <reference types='vitest' />
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import {
+  hashEdificeBootstrap,
+  queryHashVersion,
+} from './plugins/vite-plugin-edifice';
 
 export default ({ mode }: { mode: string }) => {
   // Checking environement files
@@ -64,12 +68,13 @@ export default ({ mode }: { mode: string }) => {
       host: 'localhost',
     },
 
-    plugins: [react(), nxViteTsPaths()],
-
-    // Uncomment this if you are using workers.
-    // worker: {
-    //  plugins: [ nxViteTsPaths() ],
-    // },
+    plugins: [
+      react(),
+      tsconfigPaths(),
+      hashEdificeBootstrap({
+        hash: queryHashVersion,
+      }),
+    ],
 
     build: {
       outDir: './dist',
@@ -83,8 +88,9 @@ export default ({ mode }: { mode: string }) => {
       rollupOptions: {
         external: ['edifice-ts-client'],
         output: {
+          inlineDynamicImports: true,
           paths: {
-            'edifice-ts-client': '/assets/js/edifice-ts-client/index.js',
+            'edifice-ts-client': `/assets/js/edifice-ts-client/index.js?${queryHashVersion}`,
           },
         },
       },
@@ -93,12 +99,9 @@ export default ({ mode }: { mode: string }) => {
     test: {
       watch: false,
       globals: true,
-      cache: {
-        dir: './node_modules/.vitest/wiki',
-      },
       environment: 'jsdom',
       include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-      setupFiles: ['./src/mocks/setup.vitest.tsx'],
+      setupFiles: ['./src/mocks/setup.ts'],
       reporters: ['default'],
       coverage: {
         reportsDirectory: './coverage/wiki',

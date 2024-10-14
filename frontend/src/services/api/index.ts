@@ -103,7 +103,7 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .get<Revision>(
-        `${baseURL}/${wikiId}/page/${pageId}/revisions/${revisionId}`
+        `${baseURL}/${wikiId}/page/${pageId}/revisions/${revisionId}`,
       );
     return response;
   },
@@ -220,7 +220,7 @@ const createWikiService = (baseURL: string) => ({
       .http()
       .putJson<Comment>(
         `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
-        { comment }
+        { comment },
       );
 
     return response;
@@ -246,7 +246,7 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .delete<Comment>(
-        `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`
+        `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
       );
     return response;
   },

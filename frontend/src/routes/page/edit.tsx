@@ -13,7 +13,7 @@ const ConfirmVisibilityModal = lazy(
   async () =>
     await import(
       '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'
-    )
+    ),
 );
 
 /**
@@ -33,7 +33,7 @@ export const editAction =
     // submitting from confirm visibility modal form
     const isConfirmVisibilityForm: string = getFormValue(
       formData,
-      'isConfirmVisibilityForm'
+      'isConfirmVisibilityForm',
     );
 
     const actionData: FormPageDataProps = isConfirmVisibilityForm
@@ -48,10 +48,10 @@ export const editAction =
     // and visibility has changed then we show confirm modal
     if (!isConfirmVisibilityForm) {
       const wikiData = await queryClient.ensureQueryData(
-        wikiQueryOptions.findOne(params.wikiId!)
+        wikiQueryOptions.findOne(params.wikiId!),
       );
       const pageData = wikiData.pages?.find(
-        (page) => page._id === params.pageId
+        (page) => page._id === params.pageId,
       );
       if (pageData?.children && pageData.isVisible === actionData.isHidden) {
         getWikiActions().setOpenConfirmVisibilityModal(true);

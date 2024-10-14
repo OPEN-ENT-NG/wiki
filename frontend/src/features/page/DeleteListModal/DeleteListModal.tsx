@@ -58,7 +58,7 @@ const DeleteListModal = ({ selectedPages }: { selectedPages: string[] }) => {
         </fetcher.Form>
       </Modal.Footer>
     </Modal>,
-    document.getElementById('portal') as HTMLElement
+    document.getElementById('portal') as HTMLElement,
   );
 };
 

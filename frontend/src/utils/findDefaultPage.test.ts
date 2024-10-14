@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest';
-import { findDefaultPage } from './findDefaultPage';
 import {
   mockUserContrib,
   mockUserManager,
@@ -8,6 +6,7 @@ import {
   mockWikiWithHiddenIndexPage,
   mockWikiWithOnlyHiddenPages,
 } from '~/mocks';
+import { findDefaultPage } from './findDefaultPage';
 
 describe('findDefaultPage', () => {
   it('should return the index page if the user is a manager', () => {
@@ -24,7 +23,7 @@ describe('findDefaultPage', () => {
     const firstVisiblePageId = '003';
     const result = findDefaultPage(
       mockWikiWithHiddenIndexPage,
-      mockUserContrib
+      mockUserContrib,
     );
     expect(result?._id).toBe(firstVisiblePageId);
   });
@@ -32,7 +31,7 @@ describe('findDefaultPage', () => {
   it('should return the index page if the user is a manager and the index page is not visible', () => {
     const result = findDefaultPage(
       mockWikiWithHiddenIndexPage,
-      mockUserManager
+      mockUserManager,
     );
     expect(result?._id).toBe(mockWikiWithHiddenIndexPage.index);
   });

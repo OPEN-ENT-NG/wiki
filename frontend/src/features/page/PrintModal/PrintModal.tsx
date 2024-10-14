@@ -75,6 +75,6 @@ export default function PrintModal() {
         </Modal.Footer>
       </div>
     </Modal>,
-    document.getElementById('portal') as HTMLElement
+    document.getElementById('portal') as HTMLElement,
   );
 }

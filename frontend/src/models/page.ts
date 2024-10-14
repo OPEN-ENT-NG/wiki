@@ -19,7 +19,7 @@ export interface PageDto {
       _id: string;
       title: string;
       isVisible: boolean;
-    }
+    },
   ];
   parentId?: string;
 }
@@ -42,7 +42,7 @@ export interface Page {
       _id: string;
       title: string;
       isVisible: boolean;
-    }
+    },
   ];
   parentId?: string;
 }
@@ -63,7 +63,7 @@ export interface PageWithoutContent {
       _id: string;
       title: string;
       isVisible: boolean;
-    }
+    },
   ];
   parentId?: string;
 }

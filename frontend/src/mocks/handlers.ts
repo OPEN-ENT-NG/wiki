@@ -1,5 +1,4 @@
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
 import { baseURL } from '~/services';
 import {
   mockPage,
@@ -234,7 +233,7 @@ const defaultHandlers = [
 /**
  * MSW Handlers
  */
-const handlers = [
+export const handlers = [
   ...defaultHandlers,
   http.get(`${baseURL}/list`, () => {
     return HttpResponse.json(mockWikis, { status: 200 });
@@ -282,5 +281,3 @@ const handlers = [
     return HttpResponse.json(mockRevision[0], { status: 200 });
   }),
 ];
-
-export const server = setupServer(...handlers);

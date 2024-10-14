@@ -1,10 +1,7 @@
-import { test } from 'vitest';
-
-import '~/mocks/setup.msw';
 import { renderHook, waitFor } from '@testing-library/react';
-import { useRevision } from './useRevision';
 import { mockPage, mockRevision } from '~/mocks';
-import { wrapper } from '~/mocks/setup.vitest';
+import { wrapper } from '~/mocks/setup';
+import { useRevision } from './useRevision';
 
 /**
  * We mock useUserRights (store)

@@ -13,7 +13,7 @@ export const useCancelPage = (isDirty: boolean, page?: Page) => {
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      isDirty && currentLocation.pathname !== nextLocation.pathname
+      isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
   const isBlocked = blocker.state === 'blocked';

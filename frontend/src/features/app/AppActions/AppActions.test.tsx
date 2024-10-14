@@ -1,5 +1,5 @@
 import { mockWiki } from '~/mocks';
-import { render, renderHook, screen, waitFor } from '~/mocks/setup.vitest';
+import { render, renderHook, screen, waitFor } from '~/mocks/setup';
 import { Providers } from '~/providers';
 import { useGetWiki } from '~/services';
 import { useUserRights, useWikiActions } from '~/store';

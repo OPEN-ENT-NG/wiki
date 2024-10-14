@@ -1,7 +1,6 @@
-import { render, screen } from '~/mocks/setup.vitest';
-import PrintModal from './PrintModal';
 import { useCheckablePrint } from '~/hooks/useCheckablePrint';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '~/mocks/setup';
+import PrintModal from './PrintModal';
 
 const mocks = vi.hoisted(() => ({
   handleOnGroupChange: vi.fn(),
@@ -56,13 +55,13 @@ describe('PrintModal', () => {
     expect(screen.getByText('wiki.modal.print.header')).toBeInTheDocument();
     expect(screen.getByText('wiki.modal.print.radio.page')).toBeInTheDocument();
     expect(
-      screen.getByText('wiki.modal.print.radio.pages')
+      screen.getByText('wiki.modal.print.radio.pages'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('wiki.modal.print.checkbox.label')
+      screen.getByText('wiki.modal.print.checkbox.label'),
     ).toBeInTheDocument();
     expect(
-      screen.getByText('wiki.modal.print.button.print')
+      screen.getByText('wiki.modal.print.button.print'),
     ).toBeInTheDocument();
   });
 
@@ -75,9 +74,8 @@ describe('PrintModal', () => {
   });
 
   it('should close PrintModal when user clicks on cancel button', async () => {
-    render(<PrintModal />);
+    const { user } = render(<PrintModal />);
 
-    const user = userEvent.setup();
     const closeBtn = screen.getByTestId('cancel-button');
     await user.click(closeBtn);
 
@@ -96,8 +94,7 @@ describe('PrintModal', () => {
   it('should handles Radio group change', async () => {
     const { handleOnGroupChange } = useCheckablePrint();
 
-    render(<PrintModal />);
-    const user = userEvent.setup();
+    const { user } = render(<PrintModal />);
     const allPagesRadio = screen.getByLabelText('wiki.modal.print.radio.pages');
     await user.click(allPagesRadio);
 
@@ -107,8 +104,7 @@ describe('PrintModal', () => {
   it('should handles Checkbox toggle for printing comments', async () => {
     const { handleOnPrintComment } = useCheckablePrint();
 
-    render(<PrintModal />);
-    const user = userEvent.setup();
+    const { user } = render(<PrintModal />);
     const checkbox = screen.getByLabelText('wiki.modal.print.checkbox.label');
     await user.click(checkbox);
 
@@ -116,8 +112,7 @@ describe('PrintModal', () => {
   });
 
   it('should print button is rendered and clickable', async () => {
-    render(<PrintModal />);
-    const user = userEvent.setup();
+    const { user } = render(<PrintModal />);
     const printButton = screen.getByText('wiki.modal.print.button.print');
     await user.click(printButton);
 

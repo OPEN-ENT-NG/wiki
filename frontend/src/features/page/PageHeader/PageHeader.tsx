@@ -145,7 +145,7 @@ export const PageHeader = ({
               {(
                 triggerProps: JSX.IntrinsicAttributes &
                   Omit<IconButtonProps, 'ref'> &
-                  RefAttributes<HTMLButtonElement>
+                  RefAttributes<HTMLButtonElement>,
               ) => (
                 <div data-testid="dropdown">
                   <IconButton

@@ -16,7 +16,7 @@ export const ButtonGroup = ({
     className,
     {
       'align-self-end flex-wrap-reverse': variant === 'reverse',
-    }
+    },
   );
   return <div className={classes}>{children}</div>;
 };

@@ -1,5 +1,5 @@
 import { mockWikiPagesWithoutContent } from '~/mocks';
-import { render, screen } from '~/mocks/setup.vitest';
+import { render, screen } from '~/mocks/setup';
 import { PageList } from './list';
 
 const mocks = vi.hoisted(() => ({
@@ -10,9 +10,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('react-router-dom', async () => {
-  const router = await vi.importActual<typeof import('react-router-dom')>(
-    'react-router-dom'
-  );
+  const router =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
   return {
     ...router,
     useNavigate: () => mocks.useNavigate,
@@ -46,6 +47,20 @@ describe('Pages List', () => {
   });
 
   beforeEach(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+
     mocks.useBreakpoint.mockReturnValue({
       lg: true,
     });
@@ -80,7 +95,7 @@ describe('Pages List', () => {
     });
     render(<PageList />);
     expect(
-      screen.getByText('An error has occurred: Test error')
+      screen.getByText('An error has occurred: Test error'),
     ).toBeInTheDocument();
   });
 
@@ -165,12 +180,12 @@ describe('Pages List', () => {
     expect(checkbox_2).toBeChecked();
 
     const hasDisabledButton = buttons.some((button) =>
-      button.hasAttribute('disabled')
+      button.hasAttribute('disabled'),
     );
     expect(hasDisabledButton).toBe(true);
 
     const hasEnabledButton = buttons.some(
-      (button) => !button.hasAttribute('disabled')
+      (button) => !button.hasAttribute('disabled'),
     );
     expect(hasEnabledButton).toBe(true);
   });

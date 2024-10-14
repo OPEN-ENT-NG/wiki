@@ -42,7 +42,7 @@ export const useFeedData = () => {
               name: page.title,
               section: true,
             };
-          })
+          }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

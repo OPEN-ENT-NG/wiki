@@ -12,7 +12,6 @@ const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
 
 if (import.meta.env.DEV) {
-  // eslint-disable-next-line global-require
   import('@axe-core/react').then((axe) => {
     axe.default(React, root, 1000);
   });
@@ -25,5 +24,5 @@ root.render(
         <RouterProvider router={router(queryClient)} />
       </ThemeProvider>
     </Providers>
-  </StrictMode>
+  </StrictMode>,
 );

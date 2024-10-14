@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, renderWithRouter, screen } from '~/mocks/setup.vitest';
+import { renderWithRouter } from '~/mocks/renderWithRouter';
+import { render, screen } from '~/mocks/setup';
 import { CreatePage } from '~/routes/page/create';
 import { NewPage } from './NewPage';
 
@@ -16,9 +17,10 @@ const mocks = vi.hoisted(() => ({
 const mockedUseNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {
-  const router = await vi.importActual<typeof import('react-router-dom')>(
-    'react-router-dom'
-  );
+  const router =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom',
+    );
 
   return {
     ...router,

@@ -5,7 +5,7 @@ import { basename } from '..';
 
 function redirectTo(redirectPath: string) {
   return window.location.replace(
-    window.location.origin + basename.replace(/\/$/g, '') + redirectPath
+    window.location.origin + basename.replace(/\/$/g, '') + redirectPath,
   );
 }
 

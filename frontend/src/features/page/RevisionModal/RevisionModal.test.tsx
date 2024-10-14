@@ -1,7 +1,8 @@
 import userEvent from '@testing-library/user-event';
 import { useCheckableTable } from '~/hooks/useCheckableTable';
 import { mockPage, mockRevision } from '~/mocks';
-import { renderWithRouter, screen } from '~/mocks/setup.vitest';
+import { renderWithRouter } from '~/mocks/renderWithRouter';
+import { screen } from '~/mocks/setup';
 import RevisionModal from './RevisionModal';
 
 const mocks = vi.hoisted(() => ({

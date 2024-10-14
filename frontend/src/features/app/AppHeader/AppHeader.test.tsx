@@ -1,5 +1,5 @@
 import { AppHeader, Breadcrumb } from '@edifice-ui/react';
-import { render, screen, waitFor } from '~/mocks/setup.vitest';
+import { render, screen, waitFor } from '~/mocks/setup';
 
 const mockWikiApp = {
   address: '',
@@ -16,7 +16,7 @@ describe('AppHeader component', () => {
     const { baseElement } = render(
       <AppHeader>
         <Breadcrumb app={mockWikiApp} name="Mock Title"></Breadcrumb>
-      </AppHeader>
+      </AppHeader>,
     );
     expect(baseElement).toBeTruthy();
   });
@@ -25,7 +25,7 @@ describe('AppHeader component', () => {
     render(
       <AppHeader>
         <Breadcrumb app={mockWikiApp} name="Mock Title"></Breadcrumb>
-      </AppHeader>
+      </AppHeader>,
     );
     expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
@@ -34,7 +34,7 @@ describe('AppHeader component', () => {
     render(
       <AppHeader>
         <Breadcrumb app={mockWikiApp} name="Mock Title"></Breadcrumb>
-      </AppHeader>
+      </AppHeader>,
     );
 
     const heading = screen.getByRole('heading', { level: 1 });
