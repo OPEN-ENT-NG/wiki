@@ -1,5 +1,11 @@
 import { Plus } from '@edifice-ui/icons';
-import { checkUserRight, Dropdown, Grid, Menu } from '@edifice-ui/react';
+import {
+  checkUserRight,
+  Dropdown,
+  Grid,
+  Menu,
+  SortableTree,
+} from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
@@ -12,7 +18,6 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { SortableTree } from '~/components/Tree/SortableTree';
 import {
   AppHeader,
   DropdownTreeview,

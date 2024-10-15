@@ -1,9 +1,8 @@
 import { Plus, TextPage } from '@edifice-ui/icons';
-import { Dropdown, IconButtonProps, Menu } from '@edifice-ui/react';
+import { Dropdown, IconButtonProps, Menu, Tree } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Tree } from '~/components/Tree/Tree';
 import { useMenu } from '~/hooks/useMenu';
 import { useTreeActions, useTreeData, useUserRights } from '~/store';
 
