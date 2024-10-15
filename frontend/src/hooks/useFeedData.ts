@@ -37,7 +37,7 @@ export const useFeedData = () => {
               position: page.position,
               children: childPages
                 .slice()
-                .sort((a, b) => a.position - b.position),
+                .sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
             };
           }
           return {
@@ -48,7 +48,9 @@ export const useFeedData = () => {
           };
         });
 
-      setTreeData(newTree.slice().sort((a, b) => a.position - b.position));
+      setTreeData(
+        newTree.slice().sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);

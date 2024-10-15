@@ -88,6 +88,7 @@ export const DropdownTreeview = ({
                     </button>
                   </div>
                 )}
+                onTreeItemAction={onTreeItemAction}
               />
             </Dropdown.Menu>
           </>

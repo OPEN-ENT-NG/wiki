@@ -1,7 +1,7 @@
+import { TreeItem } from 'node_modules/@edifice-ui/react/dist/components/Tree/types';
 import { useStore } from 'zustand';
 
 import { createStore } from 'zustand/vanilla';
-import { TreeItem } from '~/components/Tree/types';
 
 /**
  * https://doichevkostia.dev/blog/authentication-store-with-zustand/

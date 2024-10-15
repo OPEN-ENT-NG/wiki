@@ -1,4 +1,4 @@
-import { UpdateData } from '~/components/Tree/types';
+import { UpdateTreeData } from 'node_modules/@edifice-ui/react/dist/components/Tree/types';
 
 export interface PagePostPayload {
   title: string;
@@ -6,6 +6,7 @@ export interface PagePostPayload {
   isIndex?: boolean;
   parentId?: string;
   isVisible?: boolean;
+  position?: number;
 }
 
 export interface PagePutPayload {
@@ -15,11 +16,11 @@ export interface PagePutPayload {
   wasIndex?: boolean;
   isVisible?: boolean;
   parentId?: string;
-  position: number | undefined;
+  position?: number;
 }
 
 export interface PagesPutPayload {
-  pages: UpdateData[];
+  pages: UpdateTreeData[];
 }
 
 export interface CommentPostPayload {
