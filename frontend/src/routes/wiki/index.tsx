@@ -142,8 +142,11 @@ export const Index = () => {
                 nodes={treeData}
                 selectedNodeId={selectedNodeId}
                 renderNode={({ nodeId, nodeName }) => (
-                  <div className="d-flex flex-fill align-items-center justify-content-between">
-                    <span>{nodeName}</span>
+                  <div
+                    className="d-flex flex-fill align-items-center justify-content-between"
+                    style={{ width: '100%' }}
+                  >
+                    <span className="text-truncate">{nodeName}</span>
                     <button
                       className="tree-btn mx-8"
                       onClick={
