@@ -1,9 +1,12 @@
+import { UpdateTreeData } from 'node_modules/@edifice-ui/react/dist/components/Tree/types';
+
 export interface PagePostPayload {
   title: string;
   content: string;
   isIndex?: boolean;
   parentId?: string;
   isVisible?: boolean;
+  position?: number;
 }
 
 export interface PagePutPayload {
@@ -12,6 +15,12 @@ export interface PagePutPayload {
   isIndex?: boolean;
   wasIndex?: boolean;
   isVisible?: boolean;
+  parentId?: string;
+  position?: number;
+}
+
+export interface PagesPutPayload {
+  pages: UpdateTreeData[];
 }
 
 export interface CommentPostPayload {

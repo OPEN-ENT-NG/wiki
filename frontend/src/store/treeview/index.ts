@@ -1,5 +1,4 @@
-import { TreeData } from '@edifice-ui/react';
-import { FOLDER } from 'edifice-ts-client';
+import { TreeItem } from 'node_modules/@edifice-ui/react/dist/components/Tree/types';
 import { useStore } from 'zustand';
 
 import { createStore } from 'zustand/vanilla';
@@ -9,14 +8,14 @@ import { createStore } from 'zustand/vanilla';
  */
 
 interface State {
-  treeData: TreeData[];
-  selectedNodeId: string;
+  treeData: TreeItem[];
+  selectedNodeId: string | null;
 }
 
 type Action = {
   actions: {
-    setTreeData: (treeData: TreeData[]) => void;
-    setSelectedNodeId: (selectedNodeId: string) => void;
+    setTreeData: (treeData: TreeItem[]) => void;
+    setSelectedNodeId: (selectedNodeId: string | null) => void;
   };
 };
 
@@ -29,23 +28,15 @@ type ExtractState<S> = S extends {
 type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 
 const initialState = {
-  treeData: [
-    {
-      id: FOLDER.DEFAULT,
-      name: 'default',
-      section: true,
-      children: [],
-    },
-  ],
-  selectedNodeId: '',
+  treeData: [],
+  selectedNodeId: null,
 };
 
 const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
-    setTreeData: (treeData: TreeData[]) => set(() => ({ treeData })),
-    setSelectedNodeId: (selectedNodeId: string) =>
-      set(() => ({ selectedNodeId })),
+    setTreeData: (treeData) => set(() => ({ treeData })),
+    setSelectedNodeId: (selectedNodeId) => set(() => ({ selectedNodeId })),
   },
 }));
 

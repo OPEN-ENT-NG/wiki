@@ -1,9 +1,10 @@
+import { Plus } from '@edifice-ui/icons';
 import {
   checkUserRight,
   Dropdown,
   Grid,
   Menu,
-  TreeView,
+  SortableTree,
 } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
@@ -26,7 +27,7 @@ import {
 import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
-import { useGetWiki, wikiQueryOptions } from '~/services';
+import { useGetWiki, wikiQueryOptions, wikiService } from '~/services';
 import { getUserRightsActions, useUserRights } from '~/store';
 import {
   useSelectedNodeId,
@@ -63,13 +64,13 @@ export const Index = () => {
   const treeData = useTreeData();
   const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
-  const { setSelectedNodeId } = useTreeActions();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
+
+  const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
     onMenuClick: setSelectedNodeId,
   });
-
   const { data } = useGetWiki(params.wikiId!);
   const hasPages = data && data?.pages?.length > 0;
 
@@ -89,22 +90,22 @@ export const Index = () => {
    */
   useFeedData();
 
-  const handleOnTreeItemClick = (pageId: ID) => {
+  const handleOnTreeItemClick = (pageId: ID) =>
     navigate(`/id/${data?._id}/page/${pageId}`);
-  };
 
-  const handleOnTreeItemCreateChildren = (pageId: ID) => {
+  const handleOnTreeItemCreateChildren = (pageId: ID) =>
     navigate(`page/${pageId}/subpage/create`);
-  };
 
   useEffect(() => {
     if (params.pageId) {
       setSelectedNodeId(`${params.pageId}`);
     } else {
-      setSelectedNodeId('');
+      setSelectedNodeId(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.pageId]);
+
+  // const disabledIds = ['66d06b427d517979a6eb61a6'];
 
   return (
     <>
@@ -135,15 +136,36 @@ export const Index = () => {
               </>
             ) : null}
             {!isOnlyRead && <NewPage />}
+
             {treeData && (
-              <TreeView
-                data={treeData}
-                showIcon={false}
+              <SortableTree
+                nodes={treeData}
                 selectedNodeId={selectedNodeId}
+                renderNode={({ nodeId, nodeName }) => (
+                  <div className="d-flex flex-fill align-items-center justify-content-between">
+                    <span>{nodeName}</span>
+                    <button
+                      className="tree-btn mx-8"
+                      onClick={
+                        !isOnlyRead
+                          ? (event) => {
+                              event.stopPropagation();
+                              handleOnTreeItemCreateChildren(nodeId);
+                            }
+                          : undefined
+                      }
+                    >
+                      <Plus height={16} width={16} />
+                    </button>
+                  </div>
+                )}
+                onSortable={async (updateArray) => {
+                  await wikiService.updatePages({
+                    wikiId: params.wikiId!,
+                    data: { pages: updateArray },
+                  });
+                }}
                 onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                }
               />
             )}
           </Grid.Col>
@@ -162,7 +184,6 @@ export const Index = () => {
           {isSmallDevice && (
             <>
               <DropdownTreeview
-                treeData={treeData}
                 selectedNodeId={selectedNodeId}
                 onTreeItemClick={handleOnTreeItemClick}
                 onTreeItemAction={

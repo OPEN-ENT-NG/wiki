@@ -19,9 +19,11 @@ export interface PageDto {
       _id: string;
       title: string;
       isVisible: boolean;
+      position?: number;
     },
   ];
   parentId?: string;
+  position?: number;
 }
 
 export interface Page {
@@ -42,8 +44,10 @@ export interface Page {
       _id: string;
       title: string;
       isVisible: boolean;
+      position?: number;
     },
   ];
+  position?: number;
   parentId?: string;
 }
 
@@ -63,7 +67,9 @@ export interface PageWithoutContent {
       _id: string;
       title: string;
       isVisible: boolean;
+      position?: number;
     },
   ];
   parentId?: string;
+  position?: number;
 }
