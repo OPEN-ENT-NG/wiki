@@ -7,19 +7,19 @@ settings:
 dependencies:
   '@edifice-ui/editor':
     specifier: develop-pedago
-    version: 1.5.22-develop-pedago.7(@edifice-ui/icons@1.5.22-develop-pedago.1)(@edifice-ui/react@1.5.22-develop-pedago.7)(@react-spring/web@9.7.5)(katex@0.16.11)(react-dom@18.3.1)(react-i18next@14.1.0)(react@18.3.1)
+    version: 1.5.22-develop-pedago.8(@edifice-ui/icons@1.5.22-develop-pedago.1)(@edifice-ui/react@1.5.22-develop-pedago.8)(@react-spring/web@9.7.5)(katex@0.16.11)(react-dom@18.3.1)(react-i18next@14.1.0)(react@18.3.1)
   '@edifice-ui/icons':
     specifier: develop-pedago
     version: 1.5.22-develop-pedago.1(react-dom@18.3.1)(react@18.3.1)
   '@edifice-ui/react':
     specifier: develop-pedago
-    version: 1.5.22-develop-pedago.7(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.14)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
+    version: 1.5.22-develop-pedago.8(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.15)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
   '@react-spring/web':
     specifier: ^9.7.5
     version: 9.7.5(react-dom@18.3.1)(react@18.3.1)
   '@tanstack/react-query':
     specifier: ^5.59.13
-    version: 5.59.14(react@18.3.1)
+    version: 5.59.15(react@18.3.1)
   '@uidotdev/usehooks':
     specifier: 2.4.1
     version: 2.4.1(react-dom@18.3.1)(react@18.3.1)
@@ -66,7 +66,7 @@ devDependencies:
     version: 9.12.0
   '@tanstack/react-query-devtools':
     specifier: ^5.59.13
-    version: 5.59.14(@tanstack/react-query@5.59.14)(react@18.3.1)
+    version: 5.59.15(@tanstack/react-query@5.59.15)(react@18.3.1)
   '@testing-library/jest-dom':
     specifier: ^6.5.0
     version: 6.5.0
@@ -393,7 +393,7 @@ packages:
       react: '>=16.8.0'
     dependencies:
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: false
 
   /@dnd-kit/core@6.1.0(react-dom@18.3.1)(react@18.3.1):
@@ -406,7 +406,7 @@ packages:
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: false
 
   /@dnd-kit/modifiers@7.0.0(@dnd-kit/core@6.1.0)(react@18.3.1):
@@ -418,7 +418,7 @@ packages:
       '@dnd-kit/core': 6.1.0(react-dom@18.3.1)(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: false
 
   /@dnd-kit/sortable@8.0.0(@dnd-kit/core@6.1.0)(react@18.3.1):
@@ -430,7 +430,7 @@ packages:
       '@dnd-kit/core': 6.1.0(react-dom@18.3.1)(react@18.3.1)
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: false
 
   /@dnd-kit/utilities@3.2.2(react@18.3.1):
@@ -439,7 +439,7 @@ packages:
       react: '>=16.8.0'
     dependencies:
       react: 18.3.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: false
 
   /@edifice-tiptap-extensions/extension-alert@1.5.22-develop-pedago.1(@tiptap/core@2.3.0)(@tiptap/pm@2.3.0):
@@ -598,8 +598,8 @@ packages:
       '@tiptap/pm': 2.3.0
     dev: false
 
-  /@edifice-ui/editor@1.5.22-develop-pedago.7(@edifice-ui/icons@1.5.22-develop-pedago.1)(@edifice-ui/react@1.5.22-develop-pedago.7)(@react-spring/web@9.7.5)(katex@0.16.11)(react-dom@18.3.1)(react-i18next@14.1.0)(react@18.3.1):
-    resolution: {integrity: sha512-eIHEfBoL2lSxfdaRSA98ryC+RA5jneNMwD7n9z4/340IqIZegs0F21uX8vD7pB+IFu+g1rgE/CnAb1l4yZsRvA==}
+  /@edifice-ui/editor@1.5.22-develop-pedago.8(@edifice-ui/icons@1.5.22-develop-pedago.1)(@edifice-ui/react@1.5.22-develop-pedago.8)(@react-spring/web@9.7.5)(katex@0.16.11)(react-dom@18.3.1)(react-i18next@14.1.0)(react@18.3.1):
+    resolution: {integrity: sha512-Ry/HjT0hkgllNZxBz+akTp625gqzK7DgLFqqhQZh8UTS2/rPfrBGRuur8usjDvUcglZlOFcolD2gJJXBu0A05Q==}
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@edifice-ui/react': '*'
@@ -623,7 +623,7 @@ packages:
       '@edifice-tiptap-extensions/extension-table-cell': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0)(@tiptap/pm@2.3.0)
       '@edifice-tiptap-extensions/extension-video': 1.5.22-develop-pedago.1(@tiptap/core@2.3.0)(@tiptap/pm@2.3.0)
       '@edifice-ui/icons': 1.5.22-develop-pedago.1(react-dom@18.3.1)(react@18.3.1)
-      '@edifice-ui/react': 1.5.22-develop-pedago.7(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.14)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
+      '@edifice-ui/react': 1.5.22-develop-pedago.8(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.15)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
       '@react-spring/web': 9.7.5(react-dom@18.3.1)(react@18.3.1)
       '@tiptap-pro/extension-mathematics': 2.2.1(@tiptap/core@2.3.0)(@tiptap/pm@2.3.0)(katex@0.16.11)
       '@tiptap/core': 2.3.0(@tiptap/pm@2.3.0)
@@ -669,8 +669,8 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
-  /@edifice-ui/react@1.5.22-develop-pedago.7(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.14)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1):
-    resolution: {integrity: sha512-iXgE9iJso2asdEAYFmR09y0MtQEEZPgC/arH5q3f3ctHVVbdDfira6QjohuJha5sE++xOvvsRM5MyLXvZ4gmGg==}
+  /@edifice-ui/react@1.5.22-develop-pedago.8(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.15)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1):
+    resolution: {integrity: sha512-8RwV5jNX7PU4q+VuyRg9rZmT+B3K4DL0xHuu32hjZJXSvUHR7ojGtEEDlbvRD0eqeK+jRErswJtlTx23REK7hg==}
     peerDependencies:
       '@edifice-ui/icons': '*'
       '@react-spring/web': ^9.7.3
@@ -690,7 +690,7 @@ packages:
       '@pixi/react': 7.1.2(@babel/runtime@7.25.7)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)
       '@popperjs/core': 2.11.8
       '@react-spring/web': 9.7.5(react-dom@18.3.1)(react@18.3.1)
-      '@tanstack/react-query': 5.59.14(react@18.3.1)
+      '@tanstack/react-query': 5.59.15(react@18.3.1)
       '@tiptap/pm': 2.3.0
       '@tiptap/react': 2.3.0(@tiptap/core@2.8.0)(@tiptap/pm@2.3.0)(react-dom@18.3.1)(react@18.3.1)
       '@tiptap/starter-kit': 2.3.0(@tiptap/extension-text-style@2.3.0)(@tiptap/pm@2.3.0)
@@ -739,19 +739,19 @@ packages:
     resolution: {integrity: sha512-pVGjBIt1Y6gg3EJN8jTcfpP/+uuRksIo055oE/OBkDNcjZqVbfkWCksG1Jp4yZnj3iKWyWX8fdG/j6UDYPbFog==}
     dependencies:
       '@emnapi/wasi-threads': 1.0.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: true
 
   /@emnapi/runtime@1.3.1:
     resolution: {integrity: sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw==}
     dependencies:
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: true
 
   /@emnapi/wasi-threads@1.0.1:
     resolution: {integrity: sha512-iIBu7mwkq4UQGeMEM8bLwNK962nXdhodeScX4slfQnRhEMMzvYivHhutCIk8uojvmASXXPC2WNEjwxFWk72Oqw==}
     dependencies:
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: true
 
   /@esbuild/aix-ppc64@0.21.5:
@@ -1239,7 +1239,7 @@ packages:
     hasBin: true
     dependencies:
       nx: 19.6.0
-      tslib: 2.7.0
+      tslib: 2.8.0
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
@@ -1967,19 +1967,19 @@ packages:
     resolution: {integrity: sha512-iFdQEFXaYYxqgrv63ots+65FGI+tNp5ZS5PdMU1DWisxk3fez5HG3FyVlbUva+RdYS5hSLbxZ9aw3yEs97GNTw==}
     dev: true
 
-  /@tanstack/react-query-devtools@5.59.14(@tanstack/react-query@5.59.14)(react@18.3.1):
-    resolution: {integrity: sha512-7hYY59jveDF1thc4mnExfMoz/ySnE22pv3d+tinw+HxDGZFPa5BfCZgr1N3i1OGxxBuZch8k9seUJ2qUhBdJoQ==}
+  /@tanstack/react-query-devtools@5.59.15(@tanstack/react-query@5.59.15)(react@18.3.1):
+    resolution: {integrity: sha512-rX28KTivkA2XEn3Fj9ckDtnTPY8giWYgssySSAperpVol4+th+NCij/MhLylfB+Mfg2JfCxOcwnM/fwzS8iSog==}
     peerDependencies:
-      '@tanstack/react-query': ^5.59.14
+      '@tanstack/react-query': ^5.59.15
       react: ^18 || ^19
     dependencies:
       '@tanstack/query-devtools': 5.58.0
-      '@tanstack/react-query': 5.59.14(react@18.3.1)
+      '@tanstack/react-query': 5.59.15(react@18.3.1)
       react: 18.3.1
     dev: true
 
-  /@tanstack/react-query@5.59.14(react@18.3.1):
-    resolution: {integrity: sha512-2cM4x3Ka4Thl7/wnjf++EMGA2Is/RgPynn83D4kfGiJOGSjb5T2D3EEOlC8Nt6U2htLS3imOXjOSMEjC3K7JNg==}
+  /@tanstack/react-query@5.59.15(react@18.3.1):
+    resolution: {integrity: sha512-QbVlAkTI78wB4Mqgf2RDmgC0AOiJqer2c5k9STOOSXGv1S6ZkY37r/6UpE8DbQ2Du0ohsdoXgFNEyv+4eDoPEw==}
     peerDependencies:
       react: ^18 || ^19
     dependencies:
@@ -2539,7 +2539,7 @@ packages:
   /@tybys/wasm-util@0.9.0:
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
     dependencies:
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: true
 
   /@types/aria-query@5.0.4:
@@ -2921,7 +2921,7 @@ packages:
     engines: {node: '>=14.15.0'}
     dependencies:
       js-yaml: 3.14.1
-      tslib: 2.7.0
+      tslib: 2.8.0
     dev: true
 
   /@zkochan/js-yaml@0.0.7:
@@ -2931,16 +2931,16 @@ packages:
       argparse: 2.0.1
     dev: true
 
-  /acorn-jsx@5.3.2(acorn@8.12.1):
+  /acorn-jsx@5.3.2(acorn@8.13.0):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      acorn: 8.12.1
+      acorn: 8.13.0
     dev: true
 
-  /acorn@8.12.1:
-    resolution: {integrity: sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==}
+  /acorn@8.13.0:
+    resolution: {integrity: sha512-8zSiw54Oxrdym50NlZ9sUusyO1Z1ZchgRLWRaK6c86XJFClyCgFKetdowBg5bKxyp/u+CDBJG4Mpp0m3HLZl9w==}
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
@@ -3119,8 +3119,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001668
-      electron-to-chromium: 1.5.38
+      caniuse-lite: 1.0.30001669
+      electron-to-chromium: 1.5.39
       node-releases: 2.0.18
       update-browserslist-db: 1.1.1(browserslist@4.24.0)
     dev: true
@@ -3153,8 +3153,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /caniuse-lite@1.0.30001668:
-    resolution: {integrity: sha512-nWLrdxqCdblixUO+27JtGJJE/txpJlyUy5YN1u53wLZkP0emYCo5zgS6QYft7VUYR42LGgi/S5hdLZTrnyIddw==}
+  /caniuse-lite@1.0.30001669:
+    resolution: {integrity: sha512-DlWzFDJqstqtIVx1zeSpIMLjunf5SmwOw0N2Ck/QSQdS8PLS4+9HrLaYei4w8BIAL7IB/UEDu889d8vhCTPA0w==}
     dev: true
 
   /chai@5.1.1:
@@ -3506,8 +3506,8 @@ packages:
       - debug
     dev: true
 
-  /electron-to-chromium@1.5.38:
-    resolution: {integrity: sha512-VbeVexmZ1IFh+5EfrYz1I0HTzHVIlJa112UEWhciPyeOcKJGeTv6N8WnG4wsQB81DGCaVEGhpSb6o6a8WYFXXg==}
+  /electron-to-chromium@1.5.39:
+    resolution: {integrity: sha512-4xkpSR6CjuiaNyvwiWDI85N9AxsvbPawB8xc7yzLPonYTuP19BVgYweKyUMFtHEZgIcHWMt1ks5Cqx2m+6/Grg==}
     dev: true
 
   /emoji-picker-react@4.5.2(react@18.3.1):
@@ -3699,8 +3699,8 @@ packages:
     resolution: {integrity: sha512-upbkBJbckcCNBDBDXEbuhjbP68n+scUd3k/U2EkyM9nw+I/jPiL4cLF/Al06CF96wRltFda16sxDFrxsI1v0/g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     dependencies:
-      acorn: 8.12.1
-      acorn-jsx: 5.3.2(acorn@8.12.1)
+      acorn: 8.13.0
+      acorn-jsx: 5.3.2(acorn@8.13.0)
       eslint-visitor-keys: 4.1.0
     dev: true
 
@@ -4799,7 +4799,7 @@ packages:
       tar-stream: 2.2.0
       tmp: 0.2.3
       tsconfig-paths: 4.2.0
-      tslib: 2.7.0
+      tslib: 2.8.0
       yargs: 17.7.2
       yargs-parser: 21.1.1
     optionalDependencies:
@@ -4834,9 +4834,9 @@ packages:
       '@dnd-kit/core': 6.1.0(react-dom@18.3.1)(react@18.3.1)
       '@dnd-kit/modifiers': 7.0.0(@dnd-kit/core@6.1.0)(react@18.3.1)
       '@edifice-ui/icons': 1.5.22-develop-pedago.1(react-dom@18.3.1)(react@18.3.1)
-      '@edifice-ui/react': 1.5.22-develop-pedago.7(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.14)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
+      '@edifice-ui/react': 1.5.22-develop-pedago.8(@babel/runtime@7.25.7)(@edifice-ui/icons@1.5.22-develop-pedago.1)(@pixi/app@7.4.2)(@pixi/constants@7.4.2)(@pixi/core@7.4.2)(@pixi/display@7.4.2)(@pixi/extensions@7.4.2)(@pixi/graphics@7.4.2)(@pixi/math@7.4.2)(@pixi/mesh-extras@7.4.2)(@pixi/mesh@7.4.2)(@pixi/particle-container@7.4.2)(@pixi/sprite-animated@7.4.2)(@pixi/sprite-tiling@7.4.2)(@pixi/sprite@7.4.2)(@pixi/text-bitmap@7.4.2)(@pixi/text@7.4.2)(@pixi/ticker@7.4.2)(@react-spring/web@9.7.5)(@tanstack/react-query@5.59.15)(@tiptap/core@2.8.0)(@tiptap/extension-text-style@2.3.0)(csstype@3.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react-hook-form@7.53.0)(react-i18next@14.1.0)(react@18.3.1)
       '@react-spring/web': 9.7.5(react-dom@18.3.1)(react@18.3.1)
-      '@tanstack/react-query': 5.59.14(react@18.3.1)
+      '@tanstack/react-query': 5.59.15(react@18.3.1)
       clsx: 2.1.1
       dayjs: 1.11.10
       i18next: 23.8.1
@@ -5834,8 +5834,8 @@ packages:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
     dev: true
 
-  /tinyexec@0.3.0:
-    resolution: {integrity: sha512-tVGE0mVJPGb0chKhqmsoosjsS+qUnJVGJpZgsHYQcGoPlG3B51R3PouqTgEGH2Dc9jjFyOqOpix6ZHNMXp1FZg==}
+  /tinyexec@0.3.1:
+    resolution: {integrity: sha512-WiCJLEECkO18gwqIp6+hJg0//p23HXp4S+gGtAKu3mI2F2/sXC4FvHvXvB0zJVVaTPhx1/tOwdbRsa1sOBIKqQ==}
     dev: true
 
   /tinyglobby@0.2.9:
@@ -5867,15 +5867,15 @@ packages:
       '@popperjs/core': 2.11.8
     dev: false
 
-  /tldts-core@6.1.51:
-    resolution: {integrity: sha512-bu9oCYYWC1iRjx+3UnAjqCsfrWNZV1ghNQf49b3w5xE8J/tNShHTzp5syWJfwGH+pxUgTTLUnzHnfuydW7wmbg==}
+  /tldts-core@6.1.52:
+    resolution: {integrity: sha512-j4OxQI5rc1Ve/4m/9o2WhWSC4jGc4uVbCINdOEJRAraCi0YqTqgMcxUx7DbmuP0G3PCixoof/RZB0Q5Kh9tagw==}
     dev: true
 
-  /tldts@6.1.51:
-    resolution: {integrity: sha512-33lfQoL0JsDogIbZ8fgRyvv77GnRtwkNE/MOKocwUgPO1WrSfsq7+vQRKxRQZai5zd+zg97Iv9fpFQSzHyWdLA==}
+  /tldts@6.1.52:
+    resolution: {integrity: sha512-fgrDJXDjbAverY6XnIt0lNfv8A0cf7maTEaZxNykLGsLG7XP+5xhjBTrt/ieAsFjAlZ+G5nmXomLcZDkxXnDzw==}
     hasBin: true
     dependencies:
-      tldts-core: 6.1.51
+      tldts-core: 6.1.52
     dev: true
 
   /tmp@0.2.3:
@@ -5914,7 +5914,7 @@ packages:
     resolution: {integrity: sha512-FRKsF7cz96xIIeMZ82ehjC3xW2E+O2+v11udrDYewUbszngYhsGa8z6YUMMzO9QJZzzyd0nGGXnML/TReX6W8Q==}
     engines: {node: '>=16'}
     dependencies:
-      tldts: 6.1.51
+      tldts: 6.1.52
     dev: true
 
   /tr46@0.0.3:
@@ -5959,8 +5959,8 @@ packages:
       strip-bom: 3.0.0
     dev: true
 
-  /tslib@2.7.0:
-    resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
+  /tslib@2.8.0:
+    resolution: {integrity: sha512-jWVzBLplnCmoaTr13V9dYbiQ99wvZRd0vNWaDRg+aVYRcjDF3nDksxFDE/+fkXnKhpnUUkmx5pK/v8mCtLVqZA==}
 
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -6192,7 +6192,7 @@ packages:
       pathe: 1.1.2
       std-env: 3.7.0
       tinybench: 2.9.0
-      tinyexec: 0.3.0
+      tinyexec: 0.3.1
       tinypool: 1.0.1
       tinyrainbow: 1.2.0
       vite: 5.4.1(@types/node@18.19.55)
