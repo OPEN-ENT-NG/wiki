@@ -16,33 +16,40 @@ export const useFeedData = () => {
 
   useEffect(() => {
     if (data) {
-      setTreeData(
-        data.pages
-          .filter((page) => filterParentPage(page) && filterVisiblePage(page))
-          .map((page) => {
-            if (page.children) {
-              const childPages = page.children
-                .filter((child) => filterVisiblePage(child as Page))
-                .map((child) => {
-                  return {
-                    id: child._id,
-                    name: child.title,
-                    isVisible: child.isVisible,
-                  };
-                });
-              return {
-                id: page._id,
-                name: page.title,
-                section: true,
-                children: childPages,
-              };
-            }
+      const newTree = data.pages
+        .filter((page) => filterParentPage(page) && filterVisiblePage(page))
+        .map((page) => {
+          if (page.children) {
+            const childPages = page.children
+              .filter((child) => filterVisiblePage(child as Page))
+              .map((child) => {
+                return {
+                  id: child._id,
+                  name: child.title,
+                  isVisible: child.isVisible,
+                  position: child.position,
+                };
+              });
             return {
               id: page._id,
               name: page.title,
               section: true,
+              position: page.position,
+              children: childPages
+                .slice()
+                .sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
             };
-          }),
+          }
+          return {
+            id: page._id,
+            name: page.title,
+            section: true,
+            position: page.position,
+          };
+        });
+
+      setTreeData(
+        newTree.slice().sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
