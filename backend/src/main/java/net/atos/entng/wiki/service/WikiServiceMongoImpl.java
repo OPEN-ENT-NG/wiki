@@ -22,7 +22,6 @@ package net.atos.entng.wiki.service;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
@@ -638,26 +637,22 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 	@Override
-	public void deletePage(UserInfos user, String idWiki, String idPage,
-						   Handler<Either<String, JsonObject>> handler) {
+	public Future<Map<String, List<String>>> deletePage(UserInfos user, JsonObject wiki, String idPage) {
 		final Set<String> idPages = new HashSet<>();
 		idPages.add(idPage);
-		deletePages(user, idWiki, idPages)
-			.onSuccess(res -> {
-				handler.handle(new Either.Right<>(new JsonObject().put("result", "ok")));
-			})
-			.onFailure(err -> {
-				handler.handle(new Either.Left<>(err.getMessage()));
-			});
+		return deletePages(user, wiki, idPages);
 	}
 
 	@Override
-	public Future<Void> deletePages(UserInfos user, String idWiki, Set<String> idPages) {
+	public Future<Map<String, List<String>>> deletePages(UserInfos user, JsonObject wiki, Set<String> idPages) {
 		// Page IDs to delete
 		final List<String> pageIDsToDelete = new ArrayList<>();
 
 		// Subpages IDs that will become a page
 		final List<String> subpageIDsToPage = new ArrayList<>();
+
+		// Map of authorId and pageIDs, used to send notification if manager deletes their page
+		final Map<String, List<String>> authorPagesNotifyMap = new HashMap<>();
 
 		// We implement the following rules:
 		// - if manager:
@@ -665,91 +660,97 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// - if contrib:
 		//   => if user is author: delete subpages + pages matching idPages
 		//   => if user is NOT author:  subpages will become pages
-		final Promise<Void> promise = Promise.promise();
-		this.getWiki(idWiki, getWikiRes -> {
-			final JsonObject wiki = getWikiRes.right().getValue();
-			final JsonArray pages = getPages(wiki, idPages);
-			final JsonArray subpages = getSubPages(wiki, idPages);
-			final JsonArray toDeletePages = new JsonArray().addAll(pages).addAll(subpages);
-			if (!toDeletePages.isEmpty()) {
-				if (isManager(wiki, user)) {
-					pageIDsToDelete.addAll(
-							toDeletePages
-									.stream()
-									.map(page -> ((JsonObject) page).getString("_id"))
-									.collect(Collectors.toList()));
-				} else if (isContrib(wiki, user)) {
-					toDeletePages.forEach(page -> {
-						JsonObject pageJson = (JsonObject) page;
-						if (isPageAuthor(pageJson, user)) {
-							pageIDsToDelete.add(pageJson.getString("_id"));
-						} else {
-							subpageIDsToPage.add(pageJson.getString("_id"));
+		final Promise<Map<String, List<String>>> promise = Promise.promise();
+
+		final JsonArray toDeletePages = new JsonArray()
+				.addAll(getPages(wiki, idPages))
+				.addAll(getSubPages(wiki, idPages));
+
+		if (!toDeletePages.isEmpty()) {
+			toDeletePages.stream()
+					.map(page -> (JsonObject) page)
+					.forEach(jsonPage -> {
+						String pageId = jsonPage.getString("_id");
+						String authorId = jsonPage.getString("author");
+
+						if (isManager(wiki, user)) {
+							pageIDsToDelete.add(pageId);
+
+							// if user is not author then add author and page to the notify map
+							if (!isPageAuthor(jsonPage, user)) {
+								authorPagesNotifyMap
+										.computeIfAbsent(authorId, k -> new ArrayList<>())
+										.add(pageId);
+							}
+						} else if (isContrib(wiki, user)) {
+							if (isPageAuthor(jsonPage, user)) {
+								pageIDsToDelete.add(pageId);
+							} else {
+								subpageIDsToPage.add(pageId);
+							}
 						}
 					});
-				}
-			}
+		}
 
-			final List<Future> futures = new ArrayList<>();
-			// Delete subpages in "pageIDsToDelete"
-			final Promise<Void> subpagesDeletePromise = Promise.promise();
-			futures.add(subpagesDeletePromise.future());
+		final List<Future> futures = new ArrayList<>();
+		// Delete subpages in "pageIDsToDelete"
+		final Promise<Void> subpagesDeletePromise = Promise.promise();
+		futures.add(subpagesDeletePromise.future());
+		// Mongo query
+		final QueryBuilder subpagesDeleteQuery = QueryBuilder
+				.start("_id")
+				.is(wiki.getString("_id"));
+		// Mongo modifier
+		final MongoUpdateBuilder subpagesDeleteModifier = new MongoUpdateBuilder();
+		subpagesDeleteModifier.pull("pages", MongoQueryBuilder.build(QueryBuilder.start("_id").in(pageIDsToDelete)));
+		subpagesDeleteModifier.set("modified", MongoDb.now());
+		// Execute query
+		mongo.update(collection,
+				MongoQueryBuilder.build(subpagesDeleteQuery),
+				subpagesDeleteModifier.build(),
+				deleteSubpagesRes -> {
+					if ("ok".equals(deleteSubpagesRes.body().getString("status"))) {
+						subpagesDeletePromise.complete();
+					} else {
+						subpagesDeletePromise.fail(deleteSubpagesRes.body().getString("message"));
+					}
+				});
+
+		// Converting subpages to pages for subpages in "subpageIDsToPage"
+		final Promise<Void> subpagesToPagesPromise = Promise.promise();
+		futures.add(subpagesToPagesPromise.future());
+
+		if (!subpageIDsToPage.isEmpty()) {
 			// Mongo query
-			final QueryBuilder subpagesDeleteQuery = QueryBuilder
+			final QueryBuilder subpagesToPageQuery = QueryBuilder
 					.start("_id")
-					.is(idWiki);
+					.is(wiki.getString("_id"));
 			// Mongo modifier
-			final MongoUpdateBuilder subpagesDeleteModifier = new MongoUpdateBuilder();
-			subpagesDeleteModifier.pull("pages", MongoQueryBuilder.build(QueryBuilder.start("_id").in(pageIDsToDelete)));
-			subpagesDeleteModifier.set("modified", MongoDb.now());
+			final MongoUpdateBuilder subpagesToPageModifier = new MongoUpdateBuilder();
+			subpagesToPageModifier.unset("pages.$[elem].parentId");
+			subpagesToPageModifier.set("modified", MongoDb.now());
+			// Mongo arrayFilters
+			final JsonArray arrayFilters = new JsonArray()
+					.add(MongoQueryBuilder.build(QueryBuilder.start("elem._id").in(subpageIDsToPage)));
 			// Execute query
 			mongo.update(collection,
-					MongoQueryBuilder.build(subpagesDeleteQuery),
-					subpagesDeleteModifier.build(),
-					deleteSubpagesRes -> {
-						if ("ok".equals(deleteSubpagesRes.body().getString("status"))) {
-							subpagesDeletePromise.complete();
+					MongoQueryBuilder.build(subpagesToPageQuery),
+					subpagesToPageModifier.build(),
+					arrayFilters,
+					subpagesToPagesRes -> {
+						if ("ok".equals(subpagesToPagesRes.body().getString("status"))) {
+							subpagesToPagesPromise.complete();
 						} else {
-							subpagesDeletePromise.fail(deleteSubpagesRes.body().getString("message"));
+							subpagesToPagesPromise.fail(subpagesToPagesRes.body().getString("message"));
 						}
+
 					});
-
-			// Converting subpages to pages for subpages in "subpageIDsToPage"
-			final Promise<Void> subpagesToPagesPromise = Promise.promise();
-			futures.add(subpagesToPagesPromise.future());
-
-			if (!subpageIDsToPage.isEmpty()) {
-				// Mongo query
-				final QueryBuilder subpagesToPageQuery = QueryBuilder
-						.start("_id")
-						.is(idWiki);
-				// Mongo modifier
-				final MongoUpdateBuilder subpagesToPageModifier = new MongoUpdateBuilder();
-				subpagesToPageModifier.unset("pages.$[elem].parentId");
-				subpagesToPageModifier.set("modified", MongoDb.now());
-				// Mongo arrayFilters
-				final JsonArray arrayFilters = new JsonArray()
-						.add(MongoQueryBuilder.build(QueryBuilder.start("elem._id").in(subpageIDsToPage)));
-				// Execute query
-				mongo.update(collection,
-						MongoQueryBuilder.build(subpagesToPageQuery),
-						subpagesToPageModifier.build(),
-						arrayFilters,
-						subpagesToPagesRes -> {
-							if ("ok".equals(subpagesToPagesRes.body().getString("status"))) {
-								subpagesToPagesPromise.complete();
-							} else {
-								subpagesToPagesPromise.fail(subpagesToPagesRes.body().getString("message"));
-							}
-
-						});
-			} else {
-				subpagesToPagesPromise.complete();
-			}
-			CompositeFuture.all(futures).mapEmpty()
-					.onSuccess(res -> promise.complete())
-					.onFailure(err -> promise.fail(err.getMessage()));
-		});
+		} else {
+			subpagesToPagesPromise.complete();
+		}
+		CompositeFuture.all(futures).mapEmpty()
+				.onSuccess(res -> promise.complete(authorPagesNotifyMap))
+				.onFailure(err -> promise.fail(err.getMessage()));
 		return promise.future();
 	}
 
@@ -1021,5 +1022,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public static boolean isPageAuthor(final JsonObject page, final UserInfos user) {
 		return page.getString("author") != null
 				&& page.getString("author").equals(user.getUserId());
+	}
+
+	public static String getPageTitle(JsonObject wiki, String pageId) {
+		final JsonObject page = wiki.getJsonArray("pages")
+				.stream()
+				.map(p -> (JsonObject) p)
+				.filter(pageJson -> pageJson.getString("_id") != null
+						&& pageJson.getString("_id").equals(pageId))
+				.findFirst()
+				.orElse(null);
+
+		return page != null ? page.getString("title") : "";
 	}
 }
