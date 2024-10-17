@@ -1,13 +1,21 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { checkUserRight, LoadingScreen } from '@edifice-ui/react';
+import {
+  Alert,
+  Button,
+  checkUserRight,
+  LoadingScreen,
+  useOdeClient,
+} from '@edifice-ui/react';
 import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
 import { lazy, Suspense, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   redirect,
+  useNavigate,
   useParams,
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
@@ -146,6 +154,10 @@ export const Page = () => {
     });
   };
 
+  const { appCode } = useOdeClient();
+  const navigate = useNavigate();
+  const { t } = useTranslation(appCode);
+
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
@@ -153,7 +165,31 @@ export const Page = () => {
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
       {isRevision ? <RevisionHeader page={data} /> : <PageHeader page={data} />}
-
+      {data.contentVersion === 0 ? (
+        <Alert
+          type="warning"
+          className="my-24"
+          button={
+            <Button
+              color="tertiary"
+              type="button"
+              variant="ghost"
+              className="text-gray-700"
+              onClick={() => {
+                navigate(
+                  `/id/${params.wikiId}/page/${params.pageId}/oldformat`,
+                );
+              }}
+            >
+              {t('wiki.oldFormat.open')}
+            </Button>
+          }
+        >
+          {t('wiki.oldFormat.text')}
+        </Alert>
+      ) : (
+        <></>
+      )}
       <Editor
         ref={editorRef}
         content={data.content}

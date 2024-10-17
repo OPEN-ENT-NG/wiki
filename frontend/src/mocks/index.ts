@@ -10,6 +10,7 @@ export const mockWiki = {
       title: 'ma nouvelle page',
       content: 'test modification',
       contentPlain: 'test modification',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -27,6 +28,7 @@ export const mockWiki = {
       title: 'aaaa',
       content: 'rgrgrg aaz',
       contentPlain: 'rgrgrg aaz',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -44,6 +46,7 @@ export const mockWiki = {
       title: 'test gras',
       content: 'ma super page',
       contentPlain: 'ma super page',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -59,6 +62,7 @@ export const mockWiki = {
       title: 'zefzefzefzef',
       content: 'zefzefzef',
       contentPlain: 'zefzefzef',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -74,6 +78,7 @@ export const mockWiki = {
       title: 'page parent 005 masquée',
       content: 'ma page parent 005 masquée',
       contentPlain: 'ma page parent 005 masquée',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -89,6 +94,7 @@ export const mockWiki = {
       title: 'sous page 006 masquée de page parent 005 masquée',
       content: 'ma sous page 006 masquée de page parent 005 masquée',
       contentPlain: 'ma sous page 006 masquée de page parent 005 masquée',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -105,6 +111,7 @@ export const mockWiki = {
       title: 'page parent 007 visible',
       content: 'ma page parent 007 visible',
       contentPlain: 'ma page parent 007 visible',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -120,6 +127,7 @@ export const mockWiki = {
       title: 'sous page 008 visible de page parent 007 visible',
       content: 'ma sous page 008 visible de page parent 007 visible',
       contentPlain: 'ma sous page 008 visible de page parent 007 visible',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {
@@ -156,6 +164,7 @@ export const mockWikiWithHiddenIndexPage = {
       title: 'ma nouvelle page',
       content: 'test modification',
       contentPlain: 'test modification',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -170,6 +179,7 @@ export const mockWikiWithHiddenIndexPage = {
       title: 'aaaa',
       content: 'rgrgrg aaz',
       contentPlain: 'rgrgrg aaz',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -184,6 +194,7 @@ export const mockWikiWithHiddenIndexPage = {
       title: 'test gras',
       content: 'ma super page',
       contentPlain: 'ma super page',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -213,6 +224,7 @@ export const mockWikiWithOnlyHiddenPages = {
       title: 'ma nouvelle page',
       content: 'test modification',
       contentPlain: 'test modification',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -227,6 +239,7 @@ export const mockWikiWithOnlyHiddenPages = {
       title: 'aaaa',
       content: 'rgrgrg aaz',
       contentPlain: 'rgrgrg aaz',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -241,6 +254,7 @@ export const mockWikiWithOnlyHiddenPages = {
       title: 'test gras',
       content: 'ma super page',
       contentPlain: 'ma super page',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       modified: {
@@ -389,6 +403,7 @@ export const mockPage = {
       title: 'ma nouvelle page',
       content: '',
       contentPlain: 'test modification',
+      contentVersion: 1,
       author: '123456789',
       authorName: 'Author',
       created: {

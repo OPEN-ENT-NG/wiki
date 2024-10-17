@@ -6,6 +6,7 @@ export interface PageDto {
   title: string;
   content: string;
   contentPlain: string;
+  contentVersion: number;
   author: string;
   authorName: string;
   created?: Created;
@@ -31,6 +32,7 @@ export interface Page {
   title: string;
   content: string;
   contentPlain: string;
+  contentVersion: number;
   author: string;
   authorName: string;
   modified: Modified;
