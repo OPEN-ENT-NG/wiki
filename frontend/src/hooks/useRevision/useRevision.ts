@@ -12,7 +12,9 @@ export const useRevision = () => {
   const navigate = useNavigate();
   const params = useParams();
   const userRights = useUserRights();
+
   const [isRestoring, setIsRestoring] = useState<boolean>(false);
+
   // load page from route params
   const page = useGetPage({
     wikiId: params.wikiId!,
