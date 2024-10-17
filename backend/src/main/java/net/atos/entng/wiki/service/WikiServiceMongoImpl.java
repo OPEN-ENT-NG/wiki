@@ -292,8 +292,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		// Projection
 		JsonObject projection = new JsonObject()
 				.put("_id", 0)
-				.put("pages.$", 1)
-				.put("pages.oldContent", 0);
+				.put("pages.$", 1);
 
 		// Find page
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection, res -> {
@@ -347,7 +346,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							final ContentTransformerResponse transformedContent = response.result();
 							page.put("contentVersion", 0)
 									.put("jsonContent", transformedContent.getJsonContent())
-									.put("oldContent", page.getString("content"))
+									.put("oldContent", oldPage.getString("content"))
 									.put("content", transformedContent.getCleanHtml());
 							// Update query
 							final BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
@@ -357,7 +356,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 									.set("pages.$.contentVersion", page.getInteger("contentVersion"))
 									.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
 									.set("pages.$.content", page.getString("content"))
-									.set("pages.$.oldContent", page.getString("oldContent"));
+									.set("pages.$.oldContent", oldPage.getString("content"));
 							mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(),e -> {
 								promise.complete(page);
 							});
@@ -368,6 +367,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			if(originalFormatRequested && oldPage.containsKey("oldContent")) {
 				fetchedPage.put("content", oldPage.getString("oldContent"));
 			}
+			fetchedPage.remove("oldContent");
 			return fetchedPage;
 		});
 	}
