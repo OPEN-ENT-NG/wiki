@@ -9,6 +9,10 @@ import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, editAction } from './page/edit';
 import {
+  Component as OldFormat,
+  loader as oldFormatLoader,
+} from './old-format';
+import {
   PageList,
   action as deleteListAction,
   loader as pagesLoader,
@@ -74,6 +78,25 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'page/:pageId/version/:versionId',
             element: <Page />,
             loader: pageLoader(queryClient),
+          },
+          {
+            path: 'page/:pageId/oldformat',
+            element: <OldFormat />,
+            loader: oldFormatLoader(queryClient),
+          },
+          {
+            path: 'page/:pageId/oldformat/edit',
+            element: <EditPage />,
+            action: editAction(queryClient),
+          },
+          {
+            path: 'page/:pageId/oldformat/destroy',
+            action: deleteAction(queryClient),
+          },
+          {
+            path: 'page/:pageId/oldformat/subpage/create',
+            element: <CreatePage />,
+            action: createAction(queryClient),
           },
         ],
       },
