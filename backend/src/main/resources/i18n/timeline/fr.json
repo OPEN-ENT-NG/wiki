@@ -2,13 +2,19 @@
     "wiki": "Wiki",
     "wiki.comment-added": "Commentaire dans un Wiki (seulement pour l’auteur de la page et les gestionnaires du Wiki)",
     "wiki.page-created": "Nouvelle page dans un Wiki",
+    "wiki.page-deleted": "Suppression d'une page d'un Wiki",
     "wiki.shared": "Partage d'un Wiki",
     "timeline.wiki.has.created.page": "a créé la page",
     "timeline.wiki.has.commented.page": "a commenté la page",
+    "timeline.wiki.has.deleted.page": "a supprimé la page",
+    "timeline.wiki.has.deleted.page.multiple": "(plusieurs pages)",
     "timeline.wiki.has.shared": "vous a partagé le wiki",
     "timeline.wiki.in": "dans le wiki",
     "timeline.wiki.of": "du wiki",
     "wiki.push.notif.shared.title": "Wiki: Partage d'un wiki",
     "wiki.push.notif.page-created": "Wiki: Nouvelle page dans un Wiki",
-    "wiki.push.notif.comment-added": "Wiki: Commentaire dans un Wiki (seulement pour l’auteur de la page et les gestionnaires du Wiki)"
+    "wiki.push.notif.comment-added": "Wiki: Commentaire dans un Wiki (seulement pour l’auteur de la page et les gestionnaires du Wiki)",
+    "wiki.push.notif.page-deleted.title": "Wiki: Suppression d'une page",
+    "wiki.push.notif.page-deleted.body": "{0} a supprimé la page {1}, dont vous êtes l'auteur, pour le wiki {2}",
+    "wiki.push.notif.pages-deleted.body": "{0} a supprimé des pages, dont vous êtes l'auteur, pour le wiki {1}"
 }
