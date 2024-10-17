@@ -83,12 +83,10 @@ export const action =
       pageId: params.pageId!,
     };
 
-    const deletedPageOptions = pageQueryOptions.findOne(pageParams);
+    const wikiOptions = wikiQueryOptions.findOne(params.wikiId!);
 
     await wikiService.deletePage(pageParams);
-
-    queryClient.removeQueries(deletedPageOptions);
-    queryClient.invalidateQueries(deletedPageOptions);
+    await queryClient.invalidateQueries(wikiOptions);
 
     return redirect(`/id/${params.wikiId}`);
   };
