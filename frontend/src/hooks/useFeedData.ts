@@ -35,6 +35,7 @@ export const useFeedData = () => {
               name: page.title,
               section: true,
               position: page.position,
+              isVisible: page.isVisible,
               children: childPages
                 .slice()
                 .sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
@@ -45,6 +46,7 @@ export const useFeedData = () => {
             name: page.title,
             section: true,
             position: page.position,
+            isVisible: page.isVisible,
           };
         });
 
