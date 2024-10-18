@@ -70,16 +70,16 @@ export const DropdownTreeview = ({
                   onTreeItemClick(pageId);
                   setVisible(false);
                 }}
-                renderNode={({ nodeId, nodeName }) => (
+                renderNode={({ node }) => (
                   <div className="d-flex flex-fill align-items-center justify-content-between">
-                    <span>{nodeName}</span>
+                    <span>{node.name}</span>
                     <button
                       className="tree-btn mx-8"
                       onClick={
                         !isOnlyRead
                           ? (event) => {
                               event.stopPropagation();
-                              handleOnTreeItemCreateChildren(nodeId);
+                              handleOnTreeItemCreateChildren(node.id);
                             }
                           : undefined
                       }
