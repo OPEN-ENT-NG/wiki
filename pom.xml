@@ -21,7 +21,7 @@
 
   <properties>
     <web-utils.version>3.0-b2school-SNAPSHOT</web-utils.version>
-    <mongodb-helper.version>3.0-b2school-SNAPSHOT</mongodb-helper.version>
+    <mongodb-helper.version>4.0-b2school-SNAPSHOT</mongodb-helper.version>
     <entcore.version>5.0-b2school-SNAPSHOT</entcore.version>
   </properties>
 
