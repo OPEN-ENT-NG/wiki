@@ -1,4 +1,4 @@
-import { Plus } from '@edifice-ui/icons';
+import { Hide, Plus } from '@edifice-ui/icons';
 import {
   checkUserRight,
   Dropdown,
@@ -141,25 +141,39 @@ export const Index = () => {
               <SortableTree
                 nodes={treeData}
                 selectedNodeId={selectedNodeId}
-                renderNode={({ nodeId, nodeName }) => (
+                renderNode={({ node, isChild }) => (
                   <div
                     className="d-flex flex-fill align-items-center justify-content-between"
                     style={{ width: '100%' }}
                   >
-                    <span className="text-truncate">{nodeName}</span>
-                    <button
-                      className="tree-btn mx-8"
-                      onClick={
-                        !isOnlyRead
-                          ? (event) => {
-                              event.stopPropagation();
-                              handleOnTreeItemCreateChildren(nodeId);
+                    <span className="text-truncate">{node.name}</span>
+
+                    {(!node.isVisible || !isChild) && (
+                      <span className="d-flex">
+                        {!node.isVisible && (
+                          <Hide
+                            width="20"
+                            height="20"
+                            className={clsx({ 'me-8': isChild })}
+                          />
+                        )}
+                        {!isChild && (
+                          <button
+                            className="tree-btn mx-8"
+                            onClick={
+                              !isOnlyRead
+                                ? (event) => {
+                                    event.stopPropagation();
+                                    handleOnTreeItemCreateChildren(node.id);
+                                  }
+                                : undefined
                             }
-                          : undefined
-                      }
-                    >
-                      <Plus height={16} width={16} />
-                    </button>
+                          >
+                            <Plus height={16} width={16} />
+                          </button>
+                        )}
+                      </span>
+                    )}
                   </div>
                 )}
                 onSortable={async (updateArray) => {
