@@ -2,12 +2,20 @@ import { EmptyScreen, Heading, useOdeClient } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
 
 import emptyScreenImage from '~/assets/illu-wiki.svg';
+import { useUserRights } from '~/store';
 
 export const WikiEmptyScreen = () => {
   const emptyStyles = { maxWidth: '424px' };
 
   const { appCode } = useOdeClient();
+  const userRights = useUserRights();
   const { t } = useTranslation(appCode);
+
+  const isOnlyRead =
+    userRights.read &&
+    !userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
 
   return (
     <div
@@ -16,10 +24,14 @@ export const WikiEmptyScreen = () => {
     >
       <EmptyScreen imageSrc={emptyScreenImage} imageAlt="Wiki Image" />
       <Heading className="text-secondary mb-16" level="h2">
-        {t('wiki.first.emptyscreen.title', { ns: appCode })}
+        {isOnlyRead
+          ? t('wiki.first.emptyscreen.title.onlyRead', { ns: appCode })
+          : t('wiki.first.emptyscreen.title', { ns: appCode })}
       </Heading>
       <p className="text-center">
-        {t('wiki.first.emptyscreen.text', { ns: appCode })}
+        {isOnlyRead
+          ? t('wiki.first.emptyscreen.text.onlyRead', { ns: appCode })
+          : t('wiki.first.emptyscreen.text', { ns: appCode })}
       </p>
     </div>
   );
