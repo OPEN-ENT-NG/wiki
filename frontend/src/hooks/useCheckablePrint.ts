@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { useWikiActions } from '~/store';
 
 type PrintGroup = 'allPages' | 'onePage';
 
 export const useCheckablePrint = () => {
   const params = useParams();
-  const navigate = useNavigate();
+  const { setOpenPrintModal } = useWikiActions();
   const [isAllPages, setIsAllPages] = useState<boolean>(false);
   const [printGroup, setPrintGroup] = useState<PrintGroup>('onePage');
   const [printComment, setPrintComment] = useState<boolean>(false);
@@ -42,7 +43,8 @@ export const useCheckablePrint = () => {
 
   const handleOnPrintWiki = () => {
     const queryParams = generateQueryParams();
-    navigate(`/print/id/${params.wikiId}?${queryParams}`);
+    window.open(`/print/id/${params.wikiId}?${queryParams}`, '_blank');
+    setOpenPrintModal(false);
   };
 
   return {
