@@ -145,6 +145,8 @@
   "wiki.error.save.page": "Une erreur est survenue lors de la sauvegarde de la page. Veuillez réessayer ultérieurement.",
   "wiki.first.emptyscreen.title": "Créez une première page",
   "wiki.first.emptyscreen.text": "Votre première page peut être une introduction ou bien un récapitulatif de votre contenu",
+  "wiki.first.emptyscreen.title.onlyRead": "Il n’y a pas encore de pages disponibles",
+  "wiki.first.emptyscreen.text.onlyRead": "Les gestionnaires et les contributeurs n’ont pas encore mis de pages à disposition. Revenez plus tard.",
   "wiki.read.author.avatar": "Avatar de l'auteur",
   "wiki.read.author.publish.by": "Publié par [[author]]",
   "wiki.read.author.update.by": "Modifié par [[author]]",
