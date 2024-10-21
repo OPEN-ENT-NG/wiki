@@ -100,18 +100,18 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           },
         ],
       },
-      {
-        async lazy() {
-          const { printLoader, Component } = await import('./print');
-          return {
-            loader: printLoader(queryClient),
-            Component,
-          };
-        },
-        path: 'print/id/:wikiId',
-        errorElement: <PageError />,
-      },
     ],
+  },
+  {
+    async lazy() {
+      const { printLoader, Component } = await import('./print');
+      return {
+        loader: printLoader(queryClient),
+        Component,
+      };
+    },
+    path: 'print/id/:wikiId',
+    errorElement: <PageError />,
   },
   /* 404 Page */
   {

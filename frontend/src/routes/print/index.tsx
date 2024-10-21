@@ -64,7 +64,7 @@ export const Component = () => {
 
   const printPage = (page: Page) => {
     return (
-      <div className="d-flex flex-column mt-24 ms-md-24 me-md-16 rounded border pt-16">
+      <div className="d-flex flex-column mt-24 ms-md-24 me-md-16 rounded border pt-16  bg-white">
         <div className="m-32">
           <PageHeader page={page} isPrint={true} />
           <Editor
