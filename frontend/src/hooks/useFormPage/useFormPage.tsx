@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useParams, useSubmit } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetWiki } from '~/services';
+import { useUserRights } from '~/store';
 import { findPage } from '~/utils/findPage';
 
 export type FormPageDataProps = {
@@ -19,6 +20,8 @@ export const useFormPage = (page?: Page) => {
   const submit = useSubmit();
 
   const { data: wikiData } = useGetWiki(params.wikiId!);
+
+  const userRights = useUserRights();
 
   const isSubPage: boolean =
     location.pathname.includes('subpage') || !!page?.parentId;
@@ -111,6 +114,7 @@ export const useFormPage = (page?: Page) => {
     isSubmitting,
     isDirty,
     isValid,
+    isManager: userRights.manager,
     PAGE_LABEL,
     PAGE_PLACEHOLDER,
     PAGE_SAVE,
