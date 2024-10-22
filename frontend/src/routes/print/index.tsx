@@ -1,4 +1,5 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
+import { checkUserRight } from '@edifice-ui/react';
 import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { odeServices } from 'edifice-ts-client';
@@ -10,14 +11,25 @@ import {
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH } from '~/config';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
+import { useFilterVisiblePage } from '~/hooks';
 import { Page } from '~/models';
-import { pageQueryOptions } from '~/services';
+import { pageQueryOptions, wikiQueryOptions } from '~/services';
+import { getUserRightsActions } from '~/store';
 
 export const printLoader =
   (queryClient: QueryClient) =>
   async ({ params, request }: LoaderFunctionArgs) => {
     const { searchParams } = new URL(request.url);
     const printPageId = searchParams.get('printPageId');
+
+    const wikiData = await queryClient.ensureQueryData(
+      wikiQueryOptions.findOne(params.wikiId!),
+    );
+
+    const userRights = await checkUserRight(wikiData.rights);
+    const { setUserRights } = getUserRightsActions();
+    setUserRights(userRights);
+
     const fetchData = async () => {
       if (printPageId) {
         return await queryClient.fetchQuery(
@@ -51,6 +63,8 @@ export const Component = () => {
   const editorRef = useRef<EditorRef>(null);
 
   const data = useLoaderData() as Page[] | Page;
+
+  const filterVisiblePage = useFilterVisiblePage();
 
   const [searchParams] = useSearchParams();
 
@@ -90,7 +104,11 @@ export const Component = () => {
 
   return data
     ? Array.isArray(data as Page[])
-      ? (data as Page[]).map((page) => printPage(page))
-      : printPage(data as Page)
+      ? (data as Page[])
+          .filter(filterVisiblePage)
+          .map((page) => printPage(page))
+      : filterVisiblePage(data as Page)
+        ? printPage(data as Page)
+        : null
     : null;
 };

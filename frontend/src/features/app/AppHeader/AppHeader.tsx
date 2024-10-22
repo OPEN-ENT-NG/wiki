@@ -47,9 +47,11 @@ export const AppHeader = () => {
     setOpenUpdateModal(false);
   };
 
+  const canPrint = !!data?.pages.some((page) => page.isVisible === true);
+
   return (
     <>
-      <BaseAppHeader render={() => <AppActions />}>
+      <BaseAppHeader render={() => <AppActions canPrint={canPrint} />}>
         <Breadcrumb app={currentApp as IWebApp} name={data?.title}></Breadcrumb>
       </BaseAppHeader>
       <Suspense fallback={<LoadingScreen position={false} />}>

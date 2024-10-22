@@ -53,12 +53,12 @@ describe('AppActions component', () => {
   });
 
   it('should render successfully', async () => {
-    const { baseElement } = render(<AppActions />);
+    const { baseElement } = render(<AppActions canPrint={true} />);
     expect(baseElement).toBeTruthy();
   });
 
   it('should call useGetWikis hook', async () => {
-    render(<AppActions />);
+    render(<AppActions canPrint={true} />);
 
     const { result } = renderHook(() => useGetWiki(mockWiki._id), {
       wrapper: Providers,
@@ -79,20 +79,20 @@ describe('AppActions component', () => {
       manager: false,
       read: true,
     });
-    render(<AppActions />);
+    render(<AppActions canPrint={true} />);
 
     const printButton = screen.getByTestId('print-button');
     expect(printButton).toBeInTheDocument();
   });
 
   it('should render the dropdown menu when canManage is true', () => {
-    render(<AppActions />);
+    render(<AppActions canPrint={true} />);
     const dropdownButton = screen.getByTestId('dropdown');
     expect(dropdownButton).toBeInTheDocument();
   });
 
   it('should call useUserRights to get user rights', async () => {
-    render(<AppActions />);
+    render(<AppActions canPrint={true} />);
 
     const { result } = renderHook(() => useUserRights(), {
       wrapper: Providers,
@@ -104,7 +104,7 @@ describe('AppActions component', () => {
   });
 
   it('should call useWikiActions and destructure methods', async () => {
-    render(<AppActions />);
+    render(<AppActions canPrint={true} />);
 
     const { result } = renderHook(() => useWikiActions(), {
       wrapper: Providers,

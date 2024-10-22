@@ -7,7 +7,9 @@ type PrintGroup = 'allPages' | 'onePage';
 export const useCheckablePrint = () => {
   const params = useParams();
   const { setOpenPrintModal } = useWikiActions();
-  const [isAllPages, setIsAllPages] = useState<boolean>(false);
+  const [isAllPages, setIsAllPages] = useState<boolean>(
+    !params.pageId ? true : false,
+  );
   const [printGroup, setPrintGroup] = useState<PrintGroup>(
     !params.pageId ? 'allPages' : 'onePage',
   );
