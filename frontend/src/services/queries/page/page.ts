@@ -143,6 +143,9 @@ export const useCreatePage = () => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAll().queryKey,
       });
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
     },
   });
 };
@@ -167,6 +170,9 @@ export const useUpdatePage = () => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
     },
   });
 };
@@ -182,6 +188,9 @@ export const useDeletePage = () => {
       });
       queryClient.removeQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
     },
   });

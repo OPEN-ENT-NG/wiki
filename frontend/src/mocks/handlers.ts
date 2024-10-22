@@ -6,6 +6,7 @@ import {
   mockWiki,
   mockWikiPagesWithoutContent,
   mockWikis,
+  mockWikisWithPages,
 } from '.';
 
 const defaultHandlers = [
@@ -235,6 +236,9 @@ const defaultHandlers = [
  */
 export const handlers = [
   ...defaultHandlers,
+  http.get(`${baseURL}/listallpages`, () => {
+    return HttpResponse.json(mockWikisWithPages, { status: 200 });
+  }),
   http.get(`${baseURL}/list`, () => {
     return HttpResponse.json(mockWikis, { status: 200 });
   }),

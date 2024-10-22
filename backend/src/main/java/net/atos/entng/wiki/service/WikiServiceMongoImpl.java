@@ -194,6 +194,33 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
+	public void listAllPages(UserInfos user,
+							 Handler<Either<String, JsonArray>> handler) {
+		// Query : return pages visible by current user only (i.e. owner or
+		// shared)
+		List<DBObject> groups = new ArrayList<>();
+		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
+		if (!user.getGroupsIds().isEmpty()) {
+			groups.add(QueryBuilder.start("groupId").in(new JsonArray(user.getGroupsIds())).get());
+		}
+		QueryBuilder query = new QueryBuilder().or(
+				QueryBuilder.start("owner.userId").is(user.getUserId()).get(),
+				QueryBuilder
+						.start("shared")
+						.elemMatch(
+								new QueryBuilder().or(
+										groups.toArray(new DBObject[groups
+												.size()])).get()).get());
+		// Projection
+		JsonObject projection = new JsonObject();
+		projection.put("pages.content", 0).put("created", 0);
+		JsonObject sort = new JsonObject().put("pages.title", 1);
+		mongo.find(collection, MongoQueryBuilder.build(query), sort,
+				projection, MongoDbResult.validResultsHandler(handler));
+	}
+
+
+	@Override
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, String description,
 	final Optional<Number> folderId,
 			Handler<Either<String, JsonObject>> handler) {

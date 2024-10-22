@@ -4,6 +4,7 @@ import {
   mockWiki,
   mockWikiPagesWithoutContent,
   mockWikis,
+  mockWikisWithPages,
 } from '~/mocks';
 import { wikiService } from '..';
 
@@ -14,6 +15,13 @@ describe('Wiki GET Methods', () => {
     expect(response).toBeDefined();
     expect(response).toHaveLength(2);
     expect(response).toStrictEqual(mockWikis);
+  });
+
+  test('makes a GET request to get all wikis with pages', async () => {
+    const response = await wikiService.getAllWikisWithPages();
+
+    expect(response).toBeDefined();
+    expect(response).toStrictEqual(mockWikisWithPages);
   });
 
   test('makes a GET request to get one wiki with pages', async () => {

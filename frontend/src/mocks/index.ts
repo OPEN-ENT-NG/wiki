@@ -303,6 +303,75 @@ export const mockWikis = [
   },
 ];
 
+export const mockWikisWithPages = [
+  {
+    _id: '423a3e89',
+    title: 'Définitions Espanol',
+    pages: [
+      {
+        _id: '5540ede1e4b056471c495282',
+        title: 'Acaparar',
+        author: 'b6db229d',
+        authorName: 'Author',
+        modified: {
+          $date: 1430318586054,
+        },
+        contentPlain: '',
+      },
+      {
+        _id: '5540eec6e4b056471c495283',
+        title: 'Resultar',
+        author: '13f1e9f7',
+        authorName: 'Author',
+        modified: {
+          $date: 1501842229907,
+        },
+        contentPlain: '',
+      },
+      {
+        _id: '5540ef0fe4b056471c495284',
+        title: 'Lechería',
+        author: 'b6db229d',
+        authorName: 'Author',
+        modified: {
+          $date: 1430318863835,
+        },
+        contentPlain: '',
+      },
+      {
+        _id: '580f3f8ee4b07ac1b023b2db',
+        title: 'Accueil',
+        contentPlain: '',
+        author: 'a87b39c0',
+        authorName: 'Author',
+        modified: {
+          $date: 1478192151290,
+        },
+      },
+      {
+        _id: '657974cc736a590490395b4b',
+        title: 'Titre',
+        contentPlain: '',
+        author: '219a1774',
+        authorName: 'Author',
+        modified: {
+          $date: 1702458572178,
+        },
+      },
+    ],
+    owner: {
+      userId: 'b6db229d',
+      displayName: 'Author',
+    },
+    modified: {
+      $date: 1501842229907,
+      thumbnail: '',
+      shared: [],
+      index: '580f3f8ee4b07ac1b023b2db',
+    },
+  },
+];
+
 export const mockWikiPages = {
   pages: [
     {
