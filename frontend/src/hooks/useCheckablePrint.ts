@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { baseURL } from '~/services';
 import { useWikiActions } from '~/store';
 
 type PrintGroup = 'allPages' | 'onePage';
@@ -47,7 +48,10 @@ export const useCheckablePrint = () => {
 
   const handleOnPrintWiki = () => {
     const queryParams = generateQueryParams();
-    window.open(`/print/id/${params.wikiId}?${queryParams}`, '_blank');
+    window.open(
+      `${baseURL}/print/id/${params.wikiId}?${queryParams}`,
+      '_blank',
+    );
     setOpenPrintModal(false);
   };
 

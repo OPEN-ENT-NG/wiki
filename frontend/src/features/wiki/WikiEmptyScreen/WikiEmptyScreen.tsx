@@ -23,7 +23,7 @@ export const WikiEmptyScreen = () => {
       style={emptyStyles}
     >
       <EmptyScreen imageSrc={emptyScreenImage} imageAlt="Wiki Image" />
-      <Heading className="text-secondary mb-16" level="h2">
+      <Heading className="text-secondary mb-16 text-center" level="h2">
         {isOnlyRead
           ? t('wiki.first.emptyscreen.title.onlyRead', { ns: appCode })
           : t('wiki.first.emptyscreen.title', { ns: appCode })}
