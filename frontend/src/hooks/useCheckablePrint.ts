@@ -8,7 +8,9 @@ export const useCheckablePrint = () => {
   const params = useParams();
   const { setOpenPrintModal } = useWikiActions();
   const [isAllPages, setIsAllPages] = useState<boolean>(false);
-  const [printGroup, setPrintGroup] = useState<PrintGroup>('onePage');
+  const [printGroup, setPrintGroup] = useState<PrintGroup>(
+    !params.pageId ? 'allPages' : 'onePage',
+  );
   const [printComment, setPrintComment] = useState<boolean>(false);
 
   const handleOnPrintComment = (): void => {
