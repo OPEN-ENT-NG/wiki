@@ -157,17 +157,13 @@ export const Index = () => {
                             className={clsx({ 'me-8': isChild })}
                           />
                         )}
-                        {!isChild && (
+                        {!isChild && !isOnlyRead && (
                           <button
                             className="tree-btn mx-8"
-                            onClick={
-                              !isOnlyRead
-                                ? (event) => {
-                                    event.stopPropagation();
-                                    handleOnTreeItemCreateChildren(node.id);
-                                  }
-                                : undefined
-                            }
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleOnTreeItemCreateChildren(node.id);
+                            }}
                           >
                             <Plus height={16} width={16} />
                           </button>
