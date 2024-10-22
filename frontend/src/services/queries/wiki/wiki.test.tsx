@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { useGetWiki, useGetWikis } from './wiki';
+import { useGetAllWikisWithPages, useGetWiki, useGetWikis } from './wiki';
 
-import { mockWiki, mockWikis } from '~/mocks';
+import { mockWiki, mockWikis, mockWikisWithPages } from '~/mocks';
 import { wrapper } from '~/mocks/setup';
 
 describe('Wiki GET Queries', () => {
@@ -15,6 +15,15 @@ describe('Wiki GET Queries', () => {
       expect(result.current.data).toBeDefined();
       expect(result.current.data).toEqual(mockWikis);
     });
+  });
+
+  test('use useGetAllWikisWithPages to get all wikis with pages', async () => {
+    const { result } = renderHook(() => useGetAllWikisWithPages(), {
+      wrapper,
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeDefined();
+    expect(result.current.data).toEqual(mockWikisWithPages);
   });
 
   test('use useGetWiki hook to get one wiki', async () => {
