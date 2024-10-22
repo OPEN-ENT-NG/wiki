@@ -214,6 +214,21 @@ public class WikiController extends MongoDbControllerHelper {
 		wikiService.getPages(idWiki, getContent, handler);
 	}
 
+	@Get("/listallpages")
+	@ApiDoc("List wikis, visible by current user, with all their pages' titles. Used by Behaviours.")
+	@SecuredAction("wiki.list")
+	public void listAllPages(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			@Override
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
+					wikiService.listAllPages(user, handler);
+				}
+			}
+		});
+	}
+
 	// TODO: add a print param to true in GET /wiki/:id to get all information to print a wiki?
 	/*@Get("/:id/whole")
 	@ApiDoc("Get a wiki with all its pages. Used to print a wiki")

@@ -12,6 +12,12 @@ export const wikiQueryOptions = {
       queryFn: wikiService.getWikis,
       staleTime: 5000,
     }),
+  findAllWithPages: () =>
+    queryOptions({
+      queryKey: [...wikiQueryOptions.base, 'listallpages'] as const,
+      queryFn: wikiService.getAllWikisWithPages,
+      staleTime: 5000,
+    }),
   findOne: (wikiId: string) =>
     queryOptions({
       queryKey: [...wikiQueryOptions.base, { id: wikiId }] as const,
@@ -26,6 +32,10 @@ export const wikiQueryOptions = {
 
 export const useGetWikis = () => {
   return useQuery(wikiQueryOptions.findAll());
+};
+
+export const useGetAllWikisWithPages = () => {
+  return useQuery(wikiQueryOptions.findAllWithPages());
 };
 
 export const useGetWiki = (wikiId: string) => {

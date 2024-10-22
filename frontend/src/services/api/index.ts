@@ -55,6 +55,17 @@ const createWikiService = (baseURL: string) => ({
 
   /**
    *
+   * @returns all wikis with pages
+   */
+  async getAllWikisWithPages() {
+    const response = await odeServices
+      .http()
+      .get<Wiki[]>(`${baseURL}/listallpages`);
+    return response;
+  },
+
+  /**
+   *
    * @param wikiId string
    * @param pageId string
    * @returns get a page of a wiki by id
