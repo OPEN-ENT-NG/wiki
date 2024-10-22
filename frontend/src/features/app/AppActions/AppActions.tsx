@@ -16,7 +16,7 @@ export type ActionDropdownMenuOptions = {
   visibility: boolean;
 } & DropdownMenuOptions;
 
-export const AppActions = () => {
+export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
   const userRights = useUserRights();
 
   const { t } = useTranslation();
@@ -88,11 +88,13 @@ export const AppActions = () => {
       )}
     </Dropdown>
   ) : (
-    <IconButton
-      data-testid="print-button"
-      variant="outline"
-      icon={<Print />}
-      onClick={() => setOpenPrintModal(true)}
-    />
+    canPrint && (
+      <IconButton
+        data-testid="print-button"
+        variant="outline"
+        icon={<Print />}
+        onClick={() => setOpenPrintModal(true)}
+      />
+    )
   );
 };
