@@ -7,7 +7,6 @@ import {
 } from '@edifice-ui/react';
 import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { useUserRights } from '~/store';
 import { useWikiActions } from '~/store/wiki';
@@ -21,7 +20,6 @@ export const AppActions = () => {
   const userRights = useUserRights();
 
   const { t } = useTranslation();
-  const params = useParams();
   const { setOpenShareModal, setOpenUpdateModal, setOpenPrintModal } =
     useWikiActions();
 
@@ -45,7 +43,7 @@ export const AppActions = () => {
       label: t('print'),
       icon: <Print />,
       action: () => setOpenPrintModal(true),
-      visibility: !!params.pageId,
+      visibility: true,
     },
   ];
 
