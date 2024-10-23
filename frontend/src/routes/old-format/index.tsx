@@ -10,7 +10,12 @@ import { odeServices } from 'edifice-ts-client';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import DeletePageModal from '~/features/page/DeletePageModal/DeletePageModal';
 import RevisionModal from '~/features/page/RevisionModal/RevisionModal';
-import { useOpenDeleteModal, useOpenRevisionModal } from '~/store';
+import {
+  useOpenDeleteModal,
+  useOpenDuplicateModal,
+  useOpenRevisionModal,
+} from '~/store';
+import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 
 /** Load a wiki page OLD-FORMAT content */
 export const loader =
@@ -38,6 +43,7 @@ export const Component = () => {
   const { wikiId, pageId } = params;
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
+  const openDuplicateModal = useOpenDuplicateModal();
   const { data } = useGetPage({
     wikiId: wikiId!,
     pageId: pageId!,
@@ -72,6 +78,9 @@ export const Component = () => {
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeletePageModal />}
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
+        {openDuplicateModal && (
+          <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
+        )}
       </Suspense>
     </div>
   ) : null;

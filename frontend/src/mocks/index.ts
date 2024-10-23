@@ -1,6 +1,32 @@
 import { RightRole } from 'edifice-ts-client';
 import { Revision } from '~/models/revision';
 
+export const mockUser = {
+  userId: '123456789',
+  displayName: 'Author',
+};
+
+export const mockGroup = {
+  groupId: '123456789',
+  displayName: 'Enseignant',
+};
+
+export const mockWikisAsResources = [
+  {
+    id: 'wiki1',
+    title: 'Wiki 1',
+    rights: [
+      `creator:${mockUser.userId}`,
+      `group:${mockGroup.groupId}:manager`,
+    ],
+  },
+  {
+    id: 'wiki2',
+    title: 'Wiki 2',
+    rights: [`user:${mockUser.userId}:read`, `user:${mockUser.userId}:contrib`],
+  },
+];
+
 export const mockWiki = {
   _id: 'f9853a14b354',
   title: 'Wiki',
@@ -380,6 +406,7 @@ export const mockWikiPages = {
       author: '4e6f1a98-4696-4b9b-be8f-18b3a372a555',
       authorName: 'Author',
       isVisible: false,
+      position: 1,
       created: {
         $date: 1728397756331,
       },

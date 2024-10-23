@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { ReactElement } from 'react';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import '../i18n';
-import { Providers } from '../providers';
+import { CustomProviders } from '../providers';
 import { server } from './server';
 
 // Enable API mocking before tests.
@@ -28,10 +28,10 @@ const customRender = (
 ) => {
   return {
     user,
-    ...render(ui, { wrapper: Providers, ...options }),
+    ...render(ui, { wrapper: CustomProviders, ...options }),
   };
 };
 
-export const wrapper = Providers;
+export const wrapper = CustomProviders;
 export * from '@testing-library/react';
 export { customRender as render };

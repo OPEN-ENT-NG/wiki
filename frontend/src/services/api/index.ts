@@ -1,10 +1,12 @@
 import { odeServices } from 'edifice-ts-client';
 import {
+  DuplicatePagePayload,
   Page,
   PageDto,
   PagePostPayload,
   PagePutPayload,
   PagesPutPayload,
+  PickedPageId,
   PickedWiki,
   Wiki,
   WikiDto,
@@ -20,6 +22,28 @@ import { dtoToWikiPage } from '~/utils/dtoToWikiPages';
  */
 
 const createWikiService = (baseURL: string) => ({
+  async getWikisFromExplorer({
+    pageSize = 10000,
+    startIdx = 0,
+  }: {
+    pageSize?: number;
+    startIdx?: number;
+  }) {
+    const response = await odeServices.resource('wiki').searchContext({
+      application: 'wiki',
+      filters: {},
+      pagination: {
+        startIdx,
+        pageSize,
+      },
+      trashed: false,
+      orders: {
+        updatedAt: 'desc',
+      },
+      types: ['wiki'],
+    });
+    return response.resources;
+  },
   /**
    *
    * @returns all wikis without pages
@@ -288,6 +312,27 @@ const createWikiService = (baseURL: string) => ({
       .delete<Comment>(
         `${baseURL}/${wikiId}/page/${pageId}/comment/${commentId}`,
       );
+    return response;
+  },
+  /**
+   * Duplicate a page
+   *
+   * @param {Object} params - expected params to duplicate a page.
+   * @param {string} params.sourceWikiId - source wiki id.
+   * @param {string} params.destinationWikiId - destination wiki id.
+   * @param {DuplicatePagePayload} params.data - data for the new page.
+   * @returns {Promise<Page>} a promise that resolves to the newly created page.
+   */
+  async duplicatePage({
+    destinationWikiId,
+    data,
+  }: {
+    destinationWikiId: string;
+    data: DuplicatePagePayload;
+  }) {
+    const response = await odeServices
+      .http()
+      .post<PickedPageId>(`${baseURL}/${destinationWikiId}/page`, data);
     return response;
   },
 });

@@ -6,6 +6,7 @@ import {
   mockWiki,
   mockWikiPagesWithoutContent,
   mockWikis,
+  mockWikisAsResources,
   mockWikisWithPages,
 } from '.';
 
@@ -283,5 +284,11 @@ export const handlers = [
   }),
   http.get(`${baseURL}/${mockWiki._id}/page/:pageId/revisions/:version`, () => {
     return HttpResponse.json(mockRevision[0], { status: 200 });
+  }),
+  http.get(`/explorer/resources`, () => {
+    return HttpResponse.json(
+      { resources: mockWikisAsResources },
+      { status: 200 },
+    );
   }),
 ];

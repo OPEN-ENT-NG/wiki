@@ -75,3 +75,10 @@ export interface PageWithoutContent {
   parentId?: string;
   position?: number;
 }
+
+export type DuplicatePagePayload = Pick<
+  Page,
+  'title' | 'content' | 'isVisible' | 'position'
+>;
+
+export type PickedPageId = Pick<Page, '_id'>;

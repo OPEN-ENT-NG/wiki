@@ -3,6 +3,7 @@ import {
   pageQueryOptions,
   useCreatePage,
   useDeletePage,
+  useDuplicatePage,
   useGetPage,
   useGetPagesFromWiki,
   useGetRevisionPage,
@@ -178,6 +179,43 @@ describe('Wiki Page mutations Queries', () => {
           wikiId: 'wikiId',
           pageId: 'pageId',
         }).queryKey,
+      });
+    });
+  });
+
+  test('duplicate a page with useDuplicatePage hook', async () => {
+    const { result } = renderHook(() => useDuplicatePage(), { wrapper });
+    // prepare the mock
+    const variables = {
+      destinationWikiId: 'destinationWikiId',
+      data: {
+        title: 'Duplicated Page',
+        content: 'duplicated content',
+        isVisible: true,
+        position: 0,
+      },
+    };
+    // execute the mutation
+    act(() => {
+      result.current.mutate(variables);
+    });
+
+    await waitFor(() => {
+      // check the result
+      expect(result.current.isSuccess).toBe(true);
+      expect(result.current.data).toStrictEqual(variables.data);
+      // check the invalidations
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: pageQueryOptions.findAllFromWiki({
+          wikiId: 'destinationWikiId',
+          content: true,
+        }).queryKey,
+      });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: wikiQueryOptions.findOne('destinationWikiId').queryKey,
       });
     });
   });
