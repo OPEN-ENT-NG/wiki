@@ -6,6 +6,12 @@ import { wikiService } from '../..';
  */
 export const wikiQueryOptions = {
   base: ['wiki'] as const,
+  findAllAsResources: () =>
+    queryOptions({
+      queryKey: [...wikiQueryOptions.base, 'resources'] as const,
+      queryFn: () => wikiService.getWikisFromExplorer({}),
+      staleTime: 5000,
+    }),
   findAll: () =>
     queryOptions({
       queryKey: [...wikiQueryOptions.base, 'list'] as const,
@@ -26,12 +32,12 @@ export const wikiQueryOptions = {
     }),
 };
 
-/**
- * All queries and mutations
- */
-
 export const useGetWikis = () => {
   return useQuery(wikiQueryOptions.findAll());
+};
+
+export const useGetAllWikisAsResources = () => {
+  return useQuery(wikiQueryOptions.findAllAsResources());
 };
 
 export const useGetAllWikisWithPages = () => {

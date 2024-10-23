@@ -40,7 +40,8 @@ export const PageHeader = ({
   const { formatDate } = useDate();
   const { appCode, user } = useOdeClient();
   const { getAvatarURL, getUserbookURL } = useDirectory();
-  const { setOpenDeleteModal, setOpenRevisionModal } = useWikiActions();
+  const { setOpenDeleteModal, setOpenRevisionModal, setOpenDuplicateModal } =
+    useWikiActions();
   const { t } = useTranslation(appCode);
 
   const isOnlyRead =
@@ -80,8 +81,8 @@ export const PageHeader = ({
       id: 'duplicate',
       label: t('wiki.page.dropdown.duplicate'),
       icon: <Copy />,
-      action: () => console.log(''),
-      visibility: canManage,
+      action: () => setOpenDuplicateModal(true),
+      visibility: canContrib || canManage,
     },
     {
       id: 'delete',

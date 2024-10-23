@@ -1,4 +1,4 @@
-import { OdeClientProvider } from '@edifice-ui/react';
+import { OdeClientProvider, ThemeContext } from '@edifice-ui/react';
 import {
   QueryCache,
   QueryClient,
@@ -38,5 +38,24 @@ export const Providers = ({ children }: { children: ReactNode }) => {
       </OdeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
+  );
+};
+
+export const CustomProviders = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const themeContextValue = {
+    theme: 'default',
+    setTheme: vi.fn(),
+  } as any;
+
+  return (
+    <Providers>
+      <ThemeContext.Provider value={themeContextValue}>
+        {children}
+      </ThemeContext.Provider>
+    </Providers>
   );
 };

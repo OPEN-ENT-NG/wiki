@@ -4,6 +4,7 @@ import {
   mockWiki,
   mockWikiPagesWithoutContent,
   mockWikis,
+  mockWikisAsResources,
   mockWikisWithPages,
 } from '~/mocks';
 import { wikiService } from '..';
@@ -29,6 +30,15 @@ describe('Wiki GET Methods', () => {
 
     expect(response).toBeDefined();
     expect(response).toStrictEqual(mockWiki);
+  });
+
+  test('makes a GET request to get wikis from explorer', async () => {
+    const response = await wikiService.getWikisFromExplorer({});
+
+    expect(response).toBeDefined();
+    expect(Array.isArray(response)).toBe(true);
+    expect(response).toHaveLength(mockWikisAsResources.length);
+    expect(response).toEqual(expect.arrayContaining(mockWikisAsResources));
   });
 });
 

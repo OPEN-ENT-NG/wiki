@@ -4,7 +4,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { PagePostPayload, PagePutPayload } from '~/models';
+import {
+  DuplicatePagePayload,
+  PagePostPayload,
+  PagePutPayload,
+} from '~/models';
 import { wikiQueryOptions, wikiService } from '~/services';
 
 /**
@@ -144,6 +148,9 @@ export const useCreatePage = () => {
         queryKey: wikiQueryOptions.findAll().queryKey,
       });
       queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllAsResources().queryKey,
+      });
+      queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
     },
@@ -168,10 +175,13 @@ export const useUpdatePage = () => {
         queryKey: wikiQueryOptions.findAll().queryKey,
       });
       queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
+        queryKey: wikiQueryOptions.findAllAsResources().queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
   });
@@ -186,11 +196,45 @@ export const useDeletePage = () => {
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAll().queryKey,
       });
-      queryClient.removeQueries({
-        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllAsResources().queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
+      queryClient.removeQueries({
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
+      });
+    },
+  });
+};
+/**
+ * Duplicate page mutation
+ * On success, invalidate the following queries:
+ */
+export const useDuplicatePage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      destinationWikiId,
+      data,
+    }: {
+      destinationWikiId: string;
+      data: DuplicatePagePayload;
+    }) => wikiService.duplicatePage({ destinationWikiId, data }),
+    onSuccess: (_data, { destinationWikiId }) => {
+      queryClient.invalidateQueries({
+        queryKey: pageQueryOptions.findAllFromWiki({
+          wikiId: destinationWikiId,
+          content: true,
+        }).queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+      });
+      queryClient.invalidateQueries({
+        queryKey: wikiQueryOptions.findOne(destinationWikiId).queryKey,
       });
     },
   });
