@@ -106,6 +106,8 @@ export const Component = () => {
     ? Array.isArray(data as Page[])
       ? (data as Page[])
           .filter(filterVisiblePage)
+          .slice()
+          .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
           .map((page) => printPage(page))
       : filterVisiblePage(data as Page)
         ? printPage(data as Page)
