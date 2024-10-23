@@ -19,6 +19,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
+import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
 import { useRevision } from '~/hooks/useRevision/useRevision';
@@ -32,6 +33,7 @@ import {
 } from '~/services';
 import {
   useOpenDeleteModal,
+  useOpenDuplicateModal,
   useOpenRevisionModal,
   useTreeActions,
 } from '~/store';
@@ -104,7 +106,7 @@ export const Page = () => {
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
-
+  const openDuplicateModal = useOpenDuplicateModal();
   const { setSelectedNodeId } = useTreeActions();
 
   const { getPageVersionFromRoute } = useRevision();
@@ -218,6 +220,9 @@ export const Page = () => {
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeletePageModal />}
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
+        {openDuplicateModal && (
+          <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
+        )}
       </Suspense>
     </div>
   ) : null;
