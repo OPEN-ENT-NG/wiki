@@ -1,5 +1,9 @@
 import { createStore, useStore } from 'zustand';
 
+interface ToastMessage {
+  type: 'success' | 'error' | 'info' | 'warning';
+  text: string;
+}
 interface State {
   openUpdateModal: boolean;
   openShareModal: boolean;
@@ -8,6 +12,7 @@ interface State {
   openConfirmVisibilityModal: boolean;
   openPrintModal: boolean;
   openDuplicateModal: boolean;
+  toastMessages: ToastMessage[];
 }
 
 type Action = {
@@ -19,6 +24,8 @@ type Action = {
     setOpenConfirmVisibilityModal: (value: boolean) => void;
     setOpenPrintModal: (value: boolean) => void;
     setOpenDuplicateModal: (open: boolean) => void;
+    addToastMessage: (message: Omit<ToastMessage, 'id'>) => void;
+    clearToastMessages: () => void;
   };
 };
 
@@ -38,6 +45,7 @@ const initialState = {
   openConfirmVisibilityModal: false,
   openPrintModal: false,
   openDuplicateModal: false,
+  toastMessages: [] as ToastMessage[],
 };
 
 const store = createStore<State & Action>()((set) => ({
@@ -53,6 +61,11 @@ const store = createStore<State & Action>()((set) => ({
     setOpenPrintModal: (openPrintModal: boolean) => set({ openPrintModal }),
     setOpenDuplicateModal: (openDuplicateModal: boolean) =>
       set({ openDuplicateModal }),
+    addToastMessage: (message: Omit<ToastMessage, 'id'>) =>
+      set((state) => ({
+        toastMessages: [...state.toastMessages, { ...message }],
+      })),
+    clearToastMessages: () => set({ toastMessages: [] }),
   },
 }));
 
@@ -72,6 +85,9 @@ const openPrintModal = (state: ExtractState<typeof store>) =>
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 const openDuplicateModal = (state: ExtractState<typeof store>) =>
   state.openDuplicateModal;
+
+const toastMessagesSelector = (state: ExtractState<typeof store>) =>
+  state.toastMessages;
 
 // Getters
 export const getOpenUpdateModal = () => openUpdateModal(store.getState());
@@ -99,3 +115,4 @@ export const useOpenConfirmVisibilityModal = () =>
 export const useOpenPrintModal = () => useWikiStore(openPrintModal);
 export const useOpenDuplicateModal = () => useWikiStore(openDuplicateModal);
 export const useWikiActions = () => useWikiStore(actionsSelector);
+export const useToastMessages = () => useWikiStore(toastMessagesSelector);

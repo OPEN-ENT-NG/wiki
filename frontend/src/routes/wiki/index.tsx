@@ -5,6 +5,7 @@ import {
   Grid,
   Menu,
   SortableTree,
+  useToast,
 } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
@@ -28,7 +29,12 @@ import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions, wikiService } from '~/services';
-import { getUserRightsActions, useUserRights } from '~/store';
+import {
+  getUserRightsActions,
+  useToastMessages,
+  useUserRights,
+  useWikiActions,
+} from '~/store';
 import {
   useSelectedNodeId,
   useTreeActions,
@@ -66,6 +72,10 @@ export const Index = () => {
   const selectedNodeId = useSelectedNodeId();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
+
+  const { clearToastMessages } = useWikiActions();
+  const toastMessages = useToastMessages();
+  const toast = useToast();
 
   const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
@@ -106,6 +116,20 @@ export const Index = () => {
   }, [params.pageId]);
 
   // const disabledIds = ['66d06b427d517979a6eb61a6'];
+
+  useEffect(() => {
+    toastMessages.forEach((message) => {
+      if (message.type === 'success') {
+        toast.success(message.text);
+      } else if (message.type === 'error') {
+        toast.error(message.text);
+      }
+    });
+
+    if (toastMessages.length > 0) {
+      clearToastMessages();
+    }
+  }, [toastMessages, clearToastMessages, toast]);
 
   return (
     <>

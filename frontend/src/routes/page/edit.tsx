@@ -29,6 +29,7 @@ export const editAction =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData: FormData = await request.formData();
+    const { addToastMessage } = getWikiActions();
 
     // submitting from confirm visibility modal form
     const isConfirmVisibilityForm: string = getFormValue(
@@ -60,7 +61,7 @@ export const editAction =
     }
 
     // otherwise we call the updatePage service and redirect to current page.
-    await wikiService.updatePage({
+    const data = await wikiService.updatePage({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
       data: {
@@ -72,6 +73,19 @@ export const editAction =
 
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
     await queryClient.invalidateQueries({ queryKey: pageQueryOptions.base });
+
+    if (data.error) {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.edit.page',
+      });
+      return null;
+    }
+
+    addToastMessage({
+      type: 'success',
+      text: 'wiki.toast.success.edit.page',
+    });
 
     return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
   };

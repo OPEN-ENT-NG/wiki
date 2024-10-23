@@ -32,6 +32,7 @@ import {
   wikiService,
 } from '~/services';
 import {
+  getWikiActions,
   useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenRevisionModal,
@@ -88,6 +89,8 @@ export const loader =
 export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
+    const { addToastMessage } = getWikiActions();
+
     const pageParams = {
       wikiId: params.wikiId!,
       pageId: params.pageId!,
@@ -95,8 +98,21 @@ export const action =
 
     const wikiOptions = wikiQueryOptions.findOne(params.wikiId!);
 
-    await wikiService.deletePage(pageParams);
+    const data = await wikiService.deletePage(pageParams);
     await queryClient.invalidateQueries(wikiOptions);
+
+    if (data.error) {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.delete.page',
+      });
+      return null;
+    }
+
+    addToastMessage({
+      type: 'success',
+      text: 'wiki.toast.success.delete.page',
+    });
 
     return redirect(`/id/${params.wikiId}`);
   };
@@ -128,7 +144,7 @@ export const Page = () => {
   const handleOnPostComment = async (comment: string) => {
     createComment.mutate({
       wikiId: params.wikiId!,
-      pageId: params.pageId!,
+      pageId: params.pageI!,
       comment,
     });
   };
