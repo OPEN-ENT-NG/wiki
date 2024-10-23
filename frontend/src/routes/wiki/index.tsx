@@ -29,18 +29,14 @@ import { useFeedData } from '~/hooks/useFeedData';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions, wikiService } from '~/services';
-import {
-  getUserRightsActions,
-  useToastMessages,
-  useUserRights,
-  useWikiActions,
-} from '~/store';
+import { getUserRightsActions, useUserRights } from '~/store';
 import {
   useSelectedNodeId,
   useTreeActions,
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
+import { getToastActions, useToastMessages } from '~/store/toast';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -73,7 +69,7 @@ export const Index = () => {
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
 
-  const { clearToastMessages } = useWikiActions();
+  const { clearToastMessages } = getToastActions();
   const toastMessages = useToastMessages();
   const toast = useToast();
 

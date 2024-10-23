@@ -2,14 +2,14 @@ import { QueryClient } from '@tanstack/react-query';
 import { ActionFunctionArgs, redirect, useLocation } from 'react-router-dom';
 import { FormPage } from '~/features';
 import { wikiQueryOptions, wikiService } from '~/services';
-import { getWikiActions } from '~/store';
+import { getToastActions } from '~/store/toast';
 import { getFormValue } from '~/utils/getFormValue';
 
 export const action =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData = await request.formData();
-    const { addToastMessage } = getWikiActions();
+    const { addToastMessage } = getToastActions();
 
     const title = getFormValue(formData, 'title');
     const content = getFormValue(formData, 'content');

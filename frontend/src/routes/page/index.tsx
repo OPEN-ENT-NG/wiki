@@ -32,12 +32,12 @@ import {
   wikiService,
 } from '~/services';
 import {
-  getWikiActions,
   useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenRevisionModal,
   useTreeActions,
 } from '~/store';
+import { getToastActions } from '~/store/toast';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -89,7 +89,7 @@ export const loader =
 export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
-    const { addToastMessage } = getWikiActions();
+    const { addToastMessage } = getToastActions();
 
     const pageParams = {
       wikiId: params.wikiId!,

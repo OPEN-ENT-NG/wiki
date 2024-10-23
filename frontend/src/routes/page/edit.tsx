@@ -7,6 +7,7 @@ import { FormPageDataProps } from '~/hooks';
 import { useRevision } from '~/hooks/useRevision/useRevision';
 import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getOpenConfirmVisibilityModal, getWikiActions } from '~/store';
+import { getToastActions } from '~/store/toast';
 import { getFormValue } from '~/utils/getFormValue';
 
 const ConfirmVisibilityModal = lazy(
@@ -29,7 +30,7 @@ export const editAction =
   (queryClient: QueryClient) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData: FormData = await request.formData();
-    const { addToastMessage } = getWikiActions();
+    const { addToastMessage } = getToastActions();
 
     // submitting from confirm visibility modal form
     const isConfirmVisibilityForm: string = getFormValue(

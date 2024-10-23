@@ -1,9 +1,4 @@
 import { createStore, useStore } from 'zustand';
-
-interface ToastMessage {
-  type: 'success' | 'error' | 'info' | 'warning';
-  text: string;
-}
 interface State {
   openUpdateModal: boolean;
   openShareModal: boolean;
@@ -86,9 +81,6 @@ const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 const openDuplicateModal = (state: ExtractState<typeof store>) =>
   state.openDuplicateModal;
 
-const toastMessagesSelector = (state: ExtractState<typeof store>) =>
-  state.toastMessages;
-
 // Getters
 export const getOpenUpdateModal = () => openUpdateModal(store.getState());
 export const getOpenShareModal = () => openShareModal(store.getState());
@@ -115,4 +107,3 @@ export const useOpenConfirmVisibilityModal = () =>
 export const useOpenPrintModal = () => useWikiStore(openPrintModal);
 export const useOpenDuplicateModal = () => useWikiStore(openDuplicateModal);
 export const useWikiActions = () => useWikiStore(actionsSelector);
-export const useToastMessages = () => useWikiStore(toastMessagesSelector);
