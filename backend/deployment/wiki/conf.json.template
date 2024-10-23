@@ -3,7 +3,7 @@
       "config": {
         "main" : "net.atos.entng.wiki.Wiki",
         "port" : 8030,
-        "app-name" : "Wiki",
+        "app-name" : "Cours et Wiki",
         "app-address" : "/wiki",
         "app-icon" : "wiki-large",
         "app-type" : "END_USER",
