@@ -33,6 +33,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
     isSubmitting,
     isDirty,
     isValid,
+    isManager,
     PAGE_LABEL,
     PAGE_PLACEHOLDER,
     PAGE_SAVE,
@@ -65,31 +66,33 @@ export const FormPage = ({ page }: { page?: Page }) => {
           ></Input>
         </FormControl>
 
-        <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
-          <Controller
-            control={control}
-            name="isHidden"
-            render={({ field: { onChange, value } }) => (
-              <Toggle
-                disabled={isToggleDisabled}
-                onChange={onChange}
-                checked={value}
-              />
-            )}
-          />
+        {isManager && (
+          <FormControl id="toggleForm" className="d-flex mt-24 gap-8">
+            <Controller
+              control={control}
+              name="isHidden"
+              render={({ field: { onChange, value } }) => (
+                <Toggle
+                  disabled={isToggleDisabled}
+                  onChange={onChange}
+                  checked={value}
+                />
+              )}
+            />
 
-          <Label>{t('wiki.createform.toggle.title')}</Label>
-          <Tooltip
-            message={
-              isToggleDisabled
-                ? t('wiki.createform.toggle.tooltip.disabled')
-                : t('wiki.createform.toggle.tooltip')
-            }
-            placement="bottom-start"
-          >
-            <InfoCircle className="c-pointer" height="18" />
-          </Tooltip>
-        </FormControl>
+            <Label>{t('wiki.createform.toggle.title')}</Label>
+            <Tooltip
+              message={
+                isToggleDisabled
+                  ? t('wiki.createform.toggle.tooltip.disabled')
+                  : t('wiki.createform.toggle.tooltip')
+              }
+              placement="bottom-start"
+            >
+              <InfoCircle className="c-pointer" height="18" />
+            </Tooltip>
+          </FormControl>
+        )}
 
         <FormControl id="content" className="mt-16 page-content-editor">
           <Editor
