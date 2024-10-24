@@ -1,5 +1,4 @@
 import { createStore, useStore } from 'zustand';
-
 interface State {
   openUpdateModal: boolean;
   openShareModal: boolean;

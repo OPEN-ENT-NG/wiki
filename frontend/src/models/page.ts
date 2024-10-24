@@ -51,6 +51,7 @@ export interface Page {
   ];
   position?: number;
   parentId?: string;
+  error?: any;
 }
 
 export interface PageWithoutContent {

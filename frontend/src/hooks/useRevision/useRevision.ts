@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetPage, useGetRevisionPage, wikiService } from '~/services';
 import { useUserRights } from '~/store';
+import { useToastActions } from '~/store/toast';
 
 export const useRevision = () => {
   const toast = useToast();
@@ -12,6 +13,7 @@ export const useRevision = () => {
   const navigate = useNavigate();
   const params = useParams();
   const userRights = useUserRights();
+  const { addToastMessage } = useToastActions();
 
   const [isRestoring, setIsRestoring] = useState<boolean>(false);
 
@@ -64,12 +66,25 @@ export const useRevision = () => {
     try {
       // disable restore button
       setIsRestoring(true);
-      await wikiService.updatePage({
+      const data = await wikiService.updatePage({
         wikiId: params.wikiId!,
         pageId: params.pageId!,
         data: { content, title, isVisible },
       });
       await queryClient.invalidateQueries();
+
+      if (data.error) {
+        addToastMessage({
+          type: 'error',
+          text: 'wiki.toast.error.restore.page',
+        });
+        return null;
+      }
+
+      addToastMessage({
+        type: 'success',
+        text: 'wiki.toast.success.restore.page',
+      });
 
       return navigate(`/id/${params.wikiId}/page/${params.pageId!}`);
     } finally {

@@ -37,6 +37,7 @@ import {
   useOpenRevisionModal,
   useTreeActions,
 } from '~/store';
+import { getToastActions } from '~/store/toast';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -88,6 +89,8 @@ export const loader =
 export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
+    const { addToastMessage } = getToastActions();
+
     const pageParams = {
       wikiId: params.wikiId!,
       pageId: params.pageId!,
@@ -95,8 +98,21 @@ export const action =
 
     const wikiOptions = wikiQueryOptions.findOne(params.wikiId!);
 
-    await wikiService.deletePage(pageParams);
+    const data = await wikiService.deletePage(pageParams);
     await queryClient.invalidateQueries(wikiOptions);
+
+    if (data.error) {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.delete.page',
+      });
+      return null;
+    }
+
+    addToastMessage({
+      type: 'success',
+      text: 'wiki.toast.success.delete.page',
+    });
 
     return redirect(`/id/${params.wikiId}`);
   };
