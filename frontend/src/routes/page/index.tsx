@@ -144,7 +144,7 @@ export const Page = () => {
   const handleOnPostComment = async (comment: string) => {
     createComment.mutate({
       wikiId: params.wikiId!,
-      pageId: params.pageI!,
+      pageId: params.pageId!,
       comment,
     });
   };

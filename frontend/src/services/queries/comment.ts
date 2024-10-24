@@ -4,11 +4,11 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pageQueryOptions, wikiService } from '..';
-import { getToastActions } from '~/store/toast';
+import { useToastActions } from '~/store/toast';
 
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
-  const { addToastMessage } = getToastActions();
+  const { addToastMessage } = useToastActions();
 
   return useMutation({
     mutationFn: ({
@@ -41,7 +41,7 @@ export const useCreateComment = () => {
 
 export const useUpdateComment = () => {
   const queryClient = useQueryClient();
-  const { addToastMessage } = getToastActions();
+  const { addToastMessage } = useToastActions();
 
   return useMutation({
     mutationFn: ({
@@ -76,7 +76,7 @@ export const useUpdateComment = () => {
 
 export const useDeleteComment = () => {
   const queryClient = useQueryClient();
-  const { addToastMessage } = getToastActions();
+  const { addToastMessage } = useToastActions();
 
   return useMutation({
     mutationFn: ({

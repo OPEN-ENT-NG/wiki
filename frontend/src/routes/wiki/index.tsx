@@ -36,7 +36,7 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { getToastActions, useToastMessages } from '~/store/toast';
+import { useToastActions, useToastMessages } from '~/store/toast';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -69,7 +69,7 @@ export const Index = () => {
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
 
-  const { clearToastMessages } = getToastActions();
+  const { clearToastMessages } = useToastActions();
   const toastMessages = useToastMessages();
   const toast = useToast();
 
