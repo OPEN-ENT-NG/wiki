@@ -106,7 +106,7 @@ public class WikiServiceMongoImplTest {
         final UserInfos userInfos = new UserInfos();
         userInfos.setUserId("1");
 
-        final boolean isPageAuthor = WikiServiceMongoImpl.isPageAuthor(page, userInfos);
+        final boolean isPageAuthor = WikiServiceMongoImpl.isPageAuthor(page, userInfos.getUserId());
         context.assertEquals(isPageAuthor, true);
     }
 
@@ -118,7 +118,7 @@ public class WikiServiceMongoImplTest {
         final UserInfos userInfos = new UserInfos();
         userInfos.setUserId("2");
 
-        final boolean isPageAuthor = WikiServiceMongoImpl.isPageAuthor(page, userInfos);
+        final boolean isPageAuthor = WikiServiceMongoImpl.isPageAuthor(page, userInfos.getUserId());
         context.assertEquals(isPageAuthor, false);
     }
 

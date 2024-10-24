@@ -705,13 +705,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							pageIDsToDelete.add(pageId);
 
 							// if user is not author then add author and page to the notify map
-							if (!isPageAuthor(jsonPage, user)) {
+							if (!isPageAuthor(jsonPage, user.getUserId())) {
 								authorPagesNotifyMap
 										.computeIfAbsent(authorId, k -> new ArrayList<>())
 										.add(pageId);
 							}
 						} else if (isContrib(wiki, user)) {
-							if (isPageAuthor(jsonPage, user)) {
+							if (isPageAuthor(jsonPage, user.getUserId())) {
 								pageIDsToDelete.add(pageId);
 							} else {
 								subpageIDsToPage.add(pageId);
@@ -1047,9 +1047,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return false;
 	}
 
-	public static boolean isPageAuthor(final JsonObject page, final UserInfos user) {
+	public static boolean isPageAuthor(final JsonObject page, final String userId) {
 		return page.getString("author") != null
-				&& page.getString("author").equals(user.getUserId());
+				&& page.getString("author").equals(userId);
 	}
 
 	public static String getPageTitle(JsonObject wiki, String pageId) {
