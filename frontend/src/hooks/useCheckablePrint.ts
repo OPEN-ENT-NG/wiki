@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { baseURL } from '~/services';
-import { useWikiActions } from '~/store';
+import { useSelectedPages, useWikiActions } from '~/store';
 
 type PrintGroup = 'allPages' | 'onePage';
 
 export const useCheckablePrint = () => {
   const params = useParams();
+  const selectedPages = useSelectedPages();
   const { setOpenPrintModal } = useWikiActions();
-  const [isAllPages, setIsAllPages] = useState<boolean>(
-    !params.pageId ? true : false,
-  );
+  // If the pageId is not in the selectedPages store, use the pageId from the params
+  const pageId = selectedPages[0] ?? params.pageId;
+  const disableWikiPrint = selectedPages.length > 0;
+  const [isAllPages, setIsAllPages] = useState<boolean>(!pageId ? true : false);
   const [printGroup, setPrintGroup] = useState<PrintGroup>(
-    !params.pageId ? 'allPages' : 'onePage',
+    !pageId ? 'allPages' : 'onePage',
   );
   const [printComment, setPrintComment] = useState<boolean>(false);
 
@@ -42,7 +44,7 @@ export const useCheckablePrint = () => {
     if (isAllPages) {
       return `printComment=${printComment}`;
     } else {
-      return `printPageId=${params.pageId}&printComment=${printComment}`;
+      return `printPageId=${pageId}&printComment=${printComment}`;
     }
   };
 
@@ -59,7 +61,9 @@ export const useCheckablePrint = () => {
     handleOnGroupChange,
     handleOnPrintComment,
     handleOnPrintWiki,
+    disableWikiPrint,
     printComment,
     printGroup,
+    pageId,
   };
 };

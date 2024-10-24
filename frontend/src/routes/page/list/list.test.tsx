@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   useDate: vi.fn(),
   useNavigate: vi.fn(),
   useGetPagesFromWiki: vi.fn(),
+  useLocation: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -16,6 +17,7 @@ vi.mock('react-router-dom', async () => {
     );
   return {
     ...router,
+    useLocation: () => mocks.useLocation,
     useNavigate: () => mocks.useNavigate,
   };
 });
