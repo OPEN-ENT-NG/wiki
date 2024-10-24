@@ -8,17 +8,25 @@ import {
 } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  useLocation,
   useParams,
 } from 'react-router-dom';
+import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { useFilterVisiblePage, useListPage } from '~/hooks';
 import { Page } from '~/models';
 import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
-import { useOpenDeleteModal, useOpenRevisionModal } from '~/store';
+import {
+  useOpenDeleteModal,
+  useOpenDuplicateModal,
+  useOpenRevisionModal,
+  useSelectedPages,
+  useWikiActions,
+} from '~/store';
 
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal'),
@@ -55,11 +63,13 @@ export const action =
 
 export const PageList = () => {
   const params = useParams();
+  const location = useLocation();
   const filterVisiblePage = useFilterVisiblePage();
   const openVersionsModal = useOpenRevisionModal();
   const openDeleteModal = useOpenDeleteModal();
-
-  const [selectedPages, setSelectedPages] = useState<string[]>([]);
+  const openDuplicateModal = useOpenDuplicateModal();
+  const selectedPages = useSelectedPages();
+  const { setSelectedPages } = useWikiActions();
 
   const { lg } = useBreakpoint();
   const { isPending, data, error } = useGetPagesFromWiki({
@@ -75,6 +85,17 @@ export const PageList = () => {
 
   const selectedPagesCount = selectedPages.length;
   const items = useListPage({ selectedPages, pagesCount: selectedPagesCount });
+  // Reset selectedPages when the component is unmounted
+  useEffect(() => {
+    return () => {
+      setSelectedPages([]);
+    };
+  }, [setSelectedPages]);
+
+  // Reset selectedPages when the page changes
+  useEffect(() => {
+    setSelectedPages([]);
+  }, [location.pathname, setSelectedPages]);
 
   const renderDesktopNode = (
     node: Page,
@@ -169,6 +190,9 @@ export const PageList = () => {
         <Suspense fallback={<LoadingScreen position={false} />}>
           {openVersionsModal && <RevisionModal pageId={selectedPages[0]} />}
           {openDeleteModal && <DeleteListModal selectedPages={selectedPages} />}
+          {openDuplicateModal && (
+            <DuplicateModal pageId={selectedPages[0]} wikiId={params.wikiId!} />
+          )}
         </Suspense>
       </div>
     </>

@@ -30,7 +30,12 @@ export const useListPage = ({
     !userRights.manager;
 
   const { t } = useTranslation('wiki');
-  const { setOpenRevisionModal, setOpenDeleteModal } = useWikiActions();
+  const {
+    setOpenRevisionModal,
+    setOpenDeleteModal,
+    setOpenDuplicateModal,
+    setOpenPrintModal,
+  } = useWikiActions();
 
   const itemsTranslation = {
     read: {
@@ -87,7 +92,8 @@ export const useListPage = ({
         'disabled': pagesCount < 1 || pagesCount > 2,
         'aria-label': itemsTranslation.move.responsive,
       },
-      visibility: isOnlyRead ? 'hide' : 'show',
+      // TODO: remove this line when the move action is implemented
+      visibility: 'hide', // isOnlyRead ? 'hide' : 'show',
       tooltip: {
         message: itemsTranslation.move.responsive,
         position: 'bottom',
@@ -101,6 +107,7 @@ export const useListPage = ({
         'children': itemsTranslation.duplicate.desktop,
         'size': 'sm',
         'disabled': pagesCount !== 1,
+        'onClick': () => setOpenDuplicateModal(true),
         'aria-label': itemsTranslation.duplicate.responsive,
       },
       visibility: isOnlyRead ? 'hide' : 'show',
@@ -134,6 +141,7 @@ export const useListPage = ({
         'children': itemsTranslation.print.desktop,
         'size': 'sm',
         'disabled': pagesCount !== 1,
+        'onClick': () => setOpenPrintModal(true),
         'aria-label': itemsTranslation.print.responsive,
       },
       visibility: isOnlyRead ? 'hide' : 'show',

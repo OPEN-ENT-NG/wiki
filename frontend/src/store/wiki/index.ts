@@ -7,6 +7,7 @@ interface State {
   openConfirmVisibilityModal: boolean;
   openPrintModal: boolean;
   openDuplicateModal: boolean;
+  selectedPages: string[];
 }
 
 type Action = {
@@ -18,6 +19,7 @@ type Action = {
     setOpenConfirmVisibilityModal: (value: boolean) => void;
     setOpenPrintModal: (value: boolean) => void;
     setOpenDuplicateModal: (open: boolean) => void;
+    setSelectedPages: (selectedPages: string[]) => void;
   };
 };
 
@@ -37,6 +39,7 @@ const initialState = {
   openConfirmVisibilityModal: false,
   openPrintModal: false,
   openDuplicateModal: false,
+  selectedPages: [],
 };
 
 const store = createStore<State & Action>()((set) => ({
@@ -52,6 +55,7 @@ const store = createStore<State & Action>()((set) => ({
     setOpenPrintModal: (openPrintModal: boolean) => set({ openPrintModal }),
     setOpenDuplicateModal: (openDuplicateModal: boolean) =>
       set({ openDuplicateModal }),
+    setSelectedPages: (selectedPages: string[]) => set({ selectedPages }),
   },
 }));
 
@@ -71,7 +75,8 @@ const openPrintModal = (state: ExtractState<typeof store>) =>
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 const openDuplicateModal = (state: ExtractState<typeof store>) =>
   state.openDuplicateModal;
-
+const selectedPages = (state: ExtractState<typeof store>) =>
+  state.selectedPages;
 // Getters
 export const getOpenUpdateModal = () => openUpdateModal(store.getState());
 export const getOpenShareModal = () => openShareModal(store.getState());
@@ -82,7 +87,7 @@ export const getOpenConfirmVisibilityModal = () =>
 export const getOpenPrintModal = () => openPrintModal(store.getState());
 export const getOpenDuplicateModal = () => openDuplicateModal(store.getState());
 export const getWikiActions = () => actionsSelector(store.getState());
-
+export const getSelectedPages = () => selectedPages(store.getState());
 // React Store
 function useWikiStore<U>(selector: Params<U>[1]) {
   return useStore(store, selector);
@@ -97,4 +102,5 @@ export const useOpenConfirmVisibilityModal = () =>
   useWikiStore(openConfirmVisibilityModal);
 export const useOpenPrintModal = () => useWikiStore(openPrintModal);
 export const useOpenDuplicateModal = () => useWikiStore(openDuplicateModal);
+export const useSelectedPages = () => useWikiStore(selectedPages);
 export const useWikiActions = () => useWikiStore(actionsSelector);
