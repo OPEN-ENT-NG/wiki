@@ -232,8 +232,8 @@
   "wiki.toast.error.restore.page": "Votre page n'a pas pu être restorée",
   "wiki.toast.success.create.comment": "Votre commentaire a bien été enregistré",
   "wiki.toast.error.create.comment": "Votre commentaire n'a pas pu être enregistré",
-  "wiki.toast.success.edit.comment": "Votre commentaire a bien été modifiée",
-  "wiki.toast.error.edit.comment": "Votre commentaire n'a pas pu être modifiée",
-  "wiki.toast.success.delete.comment": "Votre commentaire a bien été supprimée",
-  "wiki.toast.error.delete.comment": "Votre commentaire n'a pas pu être supprimée"
+  "wiki.toast.success.edit.comment": "Votre commentaire a bien été modifié",
+  "wiki.toast.error.edit.comment": "Votre commentaire n'a pas pu être modifié",
+  "wiki.toast.success.delete.comment": "Votre commentaire a bien été supprimé",
+  "wiki.toast.error.delete.comment": "Votre commentaire n'a pas pu être supprimé"
 }
