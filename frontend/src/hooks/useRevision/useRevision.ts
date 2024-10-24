@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetPage, useGetRevisionPage, wikiService } from '~/services';
-import { useUserRights } from '~/store';
+import { useSelectedPages, useUserRights } from '~/store';
 import { useToastActions } from '~/store/toast';
 
 export const useRevision = () => {
@@ -14,23 +14,24 @@ export const useRevision = () => {
   const params = useParams();
   const userRights = useUserRights();
   const { addToastMessage } = useToastActions();
-
+  const selectedPages = useSelectedPages();
+  const safePageId = params.pageId ?? selectedPages[0];
   const [isRestoring, setIsRestoring] = useState<boolean>(false);
 
   // load page from route params
   const page = useGetPage({
     wikiId: params.wikiId!,
-    pageId: params.pageId!,
+    pageId: safePageId!,
   });
   // load revision from route params
   const revision = useGetRevisionPage({
     wikiId: params.wikiId!,
-    pageId: params.pageId!,
+    pageId: safePageId!,
     revisionId: params.versionId!,
   });
 
   const navigateToLatestRevision = () => {
-    navigate(`/id/${params.wikiId}/page/${params.pageId}`);
+    navigate(`/id/${params.wikiId}/page/${safePageId}`);
   };
 
   const restoreCurrentRevision = async () => {
@@ -48,7 +49,7 @@ export const useRevision = () => {
   const restoreRevisionById = async (revisionId: string) => {
     const version = await wikiService.getRevisionPage({
       wikiId: params.wikiId!,
-      pageId: params.pageId!,
+      pageId: safePageId!,
       revisionId,
     });
     await restoreRevision(version);
@@ -68,7 +69,7 @@ export const useRevision = () => {
       setIsRestoring(true);
       const data = await wikiService.updatePage({
         wikiId: params.wikiId!,
-        pageId: params.pageId!,
+        pageId: safePageId!,
         data: { content, title, isVisible },
       });
       await queryClient.invalidateQueries();
@@ -86,7 +87,7 @@ export const useRevision = () => {
         text: 'wiki.toast.success.restore.page',
       });
 
-      return navigate(`/id/${params.wikiId}/page/${params.pageId!}`);
+      return navigate(`/id/${params.wikiId}/page/${safePageId}`);
     } finally {
       setIsRestoring(false);
     }

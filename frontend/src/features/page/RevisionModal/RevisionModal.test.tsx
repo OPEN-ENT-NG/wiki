@@ -27,6 +27,7 @@ vi.mock('react-dom', async () => {
 
 vi.mock('~/store/wiki', () => ({
   useOpenRevisionModal: () => true,
+  useSelectedPages: () => [],
   useWikiActions: () => ({
     setOpenRevisionModal: mocks.setOpenRevisionModal,
   }),

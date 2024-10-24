@@ -3,20 +3,20 @@ import { createPortal } from 'react-dom';
 import { useCheckablePrint } from '~/hooks/useCheckablePrint';
 import { useTranslation } from 'react-i18next';
 import { useOpenPrintModal, useWikiActions } from '~/store';
-import { useParams } from 'react-router-dom';
 
 export default function PrintModal() {
   const { t } = useTranslation('wiki');
   const openPrintModal = useOpenPrintModal();
-  const params = useParams();
   const { setOpenPrintModal } = useWikiActions();
 
   const {
     handleOnGroupChange,
     handleOnPrintComment,
     handleOnPrintWiki,
+    disableWikiPrint,
     printComment,
     printGroup,
+    pageId,
   } = useCheckablePrint();
 
   return createPortal(
@@ -38,13 +38,14 @@ export default function PrintModal() {
                 checked={printGroup === 'onePage'}
                 onChange={handleOnGroupChange}
                 value="onePage"
-                disabled={!params.pageId}
+                disabled={!pageId}
               />
               <Radio
                 model={printGroup}
                 label={t('wiki.modal.print.radio.pages')}
                 checked={printGroup === 'allPages'}
                 onChange={handleOnGroupChange}
+                disabled={disableWikiPrint}
                 value="allPages"
               />
             </div>
