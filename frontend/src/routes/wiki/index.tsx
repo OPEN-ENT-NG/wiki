@@ -67,7 +67,7 @@ export const Index = () => {
   const treeData = useTreeData();
   const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
-  const { t } = useTranslation();
+  const { t } = useTranslation('wiki');
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
 
