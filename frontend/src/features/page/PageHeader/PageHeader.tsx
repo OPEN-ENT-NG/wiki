@@ -1,12 +1,4 @@
-import {
-  Copy,
-  Delete,
-  Edit,
-  FolderMove,
-  Forgoing,
-  Hide,
-  Options,
-} from '@edifice-ui/icons';
+import { Copy, Delete, Edit, Forgoing, Hide, Options } from '@edifice-ui/icons';
 import {
   Avatar,
   Badge,
@@ -63,13 +55,14 @@ export const PageHeader = ({
       action: () => console.log(''),
       visibility: canManage,
     },
-    {
+    //TODO: Implement move page when action is ready
+    /* {
       id: 'move',
       label: t('wiki.page.dropdown.move'),
       icon: <FolderMove />,
       action: () => console.log(''),
       visibility: canContrib || canManage,
-    },
+    }, */
     {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),
