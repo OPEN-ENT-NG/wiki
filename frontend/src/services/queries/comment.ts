@@ -4,9 +4,11 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { pageQueryOptions, wikiService } from '..';
+import { useToastActions } from '~/store/toast';
 
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
+  const { addToastMessage } = useToastActions();
 
   return useMutation({
     mutationFn: ({
@@ -22,12 +24,24 @@ export const useCreateComment = () => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
+
+      addToastMessage({
+        type: 'success',
+        text: 'wiki.toast.success.create.comment',
+      });
+    },
+    onError: () => {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.create.comment',
+      });
     },
   });
 };
 
 export const useUpdateComment = () => {
   const queryClient = useQueryClient();
+  const { addToastMessage } = useToastActions();
 
   return useMutation({
     mutationFn: ({
@@ -45,12 +59,25 @@ export const useUpdateComment = () => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
+
+      addToastMessage({
+        type: 'success',
+        text: 'wiki.toast.success.edit.comment',
+      });
+    },
+    onError: () => {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.edit.comment',
+      });
     },
   });
 };
 
 export const useDeleteComment = () => {
   const queryClient = useQueryClient();
+  const { addToastMessage } = useToastActions();
+
   return useMutation({
     mutationFn: ({
       wikiId,
@@ -64,6 +91,17 @@ export const useDeleteComment = () => {
     onSuccess: (_data, { wikiId, pageId }) => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
+      });
+
+      addToastMessage({
+        type: 'success',
+        text: 'wiki.toast.success.delete.comment',
+      });
+    },
+    onError: () => {
+      addToastMessage({
+        type: 'error',
+        text: 'wiki.toast.error.delete.comment',
       });
     },
   });
