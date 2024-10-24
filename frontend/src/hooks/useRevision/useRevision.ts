@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Page } from '~/models';
 import { useGetPage, useGetRevisionPage, wikiService } from '~/services';
 import { useUserRights } from '~/store';
-import { getToastActions } from '~/store/toast';
+import { useToastActions } from '~/store/toast';
 
 export const useRevision = () => {
   const toast = useToast();
@@ -13,7 +13,7 @@ export const useRevision = () => {
   const navigate = useNavigate();
   const params = useParams();
   const userRights = useUserRights();
-  const { addToastMessage } = getToastActions();
+  const { addToastMessage } = useToastActions();
 
   const [isRestoring, setIsRestoring] = useState<boolean>(false);
 
