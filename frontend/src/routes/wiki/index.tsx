@@ -37,6 +37,7 @@ import {
 } from '~/store/treeview';
 import './index.css';
 import { useToastActions, useToastMessages } from '~/store/toast';
+import { useTranslation } from 'react-i18next';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -66,6 +67,7 @@ export const Index = () => {
   const treeData = useTreeData();
   const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
+  const { t } = useTranslation();
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
 
@@ -116,15 +118,16 @@ export const Index = () => {
   useEffect(() => {
     toastMessages.forEach((message) => {
       if (message.type === 'success') {
-        toast.success(message.text);
+        toast.success(t(message.text));
       } else if (message.type === 'error') {
-        toast.error(message.text);
+        toast.error(t(message.text));
       }
     });
 
     if (toastMessages.length > 0) {
       clearToastMessages();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toastMessages, clearToastMessages, toast]);
 
   return (
