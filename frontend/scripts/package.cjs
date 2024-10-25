@@ -48,19 +48,27 @@ function generatePackage(content) {
 }
 
 function generateDeps(content) {
-  return {
-    ...content.dependencies,
-    '@edifice-ui/icons': BRANCH,
-    '@edifice-ui/react': BRANCH,
-  };
+  const updatedDeps = { ...content.dependencies };
+  for (const key in updatedDeps) {
+    if (key.startsWith('@edifice') || key.startsWith('edifice-')) {
+      updatedDeps[key] = BRANCH;
+    }
+
+    if (key.includes('ode-explorer')) {
+      updatedDeps[key] = 'develop';
+    }
+  }
+  return updatedDeps;
 }
 
 function generateDevDeps(content) {
-  return {
-    ...content.devDependencies,
-    'edifice-ts-client': BRANCH,
-    'edifice-bootstrap': BRANCH,
-  };
+  const updatedDevDeps = { ...content.devDependencies };
+  for (const key in updatedDevDeps) {
+    if (key.startsWith('@edifice') || key.startsWith('edifice-')) {
+      updatedDevDeps[key] = BRANCH;
+    }
+  }
+  return updatedDevDeps;
 }
 
 function createPackage() {
