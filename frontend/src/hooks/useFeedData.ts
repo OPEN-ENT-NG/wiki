@@ -51,7 +51,12 @@ export const useFeedData = () => {
         });
 
       setTreeData(
-        newTree.slice().sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+        newTree
+          .slice()
+          .sort(
+            (a, b) =>
+              (a.position ?? newTree.length) - (b.position ?? newTree.length),
+          ),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
