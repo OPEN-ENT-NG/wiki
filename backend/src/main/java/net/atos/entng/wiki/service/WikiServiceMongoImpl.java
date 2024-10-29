@@ -355,6 +355,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		if (page.containsKey("jsonContent")) {
 			log.debug("Page has already been transformed, nothing to do.");
 			promise.complete(page);
+		} else if (org.apache.commons.lang3.StringUtils.isEmpty(page.getString("content"))) {
+			log.debug("No content to transform");
+			promise.complete(page);
 		} else {
 			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 			desiredFormats.add(ContentTransformerFormat.HTML);
