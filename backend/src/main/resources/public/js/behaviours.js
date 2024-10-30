@@ -68,14 +68,21 @@
 	    Page: function () {
 	        var page = this;
 	        this.collection(entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.Version, {
-	            sync: '/wiki/revisions/' + page.wiki_id + '/' + page._id
+	            sync: function (callback) {
+	                entcore_1.http().get('/wiki/' + page.wiki_id + '/page/' + page._id+'/revisions' ).done(function (data) {
+	                    this.load(data);
+	                    if (typeof callback === 'function') {
+	                        callback();
+	                    }
+	                }.bind(this));
+	            }
 	        });
 	    },
 	    Wiki: function () {
 	        var wiki = this;
 	        this.collection(entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.Page, {
 	            sync: function (callback) {
-	                entcore_1.http().get('/wiki/' + wiki._id + '/listpages').done(function (returnedWiki) {
+	                entcore_1.http().get('/wiki/' + wiki._id + '/pages').done(function (returnedWiki) {
 	                    returnedWiki.pages = entcore_1._.map(returnedWiki.pages, function (page) {
 	                        page.wiki_id = wiki._id;
 	                        return page;
@@ -258,7 +265,6 @@
 	    }
 	};
 	wikiNamespace.showVersion = function (version, scope) {
-	    console.log('showVersion');
 	    if (isWikiApplication()) {
 	        scope.version = version;
 	        entcore_1.template.open('main', 'view-version');
@@ -281,7 +287,6 @@
 	    }
 	};
 	wikiNamespace.compareVersions = function (wiki, scope) {
-	    console.log('compareVersions');
 	    var a = wiki.page.versions.selection()[0];
 	    var b = wiki.page.versions.selection()[1];
 	    if (entcore_1.moment(a.date.$date).unix() > entcore_1.moment(b.date.$date).unix()) {
@@ -513,7 +518,7 @@
 	    this.save();
 	};
 	wikiNamespace.Page.prototype.comment = function (commentText, callback) {
-	    entcore_1.http().postJson('/wiki/' + this.wiki_id + '/page/' + this._id, { comment: commentText })
+	    entcore_1.http().postJson('/wiki/' + this.wiki_id + '/page/' + this._id+'/comment', { comment: commentText })
 	        .done(function (response) {
 	        if (typeof callback === 'function') {
 	            callback();
@@ -548,6 +553,7 @@
 	        title: this.title,
 	        content: this.content,
 	        isIndex: this.isIndex,
+			isVisible: this.isVisible || true,
 	        wasIndex: this.wasIndex
 	    };
 	};
@@ -563,10 +569,11 @@
 	};
 	wikiNamespace.Wiki.prototype.getPage = function (pageId, callback, errorCallback) {
 	    var that = this;
+		var wiki = this;
 	    entcore_1.http().get('/wiki/' + this._id + '/page/' + pageId)
-	        .done(function (wiki) {
-	        wiki.pages[0].wiki_id = this._id;
-	        this.page = new entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.Page(wiki.pages[0]);
+	        .done(function (page) {
+	        this.page = new entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.Page(page);
+			this.page.wiki_id = wiki._id;
 	        var content = $(this.page.content);
 	        if (this.context === 'sniplet') {
 	            content.find('a[href^="/wiki#/view/' + this._id + '"]').each(function (index, item) {
@@ -829,6 +836,7 @@
 	                        // Create a default homepage
 	                        var page = {
 	                            isIndex: true,
+								isVisible: true,
 	                            title: entcore_1.idiom.translate('wiki.sniplet.default.homepage.title'),
 	                            content: entcore_1.idiom.translate('wiki.sniplet.default.homepage.content')
 	                        };
@@ -907,11 +915,13 @@
 	                    var data = {
 	                        title: wiki.newPage.title,
 	                        content: wiki.newPage.content,
-	                        isIndex: wiki.newPage.isIndex
+	                        isIndex: wiki.newPage.isIndex,
+							isVisible: wiki.newPage.isVisible || true
 	                    };
 	                    wiki.createPage(data, function (createdPage) {
 	                        entcore_1.notify.info('wiki.page.has.been.created');
 	                        wiki.processing = false;
+							displayAction(scope, 'pagesList');
 	                        getPage(scope, wiki, createdPage._id, function () {
 	                            entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
 	                            scope.$apply();
@@ -953,6 +963,7 @@
 	                        getPage(scope, wiki, wiki.page._id, function () {
 	                            entcore_1.Behaviours.applicationsBehaviours.wiki.namespace.updateSearchBar(scope);
 	                        });
+							displayAction(scope, 'viewPage');
 	                    });
 	                },
 	                deletePage: function () {
@@ -1093,7 +1104,9 @@
 	    toggleSidePanel(scope);
 	}
 	function openPage(pageId, scope) {
-	    getPage(scope, scope.wiki, pageId, null);
+	    getPage(scope, scope.wiki, pageId, ()=>{
+			getPage(scope, scope.wiki, pageId);
+		});
 	}
 	function getPage(scope, wiki, pageId, callback) {
 	    wiki.pages.sync(function () {

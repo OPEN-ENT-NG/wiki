@@ -41,7 +41,7 @@
 					</ul>
 				</nav>
 			</side-panel>
-			<h2 ng-click="openPage(wiki.index)">
+			<h2 ng-click="openPage(wiki.pages.all[0]._id)">
 				<i class="wiki"></i>
 				<span>[[wiki.title]]</span>
 			</h2>
@@ -65,7 +65,7 @@
 							</li>
 						</resource-right>
 						<li>
-							<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print?wiki=[[wiki._id]]" target="_blank">
+							<a workflow="wiki.print" ng-if="wiki._id" ng-href="/wiki/print/id/[[wiki._id]]" target="_blank">
 								<i18n>wiki.print</i18n>
 							</a>
 						</li>
@@ -87,8 +87,8 @@
 	</div>
 
 	<div ng-if="display.action === 'pagesList'" class="twelve cell">
-		<ul class="twelve cell wiki-sniplet">
-			<alphabetical list="page in wiki.pages.all" class="twelve cell">
+		<ul class="twelve cell wiki-sniplet" ng-repeat="page in wiki.pages.all">
+			<alphabetical list="item in [page]" class="twelve cell">
 				<li>
 					<a ng-if="page._id === wiki.index" ng-click="openPage(page._id)">
 						[[page.title]]
