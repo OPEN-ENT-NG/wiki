@@ -32,12 +32,14 @@ import {
   wikiService,
 } from '~/services';
 import {
+  useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenRevisionModal,
   useTreeActions,
 } from '~/store';
 import { getToastActions } from '~/store/toast';
+import { pageEditAction } from '~/routes/page/pageEditAction';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -45,6 +47,13 @@ const DeletePageModal = lazy(
 
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal'),
+);
+
+const ConfirmVisibilityModal = lazy(
+  async () =>
+    await import(
+      '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'
+    ),
 );
 
 export const loader =
@@ -117,12 +126,16 @@ export const action =
     return redirect(`/id/${params.wikiId}`);
   };
 
+export const visibleAction = pageEditAction;
+
 export const Page = () => {
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
+  const openConfirmVisibilityModal = useOpenConfirmVisibilityModal();
+
   const { setSelectedNodeId } = useTreeActions();
 
   const { getPageVersionFromRoute } = useRevision();
@@ -182,7 +195,11 @@ export const Page = () => {
 
   return data ? (
     <div className="d-flex flex-column mt-24 ms-md-24 me-md-16">
-      {isRevision ? <RevisionHeader page={data} /> : <PageHeader page={data} />}
+      {isRevision ? (
+        <RevisionHeader page={data} />
+      ) : (
+        <PageHeader page={data} wikiId={params.wikiId} />
+      )}
       {data.contentVersion === 0 ? (
         <Alert
           type="warning"
@@ -239,6 +256,7 @@ export const Page = () => {
         {openDuplicateModal && (
           <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
         )}
+        {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
       </Suspense>
     </div>
   ) : null;

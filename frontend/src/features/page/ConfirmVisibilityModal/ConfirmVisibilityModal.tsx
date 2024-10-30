@@ -6,7 +6,13 @@ import { FormPageDataProps } from '~/hooks';
 import { Page } from '~/models';
 import { useOpenConfirmVisibilityModal, useWikiActions } from '~/store';
 
-export default function ConfirmVisibilityModal({ page }: { page: Page }) {
+export default function ConfirmVisibilityModal({
+  page,
+  action,
+}: {
+  page: Page;
+  action?: string;
+}) {
   const actionData = useActionData() as FormPageDataProps;
 
   const { appCode } = useOdeClient();
@@ -40,6 +46,7 @@ export default function ConfirmVisibilityModal({ page }: { page: Page }) {
         </Button>
         <Form
           method="post"
+          action={action ?? ''}
           onSubmit={() => setOpenConfirmVisibilityModal(false)}
         >
           <input

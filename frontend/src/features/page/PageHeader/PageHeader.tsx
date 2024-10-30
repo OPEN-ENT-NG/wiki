@@ -1,4 +1,12 @@
-import { Copy, Delete, Edit, Forgoing, Hide, Options } from '@edifice-ui/icons';
+import {
+  Copy,
+  Delete,
+  Edit,
+  Forgoing,
+  Hide,
+  Options,
+  See,
+} from '@edifice-ui/icons';
 import {
   Avatar,
   Badge,
@@ -11,21 +19,25 @@ import {
   useOdeClient,
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
-import { RefAttributes } from 'react';
+import { RefAttributes, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSubmit } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { Page } from '~/models';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
+import { wikiService } from '~/services';
 
 export const PageHeader = ({
   page,
+  wikiId,
   isPrint,
 }: {
   page: Page;
+  wikiId?: string;
   isPrint?: boolean;
 }) => {
+  const [showVisibleAction, setShowVisibleAction] = useState(false);
   const navigate = useNavigate();
   const userRights = useUserRights();
 
@@ -34,6 +46,7 @@ export const PageHeader = ({
   const { getAvatarURL, getUserbookURL } = useDirectory();
   const { setOpenDeleteModal, setOpenRevisionModal, setOpenDuplicateModal } =
     useWikiActions();
+  const submit = useSubmit();
   const { t } = useTranslation(appCode);
 
   const isOnlyRead =
@@ -45,15 +58,45 @@ export const PageHeader = ({
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
 
+  useEffect(() => {
+    const initShowVisibleAction = async () => {
+      // subpage rule: if user is manager and parent page is visible, we show the visible action
+      if (page.parentId) {
+        const parentPage = await wikiService.getPage({
+          wikiId: wikiId!,
+          pageId: page.parentId,
+        });
+        setShowVisibleAction(canManage && parentPage.isVisible);
+      } else {
+        // page rule: if user is manager, we show the visible action
+        setShowVisibleAction(canManage);
+      }
+    };
+
+    initShowVisibleAction();
+  }, [page.parentId, wikiId, canManage]);
+
+  const handleVisibleAction = async () => {
+    const formData = new FormData();
+    formData.append('title', page.title);
+    formData.append('content', page.content);
+    formData.append('isHidden', page.isVisible ? 'true' : 'false');
+    submit(formData, {
+      method: 'post',
+    });
+  };
+
   const handleEditPage = () => navigate(`edit`);
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {
       id: 'visibility',
-      label: t('wiki.page.dropdown.visibility'),
-      icon: <Hide />,
-      action: () => console.log(''),
-      visibility: canManage,
+      label: page.isVisible
+        ? t('wiki.page.dropdown.hide')
+        : t('wiki.page.dropdown.visible'),
+      icon: page.isVisible ? <Hide /> : <See />,
+      action: handleVisibleAction,
+      visibility: showVisibleAction,
     },
     //TODO: Implement move page when action is ready
     /* {
