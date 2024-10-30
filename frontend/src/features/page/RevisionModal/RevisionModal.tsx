@@ -37,7 +37,6 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
     formatDate,
     openVersionsModal,
     setOpenRevisionModal,
-    disabledVersionComparison,
     disabledRestoreButton,
     restoreSelection,
   } = useRevisionModal({ data, selectedItems });
@@ -63,14 +62,17 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
         {t('wiki.version.modal.title')}
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-8">
+        {
+          //TODO: Implement compare alert when the feature is ready
+          /* <div className="mb-8">
           <Alert type="info">
             <strong className="text-info">
               {t('wiki.version.modal.tips')}
             </strong>{' '}
             {t('wiki.version.modal.alert.compare')}
           </Alert>
-        </div>
+        </div> */
+        }
         <div className="mb-24">
           <Alert type="info">{t('wiki.version.modal.alert.invisible')}</Alert>
         </div>
@@ -149,14 +151,18 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
         >
           {t('wiki.version.cancel')}
         </Button>
-        <Button
+
+        {
+          //TODO: Implement compare button when the feature is ready
+          /* <Button
           data-testid="compare-button"
           color="primary"
           variant="outline"
           disabled={disabledVersionComparison}
         >
           {t('wiki.version.compare')}
-        </Button>
+        </Button> */
+        }
         <Button
           data-testid="restore-button"
           color="primary"
