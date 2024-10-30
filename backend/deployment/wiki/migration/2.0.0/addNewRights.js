@@ -15,6 +15,25 @@ db.wiki.updateMany(
     ],
   }
 );
+
+db.wiki.updateMany(
+  {
+    "shared.net-atos-entng-wiki-controllers-WikiController|getWholeWiki": true,
+  },
+  {
+    $set: {
+      "shared.$[elem].net-atos-entng-wiki-controllers-WikiController|getWiki": true,
+    },
+  },
+  {
+    arrayFilters: [
+      {
+        "elem.net-atos-entng-wiki-controllers-WikiController|getWholeWiki": true,
+      },
+    ],
+  }
+);
+
 db.wiki.updateMany(
   {
     "shared.net-atos-entng-wiki-controllers-WikiController|updatePage": true,
