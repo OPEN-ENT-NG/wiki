@@ -18,6 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useFilteredWikis } from '~/hooks/useFilteredWikis';
 import { IResource } from 'edifice-ts-client';
+import { getToastActions } from '~/store/toast';
 /**
  * Duplicate modal props
  */
@@ -54,6 +55,8 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
 
   const handleOnDuplicate = useCallback(
     async (destinationWikiId: string) => {
+      const { addToastMessage } = getToastActions();
+
       // Call duplicate mutation
       const result = await duplicateMutation.mutateAsync({
         destinationWikiId,
@@ -63,6 +66,19 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
           isVisible: sourcePage?.isVisible ?? false,
           position: sourceWiki?.pages.length ?? 0,
         },
+      });
+
+      if (result.error) {
+        addToastMessage({
+          type: 'error',
+          text: 'wiki.toast.error.duplicate.page',
+        });
+        return null;
+      }
+
+      addToastMessage({
+        type: 'success',
+        text: 'wiki.toast.success.duplicate.page',
       });
       // Close modal and navigate to new page
       setOpenDuplicateModal(false);
