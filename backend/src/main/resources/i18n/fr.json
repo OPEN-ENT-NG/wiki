@@ -230,6 +230,8 @@
   "wiki.toast.error.delete.page": "Votre page n'a pas pu être supprimée",
   "wiki.toast.success.restore.page": "Votre page a bien été restaurée",
   "wiki.toast.error.restore.page": "Votre page n'a pas pu être restaurée",
+  "wiki.toast.success.duplicate.page": "Votre page a bien été dupliquée",
+  "wiki.toast.error.duplicate.page": "Votre page n'a pas pu être dupliquée",
   "wiki.toast.success.create.comment": "Votre commentaire a bien été enregistré",
   "wiki.toast.error.create.comment": "Votre commentaire n'a pas pu être enregistré",
   "wiki.toast.success.edit.comment": "Votre commentaire a bien été modifié",

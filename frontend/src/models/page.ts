@@ -82,4 +82,4 @@ export type DuplicatePagePayload = Pick<
   'title' | 'content' | 'isVisible' | 'position'
 >;
 
-export type PickedPageId = Pick<Page, '_id'>;
+export type PickedPageId = Pick<Page, '_id' | 'error'>;
