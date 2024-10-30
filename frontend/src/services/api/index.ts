@@ -36,6 +36,8 @@ const createWikiService = (baseURL: string) => ({
         startIdx,
         pageSize,
       },
+      // if search is present it will search everywhere in explorer (not only in root)
+      search: '',
       trashed: false,
       orders: {
         updatedAt: 'desc',

@@ -406,60 +406,72 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public void createPage(final UserInfos user, final String wikiId, final JsonObject page,
 						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		QueryBuilder query = QueryBuilder.start("_id").is(wikiId);
+		getWiki(wikiId, wikiRes -> {
+			if(wikiRes.isRight()){
+				final JsonObject wiki = wikiRes.right().getValue();
+				// if not a manager of the wiki => the page isVisible
+				final boolean isManager = isManager(wiki, user);
+				final boolean oldVisibility = page.getBoolean("isVisible", true);
+				final boolean newVisibility = isManager? oldVisibility : true;
+				// Add extra fields to page
+				page
+						.put("_id", page.getString("_id"))
+						.put("author", user.getUserId())
+						.put("authorName", user.getUsername())
+						.put("modified", MongoDb.now())
+						.put("created", MongoDb.now())
+						// a manager
+						.put("isVisible", newVisibility);
 
-		// Add extra fields to page
-		page
-				.put("_id", page.getString("_id"))
-				.put("author", user.getUserId())
-				.put("authorName", user.getUsername())
-				.put("modified", MongoDb.now())
-				.put("created", MongoDb.now());
+				// Tiptap Transformer
+				Future<ContentTransformerResponse> contentTransformerResponseFuture;
+				if (page.containsKey("content")) {
+					Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
+					desiredFormats.add(ContentTransformerFormat.HTML);
+					desiredFormats.add(ContentTransformerFormat.JSON);
 
-		// Tiptap Transformer
-		Future<ContentTransformerResponse> contentTransformerResponseFuture;
-		if (page.containsKey("content")) {
-			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
-			desiredFormats.add(ContentTransformerFormat.HTML);
-			desiredFormats.add(ContentTransformerFormat.JSON);
+					// request to transform page "content" to desiredFormats
+					ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
+							desiredFormats,
+							page.getInteger("contentVersion", 0),
+							page.getString("content", ""),
+							null
+					);
 
-			// request to transform page "content" to desiredFormats
-			ContentTransformerRequest transformerRequest = new ContentTransformerRequest(
-					desiredFormats,
-					page.getInteger("contentVersion", 0),
-					page.getString("content", ""),
-					null
-			);
-
-			contentTransformerResponseFuture = this.contentTransformerClient
-					.transform(transformerRequest, request);
-		} else {
-			contentTransformerResponseFuture = Future.succeededFuture();
-		}
-
-		contentTransformerResponseFuture.onComplete(transformerResponse -> {
-			if (transformerResponse.failed()) {
-				log.error("Error while transforming the content", transformerResponse.cause());
-			} else {
-				if (transformerResponse.result() == null) {
-					log.debug("No content transformed.");
+					contentTransformerResponseFuture = this.contentTransformerClient
+							.transform(transformerRequest, request);
 				} else {
-					page.put("contentVersion", transformerResponse.result().getContentVersion());
-					page.put("content", transformerResponse.result().getCleanHtml());
-					page.put("jsonContent", transformerResponse.result().getJsonContent());
+					contentTransformerResponseFuture = Future.succeededFuture();
 				}
+
+				contentTransformerResponseFuture.onComplete(transformerResponse -> {
+					if (transformerResponse.failed()) {
+						log.error("Error while transforming the content", transformerResponse.cause());
+					} else {
+						if (transformerResponse.result() == null) {
+							log.debug("No content transformed.");
+						} else {
+							page.put("contentVersion", transformerResponse.result().getContentVersion());
+							page.put("content", transformerResponse.result().getCleanHtml());
+							page.put("jsonContent", transformerResponse.result().getJsonContent());
+						}
+					}
+
+					MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+					modifier.push("pages", page);
+
+					if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
+						// Set new page as index
+						modifier.set("index", page.getString("_id"));
+					}
+
+					mongo.update(collection, MongoQueryBuilder.build(query),
+							modifier.build(),
+							MongoDbResult.validActionResultHandler(handler));
+				});
+			}else{
+				handler.handle(wikiRes);
 			}
-
-			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-			modifier.push("pages", page);
-
-			if (Boolean.TRUE.equals(page.getBoolean("isIndex"))) {
-				// Set new page as index
-				modifier.set("index", page.getString("_id"));
-			}
-
-			mongo.update(collection, MongoQueryBuilder.build(query),
-					modifier.build(),
-					MongoDbResult.validActionResultHandler(handler));
 		});
 	}
 
