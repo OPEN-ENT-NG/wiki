@@ -219,7 +219,7 @@
   "wiki.oldFormat.open": "Voir l'ancienne version",
   "wiki.oldFormat.text": "Le contenu de cette page a été créé avec l’ancienne version de wiki. S’il ne s’affiche pas correctement, vous pouvez voir l’ancienne version.",
   "wiki.page.duplicate.modal.title": "Dupliquer la page",
-  "wiki.page.duplicate.modal.alert": "La page dupliquée portera la même nom que la page d’origine.\nSi vous êtes Contributeur dans les Cours et Wiki de destinations, les pages masquées dupliquées deviennent visibles\nSi vous êtes Gestionnaire dans les Cours et Wiki de destinations, les pages masquées dupliquées le restent",
+  "wiki.page.duplicate.modal.alert": "Si vous avez uniquement des droits Contributeur dans le cours de destination, alors les pages dupliquées auront le statut « visible »",
   "wiki.page.duplicate.modal.submit": "Dupliquer",
   "wiki.page.duplicate.modal.cancel": "Annuler",
   "wiki.toast.success.save.page": "Votre page a bien été enregistrée",
