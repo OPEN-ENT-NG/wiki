@@ -5,7 +5,12 @@ import { Explorer } from 'ode-explorer/lib';
 import { explorerConfig } from '~/config';
 import { PageError } from '~/routes/errors';
 import { NotFound } from '~/routes/errors/not-found';
-import { Page, action as deleteAction, loader as pageLoader } from './page';
+import {
+  Page,
+  action as deleteAction,
+  loader as pageLoader,
+  visibleAction,
+} from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, editAction } from './page/edit';
 import {
@@ -53,6 +58,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'page/:pageId',
             element: <Page />,
+            action: visibleAction(queryClient),
             loader: pageLoader(queryClient),
           },
           {
