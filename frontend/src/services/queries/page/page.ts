@@ -26,6 +26,7 @@ export const pageQueryOptions = {
     originalformat?: boolean;
   }) =>
     queryOptions({
+      enabled: !!pageId,
       queryKey: [
         ...pageQueryOptions.base,
         { id: pageId },

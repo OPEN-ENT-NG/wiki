@@ -19,14 +19,14 @@ import {
   useOdeClient,
 } from '@edifice-ui/react';
 import { ID } from 'edifice-ts-client';
-import { RefAttributes, useEffect, useState } from 'react';
+import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSubmit } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
 import { Page } from '~/models';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
-import { wikiService } from '~/services';
+import { useGetPage } from '~/services';
 
 export const PageHeader = ({
   page,
@@ -37,7 +37,10 @@ export const PageHeader = ({
   wikiId?: string;
   isPrint?: boolean;
 }) => {
-  const [showVisibleAction, setShowVisibleAction] = useState(false);
+  const parentPage = useGetPage({
+    wikiId: wikiId!,
+    pageId: page.parentId ?? '',
+  });
   const navigate = useNavigate();
   const userRights = useUserRights();
 
@@ -57,24 +60,6 @@ export const PageHeader = ({
 
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
-
-  useEffect(() => {
-    const initShowVisibleAction = async () => {
-      // subpage rule: if user is manager and parent page is visible, we show the visible action
-      if (page.parentId) {
-        const parentPage = await wikiService.getPage({
-          wikiId: wikiId!,
-          pageId: page.parentId,
-        });
-        setShowVisibleAction(canManage && parentPage.isVisible);
-      } else {
-        // page rule: if user is manager, we show the visible action
-        setShowVisibleAction(canManage);
-      }
-    };
-
-    initShowVisibleAction();
-  }, [page.parentId, wikiId, canManage]);
 
   const handleVisibleAction = async () => {
     const formData = new FormData();
@@ -96,7 +81,10 @@ export const PageHeader = ({
         : t('wiki.page.dropdown.visible'),
       icon: page.isVisible ? <Hide /> : <See />,
       action: handleVisibleAction,
-      visibility: showVisibleAction,
+      visibility:
+        page.parentId && parentPage.data
+          ? canManage && parentPage.data.isVisible
+          : canManage,
     },
     //TODO: Implement move page when action is ready
     /* {
