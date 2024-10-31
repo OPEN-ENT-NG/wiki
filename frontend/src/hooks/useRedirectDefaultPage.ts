@@ -17,7 +17,11 @@ export const useRedirectDefaultPage = () => {
       const defaultPage = findDefaultPage(wiki, userRights);
 
       if (defaultPage) {
-        return navigate(`/id/${wiki?._id}/page/${defaultPage._id}`);
+        return navigate(`/id/${wiki?._id}/page/${defaultPage._id}`, {
+          // replace: true prevents adding a new entry in the browser history
+          // when redirecting to the default page
+          replace: true,
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

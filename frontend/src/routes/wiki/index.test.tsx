@@ -80,6 +80,7 @@ describe('Index Route', () => {
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
         `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
+        { replace: true },
       );
     });
   });
