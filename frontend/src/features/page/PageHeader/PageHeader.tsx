@@ -96,15 +96,21 @@ export const PageHeader = ({
           <Avatar
             alt={t('wiki.read.author.avatar')}
             size="sm"
-            src={getAvatarURL(page.author as ID, 'user')}
+            src={getAvatarURL(
+              page.lastContributer ?? (page.author as ID),
+              'user',
+            )}
             variant="circle"
           />
           <div className="text-gray-700 small d-flex flex-column flex-md-row column-gap-12 align-items-md-center ">
             <a
-              href={getUserbookURL(page.author as ID, 'user')}
+              href={getUserbookURL(
+                page.lastContributer ?? (page.author as ID),
+                'user',
+              )}
               className="page-author"
             >
-              {page.authorName}
+              {page.lastContributerName ?? page.authorName}
             </a>
             <span className="separator d-none d-md-block"></span>
             <span>

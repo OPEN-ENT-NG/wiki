@@ -65,7 +65,7 @@ describe('Index Route', () => {
   });
 
   it('should render Menu component', async () => {
-    await waitFor(() => expect(screen.findByLabelText('Wiki')));
+    expect(screen.getByRole('navigation', { name: /wiki.pagelist/i }));
   });
 
   it('should render TreeView component', async () => {
