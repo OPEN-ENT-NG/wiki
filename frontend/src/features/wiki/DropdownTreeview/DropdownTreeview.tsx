@@ -26,8 +26,9 @@ export const DropdownTreeview = ({
     onMenuClick: setSelectedNodeId,
   });
 
-  const handleOnTreeItemCreateChildren = (pageId: ID) =>
+  const handleOnTreeItemCreateChildren = (pageId: ID) => {
     navigate(`page/${pageId}/subpage/create`);
+  };
 
   return (
     <div className="dropdown-treeview w-100 mb-16">
@@ -87,6 +88,7 @@ export const DropdownTreeview = ({
                             className="tree-btn mx-8"
                             onClick={(event) => {
                               event.stopPropagation();
+                              setVisible(false);
                               handleOnTreeItemCreateChildren(node.id);
                             }}
                           >
