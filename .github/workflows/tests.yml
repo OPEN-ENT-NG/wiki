@@ -36,7 +36,9 @@ jobs:
           pnpm config set //registry.tiptap.dev/:_authToken ${{ secrets.TIPTAP_PRO_TOKEN }}
           pnpm config set auto-install-peers true
 
-      - run: pnpm install --frozen-lockfile
+      # Install project dependencies using pnpm package manager
+      # Without --frozen-lockfile since we don't commit pnpm-lock.yaml
+      - run: pnpm install
       - run: pnpm exec nx test
 
         env:

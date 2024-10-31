@@ -17,6 +17,7 @@ const initialRights = {
 };
 
 const mockedUseNavigate = vi.fn();
+const mockedUseSubmit = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const router =
@@ -26,6 +27,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...router,
     useNavigate: () => mockedUseNavigate,
+    useSubmit: () => mockedUseSubmit,
   };
 });
 
