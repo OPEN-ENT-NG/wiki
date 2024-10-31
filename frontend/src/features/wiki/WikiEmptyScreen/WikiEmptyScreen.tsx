@@ -2,20 +2,14 @@ import { EmptyScreen, Heading, useOdeClient } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
 
 import emptyScreenImage from '~/assets/illu-wiki.svg';
-import { useUserRights } from '~/store';
+import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 
 export const WikiEmptyScreen = () => {
   const emptyStyles = { maxWidth: '424px' };
+  const isOnlyRead = useIsOnlyRead();
 
   const { appCode } = useOdeClient();
-  const userRights = useUserRights();
   const { t } = useTranslation(appCode);
-
-  const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
 
   return (
     <div

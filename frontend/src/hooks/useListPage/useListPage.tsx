@@ -9,7 +9,8 @@ import {
 import { ToolbarItem, useBreakpoint } from '@edifice-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserRights, useWikiActions } from '~/store';
+import { useWikiActions } from '~/store';
+import { useIsOnlyRead } from '../useIsOnlyRead';
 
 export const useListPage = ({
   selectedPages,
@@ -20,14 +21,9 @@ export const useListPage = ({
 }) => {
   const params = useParams();
   const navigate = useNavigate();
+  const isOnlyRead = useIsOnlyRead();
 
   const { lg } = useBreakpoint();
-  const userRights = useUserRights();
-  const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
 
   const { t } = useTranslation('wiki');
   const {

@@ -12,6 +12,7 @@ import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
 import { ID, odeServices } from 'edifice-ts-client';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LoaderFunctionArgs,
   Outlet,
@@ -26,18 +27,18 @@ import {
   WikiEmptyScreen,
 } from '~/features';
 import { useFeedData } from '~/hooks/useFeedData';
+import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
 import { useGetWiki, wikiQueryOptions, wikiService } from '~/services';
-import { getUserRightsActions, useUserRights } from '~/store';
+import { getUserRightsActions } from '~/store';
+import { useToastActions, useToastMessages } from '~/store/toast';
 import {
   useSelectedNodeId,
   useTreeActions,
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { useToastActions, useToastMessages } from '~/store/toast';
-import { useTranslation } from 'react-i18next';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -65,28 +66,22 @@ export const Index = () => {
   const params = useParams();
   const navigate = useNavigate();
   const treeData = useTreeData();
-  const userRights = useUserRights();
   const selectedNodeId = useSelectedNodeId();
-  const { t } = useTranslation('wiki');
   const match = useMatch('/id/:wikiId');
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
-
-  const { clearToastMessages } = useToastActions();
+  const isOnlyRead = useIsOnlyRead();
   const toastMessages = useToastMessages();
   const toast = useToast();
 
+  const { t } = useTranslation('wiki');
+  const { clearToastMessages } = useToastActions();
   const { setSelectedNodeId } = useTreeActions();
   const { data: menu, handleOnMenuClick } = useMenu({
     onMenuClick: setSelectedNodeId,
   });
   const { data } = useGetWiki(params.wikiId!);
-  const hasPages = data && data?.pages?.length > 0;
 
-  const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
+  const hasPages = data && data?.pages?.length > 0;
 
   /**
    * Redirect to the default page if exist
@@ -158,7 +153,8 @@ export const Index = () => {
                 <Dropdown.Separator />
               </>
             ) : null}
-            {!isOnlyRead && <NewPage />}
+
+            {!isOnlyRead ? <NewPage /> : <div className="mb-8" />}
 
             {treeData && (
               <SortableTree

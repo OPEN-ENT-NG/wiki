@@ -23,10 +23,11 @@ import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSubmit } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
+import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { Page } from '~/models';
+import { useGetPage } from '~/services';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
-import { useGetPage } from '~/services';
 
 export const PageHeader = ({
   page,
@@ -43,6 +44,7 @@ export const PageHeader = ({
   });
   const navigate = useNavigate();
   const userRights = useUserRights();
+  const isOnlyRead = useIsOnlyRead();
 
   const { formatDate } = useDate();
   const { appCode, user } = useOdeClient();
@@ -51,12 +53,6 @@ export const PageHeader = ({
     useWikiActions();
   const submit = useSubmit();
   const { t } = useTranslation(appCode);
-
-  const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
 
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
