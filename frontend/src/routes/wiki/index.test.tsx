@@ -37,6 +37,15 @@ vi.mock('~/store/treeview', () => ({
   useSelectedNodeId: () => 1,
 }));
 
+vi.mock('~/store/wiki', async () => {
+  const wiki =
+    await vi.importActual<typeof import('~/store/wiki')>('~/store/wiki');
+  return {
+    ...wiki,
+    useRedirectingToDefaultPage: () => false,
+  };
+});
+
 describe('Index Route', () => {
   afterEach(() => {
     vi.clearAllMocks();

@@ -8,6 +8,7 @@ interface State {
   openPrintModal: boolean;
   openDuplicateModal: boolean;
   selectedPages: string[];
+  redirectingToDefaultPage: boolean;
 }
 
 type Action = {
@@ -20,6 +21,7 @@ type Action = {
     setOpenPrintModal: (value: boolean) => void;
     setOpenDuplicateModal: (open: boolean) => void;
     setSelectedPages: (selectedPages: string[]) => void;
+    setRedirectingToDefaultPage: (redirectingToDefaultPage: boolean) => void;
   };
 };
 
@@ -40,6 +42,7 @@ const initialState = {
   openPrintModal: false,
   openDuplicateModal: false,
   selectedPages: [],
+  redirectingToDefaultPage: false,
 };
 
 const store = createStore<State & Action>()((set) => ({
@@ -56,6 +59,8 @@ const store = createStore<State & Action>()((set) => ({
     setOpenDuplicateModal: (openDuplicateModal: boolean) =>
       set({ openDuplicateModal }),
     setSelectedPages: (selectedPages: string[]) => set({ selectedPages }),
+    setRedirectingToDefaultPage: (redirectingToDefaultPage: boolean) =>
+      set({ redirectingToDefaultPage }),
   },
 }));
 
@@ -77,6 +82,8 @@ const openDuplicateModal = (state: ExtractState<typeof store>) =>
   state.openDuplicateModal;
 const selectedPages = (state: ExtractState<typeof store>) =>
   state.selectedPages;
+const redirectingToDefaultPage = (state: ExtractState<typeof store>) =>
+  state.redirectingToDefaultPage;
 // Getters
 export const getOpenUpdateModal = () => openUpdateModal(store.getState());
 export const getOpenShareModal = () => openShareModal(store.getState());
@@ -88,6 +95,10 @@ export const getOpenPrintModal = () => openPrintModal(store.getState());
 export const getOpenDuplicateModal = () => openDuplicateModal(store.getState());
 export const getWikiActions = () => actionsSelector(store.getState());
 export const getSelectedPages = () => selectedPages(store.getState());
+export const getRedirectingToDefaultPage = () =>
+  redirectingToDefaultPage(store.getState());
+export const getRedirectingToDefaultPageActions = () =>
+  actionsSelector(store.getState());
 // React Store
 function useWikiStore<U>(selector: Params<U>[1]) {
   return useStore(store, selector);
@@ -104,3 +115,5 @@ export const useOpenPrintModal = () => useWikiStore(openPrintModal);
 export const useOpenDuplicateModal = () => useWikiStore(openDuplicateModal);
 export const useSelectedPages = () => useWikiStore(selectedPages);
 export const useWikiActions = () => useWikiStore(actionsSelector);
+export const useRedirectingToDefaultPage = () =>
+  useWikiStore(redirectingToDefaultPage);
