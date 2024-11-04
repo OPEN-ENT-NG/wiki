@@ -115,6 +115,7 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
       isOpen={openDuplicateModal}
       onModalClose={() => setOpenDuplicateModal(false)}
       size="lg"
+      scrollable={true}
     >
       <Modal.Header onModalClose={() => setOpenDuplicateModal(false)}>
         {t('wiki.page.duplicate.modal.title')}
