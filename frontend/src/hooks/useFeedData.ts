@@ -4,6 +4,7 @@ import { Page } from '~/models';
 import { useGetWiki } from '~/services';
 import { useTreeActions } from '~/store';
 import { useFilterVisiblePage } from './useFilterVisiblePage';
+import { getChildrenRecursively } from '~/utils/getChildrenRecursively';
 
 export const useFeedData = () => {
   const params = useParams();
@@ -20,16 +21,15 @@ export const useFeedData = () => {
         .filter((page) => filterParentPage(page) && filterVisiblePage(page))
         .map((page) => {
           if (page.children) {
-            const childPages = page.children
-              .filter((child) => filterVisiblePage(child as Page))
-              .map((child) => {
-                return {
-                  id: child._id,
-                  name: child.title,
-                  isVisible: child.isVisible,
-                  position: child.position,
-                };
-              });
+            //TODO instead of flattening the tree, we should break parent children relationship at level 2 when moving a page
+            // Get all children of the page recursively (flatten the tree because we display only 2 levels)
+            const childPages = Object.values(
+              getChildrenRecursively({
+                page,
+                filterPage: filterVisiblePage,
+                allPages: data.pages,
+              }),
+            );
             return {
               id: page._id,
               name: page.title,
