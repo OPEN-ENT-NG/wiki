@@ -1,11 +1,7 @@
 import { useCallback } from 'react';
-import { wikiService } from '~/services/api';
+import { UpdateTreeDataWithVisibility } from '~/models';
 import { useGetPagesFromWiki } from '~/services';
-import { UpdateTreeData } from '@edifice-ui/react';
-
-type UpdateTreeDataWithVisibility = UpdateTreeData & {
-  isVisible?: boolean;
-};
+import { wikiService } from '~/services/api';
 
 export const useUpdatePages = (wikiId: string) => {
   const { data: originalPages } = useGetPagesFromWiki({
@@ -39,6 +35,7 @@ export const useUpdatePages = (wikiId: string) => {
 
         // Update all pages with their new visibilities
         if (pages.length > 0) {
+          const findFirstPage = pages.find((page) => page.position === 0);
           await wikiService.updatePages({
             wikiId,
             data: {
@@ -47,6 +44,7 @@ export const useUpdatePages = (wikiId: string) => {
                 parentId: page.parentId!,
                 isVisible: page.isVisible ?? false,
                 position: page.position ?? 0,
+                isIndex: page._id === findFirstPage?._id ? true : false,
               })),
             },
           });
