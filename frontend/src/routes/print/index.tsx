@@ -88,6 +88,7 @@ export const Component = () => {
             variant="ghost"
             visibility="protected"
           ></Editor>
+
           {isPrintComment && (
             <CommentProvider
               type="read"

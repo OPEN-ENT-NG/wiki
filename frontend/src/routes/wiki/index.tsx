@@ -10,7 +10,7 @@ import {
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
-import { ID, odeServices } from 'edifice-ts-client';
+import { ID } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -47,17 +47,16 @@ export const loader =
       wikiQueryOptions.findOne(params.wikiId!),
     );
 
-    // TODO: wait normalized rights
-    const userRights = await checkUserRight(data.rights);
+    const userRights = await checkUserRight(data.rights, 'comment');
     const { setUserRights } = getUserRightsActions();
     setUserRights(userRights);
 
-    if (odeServices.http().isResponseError()) {
+    /* if (odeServices.http().isResponseError()) {
       throw new Response('', {
         status: odeServices.http().latestResponse.status,
         statusText: odeServices.http().latestResponse.statusText,
       });
-    }
+    } */
 
     return data;
   };

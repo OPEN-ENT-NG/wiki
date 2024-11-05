@@ -3,8 +3,8 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { pageQueryOptions, wikiService } from '..';
 import { useToastActions } from '~/store/toast';
+import { pageQueryOptions, wikiService } from '..';
 
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
@@ -21,13 +21,13 @@ export const useCreateComment = () => {
       comment: string;
     }) => wikiService.createComment({ wikiId, pageId, comment }),
     onSuccess: (_data, { wikiId, pageId }) => {
-      queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
-      });
-
       addToastMessage({
         type: 'success',
         text: 'wiki.toast.success.create.comment',
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
     onError: () => {
@@ -55,14 +55,15 @@ export const useUpdateComment = () => {
       commentId: string;
       comment: string;
     }) => wikiService.updateComment({ wikiId, pageId, commentId, comment }),
-    onSuccess: (_data, { wikiId, pageId }) => {
-      queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
-      });
 
+    onSuccess: (_data, { wikiId, pageId }) => {
       addToastMessage({
         type: 'success',
         text: 'wiki.toast.success.edit.comment',
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: pageQueryOptions.findOne({ wikiId, pageId }).queryKey,
       });
     },
     onError: () => {

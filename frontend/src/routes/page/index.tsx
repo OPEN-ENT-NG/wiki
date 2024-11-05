@@ -1,14 +1,7 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import {
-  Alert,
-  Button,
-  checkUserRight,
-  LoadingScreen,
-  useOdeClient,
-} from '@edifice-ui/react';
+import { Alert, Button, LoadingScreen, useOdeClient } from '@edifice-ui/react';
 import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
-import { odeServices } from 'edifice-ts-client';
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -23,6 +16,7 @@ import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
 import { useRevision } from '~/hooks/useRevision/useRevision';
+import { pageEditAction } from '~/routes/page/pageEditAction';
 import {
   pageQueryOptions,
   useCreateComment,
@@ -32,14 +26,15 @@ import {
   wikiService,
 } from '~/services';
 import {
+  getUserRights,
   useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenRevisionModal,
   useTreeActions,
+  useUserRights,
 } from '~/store';
 import { getToastActions } from '~/store/toast';
-import { pageEditAction } from '~/routes/page/pageEditAction';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -66,18 +61,11 @@ export const loader =
       }),
     );
 
-    if (odeServices.http().isResponseError()) {
-      throw new Response('', {
-        status: odeServices.http().latestResponse.status,
-        statusText: odeServices.http().latestResponse.statusText,
-      });
-    }
-
     // If user is not manager and page is not visible then we return a 401.
-    const wikiData = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!),
-    );
-    const userRights = await checkUserRight(wikiData.rights);
+    // We get the user rights from the store because we need to wait for the rights to be normalized.
+    // We already checked the rights in the wiki loader.
+    const userRights = getUserRights();
+
     if (!userRights.manager && !pageData.isVisible) {
       throw new Response('', { status: 401 });
     }
@@ -135,11 +123,14 @@ export const Page = () => {
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
   const openConfirmVisibilityModal = useOpenConfirmVisibilityModal();
+  const navigate = useNavigate();
+  const userRights = useUserRights();
+  const canComment = userRights.comment;
 
+  const { appCode } = useOdeClient();
+  const { t } = useTranslation(appCode);
   const { setSelectedNodeId } = useTreeActions();
-
   const { getPageVersionFromRoute } = useRevision();
-
   const { isPending, error, data, showComments, isRevision } =
     getPageVersionFromRoute();
 
@@ -155,7 +146,7 @@ export const Page = () => {
   const updateComment = useUpdateComment();
 
   const handleOnPostComment = async (comment: string) => {
-    createComment.mutate({
+    await createComment.mutate({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
       comment,
@@ -169,7 +160,7 @@ export const Page = () => {
     comment: string;
     commentId: string;
   }) => {
-    updateComment.mutate({
+    await updateComment.mutateAsync({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
       commentId,
@@ -178,16 +169,12 @@ export const Page = () => {
   };
 
   const handleOnDeleteComment = async (commentId: string) => {
-    deleteComment.mutate({
+    await deleteComment.mutateAsync({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
       commentId,
     });
   };
-
-  const { appCode } = useOdeClient();
-  const navigate = useNavigate();
-  const { t } = useTranslation(appCode);
 
   if (isPending) return <LoadingScreen />;
 
@@ -222,9 +209,7 @@ export const Page = () => {
         >
           {t('wiki.oldFormat.text')}
         </Alert>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <Editor
         ref={editorRef}
         content={data.content}
@@ -240,7 +225,7 @@ export const Page = () => {
             maxCommentLength: MAX_COMMENT_LENGTH,
             maxComments: MAX_COMMENTS,
           }}
-          type="edit"
+          type={canComment ? 'edit' : 'read'}
           callbacks={{
             post: (comment) => handleOnPostComment(comment),
             put: ({ comment, commentId }) =>

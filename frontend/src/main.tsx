@@ -1,4 +1,4 @@
-import React, { StrictMode } from 'react';
+import React from 'react';
 
 import { createRoot } from 'react-dom/client';
 
@@ -18,11 +18,9 @@ if (import.meta.env.DEV) {
 }
 
 root.render(
-  <StrictMode>
-    <Providers>
-      <ThemeProvider>
-        <RouterProvider router={router(queryClient)} />
-      </ThemeProvider>
-    </Providers>
-  </StrictMode>,
+  <Providers>
+    <ThemeProvider>
+      <RouterProvider router={router(queryClient)} />
+    </ThemeProvider>
+  </Providers>,
 );
