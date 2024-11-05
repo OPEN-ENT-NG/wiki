@@ -12,16 +12,18 @@ public class PageListEntryFlat {
     private final String id;
     private final Integer position;
     private final String parentId;
+    private final Boolean isVisible;
 
-    public PageListEntryFlat(String id, Integer position) {
-        this(id, position, null);
+    public PageListEntryFlat(String id, Integer position, Boolean isVisible) {
+        this(id, position, null, isVisible);
     }
 
     @JsonCreator
-    public PageListEntryFlat(@JsonProperty("_id")  String id, @JsonProperty("position") Integer position, @JsonProperty("parentId") String parentId) {
+    public PageListEntryFlat(@JsonProperty("_id")  String id, @JsonProperty("position") Integer position, @JsonProperty("parentId") String parentId, @JsonProperty("isVisible") Boolean isVisible) {
         this.id = id;
         this.position = position;
         this.parentId = parentId;
+        this.isVisible = isVisible;
     }
 
     public boolean hasParentId(final String id){
@@ -42,6 +44,10 @@ public class PageListEntryFlat {
 
     public String getParentId() {
         return parentId;
+    }
+
+    public Boolean getIsVisible() {
+        return isVisible;
     }
 
     public JsonObject toJson(){
