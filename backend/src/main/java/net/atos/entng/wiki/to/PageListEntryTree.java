@@ -15,28 +15,31 @@ public class PageListEntryTree {
     private final String id;
     private final Integer position;
     private final String parentId;
+    private final Boolean isVisible;
     private final List<PageListEntryTree> childrens;
 
     public PageListEntryTree(PageListEntryFlat entry) {
-        this(entry.getId(), entry.getPosition(), entry.getParentId(), new ArrayList<>());
+        this(entry.getId(), entry.getPosition(), entry.getParentId(), entry.getIsVisible(), new ArrayList<>());
     }
 
-    public PageListEntryTree(String _id, Integer position) {
-        this(_id, position, null, Collections.emptyList());
+    public PageListEntryTree(String _id, Integer position, Boolean isVisible) {
+        this(_id, position, null, isVisible, Collections.emptyList());
     }
 
-    public PageListEntryTree(String id, Integer position, List<PageListEntryTree> childrens) {
-        this(id, position, null, childrens);
+    public PageListEntryTree(String id, Integer position, Boolean isVisible, List<PageListEntryTree> childrens) {
+        this(id, position, null, isVisible, childrens);
     }
 
     @JsonCreator
     public PageListEntryTree(@JsonProperty("_id") String _id,
                              @JsonProperty("position") Integer position,
                              @JsonProperty("parentId") String parentId,
+                             @JsonProperty("isVisible") Boolean isVisible,
                              @JsonProperty("childrens") List<PageListEntryTree> childrens) {
         this.id = _id;
         this.position = position;
         this.parentId = parentId;
+        this.isVisible = isVisible;
         this.childrens = childrens;
     }
 
@@ -59,6 +62,10 @@ public class PageListEntryTree {
 
     public String getParentId() {
         return parentId;
+    }
+
+    public Boolean getIsVisible() {
+        return isVisible;
     }
 
     public JsonObject toJson(){

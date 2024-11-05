@@ -16,6 +16,9 @@
           },
           "parentId": {
             "type": "string"
+          },
+          "isVisible": {
+            "type": "boolean"
           }
         },
         "required": ["_id", "position"]

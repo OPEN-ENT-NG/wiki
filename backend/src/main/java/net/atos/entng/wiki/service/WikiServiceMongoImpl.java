@@ -627,6 +627,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			final JsonObject criteria = new JsonObject().put("_id", idWiki).put("pages._id", entry.getId());
 			final JsonObject set = new MongoUpdateBuilder()
 					.set("pages.$.position", entry.getPosition())
+					.set("pages.$.isVisible", entry.getIsVisible())
 					.set("pages.$.parentId", entry.getParentId()).build();
 			commmands.add(new JsonObject().put("operation", "update").put("document", set).put("criteria", criteria));
 		}

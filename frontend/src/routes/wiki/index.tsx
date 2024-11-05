@@ -30,7 +30,7 @@ import { useFeedData } from '~/hooks/useFeedData';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
-import { useGetWiki, wikiQueryOptions, wikiService } from '~/services';
+import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useToastActions, useToastMessages } from '~/store/toast';
 import {
@@ -39,6 +39,7 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
+import { useUpdatePages } from '~/hooks/useUpdatePages';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -71,6 +72,7 @@ export const Index = () => {
   const isOnlyRead = useIsOnlyRead();
   const toastMessages = useToastMessages();
   const toast = useToast();
+  const { handleSortPage } = useUpdatePages(params.wikiId!);
 
   const { t } = useTranslation('wiki');
   const { clearToastMessages } = useToastActions();
@@ -190,12 +192,7 @@ export const Index = () => {
                     )}
                   </div>
                 )}
-                onSortable={async (updateArray) => {
-                  await wikiService.updatePages({
-                    wikiId: params.wikiId!,
-                    data: { pages: updateArray },
-                  });
-                }}
+                onSortable={(pages) => handleSortPage(pages)}
                 onTreeItemClick={handleOnTreeItemClick}
               />
             )}
