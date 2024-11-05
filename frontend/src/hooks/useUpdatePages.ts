@@ -3,13 +3,17 @@ import { wikiService } from '~/services/api';
 import { useGetPagesFromWiki } from '~/services';
 import { UpdateTreeData } from '@edifice-ui/react';
 
+type UpdateTreeDataWithVisibility = UpdateTreeData & {
+  isVisible?: boolean;
+};
+
 export const useUpdatePages = (wikiId: string) => {
   const { data: originalPages } = useGetPagesFromWiki({
     wikiId,
     content: true,
   });
   const handleSortPage = useCallback(
-    async (pages: UpdateTreeData[]) => {
+    async (pages: UpdateTreeDataWithVisibility[]) => {
       try {
         //TODO backend should handle this with custom api for moving pages
         // Process each page
