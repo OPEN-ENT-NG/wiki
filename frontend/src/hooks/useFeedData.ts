@@ -23,20 +23,21 @@ export const useFeedData = () => {
           if (page.children) {
             //TODO instead of flattening the tree, we should break parent children relationship at level 2 when moving a page
             // Get all children of the page recursively (flatten the tree because we display only 2 levels)
-            const childPages = Object.values(
-              getChildrenRecursively({
-                page,
-                filterPage: filterVisiblePage,
-                allPages: data.pages,
-              }),
-            );
+            const childPages = getChildrenRecursively({
+              page,
+              filterPage: filterVisiblePage,
+              allPages: data.pages,
+            });
+            // exclude the page itself from the children
+            delete childPages[page._id];
+
             return {
               id: page._id,
               name: page.title,
               section: true,
               position: page.position,
               isVisible: page.isVisible,
-              children: childPages
+              children: Object.values(childPages)
                 .slice()
                 .sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
             };
