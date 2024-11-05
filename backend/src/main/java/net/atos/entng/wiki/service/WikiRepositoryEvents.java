@@ -24,6 +24,7 @@ import static net.atos.entng.wiki.Wiki.WIKI_COLLECTION;
 
 import fr.wseduc.mongodb.MongoDb;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -35,5 +36,29 @@ public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 		super(vertx,"net-atos-entng-wiki-controllers-WikiController|shareWiki",
 				REVISIONS_COLLECTION, "wikiId");
 	}
-
+	/**
+	 * Filter out pages that are not visible
+	 * @param resources
+	 * @return filtered resources
+	 */
+	@Override
+	protected JsonArray exportResourcesFilter(JsonArray resources) {
+		// Iterate over resources
+		for(final Object resource : resources){
+			if(resource instanceof JsonObject){
+				// Get pages
+				final JsonArray pages = ((JsonObject) resource).getJsonArray("pages", new JsonArray());
+				// Filter out pages that are not visible
+				final JsonArray visiblePages = new JsonArray();
+				for(final Object page : pages){
+					if(((JsonObject) page).getBoolean("isVisible", false)){
+						visiblePages.add(page);
+					}
+				}
+				// Update pages
+				((JsonObject) resource).put("pages", visiblePages);
+			}
+		}
+		return resources;
+	}
 }
