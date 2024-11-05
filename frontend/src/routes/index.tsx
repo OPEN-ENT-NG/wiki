@@ -4,7 +4,11 @@ import { RouteObject, createBrowserRouter } from 'react-router-dom';
 import { Explorer } from 'ode-explorer/lib';
 import { explorerConfig } from '~/config';
 import { PageError } from '~/routes/errors';
-import { NotFound } from '~/routes/errors/not-found';
+import { NotFound } from './errors/not-found';
+import {
+  Component as OldFormat,
+  loader as oldFormatLoader,
+} from './old-format';
 import {
   Page,
   action as deleteAction,
@@ -13,10 +17,6 @@ import {
 } from './page';
 import { CreatePage, action as createAction } from './page/create';
 import { EditPage, editAction } from './page/edit';
-import {
-  Component as OldFormat,
-  loader as oldFormatLoader,
-} from './old-format';
 import {
   PageList,
   action as deleteListAction,

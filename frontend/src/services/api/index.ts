@@ -171,6 +171,7 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .post<Page>(`${baseURL}/${wikiId}/page`, data);
+
     return response;
   },
 
@@ -224,6 +225,7 @@ const createWikiService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .delete<Page>(`${baseURL}/${wikiId}/page/${pageId}`);
+
     return response;
   },
 
@@ -253,12 +255,13 @@ const createWikiService = (baseURL: string) => ({
     wikiId: string;
     pageId: string;
     comment: string;
-  }) {
+  }): Promise<Comment> {
     const response = await odeServices
       .http()
       .postJson<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment`, {
         comment,
       });
+
     return response;
   },
 
