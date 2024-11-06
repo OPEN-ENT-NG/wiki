@@ -847,7 +847,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 	private void sendNotification(final HttpServerRequest request, final UserInfos author, final Set<String> recipientSet,
 								  final String pageTitle, final JsonObject wiki, final String idWiki, final String idPage,
-								  final boolean isCreatePage, final String idResource, String comment) {
+								  final boolean isCreatePage, final String idSubResource, String comment) {
 		if (recipientSet != null && !recipientSet.isEmpty()){
 			List<String> recipients = new ArrayList<>(recipientSet);
 
@@ -883,7 +883,7 @@ public class WikiController extends MongoDbControllerHelper {
 								pageTitle);
 
 			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
-			notification.notifyTimeline(request, "wiki." + notificationName, author, recipients, idResource, params);
+			notification.notifyTimeline(request, "wiki." + notificationName, author, recipients, idWiki, idSubResource, params);
 		}
 
 	}
