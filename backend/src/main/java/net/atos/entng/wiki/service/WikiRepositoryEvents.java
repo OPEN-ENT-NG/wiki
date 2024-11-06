@@ -47,6 +47,10 @@ public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 		for(final Object resource : resources){
 			if(resource instanceof JsonObject){
 				final JsonObject resourceObject = (JsonObject) resource;
+				// if owner of the wiki is the user, keep all pages
+				if(resourceObject.getJsonObject("owner", new JsonObject()).getString("userId", "").equals(userId)){
+					continue;
+				}
 				// Get pages
 				final JsonArray pages = resourceObject.getJsonArray("pages", new JsonArray());
 				// Filter out pages that are not visible or not authored by the user
