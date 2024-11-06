@@ -6,6 +6,7 @@ import {
   Menu,
   SortableTree,
   useToast,
+  useTrashedResource,
 } from '@edifice-ui/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
@@ -30,6 +31,7 @@ import { useFeedData } from '~/hooks/useFeedData';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { useMenu } from '~/hooks/useMenu';
 import { useRedirectDefaultPage } from '~/hooks/useRedirectDefaultPage';
+import { useUpdatePages } from '~/hooks/useUpdatePages';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import { getUserRightsActions } from '~/store';
 import { useToastActions, useToastMessages } from '~/store/toast';
@@ -39,7 +41,6 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { useUpdatePages } from '~/hooks/useUpdatePages';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -93,6 +94,11 @@ export const Index = () => {
    * Feed treeData
    */
   useFeedData();
+
+  /**
+   * Handle trashed resources
+   */
+  useTrashedResource(params.wikiId!);
 
   const handleOnTreeItemClick = (pageId: ID) =>
     navigate(`/id/${data?._id}/page/${pageId}`);
