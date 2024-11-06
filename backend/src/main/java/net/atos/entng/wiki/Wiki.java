@@ -26,6 +26,7 @@ import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
+import net.atos.entng.wiki.service.WikiRepositoryEvents;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
 
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class Wiki extends BaseServer {
         pluginClientPerCollection.put(WIKI_COLLECTION, mainClient);
 		
         // Set Repository Events
-        setRepositoryEvents(new ExplorerRepositoryEvents(new MongoDbRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
+        setRepositoryEvents(new ExplorerRepositoryEvents(new WikiRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
 		
         // Set Searching Events
         if (config.getBoolean("searching-event", true)) {
