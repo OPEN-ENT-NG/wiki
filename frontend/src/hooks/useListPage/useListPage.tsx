@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWikiActions } from '~/store';
 import { useIsOnlyRead } from '../useIsOnlyRead';
+import { useIsAuthorOrManager } from '../useIsAuthorOrManager';
 
 export const useListPage = ({
   selectedPages,
@@ -22,7 +23,9 @@ export const useListPage = ({
   const params = useParams();
   const navigate = useNavigate();
   const isOnlyRead = useIsOnlyRead();
-
+  const { isManagerOfWiki, isManagerOfSelectedPage } = useIsAuthorOrManager();
+  // the user can delete the page if he is the author of the selected page or a manager of the wiki or the selected page
+  const canDelete = isManagerOfSelectedPage || isManagerOfWiki;
   const { lg } = useBreakpoint();
 
   const { t } = useTranslation('wiki');
@@ -153,7 +156,7 @@ export const useListPage = ({
         'leftIcon': <Delete />,
         'children': itemsTranslation.delete.desktop,
         'size': 'sm',
-        'disabled': pagesCount < 1,
+        'disabled': pagesCount < 1 || !canDelete,
         'onClick': () => setOpenDeleteModal(true),
         'aria-label': itemsTranslation.delete.responsive,
       },

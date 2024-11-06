@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   useBreakpoint: vi.fn(),
   setOpenDeleteModal: vi.fn(),
   setOpenRevisionModal: vi.fn(),
+  useIsAuthorOrManager: vi.fn(),
 }));
 
 vi.mock('react-router-dom', () => ({
@@ -34,6 +35,10 @@ vi.mock('@edifice-ui/react', () => ({
   useBreakpoint: mocks.useBreakpoint,
 }));
 
+vi.mock('~/hooks/useIsAuthorOrManager', () => ({
+  useIsAuthorOrManager: mocks.useIsAuthorOrManager,
+}));
+
 const initialRights = {
   contrib: false,
   creator: false,
@@ -45,6 +50,10 @@ const selectedPages = [mockWikiPages.pages[0]._id, mockWikiPages.pages[1]._id];
 
 describe('useListPage', () => {
   beforeEach(() => {
+    mocks.useIsAuthorOrManager.mockReturnValue({
+      isManagerOfWiki: true,
+      isManagerOfSelectedPage: false,
+    });
     mocks.useParams.mockReturnValue({ wikiId: 'testWikiId' });
     mocks.useUserRights.mockReturnValue(initialRights);
     mocks.useBreakpoint.mockReturnValue({ lg: false });

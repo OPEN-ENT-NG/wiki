@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   useNavigate: vi.fn(),
   useGetPagesFromWiki: vi.fn(),
   useLocation: vi.fn(),
+  useIsAuthorOrManager: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -38,7 +39,10 @@ vi.mock('@edifice-ui/react', async () => {
 vi.mock('~/services', () => ({
   useGetPagesFromWiki: mocks.useGetPagesFromWiki,
 }));
-
+//mock isAuthorOrManager
+vi.mock('~/hooks/useIsAuthorOrManager', () => ({
+  useIsAuthorOrManager: mocks.useIsAuthorOrManager,
+}));
 describe('Pages List', () => {
   const mockedData = mockWikiPagesWithoutContent.pages
     ?.filter((page) => page.isVisible)
@@ -49,6 +53,10 @@ describe('Pages List', () => {
   });
 
   beforeEach(() => {
+    mocks.useIsAuthorOrManager.mockReturnValue({
+      isManagerOfWiki: true,
+      isManagerOfSelectedPage: false,
+    });
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query) => ({
