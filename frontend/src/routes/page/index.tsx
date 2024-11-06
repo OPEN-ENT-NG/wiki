@@ -1,5 +1,11 @@
 import { Editor, EditorRef } from '@edifice-ui/editor';
-import { Alert, Button, LoadingScreen, useOdeClient } from '@edifice-ui/react';
+import {
+  Alert,
+  Button,
+  checkUserRight,
+  LoadingScreen,
+  useOdeClient,
+} from '@edifice-ui/react';
 import { CommentProvider } from '@edifice-ui/react/comments';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense, useEffect, useRef } from 'react';
@@ -26,7 +32,7 @@ import {
   wikiService,
 } from '~/services';
 import {
-  getUserRights,
+  getUserRightsActions,
   useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
@@ -61,10 +67,12 @@ export const loader =
       }),
     );
 
-    // If user is not manager and page is not visible then we return a 401.
-    // We get the user rights from the store because we need to wait for the rights to be normalized.
-    // We already checked the rights in the wiki loader.
-    const userRights = getUserRights();
+    const data = await queryClient.ensureQueryData(
+      wikiQueryOptions.findOne(params.wikiId!),
+    );
+    const userRights = await checkUserRight(data.rights, 'comment');
+    const { setUserRights } = getUserRightsActions();
+    setUserRights(userRights);
 
     if (!userRights.manager && !pageData.isVisible) {
       throw new Response('', { status: 401 });
