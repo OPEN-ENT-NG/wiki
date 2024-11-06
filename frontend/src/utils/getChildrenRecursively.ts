@@ -55,13 +55,15 @@ export const getChildrenRecursively = ({
   // Check if the child is in the allPages list
   const orphans = allPages.filter((p) => p.parentId === page._id);
   for (const orphan of orphans) {
-    // add orphan to the list
-    allChildren[orphan._id] = {
-      id: orphan._id,
-      name: orphan.title,
-      isVisible: orphan.isVisible,
-      position: orphan.position,
-    };
+    if (filterPage(orphan)) {
+      // add orphan to the list
+      allChildren[orphan._id] = {
+        id: orphan._id,
+        name: orphan.title,
+        isVisible: orphan.isVisible,
+        position: orphan.position,
+      };
+    }
     // Recursively add children of orphans
     allChildren = {
       ...allChildren,
