@@ -42,21 +42,26 @@ public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 	 * @return filtered resources
 	 */
 	@Override
-	protected JsonArray exportResourcesFilter(JsonArray resources) {
+	protected JsonArray exportResourcesFilter(JsonArray resources, String exportId, String userId) {
 		// Iterate over resources
 		for(final Object resource : resources){
 			if(resource instanceof JsonObject){
+				final JsonObject resourceObject = (JsonObject) resource;
 				// Get pages
-				final JsonArray pages = ((JsonObject) resource).getJsonArray("pages", new JsonArray());
-				// Filter out pages that are not visible
-				final JsonArray visiblePages = new JsonArray();
+				final JsonArray pages = resourceObject.getJsonArray("pages", new JsonArray());
+				// Filter out pages that are not visible or not authored by the user
+				final JsonArray filteredPages = new JsonArray();
 				for(final Object page : pages){
-					if(((JsonObject) page).getBoolean("isVisible", false)){
-						visiblePages.add(page);
+					final JsonObject pageObject = (JsonObject) page;
+					final Boolean isVisible = pageObject.getBoolean("isVisible", false);
+					final String author = pageObject.getString("author", "");
+					// Keep page if it is visible or authored by the user
+					if(isVisible || author.equals(userId)){
+						filteredPages.add(page);
 					}
 				}
 				// Update pages
-				((JsonObject) resource).put("pages", visiblePages);
+				resourceObject.put("pages", filteredPages);
 			}
 		}
 		return resources;
