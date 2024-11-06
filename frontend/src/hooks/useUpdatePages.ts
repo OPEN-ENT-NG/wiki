@@ -1,9 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { UpdateTreeDataWithVisibility } from '~/models';
-import { useGetPagesFromWiki } from '~/services';
+import { useGetPagesFromWiki, wikiQueryOptions } from '~/services';
 import { wikiService } from '~/services/api';
 
 export const useUpdatePages = (wikiId: string) => {
+  const queryClient = useQueryClient();
   const { data: originalPages } = useGetPagesFromWiki({
     wikiId,
     content: true,
@@ -48,6 +50,10 @@ export const useUpdatePages = (wikiId: string) => {
               })),
             },
           });
+          // invalidate the query
+          queryClient.invalidateQueries({
+            queryKey: wikiQueryOptions.findOne(wikiId).queryKey,
+          });
         }
 
         return true;
@@ -56,7 +62,7 @@ export const useUpdatePages = (wikiId: string) => {
         return false;
       }
     },
-    [wikiId, originalPages],
+    [wikiId, originalPages, queryClient],
   );
 
   return { handleSortPage };
