@@ -8,7 +8,8 @@ export const useUpdatePages = (wikiId: string) => {
   const queryClient = useQueryClient();
   const { data: originalPages } = useGetPagesFromWiki({
     wikiId,
-    content: true,
+    content: false,
+    force: true,
   });
   const handleSortPage = useCallback(
     async (pages: UpdateTreeDataWithVisibility[]) => {

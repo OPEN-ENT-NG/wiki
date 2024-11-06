@@ -107,10 +107,18 @@ export const useGetPage = ({
 export const useGetPagesFromWiki = ({
   wikiId,
   content,
+  force,
 }: {
   wikiId: string;
   content: boolean;
+  force?: boolean;
 }) => {
+  const queryClient = useQueryClient();
+  if (force) {
+    queryClient.invalidateQueries({
+      queryKey: pageQueryOptions.findAllFromWiki({ wikiId, content }).queryKey,
+    });
+  }
   return useQuery(pageQueryOptions.findAllFromWiki({ wikiId, content }));
 };
 
