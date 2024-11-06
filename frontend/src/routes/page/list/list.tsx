@@ -27,6 +27,7 @@ import {
   useSelectedPages,
   useWikiActions,
 } from '~/store';
+import { sortPagesByDate } from '~/utils/sortPagesByDate';
 
 const RevisionModal = lazy(
   async () => await import('~/features/page/RevisionModal/RevisionModal'),
@@ -79,9 +80,8 @@ export const PageList = () => {
   const { t } = useTranslation('wiki');
   const { formatDate } = useDate();
 
-  const filteredData = data
-    ?.filter((page) => filterVisiblePage(page))
-    .sort((a, b) => b.modified.$date - a.modified.$date);
+  const filteredData = data?.filter((page) => filterVisiblePage(page));
+  const sortedData = filteredData ? sortPagesByDate(filteredData) : [];
 
   const selectedPagesCount = selectedPages.length;
   const items = useListPage({ selectedPages, pagesCount: selectedPagesCount });
@@ -182,7 +182,7 @@ export const PageList = () => {
       </Heading>
       <div className="px-md-16">
         <List
-          data={filteredData}
+          data={sortedData}
           items={items}
           renderNode={lg ? renderDesktopNode : renderMobileNode}
           onSelectedItems={setSelectedPages}

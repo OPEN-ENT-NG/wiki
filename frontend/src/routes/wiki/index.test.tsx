@@ -88,7 +88,7 @@ describe('Index Route', () => {
   it('should trigger a navigation if the data has an indexed/default page', async () => {
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
-        `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
+        `/id/${mockWiki._id}/page/${mockWiki.pages[0]._id}`,
         { replace: true },
       );
     });
@@ -96,7 +96,7 @@ describe('Index Route', () => {
 
   it('should navigate to the page route if data is found', async () => {
     renderWithRouter(
-      `/id/${mockWiki._id}/page/${mockWiki.pages[3]._id}`,
+      `/id/${mockWiki._id}/page/${mockWiki.pages[0]._id}`,
       <Page />,
     );
   });

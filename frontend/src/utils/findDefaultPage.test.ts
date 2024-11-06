@@ -11,12 +11,12 @@ import { findDefaultPage } from './findDefaultPage';
 describe('findDefaultPage', () => {
   it('should return the index page if the user is a manager', () => {
     const result = findDefaultPage(mockWiki, mockUserManager);
-    expect(result?._id).toBe(mockWiki.index);
+    expect(result?._id).toBe(mockWiki.pages[0]._id);
   });
 
   it('should return the index page if the user is a reader and index page is visible', () => {
     const result = findDefaultPage(mockWiki, mockUserRead);
-    expect(result?._id).toBe(mockWiki.index);
+    expect(result?._id).toBe(mockWiki.pages[0]._id);
   });
 
   it('should return the first visible page if the index page is not visible and user is not manager', () => {

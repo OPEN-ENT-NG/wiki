@@ -48,6 +48,7 @@ export const mockWiki = {
       lastContributer: '123456789',
       lastContributerName: 'Author',
       isVisible: true,
+      position: 0,
     },
     {
       _id: '002',
@@ -66,6 +67,7 @@ export const mockWiki = {
       lastContributer: '123456789',
       lastContributerName: 'Author',
       isVisible: true,
+      position: 1,
     },
     {
       _id: '003',
@@ -82,6 +84,7 @@ export const mockWiki = {
         $date: 1720193036074,
       },
       isVisible: true,
+      position: 2,
     },
     {
       _id: '004',
@@ -98,6 +101,7 @@ export const mockWiki = {
         $date: 1720195498738,
       },
       isVisible: true,
+      position: 3,
     },
     {
       _id: '005',
@@ -114,6 +118,7 @@ export const mockWiki = {
         $date: 1720195498738,
       },
       isVisible: false,
+      position: 4,
     },
     {
       _id: '006',
@@ -131,6 +136,7 @@ export const mockWiki = {
       },
       isVisible: false,
       parentId: '005',
+      position: 5,
     },
     {
       _id: '007',
@@ -147,6 +153,7 @@ export const mockWiki = {
         $date: 1720195498738,
       },
       isVisible: true,
+      position: 6,
     },
     {
       _id: '008',
@@ -164,6 +171,7 @@ export const mockWiki = {
       },
       isVisible: true,
       parentId: '007',
+      position: 7,
     },
   ],
   created: {
