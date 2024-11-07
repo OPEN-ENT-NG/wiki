@@ -20,8 +20,8 @@ export const action =
     const title = getFormValue(formData, 'title');
     const content = getFormValue(formData, 'content');
     const isVisible = getFormValue(formData, 'isHidden') === 'false';
-    const position = (Math.max(...pagePosition) ?? 0) + 1;
-    console.log('create', position);
+    const position =
+      pagePosition.length > 0 ? Math.max(...pagePosition) + 1 : 1;
     const data = await wikiService.createPage({
       wikiId: params.wikiId!,
       data: {
