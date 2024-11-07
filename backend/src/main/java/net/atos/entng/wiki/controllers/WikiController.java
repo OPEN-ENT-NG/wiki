@@ -142,6 +142,12 @@ public class WikiController extends MongoDbControllerHelper {
 		renderView(request, new JsonObject(), "index.html", null);
 	}
 
+	@Get("/id/:id/page/:pageId/version/:versionId")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+	public void viewByRevision(HttpServerRequest request){
+		renderView(request, new JsonObject(), "index.html", null);
+	}
+
 	/**
 	 * Display react front view /id/:id/page/:pageId
 	 * @param request
