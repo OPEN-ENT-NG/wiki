@@ -1,19 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { UpdateTreeDataWithVisibility } from '~/models';
-import { useGetPagesFromWiki, wikiQueryOptions } from '~/services';
+import { wikiQueryOptions } from '~/services';
 import { wikiService } from '~/services/api';
 
 export const useUpdatePages = (wikiId: string) => {
   const queryClient = useQueryClient();
-  const { data: originalPages } = useGetPagesFromWiki({
-    wikiId,
-    content: false,
-    force: true,
-  });
   const handleSortPage = useCallback(
     async (pages: UpdateTreeDataWithVisibility[]) => {
       try {
+        const originalPages = await wikiService.getWikiPages(wikiId, false);
         //TODO backend should handle this with custom api for moving pages
         // Process each page
         for (const page of pages) {
@@ -63,7 +59,7 @@ export const useUpdatePages = (wikiId: string) => {
         return false;
       }
     },
-    [wikiId, originalPages, queryClient],
+    [wikiId, queryClient],
   );
 
   return { handleSortPage };
