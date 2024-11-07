@@ -20,7 +20,7 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
   const { navigateToLatestRevision, restoreCurrentRevision, canRestore } =
     useRevision();
   return (
-    <div className="d-flex justify-content-between">
+    <div className="d-md-flex justify-content-between">
       <div className="d-flex flex-column">
         <div className="d-flex align-items-center">
           <h2 className="text-gray-800">{page.title}</h2>
@@ -32,14 +32,14 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
             src={getAvatarURL(page.author as ID, 'user')}
             variant="circle"
           />
-          <div className="text-gray-700 small d-flex flex-column flex-md-row column-gap-12 align-items-md-center ">
+          <div className="text-gray-700 small d-flex flex-column flex-xl-row column-gap-12 align-items-start align-items-xl-center">
             <a
               href={getUserbookURL(page.author as ID, 'user')}
               className="page-author"
             >
               {page.authorName}
             </a>
-            <span className="separator d-none d-md-block"></span>
+            <span className="separator d-none d-xl-block"></span>
             <span>
               {t('wiki.read.dated.updated', {
                 date: formatDate(page.modified, 'long'),
@@ -60,7 +60,7 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
           </div>
         </div>
       </div>
-      <div className="d-flex justify-content-between align-items-center gap-12">
+      <div className="d-flex justify-content-end justify-content-xl-between align-items-center gap-12">
         <Button
           onClick={navigateToLatestRevision}
           leftIcon={<Undo />}

@@ -225,7 +225,6 @@ export const Page = () => {
         variant="ghost"
         visibility="protected"
       />
-
       {showComments && (
         <CommentProvider
           comments={data.comments}
@@ -242,7 +241,6 @@ export const Page = () => {
           }}
         />
       )}
-
       <Suspense fallback={<LoadingScreen position={false} />}>
         {openDeleteModal && <DeletePageModal />}
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
