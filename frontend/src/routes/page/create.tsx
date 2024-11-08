@@ -33,6 +33,12 @@ export const action =
       },
     });
     await queryClient.invalidateQueries({ queryKey: wikiQueryOptions.base });
+    await queryClient.invalidateQueries({
+      queryKey: pageQueryOptions.findAllFromWiki({
+        wikiId: params.wikiId!,
+        content: false,
+      }).queryKey,
+    });
 
     if (data.error) {
       addToastMessage({

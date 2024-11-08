@@ -8,15 +8,17 @@ import { useSelectedPages, useUserRights } from '~/store';
 import { useToastActions } from '~/store/toast';
 
 export const useRevision = () => {
+  const [isRestoring, setIsRestoring] = useState<boolean>(false);
+
   const toast = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const params = useParams();
   const userRights = useUserRights();
-  const { addToastMessage } = useToastActions();
   const selectedPages = useSelectedPages();
   const safePageId = params.pageId ?? selectedPages[0];
-  const [isRestoring, setIsRestoring] = useState<boolean>(false);
+
+  const { addToastMessage } = useToastActions();
 
   // load page from route params
   const page = useGetPage({
