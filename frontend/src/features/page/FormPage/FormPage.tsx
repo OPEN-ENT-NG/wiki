@@ -105,7 +105,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <input type="hidden" {...register('content')} />
         </FormControl>
 
-        <div className="d-flex align-items-center gap-8 justify-content-end mt-16">
+        <div className="d-flex align-items-center gap-8 justify-content-end mt-16 mb-24">
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
           </Button>
