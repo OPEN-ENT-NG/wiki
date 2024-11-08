@@ -1,6 +1,5 @@
 import { RightRole } from 'edifice-ts-client';
 import { Page, Wiki } from '~/models';
-import { sortPagesByPosition } from './sortPagesByPosition';
 
 type UserRights = Record<RightRole, boolean>;
 
@@ -9,8 +8,17 @@ export const findDefaultPage = (
   userRights: UserRights,
 ): Page | undefined => {
   const { pages } = wiki;
-  const sortedPages = sortPagesByPosition(pages);
-  const firstPage = sortedPages[0];
+
+  const filterParentPage = (page: Page): boolean => !page.parentId;
+  const filterVisiblePage = (page: Page): boolean =>
+    userRights.manager || page.isVisible;
+
+  const filteredPages = pages
+    .filter((page) => filterParentPage(page) && filterVisiblePage(page))
+    .sort(
+      (a, b) => (a.position ?? pages.length) - (b.position ?? pages.length),
+    );
+  const firstPage = filteredPages[0];
 
   // Return the first page if the user is a manager or if it's visible.
   if (firstPage && (userRights.manager || firstPage.isVisible)) {
