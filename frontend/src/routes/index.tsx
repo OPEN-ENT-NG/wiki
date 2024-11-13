@@ -9,20 +9,16 @@ import {
   Component as OldFormat,
   loader as oldFormatLoader,
 } from './old-format';
-import {
-  Page,
-  action as deleteAction,
-  loader as pageLoader,
-  visibleAction,
-} from './page';
+import { Page, action as deleteAction, loader as pageLoader } from './page';
 import { CreatePage, action as createAction } from './page/create';
-import { EditPage, editAction } from './page/edit';
+import { EditPage } from './page/edit';
 import {
   PageList,
   action as deleteListAction,
   loader as pagesLoader,
 } from './page/list/list';
 import { Index, loader as wikiLoader } from './wiki';
+import { pageEditAction } from './page/pageEditAction';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -58,7 +54,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'page/:pageId',
             element: <Page />,
-            action: visibleAction(queryClient),
+            action: pageEditAction(queryClient),
             loader: pageLoader(queryClient),
           },
           {
@@ -73,7 +69,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'page/:pageId/edit',
             element: <EditPage />,
-            action: editAction(queryClient),
+            action: pageEditAction(queryClient),
           },
           {
             path: 'page/:pageId/subpage/create',
@@ -89,11 +85,12 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
             path: 'page/:pageId/oldformat',
             element: <OldFormat />,
             loader: oldFormatLoader(queryClient),
+            action: pageEditAction(queryClient, 'oldformat'),
           },
           {
             path: 'page/:pageId/oldformat/edit',
             element: <EditPage />,
-            action: editAction(queryClient),
+            action: pageEditAction(queryClient, 'oldformat'),
           },
           {
             path: 'page/:pageId/oldformat/destroy',

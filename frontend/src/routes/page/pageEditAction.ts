@@ -7,7 +7,7 @@ import { pageQueryOptions, wikiQueryOptions, wikiService } from '~/services';
 import { getWikiActions } from '~/store';
 
 export const pageEditAction =
-  (queryClient: QueryClient) =>
+  (queryClient: QueryClient, redirectPath?: string) =>
   async ({ params, request }: ActionFunctionArgs) => {
     const formData: FormData = await request.formData();
     const { addToastMessage } = getToastActions();
@@ -68,5 +68,8 @@ export const pageEditAction =
       text: 'wiki.toast.success.edit.page',
     });
 
-    return redirect(`/id/${params.wikiId}/page/${params.pageId!}`);
+    const baseUrl = `/id/${params.wikiId}/page/${params.pageId!}`;
+    const redirectUrl = redirectPath ? `${baseUrl}/${redirectPath}` : baseUrl;
+
+    return redirect(redirectUrl);
   };
