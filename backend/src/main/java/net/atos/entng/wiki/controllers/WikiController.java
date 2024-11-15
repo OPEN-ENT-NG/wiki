@@ -260,11 +260,10 @@ public class WikiController extends MongoDbControllerHelper {
 					final String thumbnail = wiki.getString("thumbnail");
 					final String description = wiki.getString("description");
 					final Optional<Number> folderId = Optional.ofNullable(wiki.getNumber("folder"));
-					final boolean isFromBehaviours = wiki.getBoolean("behaviours", false);
 					
 					// create Wiki
 					final Handler<Either<String, JsonObject>> handler = DefaultResponseHandler.notEmptyResponseHandler(request);
-					wikiService.createWiki(user, wikiTitle, thumbnail, description, folderId, isFromBehaviours, (r) -> {
+					wikiService.createWiki(user, wikiTitle, thumbnail, description, folderId, (r) -> {
 						if (r.isLeft()) {
 							// if fail return error
                             handler.handle(new Either.Left<>(r.left().getValue()));

@@ -617,7 +617,6 @@
 	    });
 	};
 	wikiNamespace.Wiki.prototype.createWiki = function (data, callback) {
-		data.behaviours = true;
 	    entcore_1.http().postJson('/wiki', data).done(function (result) {
 	        this._id = result._id;
 	        callback(result);
