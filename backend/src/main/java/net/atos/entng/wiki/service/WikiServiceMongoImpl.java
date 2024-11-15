@@ -215,9 +215,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 
 	@Override
-	public void createWiki(final UserInfos user, final String wikiTitle, final String thumbnail, final String description,
-						   final Optional<Number> folderId, final boolean isFromBehaviours,
-						   Handler<Either<String, JsonObject>> handler) {
+	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, String description,
+	final Optional<Number> folderId,
+			Handler<Either<String, JsonObject>> handler) {
+
 		JsonObject newWiki = new JsonObject();
 		newWiki
 				.put("title", wikiTitle)
@@ -230,21 +231,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		super.create(newWiki, user, r -> {
 			if(r.isRight()) {
 				// notify Explorer
-				if (!isFromBehaviours) {
-					newWiki.put("version", System.currentTimeMillis());
-					newWiki.put("_id", r.right().getValue().getString("_id"));
-					wikiExplorerPlugin.notifyUpsert(user, newWiki, folderId)
-							.onSuccess(e -> {
-								// on success return 200
-								handler.handle(r);
-							})
-							.onFailure(e -> {
-								// on error return message
-								handler.handle(new Either.Left<>(e.getMessage()));
-							});
-				} else {
-					handler.handle(r);
-				}
+				newWiki.put("version", System.currentTimeMillis());
+				newWiki.put("_id", r.right().getValue().getString("_id"));
+				wikiExplorerPlugin.notifyUpsert(user, newWiki, folderId)
+					.onSuccess(e -> {
+						// on success return 200
+						handler.handle(r);
+					})
+					.onFailure(e -> {
+						// on error return message
+						handler.handle(new Either.Left<>(e.getMessage()));
+					});
 			} else {
 				handler.handle(r);
 			}
