@@ -18,6 +18,7 @@ import {
 } from 'react-router-dom';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { useFilterVisiblePage, useListPage } from '~/hooks';
+import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { Page } from '~/models';
 import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
 import {
@@ -70,6 +71,7 @@ export const PageList = () => {
   const openDeleteModal = useOpenDeleteModal();
   const openDuplicateModal = useOpenDuplicateModal();
   const selectedPages = useSelectedPages();
+  const isOnlyRead = useIsOnlyRead();
   const { setSelectedPages } = useWikiActions();
 
   const { lg } = useBreakpoint();
@@ -108,7 +110,9 @@ export const PageList = () => {
       })}
       style={{ '--edifice-columns': 8 } as React.CSSProperties}
     >
-      <div className="d-flex align-items-center gap-8 g-col-3">
+      <div
+        className={`d-flex align-items-center gap-8 ${isOnlyRead ? 'g-col-4' : 'g-col-3'}`}
+      >
         {checkbox}
         <p className="text-truncate text-truncate-2">{node.title}</p>
       </div>
@@ -122,19 +126,21 @@ export const PageList = () => {
             })}
       </em>
       <span className="g-col-1">{formatDate(node.modified.$date)}</span>
-      <div className="g-col-1 d-inline-grid">
-        <Badge
-          variant={{
-            type: 'content',
-            background: true,
-            level: node.isVisible ? 'warning' : 'info',
-          }}
-        >
-          {node.isVisible
-            ? t('wiki.table.body.visible')
-            : t('wiki.table.body.invisible')}
-        </Badge>
-      </div>
+      {!isOnlyRead && (
+        <div className="g-col-1 d-inline-grid">
+          <Badge
+            variant={{
+              type: 'content',
+              background: true,
+              level: node.isVisible ? 'warning' : 'info',
+            }}
+          >
+            {node.isVisible
+              ? t('wiki.table.body.visible')
+              : t('wiki.table.body.invisible')}
+          </Badge>
+        </div>
+      )}
     </div>
   );
 
