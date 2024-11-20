@@ -143,7 +143,6 @@ export const useListPage = ({
         'onClick': () => setOpenPrintModal(true),
         'aria-label': itemsTranslation.print.responsive,
       },
-      visibility: isOnlyRead ? 'hide' : 'show',
       tooltip: {
         message: itemsTranslation.print.responsive,
         position: 'bottom',
