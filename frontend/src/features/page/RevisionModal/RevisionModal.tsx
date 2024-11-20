@@ -14,14 +14,26 @@ import { useCheckableTable } from '~/hooks/useCheckableTable';
 import { Revision } from '~/models/revision';
 import { useGetRevisionsPage } from '~/services';
 import { useRevisionModal } from './useRevisionModal';
+import { useUserRights } from '~/store';
 
 const RevisionModal = ({ pageId }: { pageId: string }) => {
   const params = useParams();
   const navigate = useNavigate();
+  const userRights = useUserRights();
   const { data, isPending } = useGetRevisionsPage({
     wikiId: params.wikiId!,
     pageId: pageId!,
   });
+
+  const userContrib =
+    userRights.read &&
+    userRights.contrib &&
+    !userRights.creator &&
+    !userRights.manager;
+
+  const dataRevision = userContrib
+    ? data?.filter((item) => item.isVisible)
+    : data;
 
   const {
     selectedItems,
@@ -29,7 +41,7 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
     isIndeterminate,
     handleOnSelectAllItems,
     handleOnSelectItem,
-  } = useCheckableTable<Revision>(data);
+  } = useCheckableTable<Revision>(dataRevision);
 
   const {
     t,
@@ -101,13 +113,13 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
                 return (
                   <Table.Tr key={item._id}>
                     <Table.Td>
-                      <Checkbox
-                        data-testid={`checkbox-${item._id}`}
-                        checked={selectedItems.includes(item._id)}
-                        onChange={() => {
-                          handleOnSelectItem(item._id);
-                        }}
-                      />
+                      {userContrib && !item.isVisible ? null : (
+                        <Checkbox
+                          data-testid={`checkbox-${item._id}`}
+                          checked={selectedItems.includes(item._id)}
+                          onChange={() => handleOnSelectItem(item._id)}
+                        />
+                      )}
                     </Table.Td>
                     <Table.Td>{item.username}</Table.Td>
                     <Table.Td>
@@ -129,7 +141,9 @@ const RevisionModal = ({ pageId }: { pageId: string }) => {
                     <Table.Td>
                       <Button
                         variant="ghost"
-                        disabled={isLastVersion}
+                        disabled={
+                          isLastVersion || (userContrib && !item.isVisible)
+                        }
                         onClick={() => handleOnOpen(item._id)}
                       >
                         {t('wiki.table.body.btn')}
