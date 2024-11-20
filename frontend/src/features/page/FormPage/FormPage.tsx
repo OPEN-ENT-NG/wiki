@@ -26,6 +26,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
   const {
     handleContentChange,
     register,
+    watch,
     handleSubmit,
     onSubmit,
     disableToggle,
@@ -64,6 +65,9 @@ export const FormPage = ({ page }: { page?: Page }) => {
             placeholder={t(PAGE_PLACEHOLDER)}
             autoFocus={true}
           ></Input>
+          <p className="small text-gray-700 p-2 text-end">
+            {`${watch('title', '').length || 0} / ${MAX_TITLE_LENGTH}`}
+          </p>
         </FormControl>
 
         {isManager && (

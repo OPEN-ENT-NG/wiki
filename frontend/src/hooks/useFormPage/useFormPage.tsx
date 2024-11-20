@@ -54,6 +54,7 @@ export const useFormPage = (page?: Page) => {
     register,
     setValue,
     handleSubmit,
+    watch,
     formState: { isSubmitting, isDirty, isValid },
   } = useForm<FormPageDataProps>({
     defaultValues: {
@@ -105,6 +106,7 @@ export const useFormPage = (page?: Page) => {
 
   return {
     register,
+    watch,
     handleContentChange,
     handleSubmit,
     onSubmit,
