@@ -363,7 +363,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			desiredFormats.add(ContentTransformerFormat.HTML);
 			desiredFormats.add(ContentTransformerFormat.JSON);
 			final ContentTransformerRequest transformerRequest = new ContentTransformerRequest(desiredFormats, 0, page.getString("content"), null);
-			contentTransformerClient.transform(transformerRequest, request)
+			contentTransformerClient.transform(transformerRequest)
 					.onComplete(response -> {
 						if (response.failed()) {
 							log.error("Content transformation failed", response.cause());
@@ -439,7 +439,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					);
 
 					contentTransformerResponseFuture = this.contentTransformerClient
-							.transform(transformerRequest, request);
+							.transform(transformerRequest);
 				} else {
 					contentTransformerResponseFuture = Future.succeededFuture();
 				}
@@ -495,7 +495,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					null
 			);
 
-			transformFuture = this.contentTransformerClient.transform(transformerRequest, request);
+			transformFuture = this.contentTransformerClient.transform(transformerRequest);
 		} else {
 			transformFuture = Future.succeededFuture();
 		}

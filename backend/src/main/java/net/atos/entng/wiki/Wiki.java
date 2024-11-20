@@ -19,6 +19,7 @@
 
 package net.atos.entng.wiki;
 
+import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -35,13 +36,11 @@ import java.util.Optional;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
-import org.entcore.common.editor.EventStoredContentTransformerFactoryProvider;
 import org.entcore.common.explorer.IExplorerPluginClient;
 import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
-import org.entcore.common.service.impl.MongoDbRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
 
 import static java.util.Optional.empty;
@@ -75,9 +74,9 @@ public class Wiki extends BaseServer {
 		}
 
 		// Tiptap Transformer
-		EventStoredContentTransformerFactoryProvider.init(vertx);
+		ContentTransformerFactoryProvider.init(vertx);
 		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
-		IContentTransformerClient contentTransformerClient = EventStoredContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
+		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 
         // Create Explorer plugin
 		this.plugin = WikiExplorerPlugin.create(securedActions);
