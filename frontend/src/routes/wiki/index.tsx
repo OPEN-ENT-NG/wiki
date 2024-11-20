@@ -200,7 +200,7 @@ export const Index = () => {
                 )}
                 onSortable={(pages) => handleSortPage(pages)}
                 onTreeItemClick={handleOnTreeItemClick}
-                canMove={!isOnlyRead}
+                isDisabled={() => isOnlyRead}
               />
             )}
           </Grid.Col>
