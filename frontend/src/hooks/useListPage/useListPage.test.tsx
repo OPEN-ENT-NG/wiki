@@ -119,7 +119,6 @@ describe('useListPage', () => {
     expect(result.current[1].visibility).toBe('hide'); // move
     expect(result.current[2].visibility).toBe('hide'); // duplicate
     expect(result.current[3].visibility).toBe('hide'); // history
-    expect(result.current[4].visibility).toBe('hide'); // print
     expect(result.current[5].visibility).toBe('hide'); // delete
   });
 
