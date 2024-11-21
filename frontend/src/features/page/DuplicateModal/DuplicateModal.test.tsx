@@ -132,7 +132,6 @@ describe('DuplicateModal component', () => {
         data: {
           content: '',
           isVisible: mockWikiPages.pages[0].isVisible,
-          position: mockWiki.pages.length,
           title: mockWikiPages.pages[0].title,
         },
       });
