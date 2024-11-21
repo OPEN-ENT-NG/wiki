@@ -2,3 +2,6 @@
 .idea
 .gradle
 .pnpm-store
+.env
+target
+dependency-reduced-pom.xml

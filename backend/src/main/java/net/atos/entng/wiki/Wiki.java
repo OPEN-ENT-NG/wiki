@@ -21,6 +21,7 @@ package net.atos.entng.wiki;
 
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
@@ -55,8 +56,8 @@ public class Wiki extends BaseServer {
 	private WikiExplorerPlugin plugin;
 
 	@Override
-	public void start() throws Exception {
-		super.start();
+	public void start(Promise<Void> startPromise) throws Exception {
+		super.start(startPromise);
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
@@ -95,6 +96,7 @@ public class Wiki extends BaseServer {
 
         // Start Explorer plugin
 		this.plugin.start();
+		startPromise.tryComplete();
 	}
 
 	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
