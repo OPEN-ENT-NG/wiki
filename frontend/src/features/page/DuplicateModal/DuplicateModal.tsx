@@ -64,7 +64,6 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
           title: sourcePage?.title ?? '',
           content: sourcePage?.content ?? '',
           isVisible: sourcePage?.isVisible ?? false,
-          position: sourceWiki?.pages.length ?? 0,
         },
       });
 

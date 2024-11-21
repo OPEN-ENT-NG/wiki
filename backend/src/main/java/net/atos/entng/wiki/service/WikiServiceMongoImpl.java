@@ -413,6 +413,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final boolean isManager = isManager(wiki, user);
 				final boolean oldVisibility = page.getBoolean("isVisible", true);
 				final boolean newVisibility = isManager? oldVisibility : true;
+				final int lastPosition = wiki.getJsonArray("pages").size();
 				// Add extra fields to page
 				page
 						.put("_id", page.getString("_id"))
@@ -420,9 +421,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						.put("authorName", user.getUsername())
 						.put("modified", MongoDb.now())
 						.put("created", MongoDb.now())
+						.put("position", lastPosition);
 						// a manager
 						.put("isVisible", newVisibility);
-
+						// Set the position of the new page to the last position in the list
+						
+						
 				// Tiptap Transformer
 				Future<ContentTransformerResponse> contentTransformerResponseFuture;
 				if (page.containsKey("content")) {
