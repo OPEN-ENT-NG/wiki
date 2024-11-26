@@ -421,10 +421,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						.put("authorName", user.getUsername())
 						.put("modified", MongoDb.now())
 						.put("created", MongoDb.now())
-						.put("position", lastPosition);
+						// Set the position of the new page to the last position in the list
+						.put("position", lastPosition)
 						// a manager
 						.put("isVisible", newVisibility);
-						// Set the position of the new page to the last position in the list
 						
 						
 				// Tiptap Transformer
