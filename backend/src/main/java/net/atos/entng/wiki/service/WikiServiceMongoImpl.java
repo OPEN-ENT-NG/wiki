@@ -21,6 +21,7 @@ package net.atos.entng.wiki.service;
 
 import static com.mongodb.client.model.Filters.*;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.*;
 
@@ -52,7 +53,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
@@ -418,7 +418,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// Tiptap Transformer
 				Future<ContentTransformerResponse> contentTransformerResponseFuture;
-				if (page.containsKey("content")) {
+				if (isNotBlank(page.getString("content", ""))) {
 					Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 					desiredFormats.add(ContentTransformerFormat.HTML);
 					desiredFormats.add(ContentTransformerFormat.JSON);
