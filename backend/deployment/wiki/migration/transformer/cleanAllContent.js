@@ -1,6 +1,6 @@
 var countPageUpdated = 0;
 
-db.wiki.find({}).forEach((wiki) => {
+db.wiki.find({"pages.oldContent": { $exists: true } }).forEach((wiki) => {
   let changed = false;
 
   wiki.pages.forEach((page, index) => {
