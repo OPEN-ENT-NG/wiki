@@ -28,6 +28,7 @@ import { Page } from '~/models';
 import { useGetPage } from '~/services';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
+import { useMediaQuery } from '@uidotdev/usehooks';
 
 export const PageHeader = ({
   page,
@@ -53,6 +54,7 @@ export const PageHeader = ({
     useWikiActions();
   const submit = useSubmit();
   const { t } = useTranslation(appCode);
+  const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
 
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
@@ -114,7 +116,58 @@ export const PageHeader = ({
   ];
 
   return (
-    <div className="d-flex justify-content-between">
+    <div
+      className={` justify-content-between ${!isSmallDevice && 'd-flex'}`}
+      style={{ flexDirection: isSmallDevice ? 'unset' : 'row-reverse' }}
+    >
+      <div
+        className={`d-flex  align-items-center gap-12 ${isSmallDevice ? ' justify-content-end mb-12' : 'justify-content-between'}`}
+      >
+        {!isOnlyRead && !isPrint && (
+          <>
+            <Button onClick={handleEditPage} leftIcon={<Edit />}>
+              {t('wiki.page.edit')}
+            </Button>
+            <Dropdown>
+              {(
+                triggerProps: JSX.IntrinsicAttributes &
+                  Omit<IconButtonProps, 'ref'> &
+                  RefAttributes<HTMLButtonElement>,
+              ) => (
+                <div data-testid="dropdown">
+                  <IconButton
+                    {...triggerProps}
+                    type="button"
+                    aria-label="label"
+                    color="primary"
+                    variant="outline"
+                    icon={<Options />}
+                  />
+
+                  <Dropdown.Menu>
+                    {dropdownOptions.map((option) => (
+                      <Fragment key={option.id}>
+                        {option.type === 'divider' ? (
+                          <Dropdown.Separator />
+                        ) : (
+                          option.visibility && (
+                            <Dropdown.Item
+                              icon={option.icon}
+                              onClick={() => option.action(null)}
+                            >
+                              {option.label}
+                            </Dropdown.Item>
+                          )
+                        )}
+                      </Fragment>
+                    ))}
+                  </Dropdown.Menu>
+                </div>
+              )}
+            </Dropdown>
+          </>
+        )}
+      </div>
       <div className="d-flex flex-column">
         <div className="d-flex align-items-center">
           <h2 className="text-gray-800">{page.title}</h2>
@@ -161,52 +214,6 @@ export const PageHeader = ({
             )}
           </div>
         </div>
-      </div>
-      <div className="d-flex justify-content-between align-items-center gap-12">
-        {!isOnlyRead && !isPrint && (
-          <>
-            <Button onClick={handleEditPage} leftIcon={<Edit />}>
-              {t('wiki.page.edit')}
-            </Button>
-            <Dropdown>
-              {(
-                triggerProps: JSX.IntrinsicAttributes &
-                  Omit<IconButtonProps, 'ref'> &
-                  RefAttributes<HTMLButtonElement>,
-              ) => (
-                <div data-testid="dropdown">
-                  <IconButton
-                    {...triggerProps}
-                    type="button"
-                    aria-label="label"
-                    color="primary"
-                    variant="outline"
-                    icon={<Options />}
-                  />
-
-                  <Dropdown.Menu>
-                    {dropdownOptions.map((option) => (
-                      <Fragment key={option.id}>
-                        {option.type === 'divider' ? (
-                          <Dropdown.Separator />
-                        ) : (
-                          option.visibility && (
-                            <Dropdown.Item
-                              icon={option.icon}
-                              onClick={() => option.action(null)}
-                            >
-                              {option.label}
-                            </Dropdown.Item>
-                          )
-                        )}
-                      </Fragment>
-                    ))}
-                  </Dropdown.Menu>
-                </div>
-              )}
-            </Dropdown>
-          </>
-        )}
       </div>
     </div>
   );
