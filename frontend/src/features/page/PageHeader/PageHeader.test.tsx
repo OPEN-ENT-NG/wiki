@@ -40,6 +40,10 @@ const mocks = vi.hoisted(() => {
   };
 });
 
+vi.mock('@uidotdev/usehooks', () => ({
+  useMediaQuery: vi.fn(),
+}));
+
 /**
  * We use mocks in a mock of the store
  */
