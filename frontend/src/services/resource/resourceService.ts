@@ -1,11 +1,11 @@
 import {
-  CreateParameters,
-  CreateResult,
-  IResource,
-  ResourceService,
-  UpdateParameters,
-  UpdateResult,
-} from 'edifice-ts-client';
+    CreateParameters,
+    CreateResult,
+    IResource,
+    ResourceService,
+    UpdateParameters,
+    UpdateResult,
+} from '@edifice.io/ts-client';
 
 const APP = 'wiki';
 const RESOURCE = 'wiki';

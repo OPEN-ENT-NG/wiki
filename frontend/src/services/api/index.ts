@@ -1,15 +1,15 @@
-import { odeServices } from 'edifice-ts-client';
+import { odeServices } from '@edifice.io/ts-client';
 import {
-  DuplicatePagePayload,
-  Page,
-  PageDto,
-  PagePostPayload,
-  PagePutPayload,
-  PagesPutPayload,
-  PickedPageId,
-  PickedWiki,
-  Wiki,
-  WikiDto,
+    DuplicatePagePayload,
+    Page,
+    PageDto,
+    PagePostPayload,
+    PagePutPayload,
+    PagesPutPayload,
+    PickedPageId,
+    PickedWiki,
+    Wiki,
+    WikiDto,
 } from '~/models';
 import { Revision } from '~/models/revision';
 import { dtoToPage } from '~/utils/dtoToPage';

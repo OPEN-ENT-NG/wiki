@@ -1,4 +1,4 @@
-import { Alert, Button, Modal, useOdeClient } from '@edifice-ui/react';
+import { Alert, Button, Modal, useEdificeClient } from '@edifice.io/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useParams } from 'react-router-dom';
@@ -10,7 +10,7 @@ export default function DeletePageModal() {
   const openDeleteModal = useOpenDeleteModal();
 
   const { t } = useTranslation('wiki');
-  const { user } = useOdeClient();
+  const { user } = useEdificeClient();
   const { setOpenDeleteModal } = useWikiActions();
   const { data: wiki } = useGetWiki(params.wikiId!);
 

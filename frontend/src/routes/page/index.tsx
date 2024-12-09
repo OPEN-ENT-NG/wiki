@@ -1,21 +1,21 @@
-import { Editor, EditorRef } from '@edifice-ui/editor';
 import {
-  Alert,
-  Button,
-  checkUserRight,
-  LoadingScreen,
-  useOdeClient,
-} from '@edifice-ui/react';
-import { CommentProvider } from '@edifice-ui/react/comments';
+    Alert,
+    Button,
+    checkUserRight,
+    LoadingScreen,
+    useEdificeClient,
+} from '@edifice.io/react';
+import { CommentProvider } from '@edifice.io/react/comments';
+import { Editor, EditorRef } from '@edifice.io/react/editor';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  redirect,
-  useNavigate,
-  useParams,
+    ActionFunctionArgs,
+    LoaderFunctionArgs,
+    redirect,
+    useNavigate,
+    useParams,
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
@@ -24,21 +24,21 @@ import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
 import { useRevision } from '~/hooks/useRevision/useRevision';
 import { pageEditAction } from '~/routes/page/pageEditAction';
 import {
-  pageQueryOptions,
-  useCreateComment,
-  useDeleteComment,
-  useUpdateComment,
-  wikiQueryOptions,
-  wikiService,
+    pageQueryOptions,
+    useCreateComment,
+    useDeleteComment,
+    useUpdateComment,
+    wikiQueryOptions,
+    wikiService,
 } from '~/services';
 import {
-  getUserRightsActions,
-  useOpenConfirmVisibilityModal,
-  useOpenDeleteModal,
-  useOpenDuplicateModal,
-  useOpenRevisionModal,
-  useTreeActions,
-  useUserRights,
+    getUserRightsActions,
+    useOpenConfirmVisibilityModal,
+    useOpenDeleteModal,
+    useOpenDuplicateModal,
+    useOpenRevisionModal,
+    useTreeActions,
+    useUserRights,
 } from '~/store';
 import { getToastActions } from '~/store/toast';
 
@@ -135,7 +135,7 @@ export const Page = () => {
   const userRights = useUserRights();
   const canComment = userRights.comment;
 
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { setSelectedNodeId } = useTreeActions();
   const { getPageVersionFromRoute } = useRevision();

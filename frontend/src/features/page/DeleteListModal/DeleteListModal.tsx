@@ -1,4 +1,4 @@
-import { Alert, Button, Modal } from '@edifice-ui/react';
+import { Alert, Button, Modal } from '@edifice.io/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useFetcher, useParams } from 'react-router-dom';

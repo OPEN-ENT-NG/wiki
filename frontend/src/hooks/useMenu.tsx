@@ -1,5 +1,5 @@
-import { ViewList } from '@edifice-ui/icons';
-import { useOdeClient } from '@edifice-ui/react';
+import { useEdificeClient } from '@edifice.io/react';
+import { IconViewList } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import {
   matchPath,
@@ -17,7 +17,7 @@ export const useMenu = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
   const isSelected = (path = '/') => {
@@ -28,7 +28,7 @@ export const useMenu = ({
   const data = {
     children: t('wiki.pagelist'),
     onClick: () => navigate(`/id/${params.wikiId}/pages`),
-    leftIcon: <ViewList />,
+    leftIcon: <IconViewList />,
     selected: isSelected('/id/:wikiId/pages') ?? false,
   };
 

@@ -1,4 +1,4 @@
-import { useUser } from '@edifice-ui/react';
+import { useUser } from '@edifice.io/react';
 import { useParams } from 'react-router-dom';
 import { useGetPagesFromWiki } from '~/services';
 import { useSelectedPages, useUserRights } from '~/store';

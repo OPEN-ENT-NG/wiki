@@ -1,9 +1,9 @@
-import { LoadingScreen } from '@edifice-ui/react';
+import { LoadingScreen } from '@edifice.io/react';
 import { lazy, Suspense } from 'react';
 import { FormPage } from '~/features';
 import { useRevision } from '~/hooks/useRevision/useRevision';
-import { getOpenConfirmVisibilityModal } from '~/store';
 import { pageEditAction } from '~/routes/page/pageEditAction';
+import { getOpenConfirmVisibilityModal } from '~/store';
 
 const ConfirmVisibilityModal = lazy(
   async () =>
