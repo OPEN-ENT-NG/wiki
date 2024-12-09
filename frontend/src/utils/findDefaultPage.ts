@@ -1,4 +1,4 @@
-import { RightRole } from 'edifice-ts-client';
+import { RightRole } from '@edifice.io/ts-client';
 import { Page, Wiki } from '~/models';
 
 type UserRights = Record<RightRole, boolean>;

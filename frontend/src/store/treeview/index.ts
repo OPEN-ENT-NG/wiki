@@ -1,4 +1,4 @@
-import { TreeItem } from 'node_modules/@edifice-ui/react/dist/components/Tree/types';
+import { TreeItem } from 'node_modules/@edifice.io/react/dist/components/Tree/types';
 import { useStore } from 'zustand';
 
 import { createStore } from 'zustand/vanilla';

@@ -1,4 +1,4 @@
-import { useToast } from '@edifice-ui/react';
+import { useToast } from '@edifice.io/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';

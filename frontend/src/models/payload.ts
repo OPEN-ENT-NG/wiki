@@ -1,4 +1,4 @@
-import { UpdateTreeData } from '@edifice-ui/react';
+import { UpdateTreeData } from '@edifice.io/react';
 
 export type UpdateTreeDataWithVisibility = UpdateTreeData & {
   isVisible?: boolean;

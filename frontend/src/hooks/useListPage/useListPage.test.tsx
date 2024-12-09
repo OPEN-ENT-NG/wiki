@@ -1,4 +1,4 @@
-import { ToolbarButtonItem } from '@edifice-ui/react';
+import { ToolbarButtonItem } from '@edifice.io/react';
 import { mockWikiPages } from '~/mocks';
 import { renderHook } from '~/mocks/setup';
 import { useListPage } from './useListPage';
@@ -31,7 +31,7 @@ vi.mock('~/store/wiki', () => ({
   }),
 }));
 
-vi.mock('@edifice-ui/react', () => ({
+vi.mock('@edifice.io/react', () => ({
   useBreakpoint: mocks.useBreakpoint,
 }));
 

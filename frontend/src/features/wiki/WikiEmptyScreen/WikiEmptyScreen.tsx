@@ -1,4 +1,4 @@
-import { EmptyScreen, Heading, useOdeClient } from '@edifice-ui/react';
+import { EmptyScreen, Heading, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 
 import emptyScreenImage from '~/assets/illu-wiki.svg';
@@ -8,7 +8,7 @@ export const WikiEmptyScreen = () => {
   const emptyStyles = { maxWidth: '424px' };
   const isOnlyRead = useIsOnlyRead();
 
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
   return (

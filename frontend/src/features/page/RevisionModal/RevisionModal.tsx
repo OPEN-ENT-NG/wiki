@@ -1,12 +1,12 @@
 import {
-  Alert,
-  Badge,
-  Button,
-  Checkbox,
-  LoadingScreen,
-  Modal,
-  Table,
-} from '@edifice-ui/react';
+    Alert,
+    Badge,
+    Button,
+    Checkbox,
+    LoadingScreen,
+    Modal,
+    Table,
+} from '@edifice.io/react';
 import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';

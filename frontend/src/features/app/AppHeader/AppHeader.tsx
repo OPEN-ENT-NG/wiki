@@ -1,19 +1,19 @@
 import {
-  AppHeader as BaseAppHeader,
-  Breadcrumb,
-  LoadingScreen,
-  useOdeClient,
-} from '@edifice-ui/react';
+    AppHeader as BaseAppHeader,
+    Breadcrumb,
+    LoadingScreen,
+    useEdificeClient,
+} from '@edifice.io/react';
+import { IWebApp } from '@edifice.io/ts-client';
 import { useQueryClient } from '@tanstack/react-query';
-import { IWebApp } from 'edifice-ts-client';
 import { Suspense, lazy } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGetWiki, wikiQueryOptions } from '~/services';
 import {
-  useOpenPrintModal,
-  useOpenShareModal,
-  useOpenUpdateModal,
-  useWikiActions,
+    useOpenPrintModal,
+    useOpenShareModal,
+    useOpenUpdateModal,
+    useWikiActions,
 } from '~/store';
 import { AppActions } from '../AppActions/AppActions';
 
@@ -34,7 +34,7 @@ export const AppHeader = () => {
   const openPrintModal = useOpenPrintModal();
 
   const { data } = useGetWiki(params.wikiId!);
-  const { currentApp } = useOdeClient();
+  const { currentApp } = useEdificeClient();
   const { setOpenUpdateModal, setOpenShareModal } = useWikiActions();
 
   const handleOnUpdateSuccess = async () => {
