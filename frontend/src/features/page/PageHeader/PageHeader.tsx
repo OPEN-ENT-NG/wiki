@@ -1,13 +1,4 @@
 import {
-  Copy,
-  Delete,
-  Edit,
-  Forgoing,
-  Hide,
-  Options,
-  See,
-} from '@edifice-ui/icons';
-import {
   Avatar,
   Badge,
   Button,
@@ -16,9 +7,18 @@ import {
   IconButtonProps,
   useDate,
   useDirectory,
-  useOdeClient,
-} from '@edifice-ui/react';
-import { ID } from 'edifice-ts-client';
+  useEdificeClient,
+} from '@edifice.io/react';
+import {
+  IconCopy,
+  IconDelete,
+  IconEdit,
+  IconForgoing,
+  IconHide,
+  IconOptions,
+  IconSee,
+} from '@edifice.io/react/icons';
+import { ID } from '@edifice.io/client';
 import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSubmit } from 'react-router-dom';
@@ -47,7 +47,7 @@ export const PageHeader = ({
   const isOnlyRead = useIsOnlyRead();
 
   const { formatDate } = useDate();
-  const { appCode, user } = useOdeClient();
+  const { appCode, user } = useEdificeClient();
   const { getAvatarURL, getUserbookURL } = useDirectory();
   const { setOpenDeleteModal, setOpenRevisionModal, setOpenDuplicateModal } =
     useWikiActions();
@@ -75,7 +75,7 @@ export const PageHeader = ({
       label: page.isVisible
         ? t('wiki.page.dropdown.hide')
         : t('wiki.page.dropdown.visible'),
-      icon: page.isVisible ? <Hide /> : <See />,
+      icon: page.isVisible ? <IconHide /> : <IconSee />,
       action: handleVisibleAction,
       visibility:
         page.parentId && parentPage.data
@@ -93,21 +93,21 @@ export const PageHeader = ({
     {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),
-      icon: <Forgoing />,
+      icon: <IconForgoing />,
       action: () => setOpenRevisionModal(true),
       visibility: canContrib || canManage,
     },
     {
       id: 'duplicate',
       label: t('wiki.page.dropdown.duplicate'),
-      icon: <Copy />,
+      icon: <IconCopy />,
       action: () => setOpenDuplicateModal(true),
       visibility: canContrib || canManage,
     },
     {
       id: 'delete',
       label: t('wiki.page.dropdown.delete'),
-      icon: <Delete />,
+      icon: <IconDelete />,
       action: () => setOpenDeleteModal(true),
       visibility: (canContrib && user?.userId === page.author) || canManage,
     },
@@ -154,7 +154,7 @@ export const PageHeader = ({
                 }}
               >
                 <div className="d-flex align-items-center">
-                  <Hide width="20" height="20" className="me-8" />
+                  <IconHide width="20" height="20" className="me-8" />
                   {t('wiki.read.notvisible')}
                 </div>
               </Badge>
@@ -165,7 +165,7 @@ export const PageHeader = ({
       <div className="d-flex justify-content-between align-items-center gap-12">
         {!isOnlyRead && !isPrint && (
           <>
-            <Button onClick={handleEditPage} leftIcon={<Edit />}>
+            <Button onClick={handleEditPage} leftIcon={<IconEdit />}>
               {t('wiki.page.edit')}
             </Button>
             <Dropdown>
@@ -181,7 +181,7 @@ export const PageHeader = ({
                     aria-label="label"
                     color="primary"
                     variant="outline"
-                    icon={<Options />}
+                    icon={<IconOptions />}
                   />
 
                   <Dropdown.Menu>

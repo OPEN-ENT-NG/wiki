@@ -1,20 +1,20 @@
-import { Undo, Wand } from '@edifice-ui/icons';
 import {
   Avatar,
   Badge,
   Button,
   useDate,
   useDirectory,
-  useOdeClient,
-} from '@edifice-ui/react';
-import { ID } from 'edifice-ts-client';
+  useEdificeClient,
+} from '@edifice.io/react';
+import { IconUndo, IconWand } from '@edifice.io/react/icons';
+import { ID } from '@edifice.io/client';
 import { useTranslation } from 'react-i18next';
 import { useRevision } from '~/hooks/useRevision/useRevision';
 import { Page } from '~/models';
 
 export const RevisionHeader = ({ page }: { page: Page }) => {
   const { formatDate } = useDate();
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { getAvatarURL, getUserbookURL } = useDirectory();
   const { navigateToLatestRevision, restoreCurrentRevision, canRestore } =
@@ -63,7 +63,7 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
       <div className="d-flex justify-content-end justify-content-xl-between align-items-center gap-12">
         <Button
           onClick={navigateToLatestRevision}
-          leftIcon={<Undo />}
+          leftIcon={<IconUndo />}
           variant="outline"
         >
           {t('wiki.version.latest')}
@@ -71,7 +71,7 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
         {canRestore() && (
           <Button
             onClick={restoreCurrentRevision}
-            leftIcon={<Wand />}
+            leftIcon={<IconWand />}
             variant="filled"
           >
             {t('wiki.version.restore')}

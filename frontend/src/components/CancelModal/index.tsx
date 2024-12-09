@@ -1,4 +1,4 @@
-import { Button, Modal, useOdeClient } from '@edifice-ui/react';
+import { Button, Modal, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 
 export const CancelModal = ({
@@ -12,7 +12,7 @@ export const CancelModal = ({
   onCancel: () => void;
   isNewPage: boolean;
 }) => {
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation();
 
   return (

@@ -1,11 +1,11 @@
-import { OdeClientProvider, ThemeContext } from '@edifice-ui/react';
+import { EdificeClientProvider, EdificeThemeContext } from '@edifice.io/react';
+import { ERROR_CODE } from '@edifice.io/client';
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ERROR_CODE } from 'edifice-ts-client';
 import { ReactNode } from 'react';
 
 export const queryClient = new QueryClient({
@@ -29,13 +29,13 @@ export const queryClient = new QueryClient({
 export const Providers = ({ children }: { children: ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <OdeClientProvider
+      <EdificeClientProvider
         params={{
           app: 'wiki',
         }}
       >
         {children}
-      </OdeClientProvider>
+      </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
@@ -53,9 +53,9 @@ export const CustomProviders = ({
 
   return (
     <Providers>
-      <ThemeContext.Provider value={themeContextValue}>
+      <EdificeThemeContext.Provider value={themeContextValue}>
         {children}
-      </ThemeContext.Provider>
+      </EdificeThemeContext.Provider>
     </Providers>
   );
 };

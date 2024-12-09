@@ -1,4 +1,3 @@
-import { Hide, Plus } from '@edifice-ui/icons';
 import {
   checkUserRight,
   Dropdown,
@@ -7,11 +6,12 @@ import {
   SortableTree,
   useToast,
   useTrashedResource,
-} from '@edifice-ui/react';
+} from '@edifice.io/react';
+import { IconHide, IconPlus } from '@edifice.io/react/icons';
+import { ID } from '@edifice.io/client';
 import { QueryClient } from '@tanstack/react-query';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import clsx from 'clsx';
-import { ID } from 'edifice-ts-client';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -177,7 +177,7 @@ export const Index = () => {
                     {(!node.isVisible || !isChild) && (
                       <span className="d-flex">
                         {!node.isVisible && (
-                          <Hide
+                          <IconHide
                             width="20"
                             height="20"
                             className={clsx({ 'me-8': isChild })}
@@ -191,7 +191,7 @@ export const Index = () => {
                               handleOnTreeItemCreateChildren(node.id);
                             }}
                           >
-                            <Plus height={16} width={16} />
+                            <IconPlus height={16} width={16} />
                           </button>
                         )}
                       </span>

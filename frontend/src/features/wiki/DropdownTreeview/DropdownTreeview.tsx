@@ -1,7 +1,7 @@
-import { Hide, Plus, TextPage } from '@edifice-ui/icons';
-import { Dropdown, IconButtonProps, Menu, Tree } from '@edifice-ui/react';
+import { Dropdown, IconButtonProps, Menu, Tree } from '@edifice.io/react';
+import { IconHide, IconPlus, IconTextPage } from '@edifice.io/react/icons';
+import { ID } from '@edifice.io/client';
 import clsx from 'clsx';
-import { ID } from 'edifice-ts-client';
 import { RefAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
@@ -41,7 +41,7 @@ export const DropdownTreeview = ({
           setVisible,
         ) => (
           <>
-            <Dropdown.Trigger label="Pages" icon={<TextPage />} />
+            <Dropdown.Trigger label="Pages" icon={<IconTextPage />} />
             <Dropdown.Menu
               onClick={() => {
                 setVisible(false);
@@ -77,7 +77,7 @@ export const DropdownTreeview = ({
                     {(!node.isVisible || !isChild) && (
                       <span className="d-flex">
                         {!node.isVisible && (
-                          <Hide
+                          <IconHide
                             width="20"
                             height="20"
                             className={clsx({ 'me-8': isChild })}
@@ -92,7 +92,7 @@ export const DropdownTreeview = ({
                               handleOnTreeItemCreateChildren(node.id);
                             }}
                           >
-                            <Plus height={16} width={16} />
+                            <IconPlus height={16} width={16} />
                           </button>
                         )}
                       </span>

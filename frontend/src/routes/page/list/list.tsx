@@ -1,31 +1,31 @@
 import {
-  Badge,
-  Heading,
-  List,
-  LoadingScreen,
-  useBreakpoint,
-  useDate,
-} from '@edifice-ui/react';
+    Badge,
+    Heading,
+    List,
+    LoadingScreen,
+    useBreakpoint,
+    useDate,
+} from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  useLocation,
-  useParams,
+    ActionFunctionArgs,
+    LoaderFunctionArgs,
+    useLocation,
+    useParams,
 } from 'react-router-dom';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { useFilterVisiblePage, useListPage } from '~/hooks';
 import { Page } from '~/models';
 import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
 import {
-  useOpenDeleteModal,
-  useOpenDuplicateModal,
-  useOpenRevisionModal,
-  useSelectedPages,
-  useWikiActions,
+    useOpenDeleteModal,
+    useOpenDuplicateModal,
+    useOpenRevisionModal,
+    useSelectedPages,
+    useWikiActions,
 } from '~/store';
 import { sortPagesByDate } from '~/utils/sortPagesByDate';
 

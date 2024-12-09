@@ -1,11 +1,11 @@
-import { screen, waitFor, render } from '~/mocks/setup';
 import {
+  mockGroup,
+  mockUser,
   mockWiki,
   mockWikiPages,
-  mockUser,
-  mockGroup,
   mockWikisAsResources,
 } from '~/mocks';
+import { render, screen, waitFor } from '~/mocks/setup';
 import { DuplicateModal } from './DuplicateModal';
 
 const mocks = vi.hoisted(() => {
@@ -32,7 +32,7 @@ vi.mock('~/services', () => ({
   useDuplicatePage: mocks.useDuplicatePage,
 }));
 
-vi.mock('edifice-ts-client', () => ({
+vi.mock('@edifice.io/client', () => ({
   odeServices: {
     session: vi.fn().mockReturnValue({
       getUser: vi.fn().mockResolvedValue({
@@ -57,10 +57,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('@edifice-ui/react', async () => {
+vi.mock('@edifice.io/react', async () => {
   const actual =
-    await vi.importActual<typeof import('@edifice-ui/react')>(
-      '@edifice-ui/react',
+    await vi.importActual<typeof import('@edifice.io/react')>(
+      '@edifice.io/react',
     );
   return {
     ...actual,
