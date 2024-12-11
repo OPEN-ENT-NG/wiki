@@ -5,7 +5,7 @@ import {
   ResourceService,
   UpdateParameters,
   UpdateResult,
-} from 'edifice-ts-client';
+} from '@edifice.io/client';
 
 const APP = 'wiki';
 const RESOURCE = 'wiki';

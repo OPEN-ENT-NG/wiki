@@ -1,12 +1,12 @@
-import { Editor, EditorRef } from '@edifice-ui/editor';
 import {
   Alert,
   Button,
   checkUserRight,
   LoadingScreen,
-  useOdeClient,
-} from '@edifice-ui/react';
-import { CommentProvider } from '@edifice-ui/react/comments';
+  useEdificeClient,
+} from '@edifice.io/react';
+import { CommentProvider } from '@edifice.io/react/comments';
+import { Editor, EditorRef } from '@edifice.io/react/editor';
 import { QueryClient } from '@tanstack/react-query';
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -135,7 +135,7 @@ export const Page = () => {
   const userRights = useUserRights();
   const canComment = userRights.comment;
 
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { setSelectedNodeId } = useTreeActions();
   const { getPageVersionFromRoute } = useRevision();
