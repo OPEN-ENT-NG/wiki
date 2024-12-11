@@ -195,7 +195,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void listAllPages(UserInfos user,
+	public void listAllPages(UserInfos user, boolean onlyVisible,
 							 Handler<Either<String, JsonArray>> handler) {
 		// Query : return pages visible by current user only (i.e. owner or
 		// shared)
@@ -217,7 +217,41 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		projection.put("pages.content", 0).put("created", 0);
 		JsonObject sort = new JsonObject().put("pages.title", 1);
 		mongo.find(collection, MongoQueryBuilder.build(query), sort,
-				projection, MongoDbResult.validResultsHandler(handler));
+				projection, MongoDbResult.validResultsHandler(res -> {
+					// If the result is right, we want to filter the pages
+					if(res.isRight()){
+						// We get the wikis
+						final JsonArray wikis = res.right().getValue();
+						// We iterate over the wikis
+						for(final Object wiki : wikis){
+							// We get the wiki
+							final JsonObject wikiJO = (JsonObject) wiki;
+							// We get the pages
+							final JsonArray pages = wikiJO.getJsonArray("pages", new JsonArray());
+							final JsonArray filteredPages = new JsonArray();
+							// We iterate over the pages
+							for(final Object page : pages){
+								final JsonObject pageJO = (JsonObject) page;
+								// We check if the page is visible
+								boolean isVisible = pageJO.getBoolean("isVisible", true);
+								// We check if the page is visible
+								boolean isAuthor = isPageAuthor(pageJO, user.getUserId());
+								// We check if the page is visible
+								boolean isManager = isManager(wikiJO, user);
+								// If the page is visible, we want to return it
+                                if (!onlyVisible || // If onlyVisible is true, we only want to return pages that are visible
+                                    isVisible || // If isVisible is true, we want to return the page
+                                    isManager || // If isManager is true, we want to return the page
+                                    isAuthor) { // If isAuthor is true, we want to return the page
+									filteredPages.add(pageJO);
+								}
+							}
+							// We add the filtered pages to the wiki
+							wikiJO.put("pages", filteredPages);
+						}
+					}
+					handler.handle(res);
+				}));
 	}
 
 
