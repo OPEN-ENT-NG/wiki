@@ -1,8 +1,8 @@
-import { Editor, EditorRef } from '@edifice-ui/editor';
-import { checkUserRight } from '@edifice-ui/react';
-import { CommentProvider } from '@edifice-ui/react/comments';
+import { odeServices } from '@edifice.io/client';
+import { checkUserRight } from '@edifice.io/react';
+import { CommentProvider } from '@edifice.io/react/comments';
+import { Editor, EditorRef } from '@edifice.io/react/editor';
 import { QueryClient } from '@tanstack/react-query';
-import { odeServices } from 'edifice-ts-client';
 import { useEffect, useRef } from 'react';
 import {
   LoaderFunctionArgs,
@@ -87,7 +87,7 @@ export const Component = () => {
             mode="read"
             variant="ghost"
             visibility="protected"
-          ></Editor>
+          />
 
           {isPrintComment && (
             <CommentProvider
