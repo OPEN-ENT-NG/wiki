@@ -1,4 +1,4 @@
-import { RightRole } from 'edifice-ts-client';
+import { RightRole } from '@edifice.io/client';
 import { Revision } from '~/models/revision';
 
 export const mockUser = {

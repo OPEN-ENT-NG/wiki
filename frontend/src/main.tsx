@@ -2,11 +2,13 @@ import React from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-import { ThemeProvider } from '@edifice-ui/react';
+import { EdificeThemeProvider } from '@edifice.io/react';
 import { RouterProvider } from 'react-router-dom';
 import './i18n';
 import { Providers, queryClient } from './providers';
 import { router } from './routes';
+
+import '@edifice.io/bootstrap/dist/index.css';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement!);
@@ -19,8 +21,8 @@ if (import.meta.env.DEV) {
 
 root.render(
   <Providers>
-    <ThemeProvider>
+    <EdificeThemeProvider>
       <RouterProvider router={router(queryClient)} />
-    </ThemeProvider>
+    </EdificeThemeProvider>
   </Providers>,
 );

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { IResource } from 'edifice-ts-client';
-import { useUser } from '@edifice-ui/react';
+import { IResource } from '@edifice.io/client';
+import { useUser } from '@edifice.io/react';
+import { useEffect, useState } from 'react';
 /**
  * Hook to filter wikis based on user rights
  * @param wikis - The wikis to filter
