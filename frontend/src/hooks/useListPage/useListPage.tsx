@@ -1,17 +1,17 @@
+import { ToolbarItem, useBreakpoint } from '@edifice.io/react';
 import {
-  Copy,
-  Delete,
-  FolderMove,
-  Forgoing,
-  Print,
-  See,
-} from '@edifice-ui/icons';
-import { ToolbarItem, useBreakpoint } from '@edifice-ui/react';
+  IconCopy,
+  IconDelete,
+  IconFolderMove,
+  IconForgoing,
+  IconPrint,
+  IconSee,
+} from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWikiActions } from '~/store';
-import { useIsOnlyRead } from '../useIsOnlyRead';
 import { useIsAuthorOrManager } from '../useIsAuthorOrManager';
+import { useIsOnlyRead } from '../useIsOnlyRead';
 
 export const useListPage = ({
   selectedPages,
@@ -68,7 +68,7 @@ export const useListPage = ({
       type: 'button',
       name: 'read',
       props: {
-        'leftIcon': <See />,
+        'leftIcon': <IconSee />,
         'children': itemsTranslation.read.desktop,
         'size': 'sm',
         'onClick': () =>
@@ -85,7 +85,7 @@ export const useListPage = ({
       type: 'button',
       name: 'move',
       props: {
-        'leftIcon': <FolderMove />,
+        'leftIcon': <IconFolderMove />,
         'children': itemsTranslation.move.desktop,
         'size': 'sm',
         'disabled': pagesCount < 1 || pagesCount > 2,
@@ -102,7 +102,7 @@ export const useListPage = ({
       type: 'button',
       name: 'duplicate',
       props: {
-        'leftIcon': <Copy />,
+        'leftIcon': <IconCopy />,
         'children': itemsTranslation.duplicate.desktop,
         'size': 'sm',
         'disabled': pagesCount !== 1,
@@ -119,7 +119,7 @@ export const useListPage = ({
       type: 'button',
       name: 'history',
       props: {
-        'leftIcon': <Forgoing />,
+        'leftIcon': <IconForgoing />,
         'children': itemsTranslation.history.desktop,
         'size': 'sm',
         'onClick': () => setOpenRevisionModal(true),
@@ -136,7 +136,7 @@ export const useListPage = ({
       type: 'button',
       name: 'print',
       props: {
-        'leftIcon': <Print />,
+        'leftIcon': <IconPrint />,
         'children': itemsTranslation.print.desktop,
         'size': 'sm',
         'disabled': pagesCount !== 1,
@@ -152,7 +152,7 @@ export const useListPage = ({
       type: 'button',
       name: 'delete',
       props: {
-        'leftIcon': <Delete />,
+        'leftIcon': <IconDelete />,
         'children': itemsTranslation.delete.desktop,
         'size': 'sm',
         'disabled': pagesCount < 1 || !canDelete,

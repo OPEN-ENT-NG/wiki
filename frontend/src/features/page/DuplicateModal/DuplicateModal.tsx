@@ -1,23 +1,23 @@
-import { FC, useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { IResource } from '@edifice.io/client';
 import {
-  Modal,
-  Button,
-  InternalLinker,
   Alert,
+  Button,
   LoadingScreen,
-  useOdeClient,
-} from '@edifice-ui/react';
-import { getOpenDuplicateModal, useWikiActions } from '~/store';
+  Modal,
+  useEdificeClient,
+} from '@edifice.io/react';
+import { InternalLinker } from '@edifice.io/react/multimedia';
+import { FC, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useFilteredWikis } from '~/hooks/useFilteredWikis';
 import {
   useDuplicatePage,
   useGetAllWikisAsResources,
   useGetPage,
   useGetWiki,
 } from '~/services';
-import { useNavigate } from 'react-router-dom';
-import { useFilteredWikis } from '~/hooks/useFilteredWikis';
-import { IResource } from 'edifice-ts-client';
+import { getOpenDuplicateModal, useWikiActions } from '~/store';
 import { getToastActions } from '~/store/toast';
 /**
  * Duplicate modal props
@@ -34,7 +34,7 @@ interface DuplicateModalProps {
  */
 export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
   const navigate = useNavigate();
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const openDuplicateModal = getOpenDuplicateModal();
   const { data: wikis, isPending: isLoadingWikis } =

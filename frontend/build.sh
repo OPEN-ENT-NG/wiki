@@ -86,6 +86,64 @@ build () {
   fi
 }
 
+linkDependencies () {
+  # Check if the edifice-frontend-framework directory exists
+  if [ ! -d "$PWD/../../edifice-frontend-framework/packages" ]; then
+    echo "Directory edifice-frontend-framework/packages does not exist."
+    exit 1
+  else
+    echo "Directory edifice-frontend-framework/packages exists."
+  fi
+
+
+  # # Extract dependencies from package.json using sed
+  DEPENDENCIES=$(sed -n '/"dependencies": {/,/}/p' package.json | sed -n 's/ *"@edifice\.io\/\([^"]*\)":.*/\1/p')
+
+  # # Link each dependency if it exists in the edifice-frontend-framework
+  for dep in $DEPENDENCIES; do
+    # Handle special case for ts-client
+    package_path="$PWD/../../edifice-frontend-framework/packages/$dep"
+
+    if [ -d "$package_path" ]; then
+      echo "Linking package: $dep"
+      (cd "$package_path" && pnpm link --global)
+    else
+      echo "Package $dep not found in edifice-frontend-framework."
+    fi
+  done
+
+  # Check if ode-explorer exists in package.json using sed
+  if [ -n "$(sed -n '/"ode-explorer":/p' package.json)" ]; then
+    echo "ode-explorer found in package.json"
+    
+    # Check if explorer frontend path exists
+    if [ -d "$PWD/../../explorer/frontend" ]; then
+      echo "explorer/frontend directory exists"
+      echo "Linking ode-explorer globally..."
+      (cd "$PWD/../../explorer/frontend" && pnpm link --global)
+      pnpm link --global ode-explorer
+    else
+      echo "explorer/frontend directory not found"
+      exit 1
+    fi
+  else
+    echo "ode-explorer not found in package.json"
+  fi
+
+  # # Link the packages in the current application
+  echo "Linking packages in the current application..."
+  Link each dependency from package.json
+  for dep in $DEPENDENCIES; do
+    pnpm link --global "@edifice.io/$dep"
+  done
+
+  echo "All specified packages have been linked successfully."
+}
+
+cleanDependencies() {
+  rm -rf node_modules && rm -f pnpm-lock.yaml && pnpm install
+}
+
 for param in "$@"
 do
   case $param in
@@ -97,6 +155,12 @@ do
       ;;
     build)
       build
+      ;;
+    linkDependencies)
+      linkDependencies
+      ;;
+    cleanDependencies)
+      cleanDependencies
       ;;
     *)
       echo "Invalid argument : $param"

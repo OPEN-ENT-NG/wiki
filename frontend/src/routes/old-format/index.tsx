@@ -1,23 +1,23 @@
 import { Suspense, useEffect } from 'react';
 
-import { LoadingScreen, useOdeTheme } from '@edifice-ui/react';
+import { LoadingScreen, useEdificeTheme } from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { LoaderFunctionArgs, useParams } from 'react-router-dom';
 
-import { pageQueryOptions, useGetPage } from '~/services/queries';
-import { odeServices } from 'edifice-ts-client';
-import { PageHeader } from '~/features/page/PageHeader/PageHeader';
+import { odeServices } from '@edifice.io/client';
+import ConfirmVisibilityModal from '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal';
 import DeletePageModal from '~/features/page/DeletePageModal/DeletePageModal';
+import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
+import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import RevisionModal from '~/features/page/RevisionModal/RevisionModal';
+import { pageQueryOptions, useGetPage } from '~/services/queries';
 import {
   useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenRevisionModal,
 } from '~/store';
-import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
-import ConfirmVisibilityModal from '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal';
 
 /** Load a wiki page OLD-FORMAT content */
 export const loader =
@@ -52,7 +52,7 @@ export const Component = () => {
     pageId: pageId!,
     originalformat: true,
   });
-  const { theme } = useOdeTheme();
+  const { theme } = useEdificeTheme();
   const { t } = useTranslation();
 
   useEffect(() => {
