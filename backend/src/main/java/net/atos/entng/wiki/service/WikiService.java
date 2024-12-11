@@ -55,8 +55,13 @@ public interface WikiService {
 
 	public void getPages(String idWiki, String getContent,
 						 Handler<Either<String, JsonObject>> handler);
-
-	public void listAllPages(UserInfos user, Handler<Either<String, JsonArray>> handler);
+	/**
+	 * List all pages of a wiki
+	 * @param user the user
+	 * @param onlyVisible if true, only visible pages are returned (except for managers and authors) 
+	 * @param handler the handler with the pages as JsonArray
+	 */
+	public void listAllPages(UserInfos user, boolean onlyVisible, Handler<Either<String, JsonArray>> handler);
 
 	public void createPage(UserInfos user, String wikiId, JsonObject page, HttpServerRequest request
 			, Handler<Either<String, JsonObject>> handler);
