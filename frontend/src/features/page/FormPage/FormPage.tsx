@@ -1,13 +1,13 @@
-import { Editor } from '@edifice-ui/editor';
-import { InfoCircle, Save } from '@edifice-ui/icons';
 import {
   Button,
   FormControl,
   Input,
   Label,
   Tooltip,
-  useOdeClient,
-} from '@edifice-ui/react';
+  useEdificeClient,
+} from '@edifice.io/react';
+import { Editor } from '@edifice.io/react/editor';
+import { IconInfoCircle, IconSave } from '@edifice.io/react/icons';
 import { Suspense } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ import { useCancelPage } from '~/hooks/useCancelPage';
 import { Page } from '~/models';
 
 export const FormPage = ({ page }: { page?: Page }) => {
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
   const {
@@ -93,7 +93,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
               }
               placement="bottom-start"
             >
-              <InfoCircle className="c-pointer" height="18" />
+              <IconInfoCircle className="c-pointer" height="18" />
             </Tooltip>
           </FormControl>
         )}
@@ -105,7 +105,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             visibility="protected"
             onContentChange={handleContentChange}
             focus={null}
-          ></Editor>
+          />
           <input type="hidden" {...register('content')} />
         </FormControl>
 
@@ -118,7 +118,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <Button
             type="submit"
             variant="filled"
-            leftIcon={<Save />}
+            leftIcon={<IconSave />}
             isLoading={isSubmitting}
             disabled={isSubmitting || !isDirty || !isValid}
           >

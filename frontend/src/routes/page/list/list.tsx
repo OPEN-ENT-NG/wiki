@@ -5,7 +5,7 @@ import {
   LoadingScreen,
   useBreakpoint,
   useDate,
-} from '@edifice-ui/react';
+} from '@edifice.io/react';
 import { QueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { lazy, Suspense, useEffect } from 'react';

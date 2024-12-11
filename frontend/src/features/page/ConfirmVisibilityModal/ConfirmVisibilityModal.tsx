@@ -1,4 +1,4 @@
-import { Button, Modal, useOdeClient } from '@edifice-ui/react';
+import { Button, Modal, useEdificeClient } from '@edifice.io/react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Form, useActionData } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { useOpenConfirmVisibilityModal, useWikiActions } from '~/store';
 export default function ConfirmVisibilityModal({ page }: { page: Page }) {
   const actionData = useActionData() as FormPageDataProps;
 
-  const { appCode } = useOdeClient();
+  const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { setOpenConfirmVisibilityModal } = useWikiActions();
   const openConfirmVisibilityModal = useOpenConfirmVisibilityModal();

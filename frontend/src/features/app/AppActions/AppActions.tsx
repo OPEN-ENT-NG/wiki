@@ -1,10 +1,15 @@
-import { Options, Print, Settings, Share } from '@edifice-ui/icons';
 import {
   Dropdown,
   DropdownMenuOptions,
   IconButton,
   IconButtonProps,
-} from '@edifice-ui/react';
+} from '@edifice.io/react';
+import {
+  IconOptions,
+  IconPrint,
+  IconSettings,
+  IconShare,
+} from '@edifice.io/react/icons';
 import { RefAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Fragment } from 'react/jsx-runtime';
@@ -27,21 +32,21 @@ export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
     {
       id: 'share',
       label: t('share'),
-      icon: <Share />,
+      icon: <IconShare />,
       action: () => setOpenShareModal(true),
       visibility: userRights.manager,
     },
     {
       id: 'properties',
       label: t('properties'),
-      icon: <Settings />,
+      icon: <IconSettings />,
       action: () => setOpenUpdateModal(true),
       visibility: userRights.manager,
     },
     {
       id: 'print',
       label: t('print'),
-      icon: <Print />,
+      icon: <IconPrint />,
       action: () => setOpenPrintModal(true),
       visibility: true,
     },
@@ -63,7 +68,7 @@ export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
             aria-label="label"
             color="primary"
             variant="outline"
-            icon={<Options />}
+            icon={<IconOptions />}
           />
 
           <Dropdown.Menu>
@@ -92,7 +97,7 @@ export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
       <IconButton
         data-testid="print-button"
         variant="outline"
-        icon={<Print />}
+        icon={<IconPrint />}
         onClick={() => setOpenPrintModal(true)}
       />
     )
