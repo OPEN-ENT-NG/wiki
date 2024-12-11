@@ -644,7 +644,7 @@
 	    }.bind(this));
 	};
 	wikiNamespace.Wiki.prototype.listAllPages = function (callback) {
-	    entcore_1.http().get('/wiki/listallpages').done(function (wikis) {
+	    entcore_1.http().get('/wiki/listallpages?visible=true').done(function (wikis) {
 	        var pagesArray = entcore_1._.map(wikis, function (wiki) {
 	            var pages = entcore_1._.map(wiki.pages, function (page) {
 	                return {
@@ -751,7 +751,7 @@
 	    },
 	    // Used by component "linker" to load wiki pages
 	    loadResources: function (callback) {
-	        entcore_1.http().get('/wiki/listallpages').done(function (wikis) {
+	        entcore_1.http().get('/wiki/listallpages?visible=true').done(function (wikis) {
 	            var pagesArray = entcore_1._.map(wikis, function (wiki) {
 	                var pages = entcore_1._.map(wiki.pages, function (page) {
 	                    var wikiIcon;

@@ -228,8 +228,12 @@ public class WikiController extends MongoDbControllerHelper {
 			@Override
 			public void handle(final UserInfos user) {
 				if (user != null) {
+					// We get the onlyVisible parameter
+					final boolean onlyVisible = request.params().get("visible") != null;
+					// We get the handler
 					Handler<Either<String, JsonArray>> handler = arrayResponseHandler(request);
-					wikiService.listAllPages(user, handler);
+					// We list all pages
+					wikiService.listAllPages(user, onlyVisible, handler);
 				}
 			}
 		});
