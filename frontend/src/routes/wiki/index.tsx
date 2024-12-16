@@ -115,8 +115,6 @@ export const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.pageId]);
 
-  // const disabledIds = ['66d06b427d517979a6eb61a6'];
-
   useEffect(() => {
     toastMessages.forEach((message) => {
       if (message.type === 'success') {
