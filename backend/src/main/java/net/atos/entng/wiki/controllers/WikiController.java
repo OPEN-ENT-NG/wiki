@@ -403,21 +403,42 @@ public class WikiController extends MongoDbControllerHelper {
 	@ApiDoc("Update page by idwiki and idpage")
 	@SecuredAction(value = "wiki.contrib", type = ActionType.RESOURCE)
 	public void updatePage(final HttpServerRequest request) {
+		final String requestIdWiki = request.params().get("id");
+		final String requestIdPage = request.params().get("idpage");
+
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				RequestUtils.bodyToJson(request, pathPrefix + "pageUpdate", pagePayload -> {
-					wikiService.updatePage(user,
-							request.params().get("id"),
-							request.params().get("idpage"),
-							pagePayload,
-							request,
-							updatePageResult -> {
-						if (updatePageResult.isRight()) {
-							renderJson(request, updatePageResult.right().getValue());
+					// get the wiki to get the page visibility before update and to get shared users for notification
+					wikiService.getWiki(requestIdWiki, wikiRes -> {
+						if (wikiRes.isRight()) {
+							// update the page
+							wikiService.updatePage(user, requestIdWiki, requestIdPage, pagePayload, request, updatePageResult -> {
+										if (updatePageResult.isRight()) {
+											final JsonObject wiki = wikiRes.right().getValue();
+											final boolean pageWasVisible = wiki.getJsonArray("pages")
+													.stream()
+													.map(page -> (JsonObject) page)
+													.filter(page -> page.getString("_id").equals(requestIdPage))
+													.findFirst()
+													.map(page -> page.getBoolean("isVisible", false))
+													.orElse(false);
+											final boolean pageIsNowVisible = pagePayload.getBoolean("isVisible", false);
+
+											// If page became visible, then send notification
+											if (!pageWasVisible && pageIsNowVisible) {
+												final String pageTitle = updatePageResult.right().getValue().getString("title");
+												notifyPageUpdated(request, user, wiki, requestIdPage, pageTitle);
+											}
+											renderJson(request, updatePageResult.right().getValue());
+										} else {
+											renderJson(request
+													, new JsonObject().put("error", updatePageResult.left().getValue())
+													, 500);
+										}
+									});
 						} else {
-							renderJson(request
-									, new JsonObject().put("error", updatePageResult.left().getValue())
-									, 400);
+							renderJson(request, new JsonObject().put("error", "wiki with id " + requestIdWiki + " was not found"), 404);
 						}
 					});
 				});
@@ -773,7 +794,7 @@ public class WikiController extends MongoDbControllerHelper {
 							});
 
 				}
-				sendNotification(request, author, recipientSet, pageTitle, wiki, idWiki, idPage, true, idPage, null);
+				sendNotification(request, author, recipientSet, pageTitle, wiki, idPage, true, idPage, null);
 			} else {
 				log.error("Error in service getDataForNotification. Unable to send timeline "
 						+ WIKI_PAGE_CREATED_EVENT_TYPE
@@ -845,7 +866,7 @@ public class WikiController extends MongoDbControllerHelper {
 								}
 							});
 				}
-				sendNotification(request, author, recipientSet, page.getString("title"), wiki, idWiki, idPage,
+				sendNotification(request, author, recipientSet, page.getString("title"), wiki, idPage,
 						false, idComment, comment);
 			} else {
 				log.error("Error in service getDataForNotification. Unable to send timeline "
@@ -856,7 +877,7 @@ public class WikiController extends MongoDbControllerHelper {
 	}
 
 	private void sendNotification(final HttpServerRequest request, final UserInfos author, final Set<String> recipientSet,
-								  final String pageTitle, final JsonObject wiki, final String idWiki, final String idPage,
+								  final String pageTitle, final JsonObject wiki, final String idPage,
 								  final boolean isCreatePage, final String idSubResource, String comment) {
 		if (recipientSet != null && !recipientSet.isEmpty()){
 			List<String> recipients = new ArrayList<>(recipientSet);
@@ -866,7 +887,7 @@ public class WikiController extends MongoDbControllerHelper {
 			params.put("username", author.getUsername())
 					.put("pageTitle", pageTitle)
 					.put("wikiTitle", wiki.getString("title"))
-					.put("pageUri", "/wiki/id/" + idWiki + "/page" + "/" + idPage);
+					.put("pageUri", "/wiki/id/" + wiki.getString("_id") + "/page" + "/" + idPage);
 			params.put("resourceUri", params.getString("pageUri"));
 
 			if (!isCreatePage && comment != null && !comment.isEmpty()) {
@@ -893,7 +914,7 @@ public class WikiController extends MongoDbControllerHelper {
 								pageTitle);
 
 			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
-			notification.notifyTimeline(request, "wiki." + notificationName, author, recipients, idWiki, idSubResource, params);
+			notification.notifyTimeline(request, "wiki." + notificationName, author, recipients, wiki.getString("_id"), idSubResource, params);
 		}
 
 	}
@@ -957,6 +978,86 @@ public class WikiController extends MongoDbControllerHelper {
 				user,
 				Collections.singletonList(authorId),
 				pageId,
+				params);
+	}
+
+
+	/**
+	 * Send notification for page update if page visibility has changed from hidden to visible.
+	 * @param request
+	 * @param user
+	 * @param wiki
+	 * @param idPage
+	 * @param pageTitle
+	 */
+	private void notifyPageUpdated(final HttpServerRequest request, final UserInfos author, final JsonObject wiki,
+								   final String idPage, final String pageTitle) {
+		// Get userIds and members of groups, and add them to recipients
+		final Set<String> recipientSet = new HashSet<>();
+		final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
+
+		// if wiki owner is not the page author, add wiki owner to recipients
+		if (!wikiOwnerId.equals(author.getUserId())) {
+			recipientSet.add(wikiOwnerId);
+		}
+
+		final JsonArray shared = wiki.getJsonArray("shared");
+		if (shared != null) {
+			shared.stream()
+					.map((sharedItem) -> (JsonObject) sharedItem)
+					.forEach(sharedItemJO -> {
+						final String sharedUserId = sharedItemJO.getString("userId", null);
+						final String sharedGroupId = sharedItemJO.getString("groupId", null);
+
+						if (sharedUserId != null && !sharedUserId.equals(author.getUserId())) {
+							recipientSet.add(sharedUserId);
+						} else if (sharedGroupId != null) {
+							UserUtils.findUsersInProfilsGroups(sharedGroupId, eb, author.getUserId(),
+									false, findUsersEvent -> {
+								if (findUsersEvent != null) {
+									findUsersEvent.stream()
+											.map(findUser -> (JsonObject) findUser)
+											.forEach(userJO -> {
+												recipientSet.add(userJO.getString("id"));
+											});
+								}
+							});
+						}
+					});
+
+		}
+
+		// prepare notification info
+		final String wikiTitle = wiki.getString("title");
+		JsonObject params = new JsonObject();
+		params.put("uri", "/userbook/annuaire#" + author.getUserId() + "#" + author.getType());
+		params.put("username", author.getUsername())
+				.put("pageTitle", pageTitle)
+				.put("wikiTitle", wiki.getString("title"))
+				.put("pageUri", "/wiki/id/" + wiki.getString("_id") + "/page/" + idPage);
+		params.put("resourceUri", params.getString("pageUri"));
+
+		JsonObject pushNotif = new JsonObject()
+				.put("title", "wiki.push.notif.page-updated.title");
+		params.put("pageTitle", pageTitle);
+
+		pushNotif.put("body", I18n.getInstance().translate(
+				"wiki.push.notif.page-updated.body",
+				getHost(request),
+				I18n.acceptLanguage(request),
+				author.getUsername(),
+				pageTitle,
+				wikiTitle));
+
+		params.put("pushNotif", pushNotif);
+
+		// send notification
+		notification.notifyTimeline(request,
+				"wiki.page-updated",
+				author,
+				new ArrayList<>(recipientSet),
+				wiki.getString("_id"),
+				idPage,
 				params);
 	}
 }
