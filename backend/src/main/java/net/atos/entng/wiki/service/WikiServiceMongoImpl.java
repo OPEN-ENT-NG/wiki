@@ -51,7 +51,7 @@ import org.entcore.common.utils.StringUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import com.mongodb.BasicDBObject;
 
 import fr.wseduc.mongodb.MongoDb;
