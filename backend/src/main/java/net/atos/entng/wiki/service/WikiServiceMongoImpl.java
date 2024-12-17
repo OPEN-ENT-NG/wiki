@@ -48,7 +48,7 @@ import org.entcore.common.utils.StringUtils;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
@@ -463,7 +463,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						
 				// Tiptap Transformer
 				Future<ContentTransformerResponse> contentTransformerResponseFuture;
-				if (page.containsKey("content")) {
+				if (isNotBlank(page.getString("content", ""))) {
 					Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 					desiredFormats.add(ContentTransformerFormat.HTML);
 					desiredFormats.add(ContentTransformerFormat.JSON);
