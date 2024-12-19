@@ -449,12 +449,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final boolean newVisibility = isManager? oldVisibility : true;
 				final int lastPosition = wiki.getJsonArray("pages").size();
 				// Add extra fields to page
+				final JsonObject mongoNow = MongoDb.now();
 				page
 						.put("_id", page.getString("_id"))
 						.put("author", user.getUserId())
 						.put("authorName", user.getUsername())
-						.put("modified", MongoDb.now())
-						.put("created", MongoDb.now())
+						.put("modified", mongoNow)
+						.put("created", mongoNow)
 						// Set the position of the new page to the last position in the list
 						.put("position", lastPosition)
 						// a manager
@@ -502,10 +503,31 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						// Set new page as index
 						modifier.set("index", page.getString("_id"));
 					}
+					// update wiki modified date
+					modifier.set("modified", mongoNow);
 
-					mongo.update(collection, MongoQueryBuilder.build(query),
+					mongo.update(collection,
+							MongoQueryBuilder.build(query),
 							modifier.build(),
-							MongoDbResult.validActionResultHandler(handler));
+							res -> {
+								if (res.body() != null && "ok".equals(res.body().getString("status"))) {
+									// notify Explorer that wiki has been updated
+									wiki.getJsonArray("pages").add(page);
+									wiki.put("modified", mongoNow);
+									wiki.put("version", System.currentTimeMillis());
+
+									wikiExplorerPlugin.notifyUpsert(user, wiki)
+											.onSuccess(e -> handler.handle(new Either.Right<>(page)))
+											.onFailure(e -> {
+												log.error("[Wiki] Error while notifying Explorer after page creation", e);
+												handler.handle(new Either.Left<>(e.getMessage()));
+											});
+								} else {
+									String errorMessage = res.body().getString("message", "");
+									log.error("[Wiki] Error while creating page", errorMessage);
+									handler.handle(new Either.Left<>(errorMessage));
+								}
+							});
 				});
 			}else{
 				handler.handle(wikiRes);
@@ -634,21 +656,41 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 												page.getInteger("position", dbPage.getInteger("position")));
 										futures.add(createRevisionFuture);
 									}
-									if (futures.isEmpty()) {
-										handler.handle(new Either.Right<>(page));
-									} else {
-										CompositeFuture
-												.all(futures)
-												.onComplete(res -> handler.handle(new Either.Right<>(page)));
-									}
+
+									CompositeFuture
+										.all(futures)
+										.onSuccess(res -> {
+											// notify Explorer that wiki has been updated
+											this.getWiki(idWiki, wikiRes -> {
+												if (wikiRes.isRight()) {
+													final JsonObject wiki = wikiRes.right().getValue();
+													wiki.put("version", System.currentTimeMillis());
+													wikiExplorerPlugin.notifyUpsert(user, wiki)
+															.onSuccess(e -> handler.handle(new Either.Right<>(page)))
+															.onFailure(e -> {
+																log.error("[Wiki] Error while notifying Explorer after page update", e);
+																handler.handle(new Either.Left<>(e.getMessage()));
+															});
+												} else {
+													log.error("[Wiki] Error while updating page", wikiRes.left().getValue());
+													handler.handle(new Either.Left<>(wikiRes.left().getValue()));
+												}
+											});
+										})
+										.onFailure(err -> {
+											log.error("[Wiki] Error while updating page", err);
+											handler.handle(new Either.Left<>(err.getMessage()));
+										});
 								} else {
-									handler.handle(
-											new Either.Left<>(updateResult.body().getString("message", "")));
+									String errorMessage = updateResult.body().getString("message", "");
+									log.error(errorMessage);
+									handler.handle(new Either.Left<>(errorMessage));
 								}
 							});
 				} else {
-					log.error("[Wiki] Error when updating page: page with id " + idPage + " was not found.");
-					handler.handle(new Either.Left<>("Page with id " + idPage + " was not found."));
+					String errorMessage = "[Wiki] Error when updating page: page with id " + idPage + " was not found.";
+					log.error(errorMessage);
+					handler.handle(new Either.Left<>(errorMessage));
 				}
 			});
 		});
