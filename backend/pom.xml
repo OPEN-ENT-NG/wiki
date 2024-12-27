@@ -11,7 +11,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>3.0.0</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
@@ -20,9 +20,9 @@
     </scm>
 
     <properties>
-        <web-utils.version>3.0-SNAPSHOT</web-utils.version>
-        <mongodb-helper.version>4.0-SNAPSHOT</mongodb-helper.version>
-        <entcore.version>6.0-SNAPSHOT</entcore.version>
+        <web-utils.version>3.0.0</web-utils.version>
+        <mongodb-helper.version>3.0.0</mongodb-helper.version>
+        <entcore.version>6.0.0</entcore.version>
     </properties>
 
     <repositories>
