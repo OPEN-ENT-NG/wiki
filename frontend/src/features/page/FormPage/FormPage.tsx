@@ -11,7 +11,7 @@ import { IconInfoCircle, IconSave } from '@edifice.io/react/icons';
 import { Suspense } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Form } from 'react-router-dom';
+import { Form, useNavigation } from 'react-router-dom';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config';
@@ -23,6 +23,12 @@ export const FormPage = ({ page }: { page?: Page }) => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
+  // fix #WB2-2155: using useNagivation hook from react-router-dom to know the form submitting state
+  // because react-router-dom submit function does not wait for router action to finish
+  // so the react-hook-form is not able to handle form state properly
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state !== 'idle';
+
   const {
     handleContentChange,
     register,
@@ -31,7 +37,6 @@ export const FormPage = ({ page }: { page?: Page }) => {
     onSubmit,
     disableToggle,
     control,
-    isSubmitting,
     isDirty,
     isValid,
     isManager,
