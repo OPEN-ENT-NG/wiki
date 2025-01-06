@@ -17,8 +17,12 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { getAvatarURL, getUserbookURL } = useDirectory();
-  const { navigateToLatestRevision, restoreCurrentRevision, canRestore } =
-    useRevision();
+  const {
+    isRestoring,
+    navigateToLatestRevision,
+    restoreCurrentRevision,
+    canRestore,
+  } = useRevision();
   return (
     <div className="d-md-flex justify-content-between">
       <div className="d-flex flex-column">
@@ -73,6 +77,8 @@ export const RevisionHeader = ({ page }: { page: Page }) => {
             onClick={restoreCurrentRevision}
             leftIcon={<IconWand />}
             variant="filled"
+            isLoading={isRestoring}
+            disabled={isRestoring}
           >
             {t('wiki.version.restore')}
           </Button>
