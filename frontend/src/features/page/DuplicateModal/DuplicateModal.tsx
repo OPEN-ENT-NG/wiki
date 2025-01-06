@@ -33,6 +33,7 @@ interface DuplicateModalProps {
  * @returns The duplicate modal component
  */
 export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
+  const [isDuplicating, setIsDuplicating] = useState<boolean>(false);
   const navigate = useNavigate();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -55,6 +56,8 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
 
   const handleOnDuplicate = useCallback(
     async (destinationWikiId: string) => {
+      setIsDuplicating(true);
+
       const { addToastMessage } = getToastActions();
 
       // Call duplicate mutation
@@ -80,6 +83,7 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         text: 'wiki.toast.success.duplicate.page',
       });
       // Close modal and navigate to new page
+      setIsDuplicating(false);
       setOpenDuplicateModal(false);
       navigate(`/id/${destinationWikiId}/page/${result._id}`);
     },
@@ -146,7 +150,8 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         </Button>
         <Button
           color="primary"
-          disabled={!destinationWikiId}
+          isLoading={isDuplicating}
+          disabled={isDuplicating || !destinationWikiId}
           onClick={() => handleOnDuplicate(destinationWikiId!)}
         >
           {t('wiki.page.duplicate.modal.submit')}
