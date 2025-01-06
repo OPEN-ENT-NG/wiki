@@ -27,7 +27,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
   // because react-router-dom submit function does not wait for router action to finish
   // so the react-hook-form is not able to handle form state properly
   const navigation = useNavigation();
-  const isSubmitting = navigation.state !== 'idle';
+  const isSubmitting = navigation.state === 'submitting';
 
   const {
     handleContentChange,
