@@ -1,8 +1,6 @@
 import { render, screen } from '~/mocks/setup';
 import WikiEmptyScreen from './WikiEmptyScreen';
 
-const src = '/src/assets/illu-wiki.svg';
-
 /**
  * Block of test
  */
@@ -36,6 +34,6 @@ describe('WikiEmptyScreen', () => {
      * If alt must be empty, then we can use findByAltText as a backup
      */
     const img = await screen.findByRole('img');
-    expect(img).toHaveAttribute('src', src);
+    expect(img.getAttribute('src')).toMatch(/illu-wiki\.svg$/);
   });
 });
