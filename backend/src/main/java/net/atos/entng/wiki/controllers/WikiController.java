@@ -834,36 +834,47 @@ public class WikiController extends MongoDbControllerHelper {
 
 				final JsonArray shared = wiki.getJsonArray("shared");
 				if (shared != null) {
-					// Get userIds and members of groups, and add them to recipients
+					// Get userIds and members of groups, and check to add them to recipients
 					shared.stream()
 							.map((sharedItem) -> (JsonObject) sharedItem)
 							.forEach(sharedItemJO -> {
+								// if shared item (user or group) does not have manager right
+								// then do not add it to recipients
+								if (!sharedItemJO.getBoolean(
+										"net-atos-entng-wiki-controllers-WikiController|updateWiki",
+										false)) {
+									return;
+								}
+
 								final String sharedUserId = sharedItemJO.getString("userId", null);
 								final String sharedGroupId = sharedItemJO.getString("groupId", null);
 
-								// if shared user is page author then add it to recipients
-								if (WikiServiceMongoImpl.isPageAuthor(page, sharedUserId)) {
+								// If user is not the comment author nor the page author
+								// then user is eligible to receive notification for new comment
+								if (isUserEligibleForCommentNotification(sharedUserId, page, author.getUserId())) {
 									recipientSet.add(sharedUserId);
-								} else if (!sharedItemJO.getBoolean(
-										"net-atos-entng-wiki-controllers-WikiController|updateWiki",
-										false)) {
-									// if shared user is not manager then skip it
-									return;
-								} else {
-									if (sharedUserId != null && !sharedUserId.equals(author.getUserId())) {
-										recipientSet.add(sharedUserId);
-									} else if (sharedGroupId != null) {
-										UserUtils.findUsersInProfilsGroups(sharedGroupId, eb, author.getUserId(), false, findUsersEvent -> {
-											if (findUsersEvent != null) {
-												findUsersEvent.stream()
-														.map(user -> (JsonObject) user)
-														.forEach(userJO -> {
-															recipientSet.add(userJO.getString("id"));
-														});
-											}
-										});
-									}
+								} else if (sharedGroupId != null) {
+									UserUtils.findUsersInProfilsGroups(sharedGroupId
+											, eb
+											, author.getUserId()
+											, false
+											, findUsersEvent -> {
+										if (findUsersEvent != null) {
+											findUsersEvent.stream()
+													.map(user -> (JsonObject) user)
+													.forEach(userJO -> {
+														String sharedGroupMemberId = userJO.getString("id", null);
+														if (isUserEligibleForCommentNotification(
+																sharedGroupMemberId
+																, page
+																, author.getUserId())) {
+															recipientSet.add(sharedGroupMemberId);
+														}
+													});
+										}
+									});
 								}
+
 							});
 				}
 				sendNotification(request, author, recipientSet, page.getString("title"), wiki, idPage,
@@ -874,6 +885,16 @@ public class WikiController extends MongoDbControllerHelper {
 						+ " notification.");
 			}
 		});
+	}
+
+	/**
+	 * @return true if user is not the page author nor the comment author.
+	 */
+	private boolean isUserEligibleForCommentNotification(String userId, JsonObject page, String commentAuthorId) {
+		if (userId == null) {
+			return false;
+		}
+		return !userId.equals(commentAuthorId) && !WikiServiceMongoImpl.isPageAuthor(page, userId);
 	}
 
 	private void sendNotification(final HttpServerRequest request, final UserInfos author, final Set<String> recipientSet,
