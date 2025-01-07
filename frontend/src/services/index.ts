@@ -7,4 +7,7 @@ export * from './api';
  * Queries
  */
 export * from './queries';
-export * from './resource/resourceService';
+/**
+ * Explorer Service
+ */
+export * from './resource';
