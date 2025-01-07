@@ -12,6 +12,7 @@ import { Suspense } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigation } from 'react-router-dom';
+import { ButtonGroup } from '~/components/ButtonGroup';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config';
@@ -114,8 +115,8 @@ export const FormPage = ({ page }: { page?: Page }) => {
           <input type="hidden" {...register('content')} />
         </FormControl>
 
-        <div
-          className={`d-flex align-items-center gap-8 justify-content-end mt-16 mb-24 mx-24 z-0 ${page && 'sticky-bottom py-8'}`}
+        <ButtonGroup
+          className={`d-flex align-items-center gap-8 justify-content-end mt-16 mb-24 px-24 z-0 bg-white ${page && 'sticky-bottom py-8'}`}
         >
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
@@ -129,7 +130,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
           >
             {t(PAGE_SAVE)}
           </Button>
-        </div>
+        </ButtonGroup>
       </Form>
       <Suspense>
         {isBlocked ? (
