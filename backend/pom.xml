@@ -11,7 +11,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.0-develop-pedago-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
