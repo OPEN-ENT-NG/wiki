@@ -224,6 +224,7 @@ export const Page = () => {
         mode="read"
         variant="ghost"
         visibility="protected"
+        focus={null}
       />
       {showComments && (
         <CommentProvider
