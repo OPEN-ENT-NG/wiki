@@ -233,6 +233,7 @@ export const Page = () => {
             maxComments: MAX_COMMENTS,
           }}
           type={canComment ? 'edit' : 'read'}
+          rights={userRights}
           callbacks={{
             post: (comment) => handleOnPostComment(comment),
             put: ({ comment, commentId }) =>
