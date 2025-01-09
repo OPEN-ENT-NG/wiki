@@ -121,7 +121,7 @@ export const PageHeader = ({
       style={{ flexDirection: isSmallDevice ? 'unset' : 'row-reverse' }}
     >
       <div
-        className={`d-flex  align-items-center gap-12 ${isSmallDevice ? ' justify-content-end mb-12' : 'justify-content-between'}`}
+        className={`d-flex  align-items-center gap-12 ${isSmallDevice ? ' justify-content-end mb-24' : 'justify-content-between'}`}
       >
         {!isOnlyRead && !isPrint && (
           <>
@@ -172,7 +172,7 @@ export const PageHeader = ({
         <div className="d-flex align-items-center">
           <h2 className="text-gray-800">{page.title}</h2>
         </div>
-        <div className="d-flex align-items-center gap-12 mb-16 mb-md-24 mt-8">
+        <div className="d-flex align-items-center gap-12 mb-16 mb-md-24 mt-16">
           <Avatar
             alt={t('wiki.read.author.avatar')}
             size="sm"
