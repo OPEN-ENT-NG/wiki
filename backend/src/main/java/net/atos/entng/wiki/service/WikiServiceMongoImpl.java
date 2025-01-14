@@ -622,10 +622,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							updateResult -> {
 								if (updateResult.body() != null
 										&& "ok".equals(updateResult.body().getString("status"))) {
-									// If update is OK then we update subPages visibility and create page revision
-									final List<Future> futures = new ArrayList<>();
-
 									// if page visibility has changed then we update visibility for sub pages too
+									final List<Future> futures = new ArrayList<>();
 									if (Boolean.compare(
 											page.getBoolean("isVisible", false),
 											dbPage.getBoolean("isVisible", false)) != 0) {
@@ -636,10 +634,18 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 										futures.add(updateSubpagesVisibilityFuture);
 									}
 
-									// create new revision of a page
-									// (if page was not visible and is still not visible then we don't create a new revision)
-									if (Boolean.TRUE.equals(dbPage.getBoolean("isVisible"))
-											|| Boolean.TRUE.equals(page.getBoolean("isVisible"))) {
+									// Create or update revision
+									// if page was not visible and is still not visible then we udpate the last revision
+									if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
+										&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
+										Future<Void> lastRevisionFuture = this.updateLastRevision(
+												idPage
+												, page.getString("title")
+												, page.getString("content")
+												, page.getBoolean("isVisible")
+												, page.getInteger("position"));
+										futures.add(lastRevisionFuture);
+									} else { // otherwise we create a new revision
 										final Future<Void> createRevisionFuture = this.createRevision(
 												idWiki,
 												idPage,
@@ -1140,5 +1146,67 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.orElse(null);
 
 		return page != null ? page.getString("title") : "";
+	}
+
+	private Future<JsonObject> getLastRevisionByPageId(String pageId) {
+		final Promise<JsonObject> promise = Promise.promise();
+
+		final Bson query = eq("pageId", pageId);
+		final JsonObject sort = new JsonObject().put("date", -1);
+		final JsonObject projection = new JsonObject().put("oldContent", 0).put("content", 0);
+		final int skip = 0;
+		final int limit = 1;
+		final int batchSize = 1;
+
+		mongo.find(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), sort, projection, skip, limit, batchSize, res -> {
+			if ("ok".equals(res.body().getString("status"))) {
+				// if OK returns the Promise with the last revision found
+				promise.complete(res.body());
+			} else {
+				log.error("Error retrieving the last revision for page "
+						+ pageId + " - " + res.body().getString("message"));
+				promise.fail(res.body().getString("message"));
+			}
+		});
+
+		return promise.future();
+	}
+
+	private Future<Void> updateLastRevision(String pageId, String pageTitle, String pageContent,
+											boolean isVisible, Integer position) {
+		final Promise<Void> promise = Promise.promise();
+
+		Future<JsonObject> lastRevisionFuture = this.getLastRevisionByPageId(pageId);
+		lastRevisionFuture
+				.onSuccess(lastRevisionRes -> {
+					JsonArray result = lastRevisionRes.getJsonArray("results");
+					if (!result.isEmpty()) {
+						JsonObject lastRevision = result.getJsonObject(0);
+
+						final Bson query = eq("_id", lastRevision.getString("_id"));
+
+						final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+						modifier.set("title", pageTitle)
+								.set("content", pageContent)
+								.set("isVisible", isVisible)
+								.set("position", position)
+								.set("date", MongoDb.now());
+
+						mongo.update(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), modifier.build(), res -> {
+							if ("ok".equals(res.body().getString("status"))) {
+								promise.complete();
+							} else {
+								log.error("Error updating revision " + lastRevision.getString("_id") + " - " + res.body().getString("message"));
+								promise.fail(res.body().getString("message"));
+							}
+						});
+					} else {
+						String errorMessage = "Error retrieving last revision of page: " + pageId;
+						log.error(errorMessage);
+						promise.fail(errorMessage);
+					}
+				});
+
+		return promise.future();
 	}
 }
