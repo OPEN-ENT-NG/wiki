@@ -31,9 +31,9 @@
     ]
   },
   "dependencies": {
-    "@edifice.io/bootstrap": "develop",
-    "@edifice.io/client": "develop",
-    "@edifice.io/react": "develop",
+    "@edifice.io/bootstrap": "develop-pedago",
+    "@edifice.io/client": "develop-pedago",
+    "@edifice.io/react": "develop-pedago",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
