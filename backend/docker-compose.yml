@@ -5,6 +5,8 @@ services:
     working_dir: /usr/src/maven
     volumes:
       - ./:/usr/src/maven
+      - ../.git:/usr/src/.git:ro
       - ~/.m2:/var/maven/.m2
     environment:
       MAVEN_CONFIG: /var/maven/.m2
+      GIT_DIR: /usr/src/.git
