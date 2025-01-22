@@ -41,9 +41,9 @@ public class OwnerAuthorOrSharedPage implements ResourcesProvider {
             // Authorize if current user is the wiki's owner, the comment's author or if the serviceMethod has been shared
             final Bson query = and(
               eq("_id", wikiId),
+              elemMatch("pages", pageMatch),
               or(
                 eq("owner.userId", user.getUserId()),
-                elemMatch("pages", pageMatch),
                 elemMatch("shared", or(groups))
               )
             );
