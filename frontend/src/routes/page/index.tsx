@@ -41,6 +41,7 @@ import {
   useUserRights,
 } from '~/store';
 import { getToastActions } from '~/store/toast';
+import { findLastPage } from '~/utils/findLastPage';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -95,11 +96,15 @@ export const action =
   (queryClient: QueryClient) =>
   async ({ params }: ActionFunctionArgs) => {
     const { addToastMessage } = getToastActions();
-
     const pageParams = {
       wikiId: params.wikiId!,
       pageId: params.pageId!,
     };
+
+    // get wiki to check if it has pages
+    const wiki = await queryClient.fetchQuery(
+      wikiQueryOptions.findOne(params.wikiId!),
+    );
 
     const wikiOptions = wikiQueryOptions.findOne(params.wikiId!);
 
@@ -118,8 +123,14 @@ export const action =
       type: 'success',
       text: 'wiki.toast.success.delete.page',
     });
-
-    return redirect(`/id/${params.wikiId}`);
+    // get last page to redirect to it
+    const lastPage = wiki
+      ? findLastPage(wiki, { beforePageId: params.pageId })
+      : undefined;
+    // redirect to last page if it exists, otherwise redirect to wiki
+    return lastPage
+      ? redirect(`/id/${params.wikiId}/page/${lastPage._id}`)
+      : redirect(`/id/${params.wikiId}`);
   };
 
 export const visibleAction = pageEditAction;
