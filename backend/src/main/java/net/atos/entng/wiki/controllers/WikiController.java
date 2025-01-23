@@ -806,40 +806,41 @@ public class WikiController extends MongoDbControllerHelper {
 	/**
 	 * Notify comment creation.
 	 * @param request
-	 * @param author
+	 * @param commentAuthor
 	 * @param idWiki
 	 * @param idPage
 	 * @param idComment
 	 * @param comment
 	 */
-	private void notifyCommentCreated(final HttpServerRequest request, final UserInfos author,
+	private void notifyCommentCreated(final HttpServerRequest request, final UserInfos commentAuthor,
 									  final String idWiki, final String idPage, final String idComment, final String comment) {
 		wikiService.getDataForNotification(idWiki, idPage, event -> {
 			if (event.isRight()) {
 				final JsonObject wiki = event.right().getValue();
 				final JsonObject page = wiki.getJsonArray("pages").getJsonObject(0);
 
-				// Do not notify comment creation for hidden page
+				// Rule #1: Do not notify comment creation for hidden page
 				if (!page.getBoolean("isVisible", false)) {
 					return;
 				}
 
+				// The Notification Recipients Set that will be populated below
 				final Set<String> recipientSet = new HashSet<>();
-				final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
 
-				// if wiki owner is not the comment author, add wiki owner to recipients
-				if (!wikiOwnerId.equals(author.getUserId())) {
+				// Rule #2: If wiki owner is not the comment author, add it to recipients
+				final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
+				if (wikiOwnerId != null && !wikiOwnerId.equals(commentAuthor.getUserId())) {
 					recipientSet.add(wikiOwnerId);
 				}
 
+				// Get wiki shared users and groups
 				final JsonArray shared = wiki.getJsonArray("shared");
 				if (shared != null) {
-					// Get userIds and members of groups, and check to add them to recipients
 					shared.stream()
 							.map((sharedItem) -> (JsonObject) sharedItem)
 							.forEach(sharedItemJO -> {
-								// if shared item (user or group) does not have manager right
-								// then do not add it to recipients
+								// Rule #3: If shared item (user or group) does not have manager right
+								// 			then do not add it to recipients
 								if (!sharedItemJO.getBoolean(
 										"net-atos-entng-wiki-controllers-WikiController|updateWiki",
 										false)) {
@@ -849,14 +850,13 @@ public class WikiController extends MongoDbControllerHelper {
 								final String sharedUserId = sharedItemJO.getString("userId", null);
 								final String sharedGroupId = sharedItemJO.getString("groupId", null);
 
-								// If user is not the comment author nor the page author
-								// then user is eligible to receive notification for new comment
-								if (isUserEligibleForCommentNotification(sharedUserId, page, author.getUserId())) {
+								// Rule #4: If shared user is not the comment author then add it to recipients
+								if (sharedUserId != null && !sharedUserId.equals(commentAuthor.getUserId())) {
 									recipientSet.add(sharedUserId);
 								} else if (sharedGroupId != null) {
 									UserUtils.findUsersInProfilsGroups(sharedGroupId
 											, eb
-											, author.getUserId()
+											, commentAuthor.getUserId()
 											, false
 											, findUsersEvent -> {
 										if (findUsersEvent != null) {
@@ -864,10 +864,9 @@ public class WikiController extends MongoDbControllerHelper {
 													.map(user -> (JsonObject) user)
 													.forEach(userJO -> {
 														String sharedGroupMemberId = userJO.getString("id", null);
-														if (isUserEligibleForCommentNotification(
-																sharedGroupMemberId
-																, page
-																, author.getUserId())) {
+														// Rule: Same rule as rule #4 applied to group members
+														if (sharedGroupMemberId != null
+																&& !sharedGroupMemberId.equals(commentAuthor.getUserId())) {
 															recipientSet.add(sharedGroupMemberId);
 														}
 													});
@@ -877,7 +876,7 @@ public class WikiController extends MongoDbControllerHelper {
 
 							});
 				}
-				sendNotification(request, author, recipientSet, page.getString("title"), wiki, idPage,
+				sendNotification(request, commentAuthor, recipientSet, page.getString("title"), wiki, idPage,
 						false, idComment, comment);
 			} else {
 				log.error("Error in service getDataForNotification. Unable to send timeline "
@@ -885,16 +884,6 @@ public class WikiController extends MongoDbControllerHelper {
 						+ " notification.");
 			}
 		});
-	}
-
-	/**
-	 * @return true if user is not the page author nor the comment author.
-	 */
-	private boolean isUserEligibleForCommentNotification(String userId, JsonObject page, String commentAuthorId) {
-		if (userId == null) {
-			return false;
-		}
-		return !userId.equals(commentAuthorId) && !WikiServiceMongoImpl.isPageAuthor(page, userId);
 	}
 
 	private void sendNotification(final HttpServerRequest request, final UserInfos author, final Set<String> recipientSet,
