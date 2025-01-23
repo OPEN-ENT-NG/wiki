@@ -116,7 +116,9 @@ export const FormPage = ({ page }: { page?: Page }) => {
         </FormControl>
 
         <ButtonGroup
-          className={`d-flex align-items-center gap-8 justify-content-end mt-16 mb-24 px-24 z-0 bg-white ${page && 'sticky-bottom py-8'}`}
+          className={
+            'd-flex align-items-center gap-8 justify-content-end mt-16 mb-24 px-24 z-0 bg-white sticky-bottom py-8'
+          }
         >
           <Button type="button" variant="ghost" onClick={handleOnButtonCancel}>
             {t('wiki.editform.cancel')}
