@@ -130,6 +130,8 @@ public class WikiController extends MongoDbControllerHelper {
     @SecuredAction(value = "", type = ActionType.AUTHENTICATED)
     public void viewById(HttpServerRequest request) {
         renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
     }
 
 	/**
@@ -140,12 +142,16 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void viewWikiPages(HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
 	}
 
 	@Get("/id/:id/page/:pageId/version/:versionId")
 	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void viewByRevision(HttpServerRequest request){
 		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
 	}
 
 	/**
@@ -156,6 +162,8 @@ public class WikiController extends MongoDbControllerHelper {
 	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void viewPageById(HttpServerRequest request) {
 		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
 	}
 
 	/**
