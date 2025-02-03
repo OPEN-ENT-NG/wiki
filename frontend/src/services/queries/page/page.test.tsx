@@ -11,7 +11,12 @@ import {
   useUpdatePage,
 } from './page';
 
-import { mockPage, mockRevision, mockWikiPagesWithoutContent } from '~/mocks';
+import {
+  mockWikiWithOnePage,
+  mockRevision,
+  mockWikiPagesWithoutContent,
+  mockPage,
+} from '~/mocks';
 import { wrapper } from '~/mocks/setup';
 import { queryClient } from '~/providers';
 import { wikiQueryOptions } from '~/services';
@@ -24,8 +29,8 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetPage({
-          wikiId: mockPage._id,
-          pageId: mockPage.pages[0]._id,
+          wikiId: mockWikiWithOnePage._id,
+          pageId: mockWikiWithOnePage.pages[0]._id,
         }),
       {
         wrapper,
@@ -62,8 +67,8 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetRevisionsPage({
-          wikiId: mockPage._id,
-          pageId: mockPage.pages[0]._id,
+          wikiId: mockWikiWithOnePage._id,
+          pageId: mockWikiWithOnePage.pages[0]._id,
         }),
       {
         wrapper,
@@ -81,8 +86,8 @@ describe('Wiki Page GET Queries', () => {
     const { result } = renderHook(
       () =>
         useGetRevisionPage({
-          wikiId: mockPage._id,
-          pageId: mockPage.pages[0]._id,
+          wikiId: mockWikiWithOnePage._id,
+          pageId: mockWikiWithOnePage.pages[0]._id,
           revisionId: mockRevision[0]._id,
         }),
       {

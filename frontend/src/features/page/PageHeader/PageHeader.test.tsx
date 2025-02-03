@@ -1,4 +1,4 @@
-import { mockPage } from '~/mocks';
+import { mockWikiWithOnePage } from '~/mocks';
 import { render, screen } from '~/mocks/setup';
 import { PageHeader } from './PageHeader';
 
@@ -57,18 +57,20 @@ describe('PageHeader component', () => {
   });
 
   it('should render successfully', async () => {
-    const { baseElement } = render(<PageHeader page={mockPage.pages[0]} />);
+    const { baseElement } = render(
+      <PageHeader page={mockWikiWithOnePage.pages[0]} />,
+    );
 
     expect(baseElement).toBeTruthy();
   });
 
   it('renders the avatar correctly with the correct alt text', () => {
-    render(<PageHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockWikiWithOnePage.pages[0]} />);
     expect(screen.getByAltText(/wiki.read.author.avatar/));
   });
 
   it('renders the formatted modified date correctly', () => {
-    render(<PageHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockWikiWithOnePage.pages[0]} />);
     expect(screen.getByText(/wiki.read.dated.updated/));
   });
 
@@ -80,7 +82,7 @@ describe('PageHeader component', () => {
       read: true,
     });
 
-    render(<PageHeader page={mockPage.pages[0]} />);
+    render(<PageHeader page={mockWikiWithOnePage.pages[0]} />);
 
     const editButton = screen.queryByRole('button', { name: 'wiki.page.edit' });
     expect(editButton).not.toBeInTheDocument();
