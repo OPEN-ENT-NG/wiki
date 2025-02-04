@@ -1,7 +1,7 @@
 import { useCheckablePrint } from '~/hooks/useCheckablePrint';
 import { render, screen } from '~/mocks/setup';
 import PrintModal from './PrintModal';
-import { mockPage } from '~/mocks';
+import { mockWikiWithOnePage } from '~/mocks';
 
 const mocks = vi.hoisted(() => ({
   handleOnGroupChange: vi.fn(),
@@ -40,7 +40,7 @@ const mockPrintModalHookValue = {
   printComment: false,
   printGroup: 'onePage' as PrintGroup,
   disableWikiPrint: false,
-  pageId: mockPage._id,
+  pageId: mockWikiWithOnePage._id,
 };
 
 describe('PrintModal', () => {

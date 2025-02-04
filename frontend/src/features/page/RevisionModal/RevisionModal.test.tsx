@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { useCheckableTable } from '~/hooks/useCheckableTable';
-import { mockPage, mockRevision } from '~/mocks';
+import { mockWikiWithOnePage, mockRevision } from '~/mocks';
 import { renderWithRouter } from '~/mocks/renderWithRouter';
 import { screen } from '~/mocks/setup';
 import RevisionModal from './RevisionModal';
@@ -57,7 +57,7 @@ describe('RevisionModal', () => {
   beforeEach(() => {
     // mock current page
     mocks.useGetPage.mockReturnValue({
-      data: mockPage.pages[0],
+      data: mockWikiWithOnePage.pages[0],
     });
 
     vi.mocked(useCheckableTable).mockReturnValue(mockRevisionTableHookValue);
@@ -69,7 +69,7 @@ describe('RevisionModal', () => {
   });
 
   it('should render component', async () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
     //TODO: Implement compare button test when the feature is ready
@@ -83,13 +83,13 @@ describe('RevisionModal', () => {
       isPending: true,
     });
 
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     expect(screen.getByAltText('loading')).toBeInTheDocument();
   });
 
   it('should have title', () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     expect(screen.getByText('wiki.version.modal.title')).toBeInTheDocument();
     expect(screen.getByRole('heading')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('RevisionModal', () => {
   });
 
   it('should close RevisionModal when user clicks on cancel button', async () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const closeBtn = screen.getByTestId('cancel-button');
@@ -109,7 +109,7 @@ describe('RevisionModal', () => {
   });
 
   it('should close RevisionModal when user clicks close btn', async () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const closeBtn = screen.getByTitle('close');
@@ -147,7 +147,7 @@ describe('RevisionModal', () => {
   }); */
 
   it('should disable the Restore button when multiple items are selected or conditions are not met', () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const restoreButton = screen.getByTestId('restore-button');
     expect(restoreButton).toBeDisabled();
@@ -159,7 +159,7 @@ describe('RevisionModal', () => {
       selectedItems: [mockRevision[1]._id],
     });
 
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId(`checkbox-${mockRevision[1]._id}`);
@@ -178,7 +178,7 @@ describe('RevisionModal', () => {
       selectedItems: [mockRevision[2]._id],
     });
 
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId(`checkbox-${mockRevision[2]._id}`);
@@ -192,7 +192,7 @@ describe('RevisionModal', () => {
   });
 
   it('should have no checkbox checked', () => {
-    renderWithRouter(`/`, <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter(`/`, <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const checkbox = screen.getByTestId('th-checkbox');
     expect(checkbox).not.toBeChecked();
@@ -204,7 +204,7 @@ describe('RevisionModal', () => {
       allItemsSelected: true,
     });
 
-    renderWithRouter('/', <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter('/', <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const checkbox = screen.getByTestId('th-checkbox');
@@ -216,7 +216,7 @@ describe('RevisionModal', () => {
   });
 
   it('should have one checkbox checked if user clicks a checkbox', async () => {
-    renderWithRouter('/', <RevisionModal pageId={mockPage._id} />);
+    renderWithRouter('/', <RevisionModal pageId={mockWikiWithOnePage._id} />);
 
     const user = userEvent.setup();
     const checkbox = screen.getAllByRole('checkbox')[2];

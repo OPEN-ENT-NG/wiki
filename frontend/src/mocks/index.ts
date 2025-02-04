@@ -499,28 +499,28 @@ export const mockWikiPagesWithoutContent = {
 };
 
 export const mockPage = {
+  _id: '001',
+  title: 'ma nouvelle page',
+  content: '',
+  contentPlain: 'test modification',
+  contentVersion: 1,
+  author: '123456789',
+  authorName: 'Author',
+  created: {
+    $date: 1718207454421,
+  },
+  modified: {
+    $date: 1718207454421,
+  },
+  isVisible: false,
+  lastContributer: '123456789',
+  lastContributerName: 'Author',
+};
+
+export const mockWikiWithOnePage = {
   _id: 'f9853a14b354',
   title: 'Wiki',
-  pages: [
-    {
-      _id: '001',
-      title: 'ma nouvelle page',
-      content: '',
-      contentPlain: 'test modification',
-      contentVersion: 1,
-      author: '123456789',
-      authorName: 'Author',
-      created: {
-        $date: 1718207454421,
-      },
-      modified: {
-        $date: 1718207454421,
-      },
-      isVisible: false,
-      lastContributer: '123456789',
-      lastContributerName: 'Author',
-    },
-  ],
+  pages: [mockPage],
   owner: {
     userId: '123456789',
     displayName: 'Author',

@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { mockPage, mockRevision } from '~/mocks';
+import { mockWikiWithOnePage, mockRevision } from '~/mocks';
 import { wrapper } from '~/mocks/setup';
 import { useRevision } from './useRevision';
 
@@ -89,7 +89,7 @@ describe('useRevision hook', () => {
   test('should return page merged with current revision', async () => {
     // mock current page
     mocks.useGetPage.mockReturnValue({
-      data: mockPage.pages[0],
+      data: mockWikiWithOnePage.pages[0],
     });
     // mock current revision
     mocks.useGetRevisionPage.mockReturnValue({
@@ -112,7 +112,7 @@ describe('useRevision hook', () => {
 
   test('should return latest page', async () => {
     // mock current page
-    const firstPage = mockPage.pages[0];
+    const firstPage = mockWikiWithOnePage.pages[0];
     mocks.useGetPage.mockReturnValue({
       data: firstPage,
     });

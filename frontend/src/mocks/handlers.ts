@@ -257,7 +257,7 @@ export const handlers = [
     }
   }),
   http.get(`${baseURL}/:wikiId/page/:pageId`, () => {
-    return HttpResponse.json(mockPage);
+    return HttpResponse.json(mockPage, { status: 200 });
   }),
   http.get(`${baseURL}/${mockWiki._id}/page/:pageId/revisions`, () => {
     return HttpResponse.json(mockRevision, { status: 200 });

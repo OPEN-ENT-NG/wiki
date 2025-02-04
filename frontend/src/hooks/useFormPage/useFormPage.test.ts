@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { mockPage, mockWiki } from '~/mocks';
+import { mockWikiWithOnePage, mockWiki } from '~/mocks';
 import { Providers } from '~/providers';
 import { findPage } from '~/utils/findPage';
 import { useFormPage } from './useFormPage';
@@ -44,9 +44,12 @@ describe('useFormPage hook tests', () => {
   });
 
   test('Do not disable visibility toggle for a parent page', async () => {
-    const { result } = renderHook(() => useFormPage(mockPage.pages[0]), {
-      wrapper: Providers,
-    });
+    const { result } = renderHook(
+      () => useFormPage(mockWikiWithOnePage.pages[0]),
+      {
+        wrapper: Providers,
+      },
+    );
 
     await waitFor(() => {
       expect(result.current.disableToggle()).toBe(false);
