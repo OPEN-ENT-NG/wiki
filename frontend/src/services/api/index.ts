@@ -1,12 +1,11 @@
 import { odeServices } from '@edifice.io/client';
 import {
-  DuplicatePagePayload,
+  DuplicatePageResultOrError,
   Page,
   PageDto,
   PagePostPayload,
   PagePutPayload,
   PagesPutPayload,
-  PickedPageId,
   PickedWiki,
   Wiki,
   WikiDto,
@@ -322,22 +321,28 @@ const createWikiService = (baseURL: string) => ({
   /**
    * Duplicate a page
    *
-   * @param {Object} params - expected params to duplicate a page.
    * @param {string} params.sourceWikiId - source wiki id.
-   * @param {string} params.destinationWikiId - destination wiki id.
-   * @param {DuplicatePagePayload} params.data - data for the new page.
-   * @returns {Promise<Page>} a promise that resolves to the newly created page.
+   * @param {string} params.sourcePageId - source page id.
+   * @param {string[]} params.targetWikiIds - target wiki ids.
+   * @returns {Promise<PickedPageId[]>} a promise that resolves to the newly created page.
    */
   async duplicatePage({
-    destinationWikiId,
-    data,
+    sourceWikiId,
+    sourcePageId,
+    targetWikiIds,
   }: {
-    destinationWikiId: string;
-    data: DuplicatePagePayload;
-  }) {
+    sourceWikiId: string;
+    sourcePageId: string;
+    targetWikiIds: string[];
+  }): Promise<DuplicatePageResultOrError> {
     const response = await odeServices
       .http()
-      .post<PickedPageId>(`${baseURL}/${destinationWikiId}/page`, data);
+      .post<DuplicatePageResultOrError>(
+        `${baseURL}/${sourceWikiId}/page/${sourcePageId}/duplicate`,
+        {
+          targetWikiIds,
+        },
+      );
     return response;
   },
 });

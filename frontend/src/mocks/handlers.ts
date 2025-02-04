@@ -291,4 +291,10 @@ export const handlers = [
       { status: 200 },
     );
   }),
+  http.post(`${baseURL}/:wikiId/page/:pageId/duplicate`, () => {
+    return HttpResponse.json(
+      { newPageIds: [{ wikiId: mockPage._id, pageId: mockPage.pages[0]._id }] },
+      { status: 200 },
+    );
+  }),
 ];

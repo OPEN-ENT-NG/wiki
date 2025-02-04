@@ -127,12 +127,9 @@ describe('DuplicateModal component', () => {
     // Wait for the mutation to be called
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith({
-        destinationWikiId: 'wiki2', // Assuming 'wiki2' is the selected wiki
-        data: {
-          content: '',
-          isVisible: mockWikiPages.pages[0].isVisible,
-          title: mockWikiPages.pages[0].title,
-        },
+        sourceWikiId: 'wiki1',
+        sourcePageId: 'page1',
+        targetWikiIds: ['wiki2'],
       });
     });
   });

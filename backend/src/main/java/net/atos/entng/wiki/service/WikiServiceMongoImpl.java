@@ -37,11 +37,13 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
+import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListEntryFlat;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
 import org.bson.conversions.Bson;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
+import org.bson.types.ObjectId;
 import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -1045,6 +1047,127 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			query = and(query, eq("pageId", pageId));
 		}
 		mongo.delete(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), MongoDbResult.validResultHandler(handler));
+	}
+
+	@Override
+	public Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList) {
+		final Promise<List<PageId>> globalPromise = Promise.promise();
+		final List<PageId> duplicatedPageIds = new ArrayList<>();
+
+		// Get the source wiki
+		getWiki(sourceWikiId, sourceWikiRes -> {
+			// If the source wiki is not found, return an error
+			if (sourceWikiRes.isLeft()) {
+				globalPromise.fail("wiki.source.not.found");
+				return;
+			}
+			// Get the source wiki
+			final JsonObject sourceWiki = sourceWikiRes.right().getValue();
+			// Get the source pages
+			final JsonArray pages = sourceWiki.getJsonArray("pages", new JsonArray());
+
+			// Find the source page
+			final Optional<Object> sourcePageOpt = pages.stream()
+					.filter(p -> sourcePageId.equals(((JsonObject)p).getString("_id")))
+					.findFirst();
+
+			if (!sourcePageOpt.isPresent()) {
+				globalPromise.fail("wiki.page.source.not.found");
+				return;
+			}
+			// Get the source page
+			final JsonObject sourcePage = (JsonObject) sourcePageOpt.get();
+			// Get the source subpages
+			final JsonArray sourceSubPages = getSubPages(sourceWiki, Collections.singleton(sourcePageId));
+
+			// Create futures for each target wiki
+			final List<Future<Void>> futures = new ArrayList<>();
+			for (String targetWikiId : targetWikiIdList) {
+				// Generate a new page ID
+				final String newPageId = new ObjectId().toString();
+				// Add the new page ID to the list of duplicated page IDs
+				duplicatedPageIds.add(new PageId(newPageId, targetWikiId));
+
+				// Duplicate the page
+				final JsonObject newPage = sourcePage.copy();
+				// Set the new page properties
+				newPage.put("_id", newPageId)
+					   .put("author", user.getUserId())
+					   .put("authorName", user.getUsername())
+					   .put("created", MongoDb.now())
+					   .put("modified", MongoDb.now())
+					   .put("contentVersion", 1)
+					   .remove("parentId");
+
+				// Duplicate subpages
+				final JsonArray newSubPages = new JsonArray();
+				if (!sourceSubPages.isEmpty()) {
+					final JsonArray newChildren = new JsonArray();
+					for (Object subPage : sourceSubPages) {
+						// Get the source subpage
+						final JsonObject sourceSubPage = (JsonObject) subPage;
+						// Duplicate the source subpage
+						final JsonObject newSubPage = sourceSubPage.copy();
+						// Generate a new subpage ID
+						final String newSubPageId = new ObjectId().toString();
+						// Set the new subpage properties
+						newSubPage.put("_id", newSubPageId)
+								 .put("parentId", newPageId)
+								 .put("author", user.getUserId())
+								 .put("authorName", user.getUsername())
+								 .put("created", MongoDb.now())
+								 .put("modified", MongoDb.now())
+								 .put("contentVersion", 1);
+						// Add the new subpage to the new subpages array
+						newSubPages.add(newSubPage);
+						// Add child reference to parent page
+						final JsonObject child = new JsonObject()
+								.put("_id", newSubPageId)
+								.put("title", newSubPage.getString("title"))
+								.put("isVisible", newSubPage.getBoolean("isVisible"))
+								.put("position", newSubPage.getInteger("position"));
+						newChildren.add(child);
+					}
+					// Add children array to parent page
+					newPage.put("children", newChildren);
+				}
+
+				// Add the page and its subpages to the target wiki
+				final Bson query = eq("_id", targetWikiId);
+				// Create a JsonArray with all pages to add
+				final JsonArray allPages = new JsonArray().add(newPage);
+				allPages.addAll(newSubPages);
+
+				// Create the query with JsonObject
+				final JsonObject update = new JsonObject()
+					.put("$push", new JsonObject()
+						.put("pages", new JsonObject()
+							.put("$each", allPages)
+						)
+					);
+
+				// Create a future for the target wiki
+				final Future<Void> future = Future.future(updatePromise -> {
+					// Update the target wiki
+					mongo.update(collection, MongoQueryBuilder.build(query), update, res -> {
+						if ("ok".equals(res.body().getString("status"))) {
+							updatePromise.complete();
+						} else {
+							updatePromise.fail(res.body().getString("message"));
+						}
+					});
+				});
+				// Add the future to the list of futures
+				futures.add(future);
+			}
+
+			// Wait for all duplications to be completed
+			Future.all(futures)
+				.onSuccess(res -> globalPromise.complete(duplicatedPageIds))
+				.onFailure(err -> globalPromise.fail(err.getMessage()));
+		});
+
+		return globalPromise.future();
 	}
 
 	/**
