@@ -82,4 +82,17 @@ export type DuplicatePagePayload = Pick<
   'title' | 'content' | 'isVisible' | 'position'
 >;
 
+export type DuplicatePageResult = {
+  newPageIds: Array<{
+    pageId: string;
+    wikiId: string;
+  }>;
+};
+
+export type DuplicatePageResultOrError =
+  | DuplicatePageResult
+  | {
+      error: string;
+    };
+
 export type PickedPageId = Pick<Page, '_id' | 'error'>;

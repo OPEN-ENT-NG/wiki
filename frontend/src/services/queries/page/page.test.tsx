@@ -192,13 +192,9 @@ describe('Wiki Page mutations Queries', () => {
     const { result } = renderHook(() => useDuplicatePage(), { wrapper });
     // prepare the mock
     const variables = {
-      destinationWikiId: 'destinationWikiId',
-      data: {
-        title: 'Duplicated Page',
-        content: 'duplicated content',
-        isVisible: true,
-        position: 0,
-      },
+      sourceWikiId: mockPage._id,
+      sourcePageId: mockPage.pages[0]._id,
+      targetWikiIds: [mockPage._id],
     };
     // execute the mutation
     act(() => {
@@ -208,11 +204,13 @@ describe('Wiki Page mutations Queries', () => {
     await waitFor(() => {
       // check the result
       expect(result.current.isSuccess).toBe(true);
-      expect(result.current.data).toStrictEqual(variables.data);
+      expect(result.current.data).toStrictEqual({
+        newPageIds: [{ wikiId: mockPage._id, pageId: mockPage.pages[0]._id }],
+      });
       // check the invalidations
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
         queryKey: pageQueryOptions.findAllFromWiki({
-          wikiId: 'destinationWikiId',
+          wikiId: mockPage._id,
           content: true,
         }).queryKey,
       });
@@ -220,7 +218,7 @@ describe('Wiki Page mutations Queries', () => {
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: wikiQueryOptions.findOne('destinationWikiId').queryKey,
+        queryKey: wikiQueryOptions.findOne(mockPage._id).queryKey,
       });
     });
   });

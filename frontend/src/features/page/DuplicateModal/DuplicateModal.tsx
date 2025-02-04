@@ -11,12 +11,7 @@ import { FC, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useFilteredWikis } from '~/hooks/useFilteredWikis';
-import {
-  useDuplicatePage,
-  useGetAllWikisAsResources,
-  useGetPage,
-  useGetWiki,
-} from '~/services';
+import { useDuplicatePage, useGetAllWikisAsResources } from '~/services';
 import { getOpenDuplicateModal, useWikiActions } from '~/store';
 import { getToastActions } from '~/store/toast';
 /**
@@ -40,78 +35,71 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
   const openDuplicateModal = getOpenDuplicateModal();
   const { data: wikis, isPending: isLoadingWikis } =
     useGetAllWikisAsResources();
-  const { data: sourceWiki, isPending: isLoadingSourceWiki } =
-    useGetWiki(wikiId);
   const { filteredWikis, isLoading: isLoadingFilteredWikis } =
     useFilteredWikis(wikis);
-  const { data: sourcePage, isPending: isLoadingSourcePage } = useGetPage({
-    wikiId,
-    pageId,
-  });
   const { setOpenDuplicateModal } = useWikiActions();
   const duplicateMutation = useDuplicatePage();
-  const [destinationWikiId, setDestinationWikiId] = useState<string | null>(
-    null,
-  );
+  const [destinationWikiIds, setDestinationWikiIds] = useState<string[]>([]);
 
   const handleOnDuplicate = useCallback(
-    async (destinationWikiId: string) => {
+    async (destinationWikiIds: string[]) => {
       setIsDuplicating(true);
 
       const { addToastMessage } = getToastActions();
 
       // Call duplicate mutation
       const result = await duplicateMutation.mutateAsync({
-        destinationWikiId,
-        data: {
-          title: sourcePage?.title ?? '',
-          content: sourcePage?.content ?? '',
-          isVisible: sourcePage?.isVisible ?? false,
-        },
+        sourceWikiId: wikiId,
+        sourcePageId: pageId,
+        targetWikiIds: [...destinationWikiIds],
       });
 
-      if (result.error) {
+      if (typeof result === 'object' && 'error' in result) {
+        // Display error toast
         addToastMessage({
           type: 'error',
           text: 'wiki.toast.error.duplicate.page',
         });
         return null;
-      }
+      } else {
+        // Display success toast
+        addToastMessage({
+          type: 'success',
+          text: 'wiki.toast.success.duplicate.page',
+        });
 
-      addToastMessage({
-        type: 'success',
-        text: 'wiki.toast.success.duplicate.page',
-      });
-      // Close modal and navigate to new page
-      setIsDuplicating(false);
-      setOpenDuplicateModal(false);
-      navigate(`/id/${destinationWikiId}/page/${result._id}`);
+        // Close modal and navigate to new page
+        setIsDuplicating(false);
+        setOpenDuplicateModal(false);
+        // Open new pages in new tabs
+        if (result.newPageIds) {
+          for (const [index, page] of result.newPageIds.entries()) {
+            if (index === 0) {
+              // Navigate to the first page
+              navigate(`/id/${page.wikiId}/page/${page.pageId}`);
+            } else {
+              // Open new pages in new tabs
+              window.open(`/id/${page.wikiId}/page/${page.pageId}`, '_blank');
+            }
+          }
+        }
+      }
     },
-    [
-      duplicateMutation,
-      setOpenDuplicateModal,
-      sourcePage,
-      navigate,
-      sourceWiki,
-    ],
+    [duplicateMutation, setOpenDuplicateModal, navigate, wikiId, pageId],
   );
   const onSelectDestinationWiki = useCallback(
     (resources: IResource[]) => {
       if (resources.length > 0) {
-        const destinationWikiId = resources[0].assetId;
-        setDestinationWikiId(destinationWikiId);
+        const destinationWikiIds = resources.map(
+          (resource) => resource.assetId,
+        );
+        setDestinationWikiIds(destinationWikiIds);
       }
     },
-    [setDestinationWikiId],
+    [setDestinationWikiIds],
   );
   // If wikis, source page or filtered wikis are loading, show loading screen
-  if (
-    isLoadingWikis ||
-    isLoadingSourcePage ||
-    isLoadingFilteredWikis ||
-    isLoadingSourceWiki
-  )
-    return <LoadingScreen />;
+  if (isLoadingWikis || isLoadingFilteredWikis) return <LoadingScreen />;
   return (
     <Modal
       id="duplicate-modal"
@@ -133,7 +121,7 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         </div>
         <InternalLinker
           appCode="wiki"
-          multiple={false}
+          multiple={true}
           defaultAppCode="wiki"
           applicationList={[{ application: appCode, displayName: 'Wiki' }]}
           resourceList={filteredWikis?.map((wiki) => ({
@@ -151,8 +139,8 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         <Button
           color="primary"
           isLoading={isDuplicating}
-          disabled={isDuplicating || !destinationWikiId}
-          onClick={() => handleOnDuplicate(destinationWikiId!)}
+          disabled={isDuplicating || destinationWikiIds.length === 0}
+          onClick={() => handleOnDuplicate(destinationWikiIds)}
         >
           {t('wiki.page.duplicate.modal.submit')}
         </Button>

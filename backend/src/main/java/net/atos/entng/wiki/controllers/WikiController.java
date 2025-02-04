@@ -35,6 +35,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.WikiService;
 
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -550,6 +551,50 @@ public class WikiController extends MongoDbControllerHelper {
 		});
 	}
 
+	@Post("/:id/page/:idpage/duplicate")
+	@ApiDoc("Duplicate a page to multiple wikis")
+	@SecuredAction(value = "wiki.read", type = ActionType.RESOURCE)
+	public void duplicatePage(final HttpServerRequest request) {
+		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
+			final String sourceWikiId = request.params().get("id");
+			final String sourcePageId = request.params().get("idpage");
+			// check if the source wiki id and page id are not null or empty
+			if (sourceWikiId == null || sourceWikiId.trim().isEmpty() 
+				|| sourcePageId == null || sourcePageId.trim().isEmpty()) {
+				badRequest(request);
+				return;
+			}
+			// get the list of target wiki IDs from the request body
+			RequestUtils.bodyToJson(request, body -> {
+				// Get the list of target wiki IDs
+				final JsonArray targetWikiIds = body.getJsonArray("targetWikiIds");
+				if (targetWikiIds == null || targetWikiIds.isEmpty()) {
+					badRequest(request, "missing.target.wikis");
+					return;
+				}
+
+				// Convert the JsonArray to a List<String>
+				final List<String> targetWikiIdList = targetWikiIds.stream()
+					.map(Object::toString)
+					.collect(Collectors.toList());
+
+				// Duplicate the page to the target wikis
+				wikiService.duplicatePage(user, sourceWikiId, sourcePageId, targetWikiIdList).onSuccess(event -> {
+					// Return the list of new page IDs
+					final JsonArray newPageIds = new JsonArray(event.stream()
+							.map(PageId::toJson)
+							.collect(Collectors.toList()));
+					renderJson(request, new JsonObject().put("newPageIds", newPageIds));
+				}).onFailure(err -> {
+					// Return an error object
+					final JsonObject error = new JsonObject()
+							.put("error", err.getMessage());
+					renderJson(request, error, 400);
+				});
+			});
+		});
+	}
+
 	@Post("/:id/page/:idpage/comment")
 	@ApiDoc("Add comment to a page")
 	@SecuredAction(value = "wiki.comment", type = ActionType.RESOURCE)
@@ -995,7 +1040,7 @@ public class WikiController extends MongoDbControllerHelper {
 	/**
 	 * Send notification for page update if page visibility has changed from hidden to visible.
 	 * @param request
-	 * @param user
+	 * @param author
 	 * @param wiki
 	 * @param idPage
 	 * @param pageTitle

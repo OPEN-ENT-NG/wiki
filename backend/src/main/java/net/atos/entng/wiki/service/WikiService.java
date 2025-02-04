@@ -26,6 +26,7 @@ import java.util.Set;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
+import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
 import org.entcore.common.user.UserInfos;
@@ -109,4 +110,13 @@ public interface WikiService {
 
 	public void deleteRevisions(String wikiId, String pageId, Handler<Either<String, JsonObject>> handler);
 
+	/**
+	 * Duplicate a page to multiple wikis
+	 * @param user the user
+	 * @param sourceWikiId the source wiki ID
+	 * @param sourcePageId the source page ID
+	 * @param targetWikiIdList the list of target wiki IDs
+	 * @return the list of new page IDs
+	 */
+	Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList);
 }
