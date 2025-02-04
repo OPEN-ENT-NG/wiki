@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import {
-  DuplicatePagePayload,
+  DuplicatePageResultOrError,
   PagePostPayload,
   PagePutPayload,
 } from '~/models';
@@ -218,25 +218,31 @@ export const useDuplicatePage = () => {
 
   return useMutation({
     mutationFn: ({
-      destinationWikiId,
-      data,
+      sourceWikiId,
+      sourcePageId,
+      targetWikiIds,
     }: {
-      destinationWikiId: string;
-      data: DuplicatePagePayload;
-    }) => wikiService.duplicatePage({ destinationWikiId, data }),
-    onSuccess: (_data, { destinationWikiId }) => {
+      sourceWikiId: string;
+      sourcePageId: string;
+      targetWikiIds: string[];
+    }): Promise<DuplicatePageResultOrError> =>
+      wikiService.duplicatePage({ sourceWikiId, sourcePageId, targetWikiIds }),
+    onSuccess: (_data, { sourceWikiId, targetWikiIds }) => {
       queryClient.invalidateQueries({
         queryKey: pageQueryOptions.findAllFromWiki({
-          wikiId: destinationWikiId,
+          wikiId: sourceWikiId,
           content: true,
         }).queryKey,
       });
       queryClient.invalidateQueries({
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
-      queryClient.invalidateQueries({
-        queryKey: wikiQueryOptions.findOne(destinationWikiId).queryKey,
-      });
+      // Invalidate the target wikis
+      for (const targetWikiId of targetWikiIds) {
+        queryClient.invalidateQueries({
+          queryKey: wikiQueryOptions.findOne(targetWikiId).queryKey,
+        });
+      }
     },
   });
 };
