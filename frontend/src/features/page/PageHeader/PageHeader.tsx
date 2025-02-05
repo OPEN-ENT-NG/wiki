@@ -192,25 +192,29 @@ export const PageHeader = ({
             >
               {page.lastContributerName ?? page.authorName}
             </a>
-            <span className="separator d-none d-md-block"></span>
-            <span>
-              {t('wiki.read.dated.updated', {
-                date: formatDate(page.modified, 'long'),
-              })}
-            </span>
-            {!page.isVisible && (
-              <Badge
-                variant={{
-                  type: 'content',
-                  level: 'info',
-                  background: true,
-                }}
-              >
-                <div className="d-flex align-items-center">
-                  <IconHide width="20" height="20" className="me-8" />
-                  {t('wiki.read.notvisible')}
-                </div>
-              </Badge>
+            {!isPrint && (
+              <>
+                <span className="separator d-none d-md-block"></span>
+                <span>
+                  {t('wiki.read.dated.updated', {
+                    date: formatDate(page.modified, 'long'),
+                  })}
+                </span>
+                {!page.isVisible && (
+                  <Badge
+                    variant={{
+                      type: 'content',
+                      level: 'info',
+                      background: true,
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <IconHide width="20" height="20" className="me-8" />
+                      {t('wiki.read.notvisible')}
+                    </div>
+                  </Badge>
+                )}
+              </>
             )}
           </div>
         </div>
