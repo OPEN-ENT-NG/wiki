@@ -11,7 +11,11 @@ import { FC, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useFilteredWikis } from '~/hooks/useFilteredWikis';
-import { useDuplicatePage, useGetAllWikisAsResources } from '~/services';
+import {
+  baseURL,
+  useDuplicatePage,
+  useGetAllWikisAsResources,
+} from '~/services';
 import { getOpenDuplicateModal, useWikiActions } from '~/store';
 import { getToastActions } from '~/store/toast';
 /**
@@ -79,7 +83,10 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
               navigate(`/id/${page.wikiId}/page/${page.pageId}`);
             } else {
               // Open new pages in new tabs
-              window.open(`/id/${page.wikiId}/page/${page.pageId}`, '_blank');
+              window.open(
+                `${baseURL}/id/${page.wikiId}/page/${page.pageId}`,
+                '_blank',
+              );
             }
           }
         }
