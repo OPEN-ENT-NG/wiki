@@ -192,9 +192,9 @@ describe('Wiki Page mutations Queries', () => {
     const { result } = renderHook(() => useDuplicatePage(), { wrapper });
     // prepare the mock
     const variables = {
-      sourceWikiId: mockPage._id,
-      sourcePageId: mockPage.pages[0]._id,
-      targetWikiIds: [mockPage._id],
+      sourceWikiId: mockWikiWithOnePage._id,
+      sourcePageId: mockWikiWithOnePage.pages[0]._id,
+      targetWikiIds: [mockWikiWithOnePage._id],
     };
     // execute the mutation
     act(() => {
@@ -205,12 +205,17 @@ describe('Wiki Page mutations Queries', () => {
       // check the result
       expect(result.current.isSuccess).toBe(true);
       expect(result.current.data).toStrictEqual({
-        newPageIds: [{ wikiId: mockPage._id, pageId: mockPage.pages[0]._id }],
+        newPageIds: [
+          {
+            wikiId: mockWikiWithOnePage._id,
+            pageId: mockWikiWithOnePage.pages[0]._id,
+          },
+        ],
       });
       // check the invalidations
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
         queryKey: pageQueryOptions.findAllFromWiki({
-          wikiId: mockPage._id,
+          wikiId: mockWikiWithOnePage._id,
           content: true,
         }).queryKey,
       });
@@ -218,7 +223,7 @@ describe('Wiki Page mutations Queries', () => {
         queryKey: wikiQueryOptions.findAllWithPages().queryKey,
       });
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: wikiQueryOptions.findOne(mockPage._id).queryKey,
+        queryKey: wikiQueryOptions.findOne(mockWikiWithOnePage._id).queryKey,
       });
     });
   });

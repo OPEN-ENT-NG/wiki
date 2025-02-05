@@ -8,6 +8,7 @@ import {
   mockWikis,
   mockWikisAsResources,
   mockWikisWithPages,
+  mockWikiWithOnePage,
 } from '.';
 
 const defaultHandlers = [
@@ -293,7 +294,14 @@ export const handlers = [
   }),
   http.post(`${baseURL}/:wikiId/page/:pageId/duplicate`, () => {
     return HttpResponse.json(
-      { newPageIds: [{ wikiId: mockPage._id, pageId: mockPage.pages[0]._id }] },
+      {
+        newPageIds: [
+          {
+            wikiId: mockWikiWithOnePage._id,
+            pageId: mockWikiWithOnePage.pages[0]._id,
+          },
+        ],
+      },
       { status: 200 },
     );
   }),
