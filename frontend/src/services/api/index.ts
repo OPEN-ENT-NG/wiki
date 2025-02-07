@@ -9,10 +9,12 @@ import {
   PickedWiki,
   Wiki,
   WikiDto,
+  WikiPagesDto,
 } from '~/models';
 import { Revision } from '~/models/revision';
 import { dtoToPage } from '~/utils/dtoToPage';
-import { dtoToWikiPage } from '~/utils/dtoToWikiPages';
+import { dtoToWiki } from '~/utils/dtoToWiki';
+import { dtoToWikiPages } from '~/utils/dtoToWikiPages';
 
 /**
  *
@@ -62,8 +64,10 @@ const createWikiService = (baseURL: string) => ({
    * @returns get a wiki by id
    */
   async getWiki(wikiId: string) {
-    const response = await odeServices.http().get<Wiki>(`${baseURL}/${wikiId}`);
-    return response;
+    const response = await odeServices
+      .http()
+      .get<WikiDto>(`${baseURL}/${wikiId}`);
+    return dtoToWiki(response);
   },
 
   /**
@@ -74,8 +78,8 @@ const createWikiService = (baseURL: string) => ({
   async getWikiPages(wikiId: string, content: boolean): Promise<Page[]> {
     const response = await odeServices
       .http()
-      .get<WikiDto>(`${baseURL}/${wikiId}/pages?content=${content}`);
-    return dtoToWikiPage(response);
+      .get<WikiPagesDto>(`${baseURL}/${wikiId}/pages?content=${content}`);
+    return dtoToWikiPages(response);
   },
 
   /**

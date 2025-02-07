@@ -1,9 +1,23 @@
-import { Modified } from './date';
+import { Created, Modified } from './date';
 import { Page, PageDto } from './page';
 
 export interface WikiDto {
+  _id: string;
+  title: string;
+  pages: Page[];
+  thumbnail: string;
+  created: Created;
+  modified: Modified;
+  owner: Owner;
+  rights: string[];
+  index?: string;
+  shared?: string[];
+}
+
+export interface WikiPagesDto {
   pages: PageDto[];
 }
+
 export interface Wiki {
   _id: string;
   title: string;
