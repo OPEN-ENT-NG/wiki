@@ -222,6 +222,8 @@
   "wiki.oldFormat.text": "Le contenu de cette page a été créé avec l’ancienne version de wiki. S’il ne s’affiche pas correctement, vous pouvez voir l’ancienne version.",
   "wiki.page.duplicate.modal.title": "Dupliquer la page",
   "wiki.page.duplicate.modal.alert": "Si vous avez uniquement des droits Contributeur dans le cours de destination, alors les pages dupliquées auront le statut « visible »",
+  "wiki.page.duplicate.checkbox.label": "Sous Pages également copiées",
+  "wiki.page.duplicate.checkbox.tooltip": "Si vous cochez cette option, les sous-pages seront également copiées dans le(s) cours(s) de destination.",
   "wiki.page.duplicate.modal.submit": "Dupliquer",
   "wiki.page.duplicate.modal.cancel": "Annuler",
   "wiki.toast.success.save.page": "Votre page a bien été enregistrée",
