@@ -1101,8 +1101,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// Duplicate subpages
 				final JsonArray newSubPages = new JsonArray();
+				final JsonArray newChildren = new JsonArray();
 				if (shouldIncludeSubPages && !sourceSubPages.isEmpty()) {
-					final JsonArray newChildren = new JsonArray();
 					for (Object subPage : sourceSubPages) {
 						// Get the source subpage
 						final JsonObject sourceSubPage = (JsonObject) subPage;
@@ -1128,9 +1128,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 								.put("position", newSubPage.getInteger("position"));
 						newChildren.add(child);
 					}
-					// Add children array to parent page
-					newPage.put("children", newChildren);
 				}
+				// Add children array to parent page
+				newPage.put("children", newChildren);
 
 				// Add the page and its subpages to the target wiki
 				final Bson query = eq("_id", targetWikiId);
