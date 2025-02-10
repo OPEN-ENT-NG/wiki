@@ -81,10 +81,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public void getWiki(String id, Handler<Either<String, JsonObject>> handler) {
+	public void getWiki(String id, boolean includeContent, Handler<Either<String, JsonObject>> handler) {
 		final Bson query = eq("_id", id);
 
-		JsonObject projection = new JsonObject()
+		JsonObject projection = includeContent? new JsonObject() : new JsonObject()
 				.put("pages.content", 0)
 				.put("pages.jsonContent", 0)
 				.put("pages.contentVersion", 0);
@@ -1040,12 +1040,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
 	@Override
-	public Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList) {
+	public Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList, boolean shouldIncludeSubPages) {
 		final Promise<List<PageId>> globalPromise = Promise.promise();
 		final List<PageId> duplicatedPageIds = new ArrayList<>();
 
 		// Get the source wiki
-		getWiki(sourceWikiId, sourceWikiRes -> {
+		getWiki(sourceWikiId, true, sourceWikiRes -> {
 			// If the source wiki is not found, return an error
 			if (sourceWikiRes.isLeft()) {
 				globalPromise.fail("wiki.source.not.found");
@@ -1091,7 +1091,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// Duplicate subpages
 				final JsonArray newSubPages = new JsonArray();
-				if (!sourceSubPages.isEmpty()) {
+				if (shouldIncludeSubPages && !sourceSubPages.isEmpty()) {
 					final JsonArray newChildren = new JsonArray();
 					for (Object subPage : sourceSubPages) {
 						// Get the source subpage

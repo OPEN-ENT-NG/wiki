@@ -334,10 +334,12 @@ const createWikiService = (baseURL: string) => ({
     sourceWikiId,
     sourcePageId,
     targetWikiIds,
+    shouldIncludeSubPages,
   }: {
     sourceWikiId: string;
     sourcePageId: string;
     targetWikiIds: string[];
+    shouldIncludeSubPages: boolean;
   }): Promise<DuplicatePageResultOrError> {
     const response = await odeServices
       .http()
@@ -345,6 +347,7 @@ const createWikiService = (baseURL: string) => ({
         `${baseURL}/${sourceWikiId}/page/${sourcePageId}/duplicate`,
         {
           targetWikiIds,
+          shouldIncludeSubPages,
         },
       );
     return response;
