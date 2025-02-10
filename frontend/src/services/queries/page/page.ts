@@ -4,6 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { useState } from 'react';
 import {
   DuplicatePageResultOrError,
   PagePostPayload,
@@ -215,34 +216,48 @@ export const useDeletePage = () => {
  */
 export const useDuplicatePage = () => {
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      sourceWikiId,
-      sourcePageId,
-      targetWikiIds,
-    }: {
-      sourceWikiId: string;
-      sourcePageId: string;
-      targetWikiIds: string[];
-    }): Promise<DuplicatePageResultOrError> =>
-      wikiService.duplicatePage({ sourceWikiId, sourcePageId, targetWikiIds }),
-    onSuccess: (_data, { sourceWikiId, targetWikiIds }) => {
-      queryClient.invalidateQueries({
-        queryKey: pageQueryOptions.findAllFromWiki({
-          wikiId: sourceWikiId,
-          content: true,
-        }).queryKey,
-      });
-      queryClient.invalidateQueries({
-        queryKey: wikiQueryOptions.findAllWithPages().queryKey,
-      });
-      // Invalidate the target wikis
-      for (const targetWikiId of targetWikiIds) {
+  const [shouldIncludeSubPages, setShouldIncludeSubPages] =
+    useState<boolean>(true);
+  const toggleShouldIncludeSubPages = () =>
+    setShouldIncludeSubPages(!shouldIncludeSubPages);
+  return {
+    shouldIncludeSubPages,
+    toggleShouldIncludeSubPages,
+    mutation: useMutation({
+      mutationFn: ({
+        sourceWikiId,
+        sourcePageId,
+        targetWikiIds,
+        shouldIncludeSubPages,
+      }: {
+        sourceWikiId: string;
+        sourcePageId: string;
+        targetWikiIds: string[];
+        shouldIncludeSubPages: boolean;
+      }): Promise<DuplicatePageResultOrError> =>
+        wikiService.duplicatePage({
+          sourceWikiId,
+          sourcePageId,
+          targetWikiIds,
+          shouldIncludeSubPages,
+        }),
+      onSuccess: (_data, { sourceWikiId, targetWikiIds }) => {
         queryClient.invalidateQueries({
-          queryKey: wikiQueryOptions.findOne(targetWikiId).queryKey,
+          queryKey: pageQueryOptions.findAllFromWiki({
+            wikiId: sourceWikiId,
+            content: true,
+          }).queryKey,
         });
-      }
-    },
-  });
+        queryClient.invalidateQueries({
+          queryKey: wikiQueryOptions.findAllWithPages().queryKey,
+        });
+        // Invalidate the target wikis
+        for (const targetWikiId of targetWikiIds) {
+          queryClient.invalidateQueries({
+            queryKey: wikiQueryOptions.findOne(targetWikiId).queryKey,
+          });
+        }
+      },
+    }),
+  };
 };

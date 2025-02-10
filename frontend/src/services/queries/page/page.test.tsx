@@ -195,16 +195,17 @@ describe('Wiki Page mutations Queries', () => {
       sourceWikiId: mockWikiWithOnePage._id,
       sourcePageId: mockWikiWithOnePage.pages[0]._id,
       targetWikiIds: [mockWikiWithOnePage._id],
+      shouldIncludeSubPages: false,
     };
     // execute the mutation
     act(() => {
-      result.current.mutate(variables);
+      result.current.mutation.mutate(variables);
     });
 
     await waitFor(() => {
       // check the result
-      expect(result.current.isSuccess).toBe(true);
-      expect(result.current.data).toStrictEqual({
+      expect(result.current.mutation.isSuccess).toBe(true);
+      expect(result.current.mutation.data).toStrictEqual({
         newPageIds: [
           {
             wikiId: mockWikiWithOnePage._id,

@@ -105,7 +105,9 @@ describe('DuplicateModal component', () => {
     const mockMutateAsync = vi.fn().mockResolvedValue({
       _id: 'page1',
     });
-    mocks.useDuplicatePage.mockReturnValue({ mutateAsync: mockMutateAsync });
+    mocks.useDuplicatePage.mockReturnValue({
+      mutation: { mutateAsync: mockMutateAsync },
+    });
     // Render the component
     const { user } = render(<DuplicateModal pageId="page1" wikiId="wiki1" />);
     // Wait for the submit button to be rendered
@@ -130,6 +132,7 @@ describe('DuplicateModal component', () => {
         sourceWikiId: 'wiki1',
         sourcePageId: 'page1',
         targetWikiIds: ['wiki2'],
+        shouldIncludeSubPages: undefined,
       });
     });
   });

@@ -4,8 +4,10 @@ import {
   Button,
   LoadingScreen,
   Modal,
+  Tooltip,
   useEdificeClient,
 } from '@edifice.io/react';
+import { IconInfoCircle } from '@edifice.io/react/icons';
 import { InternalLinker } from '@edifice.io/react/multimedia';
 import { FC, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +44,11 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
   const { filteredWikis, isLoading: isLoadingFilteredWikis } =
     useFilteredWikis(wikis);
   const { setOpenDuplicateModal } = useWikiActions();
-  const duplicateMutation = useDuplicatePage();
+  const {
+    mutation: duplicateMutation,
+    shouldIncludeSubPages,
+    toggleShouldIncludeSubPages,
+  } = useDuplicatePage();
   const [destinationWikiIds, setDestinationWikiIds] = useState<string[]>([]);
 
   const handleOnDuplicate = useCallback(
@@ -56,6 +62,7 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         sourceWikiId: wikiId,
         sourcePageId: pageId,
         targetWikiIds: [...destinationWikiIds],
+        shouldIncludeSubPages,
       });
 
       if (typeof result === 'object' && 'error' in result) {
@@ -92,7 +99,14 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         }
       }
     },
-    [duplicateMutation, setOpenDuplicateModal, navigate, wikiId, pageId],
+    [
+      duplicateMutation,
+      setOpenDuplicateModal,
+      navigate,
+      wikiId,
+      pageId,
+      shouldIncludeSubPages,
+    ],
   );
   const onSelectDestinationWiki = useCallback(
     (resources: IResource[]) => {
@@ -125,6 +139,25 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
               {t('wiki.page.duplicate.modal.alert')}
             </span>
           </Alert>
+        </div>
+        <div className="d-flex mb-24 gap-8">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={shouldIncludeSubPages}
+              onChange={toggleShouldIncludeSubPages}
+            />
+            <span className="slider round"></span>
+          </label>
+          <label className="form-label">
+            {t('wiki.page.duplicate.checkbox.label')}
+          </label>
+          <Tooltip
+            message={t('wiki.page.duplicate.checkbox.tooltip')}
+            placement="bottom-start"
+          >
+            <IconInfoCircle className="c-pointer" height="18" />
+          </Tooltip>
         </div>
         <InternalLinker
           appCode="wiki"

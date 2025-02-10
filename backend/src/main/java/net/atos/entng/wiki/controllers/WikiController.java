@@ -580,6 +580,7 @@ public class WikiController extends MongoDbControllerHelper {
 					badRequest(request, "missing.target.wikis");
 					return;
 				}
+				final boolean shouldIncludeSubPages = body.getBoolean("shouldIncludeSubPages", true);
 
 				// Convert the JsonArray to a List<String>
 				final List<String> targetWikiIdList = targetWikiIds.stream()
@@ -587,7 +588,7 @@ public class WikiController extends MongoDbControllerHelper {
 					.collect(Collectors.toList());
 
 				// Duplicate the page to the target wikis
-				wikiService.duplicatePage(user, sourceWikiId, sourcePageId, targetWikiIdList).onSuccess(event -> {
+				wikiService.duplicatePage(user, sourceWikiId, sourcePageId, targetWikiIdList, shouldIncludeSubPages).onSuccess(event -> {
 					// Return the list of new page IDs
 					final JsonArray newPageIds = new JsonArray(event.stream()
 							.map(PageId::toJson)

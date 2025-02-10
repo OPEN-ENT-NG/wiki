@@ -37,7 +37,11 @@ import io.vertx.core.json.JsonObject;
 import fr.wseduc.webutils.Either;
 
 public interface WikiService {
-	public void getWiki(String id, Handler<Either<String, JsonObject>> handler);
+	default void getWiki(String id, Handler<Either<String, JsonObject>> handler){
+		getWiki(id, false, handler);
+	}
+
+	void getWiki(String id, boolean includeContent, Handler<Either<String, JsonObject>> handler);
 
 	/* public void getWholeWiki(String id, Handler<Either<String, JsonObject>> handler); */
 
@@ -116,7 +120,8 @@ public interface WikiService {
 	 * @param sourceWikiId the source wiki ID
 	 * @param sourcePageId the source page ID
 	 * @param targetWikiIdList the list of target wiki IDs
+	 * @param shouldIncludeSubPages wether subpages are also duplicated
 	 * @return the list of new page IDs
 	 */
-	Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList);
+	Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList, boolean shouldIncludeSubPages);
 }
