@@ -11,7 +11,6 @@ import { IconInfoCircle } from '@edifice.io/react/icons';
 import { InternalLinker } from '@edifice.io/react/multimedia';
 import { FC, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { useFilteredWikis } from '~/hooks/useFilteredWikis';
 import {
   baseURL,
@@ -35,7 +34,6 @@ interface DuplicateModalProps {
  */
 export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
   const [isDuplicating, setIsDuplicating] = useState<boolean>(false);
-  const navigate = useNavigate();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const openDuplicateModal = getOpenDuplicateModal();
@@ -84,17 +82,11 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         setOpenDuplicateModal(false);
         // Open new pages in new tabs
         if (result.newPageIds) {
-          for (const [index, page] of result.newPageIds.entries()) {
-            if (index === 0) {
-              // Navigate to the first page
-              navigate(`/id/${page.wikiId}/page/${page.pageId}`);
-            } else {
-              // Open new pages in new tabs
-              window.open(
-                `${baseURL}/id/${page.wikiId}/page/${page.pageId}`,
-                '_blank',
-              );
-            }
+          for (const [, page] of result.newPageIds.entries()) {
+            window.open(
+              `${baseURL}/id/${page.wikiId}/page/${page.pageId}`,
+              '_blank',
+            );
           }
         }
       }
@@ -102,7 +94,6 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
     [
       duplicateMutation,
       setOpenDuplicateModal,
-      navigate,
       wikiId,
       pageId,
       shouldIncludeSubPages,
