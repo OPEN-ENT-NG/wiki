@@ -1087,6 +1087,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					   .put("created", MongoDb.now())
 					   .put("modified", MongoDb.now())
 					   .put("contentVersion", 1)
+						.put("comments", new JsonArray())
 					   .remove("parentId");
 
 				// Duplicate subpages
@@ -1108,6 +1109,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 								 .put("created", MongoDb.now())
 								 .put("modified", MongoDb.now())
 								 .put("contentVersion", 1);
+						// reset comments
+						newSubPage.put("comments", new JsonArray());
 						// Add the new subpage to the new subpages array
 						newSubPages.add(newSubPage);
 						// Add child reference to parent page
