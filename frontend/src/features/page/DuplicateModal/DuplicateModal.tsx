@@ -76,22 +76,30 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
         });
         return null;
       } else {
-        // Display success toast
-        addToastMessage({
-          type: 'success',
-          text: 'wiki.toast.success.duplicate.page',
-        });
-
         // Close modal and navigate to new page
         setIsDuplicating(false);
         setOpenDuplicateModal(false);
         // Open new pages in new tabs
         if (result.newPageIds) {
-          for (const [, page] of result.newPageIds.entries()) {
+          if (result.newPageIds.length === 1) {
+            // Open new page in new tab when there is only one target wiki
             window.open(
-              `${baseURL}/id/${page.wikiId}/page/${page.pageId}`,
+              `${baseURL}/id/${result.newPageIds[0].wikiId}/page/${result.newPageIds[0].pageId}`,
               '_blank',
             );
+            // Display success toast on single target wiki
+            addToastMessage({
+              type: 'success',
+              text: 'wiki.toast.success.duplicate.page.single',
+            });
+          } else {
+            // Display success toast on multiple target wikis and don't open new tabs
+            addToastMessage({
+              type: 'success',
+              text: t('wiki.toast.success.duplicate.page.multiple', {
+                count: result.newPageIds.length,
+              }),
+            });
           }
         }
       }
@@ -102,6 +110,7 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
       wikiId,
       pageId,
       shouldIncludeSubPages,
+      t,
     ],
   );
   const onSelectDestinationWiki = useCallback(
@@ -139,27 +148,26 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
             </span>
           </Alert>
         </div>
-        {hasSubPages && (
-          <div className="d-flex mb-24 gap-8">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={shouldIncludeSubPages}
-                onChange={toggleShouldIncludeSubPages}
-              />
-              <span className="slider round"></span>
-            </label>
-            <label className="form-label">
-              {t('wiki.page.duplicate.checkbox.label')}
-            </label>
-            <Tooltip
-              message={t('wiki.page.duplicate.checkbox.tooltip')}
-              placement="bottom-start"
-            >
-              <IconInfoCircle className="c-pointer" height="18" />
-            </Tooltip>
-          </div>
-        )}
+        <div className="d-flex mb-24 gap-8">
+          <label className="switch">
+            <input
+              type="checkbox"
+              disabled={!hasSubPages}
+              checked={hasSubPages ? shouldIncludeSubPages : false}
+              onChange={toggleShouldIncludeSubPages}
+            />
+            <span className="slider round"></span>
+          </label>
+          <label className="form-label">
+            {t('wiki.page.duplicate.checkbox.label')}
+          </label>
+          <Tooltip
+            message={t('wiki.page.duplicate.checkbox.tooltip')}
+            placement="bottom-start"
+          >
+            <IconInfoCircle className="c-pointer" height="18" />
+          </Tooltip>
+        </div>
         <InternalLinker
           appCode="wiki"
           multiple={true}
