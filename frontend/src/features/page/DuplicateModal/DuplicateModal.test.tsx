@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => {
   return {
     useGetWiki: vi.fn(),
     useGetPage: vi.fn(),
+    useGetPagesFromWiki: vi.fn(),
     useDuplicatePage: vi.fn(),
     useNavigate: vi.fn(),
     useTranslation: vi.fn(),
@@ -28,6 +29,7 @@ vi.mock('react-i18next', () => ({
 vi.mock('~/services', () => ({
   useGetWiki: mocks.useGetWiki,
   useGetPage: mocks.useGetPage,
+  useGetPagesFromWiki: mocks.useGetPagesFromWiki,
   useGetAllWikisAsResources: mocks.useGetAllWikisAsResources,
   useDuplicatePage: mocks.useDuplicatePage,
 }));
@@ -77,6 +79,10 @@ vi.mock('@edifice.io/react/multimedia', async () => {
 
 describe('DuplicateModal component', () => {
   beforeEach(() => {
+    mocks.useGetPagesFromWiki.mockReturnValue({
+      data: mockWikiPages.pages,
+      isLoading: false,
+    });
     mocks.useGetWiki.mockReturnValue({ data: mockWiki, isPending: false });
     mocks.useGetPage.mockReturnValue({
       data: mockWikiPages.pages[0],

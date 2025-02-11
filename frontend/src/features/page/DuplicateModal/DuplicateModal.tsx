@@ -16,6 +16,7 @@ import {
   baseURL,
   useDuplicatePage,
   useGetAllWikisAsResources,
+  useGetPagesFromWiki,
 } from '~/services';
 import { getOpenDuplicateModal, useWikiActions } from '~/store';
 import { getToastActions } from '~/store/toast';
@@ -41,6 +42,10 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
     useGetAllWikisAsResources();
   const { filteredWikis, isLoading: isLoadingFilteredWikis } =
     useFilteredWikis(wikis);
+  const { data: pages, isLoading: isLoadingPages } = useGetPagesFromWiki({
+    wikiId,
+    content: false,
+  });
   const { setOpenDuplicateModal } = useWikiActions();
   const {
     mutation: duplicateMutation,
@@ -111,7 +116,10 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
     [setDestinationWikiIds],
   );
   // If wikis, source page or filtered wikis are loading, show loading screen
-  if (isLoadingWikis || isLoadingFilteredWikis) return <LoadingScreen />;
+  if (isLoadingWikis || isLoadingFilteredWikis || isLoadingPages)
+    return <LoadingScreen />;
+  // Check if the source page has subpages
+  const hasSubPages = pages?.some((page) => page.parentId === pageId);
   return (
     <Modal
       id="duplicate-modal"
@@ -131,25 +139,27 @@ export const DuplicateModal: FC<DuplicateModalProps> = ({ pageId, wikiId }) => {
             </span>
           </Alert>
         </div>
-        <div className="d-flex mb-24 gap-8">
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={shouldIncludeSubPages}
-              onChange={toggleShouldIncludeSubPages}
-            />
-            <span className="slider round"></span>
-          </label>
-          <label className="form-label">
-            {t('wiki.page.duplicate.checkbox.label')}
-          </label>
-          <Tooltip
-            message={t('wiki.page.duplicate.checkbox.tooltip')}
-            placement="bottom-start"
-          >
-            <IconInfoCircle className="c-pointer" height="18" />
-          </Tooltip>
-        </div>
+        {hasSubPages && (
+          <div className="d-flex mb-24 gap-8">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={shouldIncludeSubPages}
+                onChange={toggleShouldIncludeSubPages}
+              />
+              <span className="slider round"></span>
+            </label>
+            <label className="form-label">
+              {t('wiki.page.duplicate.checkbox.label')}
+            </label>
+            <Tooltip
+              message={t('wiki.page.duplicate.checkbox.tooltip')}
+              placement="bottom-start"
+            >
+              <IconInfoCircle className="c-pointer" height="18" />
+            </Tooltip>
+          </div>
+        )}
         <InternalLinker
           appCode="wiki"
           multiple={true}
