@@ -182,7 +182,7 @@
   "explorer.emptyScreen.txt2d.consultation": "Fiches de lecture, cours de maths ou d'anglais, leçons de géo ou de français, sessions pédagogiques… créez, modifiez, organisez et partagez tous vos contenus éducatifs !",
   "explorer.emptyScreen.search.text": "Désolé, il n’y a rien sous ce nom-là... Aucun cours ne correspond à votre recherche. Modifiez les critères et tentez à nouveau !",
   "explorer.emptyScreen.search.alt": "Illustration de la recherche de ressources",
-  "explorer.tooltip.shared": "Cours partagé",
+  "tooltip.shared": "Cours partagé",
   "wiki.modal.delete.pages.header": "Suppression des pages",
   "wiki.modal.delete.page.header": "Suppression de la page",
   "wiki.modal.delete.pages.subtitle": "Souhaitez-vous supprimer la page et ses sous-pages ?",
