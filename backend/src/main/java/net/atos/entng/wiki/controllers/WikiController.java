@@ -621,7 +621,10 @@ public class WikiController extends MongoDbControllerHelper {
 						return;
 					}
 
-					wikiService.addComment(user, idWiki, idPage, newCommentId, comment, res -> {
+					// replyTo is the ID of the comment to which the new comment is a reply
+					final String replyTo = body.getString("replyTo", null);
+
+					wikiService.addComment(user, idWiki, idPage, newCommentId, comment, replyTo, res -> {
 						// Return attribute _id of created comment in case of success
 						if (res.isRight()) {
 							JsonObject result = new JsonObject();

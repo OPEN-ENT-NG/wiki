@@ -919,7 +919,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void addComment(UserInfos user, String idWiki, String idPage, String newCommentId,
-			String comment, Handler<Either<String, JsonObject>> handler) {
+			String comment, String replyTo, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
@@ -932,6 +932,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("author", user.getUserId())
 				.put("authorName", user.getUsername())
 				.put("created", MongoDb.now());
+
+		if (replyTo != null && !replyTo.isEmpty()) {
+			newComment.put("replyTo", replyTo);
+		}
 
 		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 		modifier.push("pages.$.comments", newComment);
