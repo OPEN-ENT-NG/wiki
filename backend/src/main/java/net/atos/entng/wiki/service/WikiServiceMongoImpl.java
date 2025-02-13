@@ -1150,14 +1150,18 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					);
 
 				// Create a future for the target wiki
-				final Future<Void> future = Future.future(updatePromise -> {
+				final Future<Void> future = getMaxPagePosition(targetWikiId).compose(maxPosition -> {
+					// Set the position of the new page
+					newPage.put("position", maxPosition + 1);
 					// Update the target wiki
-					mongo.update(collection, MongoQueryBuilder.build(query), update, res -> {
-						if ("ok".equals(res.body().getString("status"))) {
-							updatePromise.complete();
-						} else {
-							updatePromise.fail(res.body().getString("message"));
-						}
+					return Future.future(updatePromise -> {
+						mongo.update(collection, MongoQueryBuilder.build(query), update, res -> {
+							if ("ok".equals(res.body().getString("status"))) {
+								updatePromise.complete();
+							} else {
+								updatePromise.fail(res.body().getString("message"));
+							}
+						});
 					});
 				});
 				// Add the future to the list of futures
@@ -1343,6 +1347,35 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					}
 				});
 
+		return promise.future();
+	}
+
+	private Future<Integer> getMaxPagePosition(String wikiId) {
+		final Promise<Integer> promise = Promise.promise();
+		
+		// Get the wiki with the pages position
+		final Bson query = eq("_id", wikiId);
+		JsonObject projection = new JsonObject().put("pages.position", 1);
+		
+		mongo.findOne(collection, MongoQueryBuilder.build(query), projection, res -> {
+			if ("ok".equals(res.body().getString("status"))) {
+				JsonObject wiki = res.body().getJsonObject("result");
+				if (wiki != null) {
+					JsonArray pages = wiki.getJsonArray("pages", new JsonArray());
+					// Find the max position
+					int maxPosition = pages.stream()
+						.map(p -> ((JsonObject)p).getInteger("position", 0))
+						.max(Integer::compareTo)
+						.orElse(-1);
+					promise.complete(maxPosition);
+				} else {
+					promise.complete(0);
+				}
+			} else {
+				promise.fail(res.body().getString("message"));
+			}
+		});
+		
 		return promise.future();
 	}
 }
