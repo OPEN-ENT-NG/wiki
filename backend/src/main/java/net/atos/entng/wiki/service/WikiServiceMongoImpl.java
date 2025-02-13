@@ -41,6 +41,7 @@ import net.atos.entng.wiki.to.PageListEntryFlat;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
 import org.bson.conversions.Bson;
+import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.explorer.IdAndVersion;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
@@ -69,13 +70,16 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final IContentTransformerClient contentTransformerClient;
 
-	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin, final IContentTransformerClient contentTransformerClient) {
+	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
+
+	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin, final IContentTransformerClient contentTransformerClient, final IContentTransformerEventRecorder contentTransformerEventRecorder) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
 		this.wikiExplorerPlugin = plugin;
 		this.shareNormalizer = new ShareNormalizer(this.wikiExplorerPlugin.getSecuredActions());
 		this.contentTransformerClient = contentTransformerClient;
+		this.contentTransformerEventRecorder = contentTransformerEventRecorder;
 	}
 
 	@Override
@@ -417,6 +421,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(),e -> {
 								promise.complete(page);
 							});
+							// Record transformation event
+							contentTransformerEventRecorder.recordTransformation(idPage, "page", transformedContent, request);
 						}
 					});
 		}
@@ -488,6 +494,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							page.put("contentVersion", transformerResponse.result().getContentVersion());
 							page.put("content", transformerResponse.result().getCleanHtml());
 							page.put("jsonContent", transformerResponse.result().getJsonContent());
+							// Record transformation event
+							contentTransformerEventRecorder.recordTransformation(page.getString("_id"), "page", transformerResponse.result(), request);
 						}
 					}
 
@@ -574,6 +582,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					modifier.set("pages.$.contentVersion", transformerResponse.result().getContentVersion());
 					modifier.set("pages.$.jsonContent", transformerResponse.result().getJsonContent());
 					modifier.unset("pages.$.oldContent");
+					// Record transformation event
+					contentTransformerEventRecorder.recordTransformation(idPage, "page", transformerResponse.result(), request);
 				}
 			}
 
