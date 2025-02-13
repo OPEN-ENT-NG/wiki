@@ -37,6 +37,8 @@ import java.util.Optional;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
+import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.explorer.IExplorerPluginClient;
 import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
@@ -78,12 +80,13 @@ public class Wiki extends BaseServer {
 		ContentTransformerFactoryProvider.init(vertx);
 		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
+		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
         // Create Explorer plugin
 		this.plugin = WikiExplorerPlugin.create(securedActions);
 
-		// Pass the Explorer plugin and the Tiptap transformer to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient);
+		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
+		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder);
 
         // Add Wiki Controller
         final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
