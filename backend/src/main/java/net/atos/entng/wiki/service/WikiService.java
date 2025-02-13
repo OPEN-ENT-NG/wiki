@@ -91,8 +91,18 @@ public interface WikiService {
 	 */
 	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler);
 
+	/**
+	 * Add a new comment to the page.
+	 * @param user
+	 * @param idWiki
+	 * @param idPage
+	 * @param newCommentId
+	 * @param comment
+	 * @param replyTo the ID of the comment to which the new comment is a reply
+	 * @param handler
+	 */
 	public void addComment(UserInfos user, String idWiki, String idPage, String newCommentId,
-			String comment, Handler<Either<String, JsonObject>> handler);
+			String comment, String replyTo, Handler<Either<String, JsonObject>> handler);
 
 	public void deleteComment(String idWiki, String idPage, String idComment,
 			Handler<Either<String, JsonObject>> handler);
