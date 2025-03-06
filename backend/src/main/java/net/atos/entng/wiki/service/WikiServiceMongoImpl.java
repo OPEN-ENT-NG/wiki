@@ -1154,9 +1154,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					);
 
 				// Create a future for the target wiki
-				final Future<Void> future = getMaxPagePosition(targetWikiId).compose(maxPosition -> {
+				final Future<Void> future = getWikiById(targetWikiId).compose(targetWiki -> {
 					// Set the position of the new page
-					newPage.put("position", maxPosition + 1);
+					newPage.put("position", getMaxPagePosition(targetWiki) + 1);
+					// Check whether the user is manager of the targetWiki
+					if(!isManager(targetWiki, user)){
+						// if not manager => make pages visible
+						allPages.forEach(object -> {
+							final JsonObject page = (JsonObject) object;
+							page.put("isVisible", true);
+						});
+					}
 					// Update the target wiki
 					return Future.future(updatePromise -> {
 						mongo.update(collection, MongoQueryBuilder.build(query), update, res -> {
@@ -1354,27 +1362,30 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 
-	private Future<Integer> getMaxPagePosition(String wikiId) {
-		final Promise<Integer> promise = Promise.promise();
+	private Integer getMaxPagePosition(final JsonObject wiki){
+		if (wiki != null) {
+			JsonArray pages = wiki.getJsonArray("pages", new JsonArray());
+			// Find the max position
+			int maxPosition = pages.stream()
+					.map(p -> ((JsonObject)p).getInteger("position", 0))
+					.max(Integer::compareTo)
+					.orElse(-1);
+			return maxPosition;
+		} else {
+			return 0;
+		}
+	}
+
+	private Future<JsonObject> getWikiById(String wikiId) {
+		final Promise<JsonObject> promise = Promise.promise();
 		
 		// Get the wiki with the pages position
 		final Bson query = eq("_id", wikiId);
-		JsonObject projection = new JsonObject().put("pages.position", 1);
-		
+		final JsonObject projection = new JsonObject().put("pages.position", 1).put("owner", 1).put("shared", true);
 		mongo.findOne(collection, MongoQueryBuilder.build(query), projection, res -> {
 			if ("ok".equals(res.body().getString("status"))) {
-				JsonObject wiki = res.body().getJsonObject("result");
-				if (wiki != null) {
-					JsonArray pages = wiki.getJsonArray("pages", new JsonArray());
-					// Find the max position
-					int maxPosition = pages.stream()
-						.map(p -> ((JsonObject)p).getInteger("position", 0))
-						.max(Integer::compareTo)
-						.orElse(-1);
-					promise.complete(maxPosition);
-				} else {
-					promise.complete(0);
-				}
+				final JsonObject wiki = res.body().getJsonObject("result");
+				promise.complete(wiki);
 			} else {
 				promise.fail(res.body().getString("message"));
 			}
