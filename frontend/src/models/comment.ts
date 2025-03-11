@@ -7,6 +7,7 @@ export interface CommentDto {
   authorName: string;
   created: Created;
   modified: Modified;
+  replyTo?: string;
 }
 
 export interface Comment {
@@ -16,4 +17,5 @@ export interface Comment {
   authorName: string;
   createdAt: number;
   updatedAt?: number;
+  replyTo?: string;
 }
