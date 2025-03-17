@@ -164,11 +164,12 @@ export const Page = () => {
   const deleteComment = useDeleteComment();
   const updateComment = useUpdateComment();
 
-  const handleOnPostComment = async (comment: string) => {
+  const handleOnPostComment = async (comment: string, replyTo?: string) => {
     await createComment.mutate({
       wikiId: params.wikiId!,
       pageId: params.pageId!,
       comment,
+      replyTo,
     });
   };
 
@@ -247,7 +248,8 @@ export const Page = () => {
           type={canComment ? 'edit' : 'read'}
           rights={userRights}
           callbacks={{
-            post: (comment) => handleOnPostComment(comment),
+            post: (comment: string, replyTo?: string) =>
+              handleOnPostComment(comment, replyTo),
             put: ({ comment, commentId }) =>
               handleOnPutcomment({ comment, commentId }),
             delete: (commentId) => handleOnDeleteComment(commentId),

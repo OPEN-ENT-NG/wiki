@@ -254,15 +254,18 @@ const createWikiService = (baseURL: string) => ({
     wikiId,
     pageId,
     comment,
+    replyTo,
   }: {
     wikiId: string;
     pageId: string;
     comment: string;
+    replyTo?: string;
   }): Promise<Comment> {
     const response = await odeServices
       .http()
       .postJson<Comment>(`${baseURL}/${wikiId}/page/${pageId}/comment`, {
         comment,
+        replyTo,
       });
 
     return response;
