@@ -957,20 +957,35 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	@Override
 	public void deleteComment(String idWiki, String idPage, String idComment,
 			Handler<Either<String, JsonObject>> handler){
-
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
 		final Bson query = and(eq("_id", idWiki), elemMatch("pages", idPageDBO));
 
-		// Delete comment from array "comments"
-		JsonObject commentToDelete = new JsonObject();
-		commentToDelete.put("_id", idComment);
+		// feat #WB2-1941
+		// The specification says:
+		// Dans le cas d’un commentaire supprimé une carte de type commentaire est affiché
+		// contenant uniquement l’information suivante : contenu supprimé
+		// Les réponses sont maintenues dans le fil, elles sont toujours visibles
+		// si le gestionnaire ne les a pas supprimées.
+		//
+		// So we unset the comment content and author for RGPD compliance
+		// and keep the comment id and creation date to keep the history
+		// and add a deleted field to indicate that the comment has been deleted
+		final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.unset("pages.$[page].comments.$[comment].comment");
+		modifier.unset("pages.$[page].comments.$[comment].author");
+		modifier.unset("pages.$[page].comments.$[comment].authorName");
+		modifier.set("pages.$[page].comments.$[comment].deleted", true);
 
-		MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-		modifier.pull("pages.$.comments", commentToDelete);
+		final JsonArray arrayFilters = new JsonArray()
+				.add(new JsonObject().put("page._id", idPage))
+				.add(new JsonObject().put("comment._id", idComment));
 
-		mongo.update(collection, MongoQueryBuilder.build(query),
-				modifier.build(), MongoDbResult.validActionResultHandler(handler));
+		mongo.update(collection,
+				MongoQueryBuilder.build(query),
+				modifier.build(),
+				arrayFilters,
+				MongoDbResult.validActionResultHandler(handler));
 	}
 
 	@Override

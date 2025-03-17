@@ -15,11 +15,13 @@ export const useCreateComment = () => {
       wikiId,
       pageId,
       comment,
+      replyTo,
     }: {
       wikiId: string;
       pageId: string;
       comment: string;
-    }) => wikiService.createComment({ wikiId, pageId, comment }),
+      replyTo?: string;
+    }) => wikiService.createComment({ wikiId, pageId, comment, replyTo }),
     onSuccess: (_data, { wikiId, pageId }) => {
       addToastMessage({
         type: 'success',
