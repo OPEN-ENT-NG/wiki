@@ -244,6 +244,7 @@
   "wiki.toast.success.delete.comment": "Votre commentaire a bien été supprimé",
   "wiki.toast.error.delete.comment": "Votre commentaire n'a pas pu être supprimé",
   "wiki.move.button": "Déplacer",
+  "wiki.move.title": "Déplacer \"[[name]]\"",
   "wiki.move.page.title": "Déplacer la page",
   "wiki.move.cancel": "Annuler",
   "wiki.move.success": "La page a bien été déplacée",
