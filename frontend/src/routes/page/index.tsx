@@ -17,7 +17,14 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
+import {
+  ADDITIONAL_COMMENTS,
+  ADDITIONAL_REPLIES,
+  MAX_COMMENT_LENGTH,
+  MAX_COMMENTS,
+  MAX_REPLIES,
+  MAX_REPLY_LENGTH,
+} from '~/config';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
@@ -246,7 +253,11 @@ export const Page = () => {
           comments={data.comments}
           options={{
             maxCommentLength: MAX_COMMENT_LENGTH,
+            maxReplyLength: MAX_REPLY_LENGTH,
             maxComments: MAX_COMMENTS,
+            additionalComments: ADDITIONAL_COMMENTS,
+            maxReplies: MAX_REPLIES,
+            additionalReplies: ADDITIONAL_REPLIES,
           }}
           type={canComment ? 'edit' : 'read'}
           rights={userRights}
