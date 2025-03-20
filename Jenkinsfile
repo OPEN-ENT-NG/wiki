@@ -37,7 +37,7 @@ pipeline {
 
   post {
     cleanup {
-      sh 'cd backend && docker-compose down && cd ../frontend && docker-compose down'
+      sh 'cd backend && (docker-compose down || true) && cd ../frontend && (docker-compose down || true)'
     }
   }
 }
