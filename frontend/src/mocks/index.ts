@@ -596,3 +596,18 @@ export const mockUserContrib: Record<RightRole, boolean> = {
   read: true,
   contrib: true,
 };
+
+export const mockTreeData = [
+  {
+    id: '66dab5f5812656287f15fd41',
+    name: 'Page 1',
+    section: true,
+    showIconSection: false,
+  },
+  {
+    id: '670541bc088c9c7ceeca2c3f',
+    name: 'Page 2',
+    section: true,
+    showIconSection: false,
+  },
+];

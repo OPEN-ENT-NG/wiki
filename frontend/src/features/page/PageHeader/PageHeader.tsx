@@ -14,6 +14,7 @@ import {
   IconCopy,
   IconDelete,
   IconEdit,
+  IconFolderMove,
   IconForgoing,
   IconHide,
   IconOptions,
@@ -50,8 +51,12 @@ export const PageHeader = ({
   const { formatDate } = useDate();
   const { appCode, user } = useEdificeClient();
   const { getAvatarURL, getUserbookURL } = useDirectory();
-  const { setOpenDeleteModal, setOpenRevisionModal, setOpenDuplicateModal } =
-    useWikiActions();
+  const {
+    setOpenDeleteModal,
+    setOpenRevisionModal,
+    setOpenDuplicateModal,
+    setOpenMoveModal,
+  } = useWikiActions();
   const submit = useSubmit();
   const { t } = useTranslation(appCode);
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
@@ -84,14 +89,13 @@ export const PageHeader = ({
           ? canManage && parentPage.data.isVisible
           : canManage,
     },
-    //TODO: Implement move page when action is ready
-    /* {
+    {
       id: 'move',
       label: t('wiki.page.dropdown.move'),
-      icon: <FolderMove />,
-      action: () => console.log(''),
+      icon: <IconFolderMove />,
+      action: () => setOpenMoveModal(true),
       visibility: canContrib || canManage,
-    }, */
+    },
     {
       id: 'versions',
       label: t('wiki.page.dropdown.versions'),

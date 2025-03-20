@@ -96,7 +96,7 @@ describe('useListPage', () => {
     );
 
     expect((result.current[0] as ToolbarButtonItem).props.disabled).toBe(true); // read
-    expect((result.current[1] as ToolbarButtonItem).props.disabled).toBe(false); // move
+    expect((result.current[1] as ToolbarButtonItem).props.disabled).toBe(true); // move
     expect((result.current[2] as ToolbarButtonItem).props.disabled).toBe(true); // duplicate
     expect((result.current[3] as ToolbarButtonItem).props.disabled).toBe(true); // history
     expect((result.current[4] as ToolbarButtonItem).props.disabled).toBe(true); // print

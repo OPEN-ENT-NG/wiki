@@ -1,5 +1,6 @@
 import { createStore, useStore } from 'zustand';
 interface State {
+  openMoveModal: boolean;
   openUpdateModal: boolean;
   openShareModal: boolean;
   openDeleteModal: boolean;
@@ -13,6 +14,7 @@ interface State {
 
 type Action = {
   actions: {
+    setOpenMoveModal: (value: boolean) => void;
     setOpenUpdateModal: (value: boolean) => void;
     setOpenShareModal: (value: boolean) => void;
     setOpenDeleteModal: (value: boolean) => void;
@@ -34,6 +36,7 @@ type ExtractState<S> = S extends {
 type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 
 const initialState = {
+  openMoveModal: false,
   openUpdateModal: false,
   openShareModal: false,
   openDeleteModal: false,
@@ -48,6 +51,7 @@ const initialState = {
 const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
+    setOpenMoveModal: (openMoveModal: boolean) => set({ openMoveModal }),
     setOpenUpdateModal: (openUpdateModal: boolean) => set({ openUpdateModal }),
     setOpenShareModal: (openShareModal: boolean) => set({ openShareModal }),
     setOpenDeleteModal: (openDeleteModal: boolean) => set({ openDeleteModal }),
@@ -77,6 +81,8 @@ const openConfirmVisibilityModal = (state: ExtractState<typeof store>) =>
   state.openConfirmVisibilityModal;
 const openPrintModal = (state: ExtractState<typeof store>) =>
   state.openPrintModal;
+const openMoveModal = (state: ExtractState<typeof store>) =>
+  state.openMoveModal;
 const actionsSelector = (state: ExtractState<typeof store>) => state.actions;
 const openDuplicateModal = (state: ExtractState<typeof store>) =>
   state.openDuplicateModal;
@@ -105,6 +111,7 @@ function useWikiStore<U>(selector: Params<U>[1]) {
 }
 
 // Hooks
+export const useOpenMoveModal = () => useWikiStore(openMoveModal);
 export const useOpenUpdateModal = () => useWikiStore(openUpdateModal);
 export const useOpenShareModal = () => useWikiStore(openShareModal);
 export const useOpenDeleteModal = () => useWikiStore(openDeleteModal);

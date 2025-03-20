@@ -19,6 +19,7 @@ import {
 } from 'react-router-dom';
 import { MAX_COMMENT_LENGTH, MAX_COMMENTS } from '~/config';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
+import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
 import { RevisionHeader } from '~/features/page/RevisionHeader/RevisionHeader';
 import { useRevision } from '~/hooks/useRevision/useRevision';
@@ -36,6 +37,7 @@ import {
   useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
+  useOpenMoveModal,
   useOpenRevisionModal,
   useTreeActions,
   useUserRights,
@@ -141,6 +143,7 @@ export const Page = () => {
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
+  const openMoveModal = useOpenMoveModal();
   const openConfirmVisibilityModal = useOpenConfirmVisibilityModal();
   const navigate = useNavigate();
   const userRights = useUserRights();
@@ -261,6 +264,9 @@ export const Page = () => {
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
         {openDuplicateModal && (
           <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
+        )}
+        {openMoveModal && (
+          <MoveModal wikiId={params.wikiId!} pageId={params.pageId!} />
         )}
         {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
       </Suspense>

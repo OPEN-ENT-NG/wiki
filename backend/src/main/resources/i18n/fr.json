@@ -242,5 +242,13 @@
   "wiki.toast.success.edit.comment": "Votre commentaire a bien été modifié",
   "wiki.toast.error.edit.comment": "Votre commentaire n'a pas pu être modifié",
   "wiki.toast.success.delete.comment": "Votre commentaire a bien été supprimé",
-  "wiki.toast.error.delete.comment": "Votre commentaire n'a pas pu être supprimé"
+  "wiki.toast.error.delete.comment": "Votre commentaire n'a pas pu être supprimé",
+  "wiki.move.button": "Déplacer",
+  "wiki.move.page.title": "Déplacer la page",
+  "wiki.move.cancel": "Annuler",
+  "wiki.move.success": "La page a bien été déplacée",
+  "wiki.move.error": "La page n'a pas pu être déplacée",
+  "wiki.move.info.select.destination": "Sélectionner une destination:",
+  "wiki.move.info.select.page": "Sélectionnez une page de la liste : le contenu sera déplacé en tant que page à la suite de celle sélectionnée",
+  "wiki.move.info.select.subpage": "Sélectionnez une sous page de la liste : le contenu sera déplacé en tant que sous page à la suite de celle sélectionnée"
 }

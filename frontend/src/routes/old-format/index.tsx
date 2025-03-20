@@ -16,8 +16,10 @@ import {
   useOpenConfirmVisibilityModal,
   useOpenDeleteModal,
   useOpenDuplicateModal,
+  useOpenMoveModal,
   useOpenRevisionModal,
 } from '~/store';
+import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 
 /** Load a wiki page OLD-FORMAT content */
 export const loader =
@@ -46,6 +48,7 @@ export const Component = () => {
   const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
+  const openMoveModal = useOpenMoveModal();
   const openConfirmVisibilityModal = useOpenConfirmVisibilityModal();
   const { data } = useGetPage({
     wikiId: wikiId!,
@@ -83,6 +86,9 @@ export const Component = () => {
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
         {openDuplicateModal && (
           <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
+        )}
+        {openMoveModal && (
+          <MoveModal wikiId={params.wikiId!} pageId={params.pageId!} />
         )}
         {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
       </Suspense>
