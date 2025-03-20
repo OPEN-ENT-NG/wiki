@@ -34,6 +34,7 @@ export const useListPage = ({
     setOpenDeleteModal,
     setOpenDuplicateModal,
     setOpenPrintModal,
+    setOpenMoveModal,
   } = useWikiActions();
 
   const itemsTranslation = {
@@ -88,11 +89,11 @@ export const useListPage = ({
         'leftIcon': <IconFolderMove />,
         'children': itemsTranslation.move.desktop,
         'size': 'sm',
-        'disabled': pagesCount < 1 || pagesCount > 2,
+        'onClick': () => setOpenMoveModal(true),
+        'disabled': pagesCount !== 1,
         'aria-label': itemsTranslation.move.responsive,
       },
-      // TODO: remove this line when the move action is implemented
-      visibility: 'hide', // isOnlyRead ? 'hide' : 'show',
+      visibility: isOnlyRead ? 'hide' : 'show',
       tooltip: {
         message: itemsTranslation.move.responsive,
         position: 'bottom',

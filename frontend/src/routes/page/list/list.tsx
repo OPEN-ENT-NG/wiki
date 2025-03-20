@@ -17,6 +17,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
+import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 import { useFilterVisiblePage, useListPage } from '~/hooks';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { Page } from '~/models';
@@ -24,6 +25,7 @@ import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
 import {
   useOpenDeleteModal,
   useOpenDuplicateModal,
+  useOpenMoveModal,
   useOpenRevisionModal,
   useSelectedPages,
   useWikiActions,
@@ -70,6 +72,7 @@ export const PageList = () => {
   const openVersionsModal = useOpenRevisionModal();
   const openDeleteModal = useOpenDeleteModal();
   const openDuplicateModal = useOpenDuplicateModal();
+  const openMoveModal = useOpenMoveModal();
   const selectedPages = useSelectedPages();
   const isOnlyRead = useIsOnlyRead();
   const { setSelectedPages } = useWikiActions();
@@ -198,6 +201,9 @@ export const PageList = () => {
           {openDeleteModal && <DeleteListModal selectedPages={selectedPages} />}
           {openDuplicateModal && (
             <DuplicateModal pageId={selectedPages[0]} wikiId={params.wikiId!} />
+          )}
+          {openMoveModal && (
+            <MoveModal wikiId={params.wikiId!} pageId={selectedPages[0]} />
           )}
         </Suspense>
       </div>
