@@ -8,6 +8,7 @@ export interface CommentDto {
   created: Created;
   modified: Modified;
   replyTo?: string;
+  deleted?: boolean;
 }
 
 export interface Comment {

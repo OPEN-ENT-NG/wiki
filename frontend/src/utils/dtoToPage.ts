@@ -13,6 +13,7 @@ export const dtoToPage = (dto: PageDto) => {
         updatedAt: comment.modified.$date,
       }),
       replyTo: comment.replyTo,
+      deleted: comment.deleted,
     })),
     isVisible: 'isVisible' in dto ? dto.isVisible : true,
   };
