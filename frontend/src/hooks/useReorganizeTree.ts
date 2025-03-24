@@ -121,16 +121,23 @@ export const useReorganizeTree = () => {
           (child) => child.id !== currentPage.id,
         );
       }
-      // Remove current page from root
-      reorganizePages.splice(
-        reorganizePages.findIndex((page) => page.id === currentPage.id),
-        1,
+      // Remove current page from root if it exists
+      const index = reorganizePages.findIndex(
+        (page) => page.id === currentPage.id,
       );
+      if (index !== -1) {
+        reorganizePages.splice(index, 1);
+      }
       // Add current page to destination page children
       if (destinationPageParent) {
         const newParent = find(reorganizePages, destinationPageParent?.id);
         if (newParent) {
           newParent.children = [...(newParent.children ?? []), child];
+          // Add children of current page to destination page children
+          if (child.children) {
+            newParent.children = newParent.children.concat(child.children);
+            child.children = [];
+          }
         }
       } else {
         // If destination page is root, add current page to root
