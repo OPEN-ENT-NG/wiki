@@ -8,10 +8,8 @@ export const dtoToPage = (dto: PageDto) => {
       comment: comment.comment,
       authorId: comment.author,
       authorName: comment.authorName,
-      createdAt: comment.created.$date,
-      ...(comment.modified?.$date && {
-        updatedAt: comment.modified.$date,
-      }),
+      createdAt: new Date(comment.created.$date)?.getTime(),
+      updatedAt: new Date(comment.modified?.$date ?? '')?.getTime(),
       replyTo: comment.replyTo,
       deleted: comment.deleted,
     })),

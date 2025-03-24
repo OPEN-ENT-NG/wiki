@@ -1,12 +1,12 @@
-import { Created, Modified } from './date';
+import { CommentCreated, CommentModified } from './date';
 
 export interface CommentDto {
   _id: string;
   comment: string;
   author: string;
   authorName: string;
-  created: Created;
-  modified: Modified;
+  created: CommentCreated;
+  modified: CommentModified;
   replyTo?: string;
   deleted?: boolean;
 }
