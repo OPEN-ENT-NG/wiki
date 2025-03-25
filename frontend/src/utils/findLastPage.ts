@@ -26,6 +26,10 @@ export const findLastPage = (
           if (page._id === arg.beforePageId) {
             return false;
           }
+          // if the page is a child of the reference page, skip it
+          if (page.parentId === arg.beforePageId) {
+            return false;
+          }
           return true;
         });
         // return the first page
