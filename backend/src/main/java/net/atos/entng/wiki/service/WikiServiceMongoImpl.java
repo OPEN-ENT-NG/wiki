@@ -901,32 +901,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				MongoDbResult.validActionResultHandler(handler));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler) {
-		Bson query = eq("_id", idWiki);
-
-		// Projection
-		JsonObject projection = new JsonObject();
-		projection.put("owner", 1)
-			.put("shared", 1)
-			.put("title", 1);
-
-		if(idPage!= null && !idPage.trim().isEmpty()) {
-			query = and(query, eq("pages._id", idPage));
-
-			JsonObject matchId = new JsonObject().put("_id", idPage);
-			JsonObject elemMatch = new JsonObject().put("$elemMatch", matchId);
-			projection.put("pages", elemMatch); // returns the whole page. Projection on a field (e.g. "title") of a subdocument of an array is not supported by mongo
-		}
-
-		// Send query to event bus
-		mongo.findOne(collection, MongoQueryBuilder.build(query), projection,
-				MongoDbResult.validResultHandler(handler));
-	}
-
 	@Override
 	public void addComment(UserInfos user, String idWiki, String idPage, String newCommentId,
 			String comment, String replyTo, Handler<Either<String, JsonObject>> handler) {

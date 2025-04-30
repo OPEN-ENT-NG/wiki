@@ -31,6 +31,7 @@ import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
+import net.atos.entng.wiki.service.NotificationServiceImpl;
 import net.atos.entng.wiki.service.WikiService;
 
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
@@ -68,20 +69,11 @@ public class WikiController extends MongoDbControllerHelper {
 	public static final String PAGE_RESOURCE_NAME = "wiki_page";
 	public static final String WIKI_RESOURCE_NAME = "wiki";
 
-	public static final String COMMENT_NOTIF_EXPECTED_RIGHT = "net-atos-entng-wiki-controllers-WikiController|updateWiki";
-
 	private final WikiService wikiService;
-
-	private static final String WIKI_NAME = "WIKI";
-	private static final String WIKI_PAGE_CREATED_EVENT_TYPE = WIKI_NAME + "_PAGE_CREATED";
-	private static final String WIKI_COMMENT_CREATED_EVENT_TYPE = WIKI_NAME + "_COMMENT_CREATED";
-	private static final int OVERVIEW_LENGTH = 50;
-
 	private final EventHelper eventHelper;
-
 	private final WikiConfig wikiConfig;
-
 	private final WikiExplorerPlugin explorerPlugin;
+	private NotificationServiceImpl notificationService;
 
 	@Override
 	public void init(Vertx vertx, JsonObject config, RouteMatcher rm,
@@ -89,6 +81,7 @@ public class WikiController extends MongoDbControllerHelper {
 		super.init(vertx, config, rm, securedActions);
 		final Map<String, List<String>> groupedActions = new HashMap<>();
 		this.shareService = this.explorerPlugin.createShareService(groupedActions);
+		this.notificationService = new NotificationServiceImpl(notification, vertx.eventBus());
 	}
 
 	public WikiController(String collection, WikiConfig wikiConfig, WikiExplorerPlugin plugin, WikiService wikiService) {
@@ -387,9 +380,13 @@ public class WikiController extends MongoDbControllerHelper {
 											page.getBoolean("isVisible"),
 											page.getInteger("position"))
 											.onFailure(handler -> {
-												log.error("Error creating revision " + wikiId + "/" + page.getString("_id") + " - " + handler.getMessage());
+												log.error("Error creating revision " + wikiId + "/" +
+														page.getString("_id") + " - " + handler.getMessage());
 											});
-									notifyPageCreated(request, user, wikiId, page.getString("_id"), page.getString("title"), page.getBoolean("isVisible", false));
+									// notify page creation
+									notificationService.notifyPageCreated(request, user, wikiId, page.getString("_id"),
+											page.getString("title"), page.getBoolean("isVisible", false));
+									// create the page creation event
 									eventHelper.onCreateResource(request, PAGE_RESOURCE_NAME);
 									// render created page json information
 									renderJson(request, page);
@@ -436,7 +433,7 @@ public class WikiController extends MongoDbControllerHelper {
 											// If page became visible, then send notification
 											if (!pageWasVisible && pageIsNowVisible) {
 												final String pageTitle = updatePageResult.right().getValue().getString("title");
-												notifyPageUpdated(request, user, wiki, requestIdPage, pageTitle);
+												notificationService.notifyPageUpdated(request, user, wiki, requestIdPage, pageTitle);
 											}
 											renderJson(request, updatePageResult.right().getValue());
 										} else {
@@ -480,7 +477,7 @@ public class WikiController extends MongoDbControllerHelper {
 									// notify author of page deletion
 									if (notifyAuthorMap != null && !notifyAuthorMap.isEmpty()) {
 										final String authorId = notifyAuthorMap.entrySet().iterator().next().getKey();
-										this.notifyPageDeleted(wiki, idPage, user, authorId, request);
+										notificationService.notifyPageDeleted(wiki, idPage, user, authorId, request);
 									}
 								})
 								.onFailure(err -> renderJson(request, new JsonObject().put("error", err.getMessage()), 400));
@@ -523,11 +520,11 @@ public class WikiController extends MongoDbControllerHelper {
 									notifyAuthorMap.forEach((authorId, pageIDs) -> {
 										// if only one page is concerned for an author then send a notification with page info
 										if (pageIDs != null && pageIDs.size() == 1) {
-											this.notifyPageDeleted(wiki, pageIDs.get(0), user, authorId, request);
+											notificationService.notifyPageDeleted(wiki, pageIDs.get(0), user, authorId, request);
 										}
 										// else send a notification for all pages (without pages info)
 										else {
-											this.notifyPageDeleted(wiki, null, user, authorId, request);
+											notificationService.notifyPageDeleted(wiki, null, user, authorId, request);
 										}
 									});
 
@@ -628,11 +625,12 @@ public class WikiController extends MongoDbControllerHelper {
 						if (res.isRight()) {
 							JsonObject result = new JsonObject();
 							result.put("_id", newCommentId);
-							notifyCommentCreated(request, user, idWiki, idPage, newCommentId, comment);
+							// Notify comment creation
+							notificationService.notifyCommentCreated(request, user, idWiki, idPage, newCommentId, comment);
+							// Return the result
 							renderJson(request, result);
 						} else {
-							JsonObject error = new JsonObject().put(
-									"error", res.left().getValue());
+							JsonObject error = new JsonObject().put("error", res.left().getValue());
 							renderJson(request, error, 400);
 						}
 					});
@@ -796,314 +794,5 @@ public class WikiController extends MongoDbControllerHelper {
 				}
 			}
 		});
-	}
-
-	/**
-	 * Notify page creation.
-	 * @param request
-	 * @param author
-	 * @param idWiki
-	 * @param idPage
-	 * @param pageTitle
-	 * @param isVisiblePage
-	 */
-	private void notifyPageCreated(final HttpServerRequest request, final UserInfos author,
-								   final String idWiki, final String idPage, final String pageTitle, final boolean isVisiblePage) {
-		// Do not notify hidden page creation
-		if (!isVisiblePage) {
-			return;
-		}
-
-		wikiService.getDataForNotification(idWiki, null, event -> {
-			if (event.isRight()) {
-				final JsonObject wiki = event.right().getValue();
-				final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
-				final JsonArray shared = wiki.getJsonArray("shared");
-
-				// Get the recipients and send the notification
-				this.getRecipientsForNotification(shared, wikiOwnerId, author.getUserId(), null)
-						.onSuccess(recipients -> {
-							sendNotification(request, author, recipients, pageTitle, wiki, idPage, true, idPage, null);
-						})
-						.onFailure(err -> {
-							log.error("Error populating recipients from shared items: " + err.getMessage());
-						});
-
-			} else {
-				log.error("Error in service getDataForNotification. Unable to send timeline "
-						+ WIKI_PAGE_CREATED_EVENT_TYPE
-						+ " notification.");
-			}
-		});
-	}
-
-	/**
-	 * Notify comment creation.
-	 * @param request
-	 * @param commentAuthor
-	 * @param idWiki
-	 * @param idPage
-	 * @param idComment
-	 * @param comment
-	 */
-	private void notifyCommentCreated(final HttpServerRequest request, final UserInfos commentAuthor,
-									  final String idWiki, final String idPage, final String idComment, final String comment) {
-		wikiService.getDataForNotification(idWiki, idPage, event -> {
-			if (event.isRight()) {
-				final JsonObject wiki = event.right().getValue();
-				final JsonObject page = wiki.getJsonArray("pages").getJsonObject(0);
-
-				// Do not notify comment creation for hidden page
-				if (!page.getBoolean("isVisible", false)) {
-					return;
-				}
-
-				final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
-				final JsonArray shared = wiki.getJsonArray("shared");
-
-				this.getRecipientsForNotification(shared, wikiOwnerId, commentAuthor.getUserId(), COMMENT_NOTIF_EXPECTED_RIGHT)
-						.onSuccess(recipients -> {
-							sendNotification(request,
-									commentAuthor,
-									recipients,
-									page.getString("title"),
-									wiki,
-									idPage,
-									false,
-									idComment,
-									comment);
-						})
-						.onFailure(err -> {
-							log.error("Error populating recipients from shared items: " + err.getMessage());
-						});
-			} else {
-				log.error("Error in service getDataForNotification. Unable to send timeline "
-						+ WIKI_COMMENT_CREATED_EVENT_TYPE
-						+ " notification.");
-			}
-		});
-	}
-
-	/**
-	 * Notify author of page deletion.
-	 *
-	 * Note: page creation and page comment notification are handled in sendNotification method,
-	 * but this method is already complex to read so in order to keep it simple,
-	 * we handle page deletion notification here.
-	 *
-	 * @param wiki wiki information
-	 * @param pageId if pageId is provided then get page info to send in notification
-	 * @param user user who deleted the page
-	 * @param authorId author of page to send notification
-	 * @param request http request to get host and language for notification message
-	 */
-	private void notifyPageDeleted(final JsonObject wiki, final String pageId, final UserInfos user,
-								   final String authorId, final HttpServerRequest request) {
-		final String wikiTitle = wiki.getString("title");
-
-		final JsonObject params = new JsonObject()
-				.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
-				.put("username", user.getUsername())
-				.put("wikiTitle", wikiTitle);
-
-		JsonObject pushNotif = new JsonObject()
-				.put("title", "wiki.push.notif.page-deleted.title");
-
-		// if pageId is provided then get page info to send in notification
-		if (pageId != null) {
-			final String pageTitle = WikiServiceMongoImpl.getPageTitle(wiki, pageId);
-
-			params.put("pageTitle", pageTitle);
-
-			pushNotif.put("body", I18n.getInstance().translate(
-					"wiki.push.notif.page-deleted.body",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					pageTitle,
-					wikiTitle));
-		} else {
-			params.put("pageTitle", I18n.getInstance().translate(
-					"timeline.wiki.has.deleted.page.multiple",
-					getHost(request),
-					I18n.acceptLanguage(request)));
-
-			pushNotif.put("body", I18n.getInstance().translate(
-					"wiki.push.notif.pages-deleted.body",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					user.getUsername(),
-					wikiTitle));
-		}
-
-		params.put("pushNotif", pushNotif);
-
-		notification.notifyTimeline(request,
-				"wiki.page-deleted",
-				user,
-				Collections.singletonList(authorId),
-				pageId,
-				params);
-	}
-
-
-	/**
-	 * Send notification for page update if page visibility has changed from hidden to visible.
-	 * @param request
-	 * @param author
-	 * @param wiki
-	 * @param idPage
-	 * @param pageTitle
-	 */
-	private void notifyPageUpdated(final HttpServerRequest request, final UserInfos author, final JsonObject wiki,
-								   final String idPage, final String pageTitle) {
-		final String wikiOwnerId = wiki.getJsonObject("owner").getString("userId");
-		final JsonArray shared = wiki.getJsonArray("shared");
-
-		// Get the recipients and send the notification
-		this.getRecipientsForNotification(shared, wikiOwnerId, author.getUserId(), null)
-				.onSuccess(recipients -> {
-					// prepare notification info
-					final String wikiTitle = wiki.getString("title");
-					JsonObject params = new JsonObject();
-					params.put("uri", "/userbook/annuaire#" + author.getUserId() + "#" + author.getType());
-					params.put("username", author.getUsername())
-							.put("pageTitle", pageTitle)
-							.put("wikiTitle", wiki.getString("title"))
-							.put("pageUri", "/wiki/id/" + wiki.getString("_id") + "/page/" + idPage);
-					params.put("resourceUri", params.getString("pageUri"));
-
-					JsonObject pushNotif = new JsonObject()
-							.put("title", "wiki.push.notif.page-updated.title");
-					params.put("pageTitle", pageTitle);
-
-					pushNotif.put("body", I18n.getInstance().translate(
-							"wiki.push.notif.page-updated.body",
-							getHost(request),
-							I18n.acceptLanguage(request),
-							author.getUsername(),
-							pageTitle,
-							wikiTitle));
-
-					params.put("pushNotif", pushNotif);
-
-					// send notification
-					notification.notifyTimeline(request,
-							"wiki.page-updated",
-							author,
-							new ArrayList<>(recipients),
-							wiki.getString("_id"),
-							idPage,
-							params);
-				})
-				.onFailure(err -> {
-					log.error("Error populating recipients from shared items: " + err.getMessage());
-				});
-	}
-
-	private Future<Set<String>> getRecipientsForNotification(final JsonArray shared, final String wikiOwnerId,
-															 final String authorId, final String expectedRight) {
-		final Promise<Set<String>> promise = Promise.promise();
-		final Set<String> recipientSet = new HashSet<>();
-		final AtomicInteger pendingOperations = new AtomicInteger(0);
-
-		// Rule #1: If wiki owner is not the author, add it to recipients
-		if (!wikiOwnerId.equals(authorId)) {
-			recipientSet.add(wikiOwnerId);
-		}
-
-		// Process shared items
-		if (shared != null) {
-			shared.stream()
-					.map(sharedItem -> (JsonObject) sharedItem)
-					.forEach(sharedItemJO -> {
-						// Rule #2: If shared item (user or group) does not have the expected right
-						// 			then do not add it to recipients
-						if (expectedRight != null
-								&& !expectedRight.isEmpty()
-								&& !sharedItemJO.getBoolean(expectedRight, false)) {
-							return;
-						}
-
-						final String sharedUserId = sharedItemJO.getString("userId", null);
-						// Rule #3: If shared user is not the author then add it to recipients
-						if (sharedUserId != null && !sharedUserId.equals(authorId)) {
-							recipientSet.add(sharedUserId);
-						} else {
-							final String sharedGroupId = sharedItemJO.getString("groupId", null);
-							// Handle shared group ID asynchronously
-							if (sharedGroupId != null) {
-								pendingOperations.incrementAndGet(); // Track pending async operation
-								UserUtils.findUsersInProfilsGroups(sharedGroupId, eb, authorId, false, findUsersEvent -> {
-									if (findUsersEvent != null) {
-										findUsersEvent.stream()
-												.map(user -> (JsonObject) user)
-												.forEach(userJO -> {
-													// Rule #4: If shared group member is not the author then add it to recipients
-													final String sharedGroupMemberId = userJO.getString("id", null);
-													if (sharedGroupMemberId != null && !sharedGroupMemberId.equals(authorId)) {
-														recipientSet.add(sharedGroupMemberId);
-													}
-												});
-									}
-									// Decrement counter and check if all operations are done
-									if (pendingOperations.decrementAndGet() == 0) {
-										promise.complete(recipientSet);
-									}
-								});
-							}
-						}
-					});
-		}
-
-		// Complete the promise if no async operations were triggered
-		if (pendingOperations.get() == 0) {
-			promise.complete(recipientSet);
-		}
-
-		return promise.future();
-	}
-
-	private void sendNotification(final HttpServerRequest request, final UserInfos author, final Set<String> recipientSet,
-								  final String pageTitle, final JsonObject wiki, final String idPage,
-								  final boolean isCreatePage, final String idSubResource, String comment) {
-		if (recipientSet != null && !recipientSet.isEmpty()){
-			List<String> recipients = new ArrayList<>(recipientSet);
-
-			JsonObject params = new JsonObject();
-			params.put("uri", "/userbook/annuaire#" + author.getUserId() + "#" + author.getType());
-			params.put("username", author.getUsername())
-					.put("pageTitle", pageTitle)
-					.put("wikiTitle", wiki.getString("title"))
-					.put("pageUri", "/wiki/id/" + wiki.getString("_id") + "/page" + "/" + idPage);
-			params.put("resourceUri", params.getString("pageUri"));
-
-			if (!isCreatePage && comment != null && !comment.isEmpty()) {
-				if (comment.length() > OVERVIEW_LENGTH) {
-					comment = comment.substring(0, OVERVIEW_LENGTH) + " [...]";
-				}
-				params.put("overview", comment);
-			}
-
-			String notificationName = isCreatePage ? "page-created" : "comment-added";
-			String pushNotifTitle = isCreatePage ? "wiki.push.notif.page-created" : "wiki.push.notif.comment-added";
-			String pushNotifBody = isCreatePage
-					? I18n.getInstance().translate(
-					"wiki.push.notif.page-created",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					author.getUsername(),
-					wiki.getString("title"))
-					: I18n.getInstance().translate(
-					"wiki.push.notif.comment-added",
-					getHost(request),
-					I18n.acceptLanguage(request),
-					author.getUsername(),
-					pageTitle);
-
-			params.put("pushNotif", new JsonObject().put("title", pushNotifTitle).put("body", pushNotifBody));
-			notification.notifyTimeline(request, "wiki." + notificationName, author, recipients, wiki.getString("_id"), idSubResource, params);
-		}
-
 	}
 }
