@@ -86,12 +86,6 @@ public interface WikiService {
 			Handler<Either<String, JsonObject>> handler);
 
 	/**
-	 * Get title, owner, userIds and groupIds of wiki.
-	 * If parameter "idPage" is supplied, also get the associated page
-	 */
-	public void getDataForNotification(String idWiki, String idPage, Handler<Either<String, JsonObject>> handler);
-
-	/**
 	 * Add a new comment to the page.
 	 * @param user
 	 * @param idWiki
