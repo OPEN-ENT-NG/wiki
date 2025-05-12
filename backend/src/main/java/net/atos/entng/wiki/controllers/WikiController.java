@@ -773,11 +773,22 @@ public class WikiController extends MongoDbControllerHelper {
 						return;
 					}
 
-					JsonObject params = new JsonObject();
-					params.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
+					JsonObject params = new JsonObject()
+							.put("uri", "/userbook/annuaire#" + user.getUserId() + "#" + user.getType())
 							.put("username", user.getUsername())
 							.put("wikiUri", "/wiki/id/" + id);
 					params.put("resourceUri", params.getString("wikiUri"));
+
+					JsonObject pushNotif = new JsonObject()
+							.put("title", "wiki.push.notif.shared.title")
+							.put("body", I18n.getInstance().translate(
+									"wiki.push.notif.shared.body",
+									getHost(request),
+									I18n.acceptLanguage(request),
+									user.getUsername())
+							);
+
+					params.put("pushNotif", pushNotif);
 
 					shareResource(request, "wiki.shared", false, params, "title");
 				}
