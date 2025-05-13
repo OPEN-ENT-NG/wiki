@@ -1,6 +1,6 @@
 {
   "name": "wiki",
-  "version": "3.2.5-%branch%.%generateVersion%",
+  "version": "3.2-%branch%.%generateVersion%",
   "private": true,
   "license": "GPL-3.0",
   "author": "Edifice",
