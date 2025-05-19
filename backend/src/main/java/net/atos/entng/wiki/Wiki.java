@@ -23,6 +23,7 @@ import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
@@ -37,6 +38,7 @@ import java.util.Optional;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.explorer.IExplorerPluginClient;
@@ -56,6 +58,8 @@ public class Wiki extends BaseServer {
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
 
 	private WikiExplorerPlugin plugin;
+
+	private MessageConsumer<Object> audienceRightChecker;
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
@@ -85,8 +89,11 @@ public class Wiki extends BaseServer {
         // Create Explorer plugin
 		this.plugin = WikiExplorerPlugin.create(securedActions);
 
+		// Audience Helper
+		AudienceHelper audienceHelper = new AudienceHelper(vertx);
+
 		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder);
+		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
 
         // Add Wiki Controller
         final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
@@ -99,6 +106,9 @@ public class Wiki extends BaseServer {
 
         // Start Explorer plugin
 		this.plugin.start();
+
+		audienceRightChecker = audienceHelper.listenForRightsCheck("wiki", "page", wikiService);
+
 		startPromise.tryComplete();
 	}
 
@@ -120,6 +130,10 @@ public class Wiki extends BaseServer {
 
 		if (this.plugin != null) {
 			this.plugin.stop();
+		}
+
+		if (audienceRightChecker != null) {
+			audienceRightChecker.unregister();
 		}
 	}
 }
