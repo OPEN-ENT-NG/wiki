@@ -6,9 +6,10 @@ import {
   useBreakpoint,
   useDate,
 } from '@edifice.io/react';
+import { ViewsCounter, ViewsModal } from '@edifice.io/react/audience';
 import { QueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
@@ -21,7 +22,13 @@ import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 import { useFilterVisiblePage, useListPage } from '~/hooks';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { Page } from '~/models';
-import { useGetPagesFromWiki, wikiQueryOptions, wikiService } from '~/services';
+import {
+  useGetPagesFromWiki,
+  useGetPagesViewsCounter,
+  useGetPageViewsDetails,
+  wikiQueryOptions,
+  wikiService,
+} from '~/services';
 import {
   useOpenDeleteModal,
   useOpenDuplicateModal,
@@ -66,6 +73,9 @@ export const action =
   };
 
 export const PageList = () => {
+  const [isViewsModalOpen, setIsViewsModalOpen] = useState<boolean>(false);
+  const [viewsCounterPageId, setViewsCounterPageId] = useState<string>('');
+
   const params = useParams();
   const location = useLocation();
   const filterVisiblePage = useFilterVisiblePage();
@@ -82,6 +92,15 @@ export const PageList = () => {
     wikiId: params.wikiId!,
     content: false,
   });
+
+  const { data: viewsCounterData } = useGetPagesViewsCounter({
+    pageIds: data?.map((page) => page._id) || [],
+  });
+
+  const { data: pageViewsDetails } = useGetPageViewsDetails({
+    pageId: viewsCounterPageId,
+  });
+
   const { t } = useTranslation('wiki');
   const { formatDate } = useDate();
 
@@ -102,6 +121,19 @@ export const PageList = () => {
     setSelectedPages([]);
   }, [location.pathname, setSelectedPages]);
 
+  const getPageViewCount = (pageId: string): number => {
+    return viewsCounterData?.[pageId] || 0;
+  };
+
+  const handleViewsCounterClick = async (pageId: string) => {
+    setIsViewsModalOpen(true);
+    setViewsCounterPageId(pageId);
+  };
+
+  const handleViewsModalClose = () => {
+    setIsViewsModalOpen(false);
+  };
+
   const renderDesktopNode = (
     node: Page,
     checkbox: JSX.Element | undefined,
@@ -111,7 +143,7 @@ export const PageList = () => {
       className={clsx('grid gap-24 px-12 py-8 mb-2 align-items: center', {
         'bg-secondary-200 rounded': checked,
       })}
-      style={{ '--edifice-columns': 8 } as React.CSSProperties}
+      style={{ '--edifice-columns': 9 } as React.CSSProperties}
     >
       <div
         className={`d-flex align-items-center gap-8 ${isOnlyRead ? 'g-col-4' : 'g-col-3'}`}
@@ -129,6 +161,12 @@ export const PageList = () => {
             })}
       </em>
       <span className="g-col-1">{formatDate(node.modified.$date)}</span>
+      <span className="g-col-1" data-testid="pageViewsSpan">
+        <ViewsCounter
+          viewsCounter={getPageViewCount(node._id)}
+          onClick={() => handleViewsCounterClick(node._id)}
+        />
+      </span>
       {!isOnlyRead && (
         <div className="g-col-1 d-inline-grid">
           <Badge
@@ -204,6 +242,13 @@ export const PageList = () => {
           )}
           {openMoveModal && (
             <MoveModal wikiId={params.wikiId!} pageId={selectedPages[0]} />
+          )}
+          {isViewsModalOpen && pageViewsDetails && (
+            <ViewsModal
+              viewsDetails={pageViewsDetails}
+              isOpen={isViewsModalOpen}
+              onModalClose={handleViewsModalClose}
+            />
           )}
         </Suspense>
       </div>

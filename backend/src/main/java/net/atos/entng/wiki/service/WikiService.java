@@ -29,6 +29,7 @@ import io.vertx.core.http.HttpServerRequest;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
+import org.entcore.common.audience.AudienceRightChecker;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -36,7 +37,7 @@ import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
 
-public interface WikiService {
+public interface WikiService extends AudienceRightChecker {
 	default void getWiki(String id, Handler<Either<String, JsonObject>> handler){
 		getWiki(id, false, handler);
 	}

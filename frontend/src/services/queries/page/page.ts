@@ -87,6 +87,28 @@ export const pageQueryOptions = {
       },
       staleTime: 5000,
     }),
+  findPagesViewsCounter: ({ pageIds }: { pageIds: string[] }) =>
+    queryOptions({
+      enabled: !!pageIds.length,
+      queryKey: [
+        ...pageQueryOptions.base,
+        'viewsCounter',
+        { id: pageIds },
+      ] as const,
+      queryFn: () => wikiService.getPagesViewsCounter({ pageIds }),
+      staleTime: 5000,
+    }),
+  findPageViewsDetails: ({ pageId }: { pageId: string }) =>
+    queryOptions({
+      enabled: !!pageId,
+      queryKey: [
+        ...pageQueryOptions.base,
+        'viewsDetails',
+        { id: pageId },
+      ] as const,
+      queryFn: () => wikiService.getPageViewsDetails({ pageId }),
+      staleTime: 5000,
+    }),
 };
 
 /**
@@ -113,6 +135,14 @@ export const useGetPagesFromWiki = ({
   content: boolean;
 }) => {
   return useQuery(pageQueryOptions.findAllFromWiki({ wikiId, content }));
+};
+
+export const useGetPagesViewsCounter = ({ pageIds }: { pageIds: string[] }) => {
+  return useQuery(pageQueryOptions.findPagesViewsCounter({ pageIds }));
+};
+
+export const useGetPageViewsDetails = ({ pageId }: { pageId: string }) => {
+  return useQuery(pageQueryOptions.findPageViewsDetails({ pageId }));
 };
 
 export const useGetRevisionsPage = ({
