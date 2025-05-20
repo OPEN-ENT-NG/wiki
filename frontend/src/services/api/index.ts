@@ -1,4 +1,4 @@
-import { odeServices } from '@edifice.io/client';
+import { odeServices, ViewsCounters, ViewsDetails } from '@edifice.io/client';
 import {
   DuplicatePageResultOrError,
   Page,
@@ -353,6 +353,44 @@ const createWikiService = (baseURL: string) => ({
           shouldIncludeSubPages,
         },
       );
+    return response;
+  },
+  /**
+   * Gets pages views counter (audience).
+   * @param {string[]} params.pageIds - pages ids to get views counter.
+   * @returns {Promise<ViewsCounters>} a promise that resolves to the views counters.
+   */
+  async getPagesViewsCounter({
+    pageIds,
+  }: {
+    pageIds: string[];
+  }): Promise<ViewsCounters> {
+    const audienceViewsService = odeServices.audience('wiki', 'page').views;
+    const response = await audienceViewsService.getCounters(pageIds);
+    return response;
+  },
+  /**
+   * Gets one page view details (audience).
+   * @param {string[]} params.pageIds - page id to get views details.
+   * @returns {Promise<ViewsDetails>} a promise that resolves to the views details.
+   */
+  async getPageViewsDetails({
+    pageId,
+  }: {
+    pageId: string;
+  }): Promise<ViewsDetails | undefined> {
+    const audienceViewsService = odeServices.audience('wiki', 'page').views;
+    const response = await audienceViewsService.getDetails(pageId);
+    return response;
+  },
+  /**
+   * Trigger a page view (audience).
+   * @param {string} params.pageId - page id to trigger view.
+   * @returns {Promise<void>} a promise that resolves to void.
+   */
+  async triggerPageView(pageId: string): Promise<void> {
+    const audienceViewsService = odeServices.audience('wiki', 'page').views;
+    const response = await audienceViewsService.trigger(pageId);
     return response;
   },
 });

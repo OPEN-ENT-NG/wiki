@@ -7,6 +7,8 @@ import {
   mockWikisAsResources,
   mockWikisWithPages,
   mockPage,
+  mockPagesIDsForViewCounter,
+  mockPagesViewCounterResponse,
 } from '~/mocks';
 import { wikiService } from '..';
 
@@ -128,5 +130,23 @@ describe('Wiki Page Mutation Methods', () => {
     });
 
     expect(response).toHaveProperty('number', 0);
+  });
+
+  test('makes a GET request to get pages view counter.', async () => {
+    const response = await wikiService.getPagesViewsCounter({
+      pageIds: mockPagesIDsForViewCounter,
+    });
+
+    expect(response).toBeDefined();
+    expect(response).toEqual(mockPagesViewCounterResponse);
+  });
+
+  test('makes a POST request to trigger a page view', async () => {
+    const response = await wikiService.triggerPageView(
+      mockPagesIDsForViewCounter[0],
+    );
+
+    expect(response).toBeDefined();
+    expect(response).toEqual('');
   });
 });

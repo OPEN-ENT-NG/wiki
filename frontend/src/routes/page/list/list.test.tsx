@@ -1,5 +1,5 @@
 import { mockWikiPagesWithoutContent } from '~/mocks';
-import { render, screen } from '~/mocks/setup';
+import { render, screen, within } from '~/mocks/setup';
 import { PageList } from './list';
 
 const mocks = vi.hoisted(() => ({
@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   useGetPagesFromWiki: vi.fn(),
   useLocation: vi.fn(),
   useIsAuthorOrManager: vi.fn(),
+  useGetPagesViewsCounter: vi.fn(),
+  useGetPageViewsDetails: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -38,15 +40,27 @@ vi.mock('@edifice.io/react', async () => {
 
 vi.mock('~/services', () => ({
   useGetPagesFromWiki: mocks.useGetPagesFromWiki,
+  useGetPagesViewsCounter: mocks.useGetPagesViewsCounter,
+  useGetPageViewsDetails: mocks.useGetPageViewsDetails,
 }));
 //mock isAuthorOrManager
 vi.mock('~/hooks/useIsAuthorOrManager', () => ({
   useIsAuthorOrManager: mocks.useIsAuthorOrManager,
 }));
+
 describe('Pages List', () => {
   const mockedData = mockWikiPagesWithoutContent.pages
     ?.filter((page) => page.isVisible)
     .sort((a, b) => b.modified.$date - a.modified.$date);
+  const mockedPagesViews = {
+    [mockedData[0]._id]: 10,
+    [mockedData[1]._id]: 20,
+  };
+  const mockedPageViewsDetails = {
+    viewsCounter: 10,
+    uniqueViewsCounter: 1,
+    uniqueViewsPerProfile: [{ profile: 'Personnel', counter: 1 }],
+  };
 
   afterEach(() => {
     vi.resetAllMocks();
@@ -77,6 +91,16 @@ describe('Pages List', () => {
 
     mocks.useGetPagesFromWiki.mockReturnValue({
       data: mockedData,
+      isPending: false,
+    });
+
+    mocks.useGetPagesViewsCounter.mockReturnValue({
+      data: mockedPagesViews,
+      isPending: false,
+    });
+
+    mocks.useGetPageViewsDetails.mockReturnValue({
+      data: mockedPageViewsDetails,
       isPending: false,
     });
   });
@@ -163,11 +187,12 @@ describe('Pages List', () => {
   });
 
   it('should have one checkbox checked if user clicks a checkbox', async () => {
-    const { user } = render(<PageList />);
+    const { user, container } = render(<PageList />);
 
     // first checkbox of item of a list starts index 1, 0 is the checkbox in the toolbar
     const checkbox = screen.getAllByRole('checkbox')[1];
-    const buttons = screen.getAllByRole('button');
+    const buttons = container.querySelectorAll('div.toolbar button');
+
     await user.click(checkbox);
 
     expect(checkbox).toBeChecked();
@@ -198,5 +223,39 @@ describe('Pages List', () => {
       (button) => !button.hasAttribute('disabled'),
     );
     expect(hasEnabledButton).toBe(true);
+  });
+
+  it('should render pages views counter', async () => {
+    render(<PageList />);
+
+    const viewsCounterSpan = screen.getAllByTestId('pageViewsSpan');
+
+    expect(viewsCounterSpan).toHaveLength(mockedData.length);
+  });
+
+  describe('Views Modal', () => {
+    beforeEach(() => {
+      const modalRoot = document.createElement('div');
+      modalRoot.id = 'portal';
+      document.body.appendChild(modalRoot);
+    });
+
+    afterEach(() => {
+      const modalRoot = document.getElementById('portal');
+      if (modalRoot) modalRoot.remove();
+    });
+
+    it('should render ViewsModal when user clicks on views counter', async () => {
+      const { user } = render(<PageList />);
+
+      const pageViewsSpan = await screen.findAllByTestId('pageViewsSpan');
+      const button = within(pageViewsSpan[0]).getByRole('button');
+      expect(button).toBeInTheDocument();
+
+      await user.click(button);
+
+      const ViewsModal = screen.getByRole('dialog');
+      expect(ViewsModal).toBeInTheDocument();
+    });
   });
 });
