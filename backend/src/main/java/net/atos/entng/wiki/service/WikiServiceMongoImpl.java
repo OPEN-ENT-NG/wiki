@@ -25,6 +25,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.*;
 
+import com.mongodb.client.model.Filters;
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
@@ -36,12 +37,15 @@ import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListEntryFlat;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
 import org.bson.conversions.Bson;
+import org.entcore.common.audience.AudienceHelper;
+import org.entcore.common.audience.to.AudienceCheckRightRequestMessage;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.bson.types.ObjectId;
 import org.entcore.common.explorer.IdAndVersion;
@@ -74,7 +78,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
 
-	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin, final IContentTransformerClient contentTransformerClient, final IContentTransformerEventRecorder contentTransformerEventRecorder) {
+	private final AudienceHelper audienceHelper;
+
+	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin,
+								final IContentTransformerClient contentTransformerClient,
+								final IContentTransformerEventRecorder contentTransformerEventRecorder,
+								final AudienceHelper audienceHelper) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
@@ -82,6 +91,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		this.shareNormalizer = new ShareNormalizer(this.wikiExplorerPlugin.getSecuredActions());
 		this.contentTransformerClient = contentTransformerClient;
 		this.contentTransformerEventRecorder = contentTransformerEventRecorder;
+		this.audienceHelper = audienceHelper;
 	}
 
 	@Override
@@ -842,6 +852,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				subpagesDeleteModifier.build(),
 				deleteSubpagesRes -> {
 					if ("ok".equals(deleteSubpagesRes.body().getString("status"))) {
+						// Notify audience of deletion
+						audienceHelper.notifyResourcesDeletion("wiki", "page", new HashSet<>(pageIDsToDelete))
+								.onFailure(th -> log.error("Failed to notify audience of post deletion", th));
+						// Complete promise
 						subpagesDeletePromise.complete();
 					} else {
 						subpagesDeletePromise.fail(deleteSubpagesRes.body().getString("message"));
@@ -1381,5 +1395,57 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		});
 		
 		return promise.future();
+	}
+
+	/**
+	 * Called by the audience rights checker when querying Audience APIs.
+	 * @param audienceCheckRightRequestMessage
+	 * @return Future<Boolean> true if user has rights to retrieve data about the pages.
+	 */
+	@Override
+	public Future<Boolean> apply(AudienceCheckRightRequestMessage audienceCheckRightRequestMessage) {
+		final String userId = audienceCheckRightRequestMessage.getUserId();
+		final Set<String> userGroupsIds = audienceCheckRightRequestMessage.getUserGroups();
+
+		return this.hasAccessRightsOnAllPages(userId, userGroupsIds, audienceCheckRightRequestMessage.getResourceIds());
+	}
+
+	/**
+	 * Check if the user has access right on all pages.
+	 * @param userId
+	 * @param userGroupsIds
+	 * @param pagesIds
+	 * @return
+	 */
+	private Future<Boolean> hasAccessRightsOnAllPages(final String userId, final Set<String> userGroupsIds,
+												final Set<String> pagesIds) {
+		final Promise<Boolean> promise = Promise.promise();
+
+		final Bson query = elemMatch("pages", in("_id", pagesIds));
+
+		mongo.findOne(collection, MongoQueryBuilder.build(query), res -> {
+			if ("ok".equals(res.body().getString("status"))) {
+				final JsonObject wiki = res.body().getJsonObject("result");
+				if (wiki != null) {
+					// Check if user is manager or has rights on the wiki
+					UserInfos userInfos = new UserInfos();
+					userInfos.setUserId(userId);
+					userInfos.setGroupsIds(new ArrayList<>(userGroupsIds));
+
+					if (isManager(wiki, userInfos) || isContrib(wiki, userInfos)) {
+						promise.complete(Boolean.TRUE);
+					} else {
+						promise.complete(Boolean.FALSE);
+					}
+				} else {
+					promise.complete(Boolean.FALSE);
+				}
+			} else {
+				promise.fail(res.body().getString("message"));
+			}
+		});
+
+		return promise.future();
+
 	}
 }

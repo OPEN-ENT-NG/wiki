@@ -2,6 +2,8 @@ import { http, HttpResponse } from 'msw';
 import { baseURL } from '~/services';
 import {
   mockPage,
+  mockPagesIDsForViewCounter,
+  mockPagesViewCounterResponse,
   mockRevision,
   mockWiki,
   mockWikiPagesWithoutContent,
@@ -305,4 +307,16 @@ export const handlers = [
       { status: 200 },
     );
   }),
+  http.get(
+    `/audience/views/count/wiki/page?resourceIds=${mockPagesIDsForViewCounter.join(',')}`,
+    () => {
+      return HttpResponse.json(mockPagesViewCounterResponse, { status: 200 });
+    },
+  ),
+  http.post(
+    `/audience/views/wiki/page/${mockPagesIDsForViewCounter[0]}`,
+    () => {
+      return HttpResponse.json('', { status: 200 });
+    },
+  ),
 ];

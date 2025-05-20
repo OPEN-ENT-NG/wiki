@@ -2,13 +2,15 @@ import {
   Alert,
   Button,
   checkUserRight,
+  Flex,
   LoadingScreen,
   useEdificeClient,
 } from '@edifice.io/react';
+import { ViewsCounter, ViewsModal } from '@edifice.io/react/audience';
 import { CommentProvider } from '@edifice.io/react/comments';
 import { Editor, EditorRef } from '@edifice.io/react/editor';
 import { QueryClient } from '@tanstack/react-query';
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActionFunctionArgs,
@@ -35,6 +37,7 @@ import {
   pageQueryOptions,
   useCreateComment,
   useDeleteComment,
+  useGetPageViewsDetails,
   useUpdateComment,
   wikiQueryOptions,
   wikiService,
@@ -145,6 +148,7 @@ export const action =
 export const visibleAction = pageEditAction;
 
 export const Page = () => {
+  const [isViewsModalOpen, setIsViewsModalOpen] = useState<boolean>(false);
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
   const openDeleteModal = useOpenDeleteModal();
@@ -162,6 +166,14 @@ export const Page = () => {
   const { getPageVersionFromRoute } = useRevision();
   const { isPending, error, data, showComments, isRevision } =
     getPageVersionFromRoute();
+
+  const { data: pageViewsDetails } = useGetPageViewsDetails({
+    pageId: params.pageId || '',
+  });
+
+  useEffect(() => {
+    wikiService.triggerPageView(params.pageId!);
+  }, [params.pageId]);
 
   useEffect(() => {
     if (data) {
@@ -206,6 +218,14 @@ export const Page = () => {
     });
   };
 
+  const handleViewsCounterClick = async () => {
+    setIsViewsModalOpen(true);
+  };
+
+  const handleViewsModalClose = () => {
+    setIsViewsModalOpen(false);
+  };
+
   if (isPending) return <LoadingScreen />;
 
   if (error) return 'An error has occurred: ' + error.message;
@@ -248,6 +268,12 @@ export const Page = () => {
         visibility="protected"
         focus={null}
       />
+      <Flex justify="end">
+        <ViewsCounter
+          viewsCounter={pageViewsDetails?.viewsCounter || 0}
+          onClick={() => handleViewsCounterClick()}
+        />
+      </Flex>
       {showComments && (
         <CommentProvider
           comments={data.comments}
@@ -280,6 +306,14 @@ export const Page = () => {
           <MoveModal wikiId={params.wikiId!} pageId={params.pageId!} />
         )}
         {openConfirmVisibilityModal && <ConfirmVisibilityModal page={data} />}
+
+        {isViewsModalOpen && pageViewsDetails && (
+          <ViewsModal
+            viewsDetails={pageViewsDetails}
+            isOpen={isViewsModalOpen}
+            onModalClose={handleViewsModalClose}
+          />
+        )}
       </Suspense>
     </div>
   ) : null;

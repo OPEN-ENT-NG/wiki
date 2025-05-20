@@ -611,3 +611,13 @@ export const mockTreeData = [
     showIconSection: false,
   },
 ];
+
+export const mockPagesIDsForViewCounter = [
+  '66dab5f5812656287f15fd41',
+  '670541bc088c9c7ceeca2c3f',
+];
+
+export const mockPagesViewCounterResponse = {
+  '66dab5f5812656287f15fd41': 1,
+  '670541bc088c9c7ceeca2c3f': 2,
+};

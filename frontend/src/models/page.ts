@@ -52,6 +52,7 @@ export interface Page {
   position?: number;
   parentId?: string;
   error?: any;
+  views?: number;
 }
 
 export interface PageWithoutContent {
