@@ -61,8 +61,10 @@ describe('Index Route', () => {
     });
   });
 
-  it('should render the AppHeader', () => {
-    expect(screen.findByLabelText('breadcrumb'));
+  it('should render the AppHeader', async () => {
+    await waitFor(() => {
+      expect(screen.findByLabelText('breadcrumb'));
+    });
   });
 
   it('should render Index page if no data found', async () => {
@@ -74,7 +76,9 @@ describe('Index Route', () => {
   });
 
   it('should render Menu component', async () => {
-    expect(screen.getByRole('navigation', { name: /wiki.pagelist/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('navigation', { name: /wiki.pagelist/i }));
+    });
   });
 
   it('should render TreeView component', async () => {
