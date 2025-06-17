@@ -29,6 +29,7 @@ import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
+import net.atos.entng.wiki.listeners.ResourceBrokerListenerImpl;
 import net.atos.entng.wiki.service.WikiRepositoryEvents;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
 
@@ -38,6 +39,8 @@ import java.util.Optional;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import org.entcore.broker.api.utils.AddressParameter;
+import org.entcore.broker.api.utils.BrokerProxyUtils;
 import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
@@ -47,6 +50,8 @@ import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
 import org.entcore.common.service.impl.MongoDbSearchService;
+import org.entcore.common.share.ShareService;
+import org.entcore.common.share.impl.ShareBrokerListenerImpl;
 
 import static java.util.Optional.empty;
 
@@ -108,7 +113,12 @@ public class Wiki extends BaseServer {
 		this.plugin.start();
 
 		audienceRightChecker = audienceHelper.listenForRightsCheck("wiki", "page", wikiService);
-
+        // add broker listener for workspace resources
+        BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "wiki"));
+        // add broker listener for share service
+        final ShareService shareService = this.plugin.createShareService(new HashMap<>());
+        BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
+		// Complete the start promise
 		startPromise.tryComplete();
 	}
 
