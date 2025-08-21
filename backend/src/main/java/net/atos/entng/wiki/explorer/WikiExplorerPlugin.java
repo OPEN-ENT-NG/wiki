@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.entcore.broker.api.dto.resources.ResourcesDeletedDTO;
+import org.entcore.broker.api.publisher.BrokerPublisherFactory;
+import org.entcore.broker.api.utils.AddressParameter;
+import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.explorer.ExplorerMessage;
 import org.entcore.common.explorer.ExplorerPluginFactory;
 import org.entcore.common.explorer.IExplorerPlugin;
@@ -31,6 +35,7 @@ public class WikiExplorerPlugin extends ExplorerPluginResourceMongo {
     private final Map<String, SecuredAction> securedActions;
     private final MongoClient mongoClient;
     private ShareService shareService;
+    private final ResourceBrokerPublisher resourcePublisher;
 
     public static WikiExplorerPlugin create(final Map<String, SecuredAction> securedActions) throws Exception  {
         final IExplorerPlugin plugin = ExplorerPluginFactory.createMongoPlugin((params)->{
@@ -43,6 +48,12 @@ public class WikiExplorerPlugin extends ExplorerPluginResourceMongo {
         super(communication, mongoClient);
         this.mongoClient = mongoClient;
         this.securedActions = securedActions;
+        // Initialize resource publisher for deletion notifications
+        this.resourcePublisher = BrokerPublisherFactory.create(
+                ResourceBrokerPublisher.class,
+                communication.vertx(),
+                new AddressParameter("application", Wiki.APPLICATION)
+        );
     }
 
     public MongoClient getMongoClient() {return mongoClient;}
@@ -108,5 +119,14 @@ public class WikiExplorerPlugin extends ExplorerPluginResourceMongo {
         user.setUserId( owner.getString("userId"));
         user.setUsername(owner.getString("displayName"));
         return Optional.ofNullable(user);
+    }
+
+    @Override
+    protected Future<List<Boolean>> doDelete(UserInfos user, List<String> ids) {
+        return super.doDelete(user, ids).onSuccess(result -> {
+            // Notify resource deletion via broker and dont wait for completion
+            final ResourcesDeletedDTO notification = new ResourcesDeletedDTO(ids, Wiki.WIKI_TYPE);
+            resourcePublisher.notifyResourcesDeleted(notification);
+        });
     }
 }
