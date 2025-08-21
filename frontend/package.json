@@ -1,6 +1,6 @@
 {
   "name": "wiki",
-  "version": "3.2.16",
+  "version": "3.2.16-%branch%.%generateVersion%",
   "private": true,
   "license": "GPL-3.0",
   "author": "Edifice",
@@ -31,16 +31,16 @@
     ]
   },
   "dependencies": {
-    "@edifice.io/bootstrap": "2.3.0",
-    "@edifice.io/client": "2.3.0",
-    "@edifice.io/react": "2.3.0",
+    "@edifice.io/bootstrap": "develop",
+    "@edifice.io/client": "develop",
+    "@edifice.io/react": "develop",
     "@react-spring/web": "^9.7.5",
     "@tanstack/react-query": "5.62.7",
     "@uidotdev/usehooks": "2.4.1",
     "clsx": "^2.1.1",
     "i18next": "23.8.1",
     "i18next-http-backend": "2.4.2",
-    "ode-explorer": "2.2.12",
+    "ode-explorer": "develop",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "4.0.13",
