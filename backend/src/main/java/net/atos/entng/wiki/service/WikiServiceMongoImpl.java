@@ -31,12 +31,11 @@ import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
 import fr.wseduc.transformer.to.ContentTransformerResponse;
 import fr.wseduc.webutils.Utils;
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.to.PageId;
@@ -44,6 +43,10 @@ import net.atos.entng.wiki.to.PageListEntryFlat;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
 import org.bson.conversions.Bson;
+import org.entcore.broker.api.dto.resources.ResourcesDeletedDTO;
+import org.entcore.broker.api.publisher.BrokerPublisherFactory;
+import org.entcore.broker.api.utils.AddressParameter;
+import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.audience.to.AudienceCheckRightRequestMessage;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
@@ -55,7 +58,6 @@ import org.entcore.common.share.ShareNormalizer;
 import org.entcore.common.share.ShareRoles;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -79,8 +81,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
 
 	private final AudienceHelper audienceHelper;
+	private final ResourceBrokerPublisher resourcePublisher;
 
-	public WikiServiceMongoImpl(final String collection, final WikiExplorerPlugin plugin,
+	public WikiServiceMongoImpl(final Vertx vertx, final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
 								final IContentTransformerEventRecorder contentTransformerEventRecorder,
 								final AudienceHelper audienceHelper) {
@@ -92,6 +95,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		this.contentTransformerClient = contentTransformerClient;
 		this.contentTransformerEventRecorder = contentTransformerEventRecorder;
 		this.audienceHelper = audienceHelper;
+		// Initialize resource publisher for deletion notifications
+		this.resourcePublisher = BrokerPublisherFactory.create(
+				ResourceBrokerPublisher.class,
+				vertx,
+				new AddressParameter("application", Wiki.APPLICATION)
+		);
 	}
 
 	@Override
@@ -337,7 +346,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Handler<Either<String, JsonObject>> handler) {
 		super.delete(idWiki, r -> {
 			if (r.isRight()) {
-				// notify EUR
+				// Notify resource deletion via broker and don't wait for completion
+				final ResourcesDeletedDTO notification = ResourcesDeletedDTO.forSingleResource(idWiki, Wiki.WIKI_TYPE);
+				resourcePublisher.notifyResourcesDeleted(notification);
+				// Notify EUR and Wait for explorer notifications to complete
 				wikiExplorerPlugin.notifyDeleteById(user, new IdAndVersion(idWiki, System.currentTimeMillis()))
 						.onSuccess(e -> {
 							// on success return 200

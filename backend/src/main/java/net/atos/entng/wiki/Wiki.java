@@ -49,9 +49,11 @@ import org.entcore.common.explorer.impl.ExplorerRepositoryEvents;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
+import org.entcore.common.resources.ResourceBrokerRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
 import org.entcore.common.share.ShareService;
 import org.entcore.common.share.impl.ShareBrokerListenerImpl;
+import org.entcore.common.user.RepositoryEvents;
 
 import static java.util.Optional.empty;
 
@@ -78,7 +80,9 @@ public class Wiki extends BaseServer {
         pluginClientPerCollection.put(WIKI_COLLECTION, mainClient);
 		
         // Set Repository Events
-        setRepositoryEvents(new ExplorerRepositoryEvents(new WikiRepositoryEvents(vertx), pluginClientPerCollection, mainClient));
+		final RepositoryEvents explorerRepository = new ExplorerRepositoryEvents(new WikiRepositoryEvents(vertx), pluginClientPerCollection, mainClient);
+		final RepositoryEvents resourceRepository = new ResourceBrokerRepositoryEvents(explorerRepository, vertx, APPLICATION, WIKI_TYPE);
+        setRepositoryEvents(resourceRepository);
 		
         // Set Searching Events
         if (config.getBoolean("searching-event", true)) {
@@ -98,7 +102,7 @@ public class Wiki extends BaseServer {
 		AudienceHelper audienceHelper = new AudienceHelper(vertx);
 
 		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
+		WikiService wikiService = new WikiServiceMongoImpl(vertx, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
 
         // Add Wiki Controller
         final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
