@@ -21,10 +21,9 @@ package net.atos.entng.wiki;
 
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
+import fr.wseduc.webutils.collections.SharedDataHelper;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
@@ -59,7 +58,21 @@ public class Wiki extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future().onSuccess(init -> SharedDataHelper.getInstance().getMulti("server", "content-transformer")
+				.onSuccess(wikiConfigMap -> {
+					try {
+						initWiki(startPromise, wikiConfigMap);
+					} catch (Exception e) {
+						startPromise.fail(e);
+						log.error("Error when start Wiki", e);
+					}
+				}).onFailure(ex -> log.error("Error when start Wiki server shared data", ex))
+		).onFailure(ex -> log.error("Error when start Wiki server super classes", ex));
+	}
+
+	public void initWiki(final Promise<Void> startPromise, final Map<String, Object> wikiConfigMap) throws Exception {
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
@@ -78,7 +91,7 @@ public class Wiki extends BaseServer {
 
 		// Tiptap Transformer
 		ContentTransformerFactoryProvider.init(vertx);
-		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
+		final JsonObject contentTransformerConfig = this.getContentTransformerConfig((String) wikiConfigMap.get("content-transformer")).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
@@ -102,14 +115,12 @@ public class Wiki extends BaseServer {
 		startPromise.tryComplete();
 	}
 
-	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
-		final LocalMap<Object, Object> server= vertx.sharedData().getLocalMap("server");
-		final String rawConfiguration = (String) server.get("content-transformer");
+	private Optional<JsonObject> getContentTransformerConfig(final String contentTransformerRawConfig) {
 		final Optional<JsonObject> contentTransformerConfig;
-		if(rawConfiguration == null) {
+		if(contentTransformerRawConfig == null) {
 			contentTransformerConfig = empty();
 		} else {
-			contentTransformerConfig = Optional.of(new JsonObject(rawConfiguration));
+			contentTransformerConfig = Optional.of(new JsonObject(contentTransformerRawConfig));
 		}
 		return contentTransformerConfig;
 	}
