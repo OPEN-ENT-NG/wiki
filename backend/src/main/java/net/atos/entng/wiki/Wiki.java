@@ -21,12 +21,11 @@ package net.atos.entng.wiki;
 
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
+import fr.wseduc.webutils.collections.SharedDataHelper;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.broker.AIWikiGeneratorListenerImpl;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
@@ -78,8 +77,16 @@ public class Wiki extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
         listeners.clear();
+		promise.future()
+				.compose(init -> SharedDataHelper.getInstance().getMulti("server", "content-transformer"))
+				.compose(this::initWiki)
+				.onComplete(startPromise);
+	}
+
+	public Future<Void> initWiki(final Map<String, Object> wikiConfigMap){
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
@@ -100,61 +107,58 @@ public class Wiki extends BaseServer {
 
 		// Tiptap Transformer
 		ContentTransformerFactoryProvider.init(vertx);
-		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
+		final JsonObject contentTransformerConfig = this.getContentTransformerConfig((String) wikiConfigMap.get("content-transformer")).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
-        // Create Explorer plugin
-		this.plugin = WikiExplorerPlugin.create(securedActions);
+        return WikiExplorerPlugin.create(securedActions).compose(p -> {
+            this.plugin = p;
 
-		// Audience Helper
-		AudienceHelper audienceHelper = new AudienceHelper(vertx);
+            // Audience Helper
+            AudienceHelper audienceHelper = new AudienceHelper(vertx);
 
-        final String platformId = config.getString("platform-name", "unnamed-pf");
-		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(vertx, platformId, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
+            final String platformId = config.getString("platform-name", "unnamed-pf");
+            // Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
+            WikiService wikiService = new WikiServiceMongoImpl(vertx, platformId, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
 
-        // Add Wiki Controller
-        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
-		addController(wikiController);
+            // Add Wiki Controller
+            final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
+            addController(wikiController);
 
-		// Wiki Poll Service
-		WikiPollService wikiPollService = new WikiPollServiceMongoImpl(WIKI_POLLS_COLLECTION);
+            // Wiki Poll Service
+            WikiPollService wikiPollService = new WikiPollServiceMongoImpl(WIKI_POLLS_COLLECTION);
 
-		// Add WikiPoll Controller
-		final WikiPollController wikiPollController = new WikiPollController(WIKI_POLLS_COLLECTION, wikiPollService);
-		addController(wikiPollController);
-		
-        // Set Mongo Collection
-        MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
-		
-        setDefaultResourceFilter(new ShareAndOwner());
+            // Add WikiPoll Controller
+            final WikiPollController wikiPollController = new WikiPollController(WIKI_POLLS_COLLECTION, wikiPollService);
+            addController(wikiPollController);
 
-        // Start Explorer plugin
-		this.plugin.start();
+            // Set Mongo Collection
+            MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
 
-		audienceRightChecker = audienceHelper.listenForRightsCheck("wiki", "page", wikiService);
-        // add broker listener for workspace resources
-        BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "wiki"));
-        // add broker listener for share service
-        final ShareService shareService = this.plugin.createShareService(new HashMap<>());
-        BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
-		// add broker listener for wiki ai service
-        listeners.add(new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService));
-        List<Future<Void>> futureListeners = listeners.stream().map(ENTBrokerListener::start).collect(Collectors.toList());
-        Future.all(futureListeners).mapEmpty()
-                .onSuccess(e -> startPromise.tryComplete())
-                .onFailure(startPromise::fail);
-	}
+            setDefaultResourceFilter(new ShareAndOwner());
 
-	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
-		final LocalMap<Object, Object> server= vertx.sharedData().getLocalMap("server");
-		final String rawConfiguration = (String) server.get("content-transformer");
+            // Start Explorer plugin
+            this.plugin.start();
+
+            audienceRightChecker = audienceHelper.listenForRightsCheck("wiki", "page", wikiService);
+            // add broker listener for workspace resources
+            BrokerProxyUtils.addBrokerProxy(new ResourceBrokerListenerImpl(), vertx, new AddressParameter("application", "wiki"));
+            // add broker listener for share service
+            final ShareService shareService = this.plugin.createShareService(new HashMap<>());
+            BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
+            // add broker listener for wiki ai service
+            listeners.add(new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService));
+            List<Future<Void>> futureListeners = listeners.stream().map(ENTBrokerListener::start).collect(Collectors.toList());
+            return Future.all(futureListeners).mapEmpty();
+        });
+    }
+
+    private Optional<JsonObject> getContentTransformerConfig(final String contentTransformerRawConfig) {
 		final Optional<JsonObject> contentTransformerConfig;
-		if(rawConfiguration == null) {
+		if(contentTransformerRawConfig == null) {
 			contentTransformerConfig = empty();
 		} else {
-			contentTransformerConfig = Optional.of(new JsonObject(rawConfiguration));
+			contentTransformerConfig = Optional.of(new JsonObject(contentTransformerRawConfig));
 		}
 		return contentTransformerConfig;
 	}
