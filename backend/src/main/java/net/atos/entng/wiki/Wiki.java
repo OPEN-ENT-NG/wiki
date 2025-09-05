@@ -21,11 +21,12 @@ package net.atos.entng.wiki;
 
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
+import fr.wseduc.webutils.collections.SharedDataHelper;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.LocalMap;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
@@ -70,7 +71,15 @@ public class Wiki extends BaseServer {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
-		super.start(startPromise);
+		final Promise<Void> promise = Promise.promise();
+		super.start(promise);
+		promise.future()
+				.compose(init -> SharedDataHelper.getInstance().getMulti("server", "content-transformer"))
+				.compose(this::initWiki)
+				.onComplete(startPromise);
+	}
+
+	public Future<Void> initWiki(final Map<String, Object> wikiConfigMap){
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
@@ -91,12 +100,16 @@ public class Wiki extends BaseServer {
 
 		// Tiptap Transformer
 		ContentTransformerFactoryProvider.init(vertx);
-		final JsonObject contentTransformerConfig = this.getContentTransformerConfig(vertx).orElse(null);
+		final JsonObject contentTransformerConfig = this.getContentTransformerConfig((String) wikiConfigMap.get("content-transformer")).orElse(null);
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
         // Create Explorer plugin
-		this.plugin = WikiExplorerPlugin.create(securedActions);
+		try {
+			this.plugin = WikiExplorerPlugin.create(securedActions);
+		} catch (Exception e) {
+			return Future.failedFuture(e);
+		}
 
 		// Audience Helper
 		AudienceHelper audienceHelper = new AudienceHelper(vertx);
@@ -123,17 +136,15 @@ public class Wiki extends BaseServer {
         final ShareService shareService = this.plugin.createShareService(new HashMap<>());
         BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
 		// Complete the start promise
-		startPromise.tryComplete();
+		return Future.succeededFuture();
 	}
 
-	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
-		final LocalMap<Object, Object> server= vertx.sharedData().getLocalMap("server");
-		final String rawConfiguration = (String) server.get("content-transformer");
+	private Optional<JsonObject> getContentTransformerConfig(final String contentTransformerRawConfig) {
 		final Optional<JsonObject> contentTransformerConfig;
-		if(rawConfiguration == null) {
+		if(contentTransformerRawConfig == null) {
 			contentTransformerConfig = empty();
 		} else {
-			contentTransformerConfig = Optional.of(new JsonObject(rawConfiguration));
+			contentTransformerConfig = Optional.of(new JsonObject(contentTransformerRawConfig));
 		}
 		return contentTransformerConfig;
 	}
