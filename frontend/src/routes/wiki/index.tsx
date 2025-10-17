@@ -21,12 +21,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import {
-  AppHeader,
-  DropdownTreeview,
-  NewPage,
-  WikiEmptyScreen,
-} from '~/features';
+import { AppHeader, DropdownTreeview, NewPage } from '~/features';
 import { useFeedData } from '~/hooks/useFeedData';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { useMenu } from '~/hooks/useMenu';
@@ -41,6 +36,8 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
+import { PagesAssistant } from '~/features/wiki/PagesAssistant/PagesAssistant';
+import { PagesAssistantTreeItem } from '~/features/wiki/PagesAssistant/PagesAssistantTreeItem';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -159,7 +156,15 @@ export const Index = () => {
               </>
             ) : null}
 
-            {!isOnlyRead ? <NewPage /> : <div className="mb-8" />}
+            {!isOnlyRead ? (
+              match ? (
+                <PagesAssistantTreeItem />
+              ) : (
+                <NewPage />
+              )
+            ) : (
+              <div className="mb-8" />
+            )}
 
             {treeData && (
               <SortableTree
@@ -203,31 +208,38 @@ export const Index = () => {
             )}
           </Grid.Col>
         )}
-        <Grid.Col
-          sm="4"
-          md="8"
-          lg="6"
-          xl="9"
-          className={clsx({
-            'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
-            'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
-            'd-flex': match && !isSmallDevice,
-          })}
-        >
-          {isSmallDevice && (
-            <>
-              <DropdownTreeview
-                selectedNodeId={selectedNodeId}
-                onTreeItemClick={handleOnTreeItemClick}
-                onTreeItemAction={
-                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                }
-              />
-              {!isOnlyRead && <NewPage />}
-            </>
-          )}
-          {match ? <WikiEmptyScreen /> : <Outlet />}
-        </Grid.Col>
+        {!match && hasPages && (
+          <Grid.Col
+            sm="4"
+            md="8"
+            lg="6"
+            xl="9"
+            className={clsx({
+              'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
+              'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
+              'd-flex': match && !isSmallDevice,
+            })}
+          >
+            {isSmallDevice && (
+              <>
+                <DropdownTreeview
+                  selectedNodeId={selectedNodeId}
+                  onTreeItemClick={handleOnTreeItemClick}
+                  onTreeItemAction={
+                    !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                  }
+                />
+                {!isOnlyRead && <NewPage />}
+              </>
+            )}
+            {hasPages && <Outlet />}
+          </Grid.Col>
+        )}
+        {match && !hasPages && (
+          <Grid.Col sm="4" md="8" lg="6" xl="9">
+            <PagesAssistant />
+          </Grid.Col>
+        )}
       </Grid>
     </>
   );
