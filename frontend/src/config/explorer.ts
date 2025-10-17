@@ -1,6 +1,8 @@
 import { AppParams } from 'ode-explorer/lib';
 import { WikiResourceService } from '~/services/resource';
 import { workflows } from './workflows';
+import { IResource } from '@edifice.io/client';
+import { basename } from '~/routes';
 
 export const explorerConfig: AppParams = {
   app: 'wiki',
@@ -87,4 +89,9 @@ export const explorerConfig: AppParams = {
       right: 'manager',
     },
   ],
+  onResourceCreated: (resource: IResource) => {
+    return basename === '/'
+      ? (window.location.href = `/id/${resource.id}`)
+      : (window.location.href = `${basename}/id/${resource.id}`);
+  },
 };
