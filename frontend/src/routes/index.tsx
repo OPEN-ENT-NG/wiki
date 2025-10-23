@@ -19,6 +19,8 @@ import {
 } from './page/list/list';
 import { Index, loader as wikiLoader } from './wiki';
 import { pageEditAction } from './page/pageEditAction';
+import { PagesAssistantRoot } from '~/features/wiki/PagesAssistant/PagesAssistantRoot';
+import { PagesAssistantAI } from '~/features/wiki/PagesAssistant/PagesAssistantAI';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -50,6 +52,14 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'pages/destroy',
             action: deleteListAction(queryClient),
+          },
+          {
+            path: 'pages/assistant',
+            element: <PagesAssistantRoot />,
+          },
+          {
+            path: 'pages/assistant/ai',
+            element: <PagesAssistantAI />,
           },
           {
             path: 'page/:pageId',

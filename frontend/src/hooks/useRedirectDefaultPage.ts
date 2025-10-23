@@ -19,16 +19,27 @@ export const useRedirectDefaultPage = () => {
   const { data: wiki } = useGetWiki(params.wikiId!);
 
   useEffect(() => {
-    if (match && wiki && !!wiki.pages.length) {
-      const defaultPage = findDefaultPage(wiki, userRights);
-      // prevent infinite loop with loading state
-      if (defaultPage && !redirectingToDefaultPage) {
-        setRedirectingToDefaultPage(true);
-        return navigate(`/id/${wiki?._id}/page/${defaultPage._id}`, {
-          // replace: true prevents adding a new entry in the browser history
-          // when redirecting to the default page
-          replace: true,
-        });
+    if (match && wiki) {
+      // If wiki has pages, redirect to wiki's default page
+      if (wiki.pages.length) {
+        const defaultPage = findDefaultPage(wiki, userRights);
+        // prevent infinite loop with loading state
+        if (defaultPage && !redirectingToDefaultPage) {
+          setRedirectingToDefaultPage(true);
+          return navigate(`/id/${wiki?._id}/page/${defaultPage._id}`, {
+            // replace: true prevents adding a new entry in the browser history
+            // when redirecting to the default page
+            replace: true,
+          });
+        }
+      } else {
+        // Redirect to Pages Assistant if no pages exist
+        if (!redirectingToDefaultPage) {
+          setRedirectingToDefaultPage(true);
+          return navigate(`/id/${wiki?._id}/pages/assistant`, {
+            replace: true,
+          });
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

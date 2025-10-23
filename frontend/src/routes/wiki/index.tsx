@@ -36,8 +36,7 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { PagesAssistant } from '~/features/wiki/PagesAssistant/PagesAssistant';
-import { PagesAssistantTreeItem } from '~/features/wiki/PagesAssistant/PagesAssistantTreeItem';
+import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssistantLeftPane';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -83,7 +82,7 @@ export const Index = () => {
   const hasPages = data && data?.pages?.length > 0;
 
   /**
-   * Redirect to the default page if exist
+   * Redirect to the default page if exist otherwise to Pages Assistant
    */
   useRedirectDefaultPage();
 
@@ -102,6 +101,11 @@ export const Index = () => {
 
   const handleOnTreeItemCreateChildren = (pageId: ID) =>
     navigate(`page/${pageId}/subpage/create`);
+
+  const showPagesAssistantLeftPane = !isOnlyRead && !hasPages;
+
+  const showNewPageButton =
+    !isOnlyRead && !match && !showPagesAssistantLeftPane;
 
   useEffect(() => {
     if (params.pageId) {
@@ -131,6 +135,7 @@ export const Index = () => {
     <>
       <AppHeader />
       <Grid className="flex-grow-1">
+        {/* Left Pane */}
         {!isSmallDevice && (
           <Grid.Col
             sm="3"
@@ -156,15 +161,8 @@ export const Index = () => {
               </>
             ) : null}
 
-            {!isOnlyRead ? (
-              match ? (
-                <PagesAssistantTreeItem />
-              ) : (
-                <NewPage />
-              )
-            ) : (
-              <div className="mb-8" />
-            )}
+            {showPagesAssistantLeftPane && <PagesAssistantLeftPane />}
+            {showNewPageButton && <NewPage />}
 
             {treeData && (
               <SortableTree
@@ -208,38 +206,33 @@ export const Index = () => {
             )}
           </Grid.Col>
         )}
-        {!match && hasPages && (
-          <Grid.Col
-            sm="4"
-            md="8"
-            lg="6"
-            xl="9"
-            className={clsx({
-              'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
-              'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
-              'd-flex': match && !isSmallDevice,
-            })}
-          >
-            {isSmallDevice && (
-              <>
-                <DropdownTreeview
-                  selectedNodeId={selectedNodeId}
-                  onTreeItemClick={handleOnTreeItemClick}
-                  onTreeItemAction={
-                    !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
-                  }
-                />
-                {!isOnlyRead && <NewPage />}
-              </>
-            )}
-            {hasPages && <Outlet />}
-          </Grid.Col>
-        )}
-        {match && !hasPages && (
-          <Grid.Col sm="4" md="8" lg="6" xl="9">
-            <PagesAssistant />
-          </Grid.Col>
-        )}
+
+        {/* Main Content */}
+        <Grid.Col
+          sm="4"
+          md="8"
+          lg="6"
+          xl="9"
+          className={clsx({
+            'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
+            'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
+            'd-flex': match && !isSmallDevice,
+          })}
+        >
+          {isSmallDevice && (
+            <>
+              <DropdownTreeview
+                selectedNodeId={selectedNodeId}
+                onTreeItemClick={handleOnTreeItemClick}
+                onTreeItemAction={
+                  !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
+                }
+              />
+              {!isOnlyRead && <NewPage />}
+            </>
+          )}
+          <Outlet />
+        </Grid.Col>
       </Grid>
     </>
   );
