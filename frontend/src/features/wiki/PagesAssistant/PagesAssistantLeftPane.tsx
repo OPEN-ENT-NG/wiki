@@ -1,6 +1,6 @@
 import { SortableTree } from '@edifice.io/react';
 
-export const PagesAssistantTreeItem = () => {
+export const PagesAssistantLeftPane = () => {
   const treeData = [
     {
       id: '1',
