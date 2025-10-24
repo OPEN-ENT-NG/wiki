@@ -219,7 +219,7 @@ export const Index = () => {
             'd-flex': match && !isSmallDevice,
           })}
         >
-          {isSmallDevice && (
+          {isSmallDevice && showNewPageButton && (
             <>
               <DropdownTreeview
                 selectedNodeId={selectedNodeId}
