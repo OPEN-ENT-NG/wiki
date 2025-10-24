@@ -20,7 +20,9 @@ import {
 import { Index, loader as wikiLoader } from './wiki';
 import { pageEditAction } from './page/pageEditAction';
 import { PagesAssistantRoot } from '~/features/wiki/PagesAssistant/PagesAssistantRoot';
-import { PagesAssistantAI } from '~/features/wiki/PagesAssistant/PagesAssistantAI';
+import { PagesAssistantAI } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAI';
+import { PagesAssistantAIStructureLoading } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStructureLoading';
+import { PagesAssistantAIStructureResult } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStructureResult';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
@@ -60,6 +62,14 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'pages/assistant/ai',
             element: <PagesAssistantAI />,
+          },
+          {
+            path: 'pages/assistant/ai/structureLoading',
+            element: <PagesAssistantAIStructureLoading />,
+          },
+          {
+            path: 'pages/assistant/ai/structureResult',
+            element: <PagesAssistantAIStructureResult />,
           },
           {
             path: 'page/:pageId',
