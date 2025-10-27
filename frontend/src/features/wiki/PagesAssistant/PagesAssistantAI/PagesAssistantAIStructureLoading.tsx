@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react';
-import { mockPagesStructureApiCall } from './mockAPI';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Flex, LoadingScreen, useEdificeClient } from '@edifice.io/react';
+import {
+  Flex,
+  LoadingScreen,
+  useEdificeClient,
+  useUser,
+} from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 import { IconClock } from '@edifice.io/react/icons';
+import {
+  usePagesAssistantActions,
+  useFormValuesStore,
+} from '~/store/assistant';
+import { assistantService } from '~/services/api/assistant/assistant.service';
 
 export const PagesAssistantAIStructureLoading = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
@@ -11,19 +20,33 @@ export const PagesAssistantAIStructureLoading = () => {
   const params = useParams();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
+  const { setPagesStructure } = usePagesAssistantActions();
+  const formValues = useFormValuesStore();
+  const user = useUser();
 
   useEffect(() => {
     const fetchPagesStructure = async () => {
       setStructureLoading(true);
 
-      const pagesStructureResponse = await mockPagesStructureApiCall();
+      const pagesStructureRequest = {
+        ...formValues,
+        wikiId: params.wikiId || '',
+        userId: user.user?.userId || '',
+        session: user.user?.sessionMetadata._id || '',
+        browser: navigator.userAgent,
+      };
+      console.log('pagesStructureRequest', pagesStructureRequest);
+
+      // Call asstistant service to get pages structure
+      const pagesStructureResponse = await assistantService.getPagesStructure(
+        pagesStructureRequest,
+      );
+
       console.log('pagesStructureResponse', pagesStructureResponse);
 
+      setPagesStructure(pagesStructureResponse?.data?.pages);
       setStructureLoading(false);
-
-      navigate(`/id/${params.wikiId}/pages/assistant/ai/structureResult`, {
-        state: { pagesStructureResponse },
-      });
+      navigate(`/id/${params.wikiId}/pages/assistant/ai/structureResult`);
     };
 
     fetchPagesStructure();
