@@ -11,32 +11,23 @@ import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigate, useParams } from 'react-router-dom';
+import { usePagesAssistantAI } from './usePagesAssistantAI';
+import { usePagesAssistantActions } from '~/store/assistant';
+import { PagesAssistantAIFormValues } from '~/services/api/assistant/assistant.types';
 
-export interface PagesAssistantAIFormData {
-  level: string;
-  subject: string;
-  sequence: string;
-  keywords: string;
-}
-
-export const PagesAssistantAI = () => {
+export const PagesAssistantAIForm = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
-  const levels = ['6ème', '5ème', '4ème', '3ème'];
-  const subjects = ['Histoire', 'SVT', 'Technologie'];
-  const sequences = [
-    'La simulation numérique : tester avant de construire',
-    'Séquence 2',
-    'Séquence 3',
-  ];
+  const { levelsData } = usePagesAssistantAI();
+  const { setFormValues } = usePagesAssistantActions();
 
-  const defaultValues: PagesAssistantAIFormData = {
-    level: '6ème',
-    subject: 'Histoire',
-    sequence: sequences[0],
+  const defaultValues: PagesAssistantAIFormValues = {
+    level: '',
+    subject: '',
+    sequence: '',
     keywords: '',
   };
 
@@ -44,15 +35,40 @@ export const PagesAssistantAI = () => {
     watch,
     register,
     handleSubmit,
+    setValue,
     control,
     formState: { isValid },
-  } = useForm<PagesAssistantAIFormData>({
+  } = useForm<PagesAssistantAIFormValues>({
     defaultValues,
   });
 
-  const onSubmit = async (data: PagesAssistantAIFormData) => {
+  const selectedLevel = watch('level');
+  const selectedSubject = watch('subject');
+
+  const availableSubjects =
+    levelsData.find((lvl) => lvl.value === selectedLevel)?.subjects ?? [];
+
+  const availableSequences =
+    availableSubjects.find((subj) => subj.value === selectedSubject)
+      ?.sequences ?? [];
+
+  const onSubmit = async (data: PagesAssistantAIFormValues) => {
     console.log('Form Data:', data);
+    setFormValues(data);
     navigate(`/id/${params.wikiId}/pages/assistant/ai/structureLoading`);
+  };
+
+  const handleLevelChange = () => {
+    // Reset subject, sequence and keywords when level changes
+    setValue('subject', '');
+    setValue('sequence', '');
+    setValue('keywords', '');
+  };
+
+  const handleSubjectChange = () => {
+    // Reset sequence and keywords when subject changes
+    setValue('sequence', '');
+    setValue('keywords', '');
   };
 
   const handleBackButtonClick = () => {
@@ -87,11 +103,12 @@ export const PagesAssistantAI = () => {
                 <Select
                   data-testid="wiki.assistant.ai.select.level"
                   size="md"
-                  value={value}
+                  selectedValue={value}
                   onValueChange={(v) => {
                     onChange(v);
+                    handleLevelChange();
                   }}
-                  options={levels}
+                  options={levelsData.map((level) => level.value)}
                   placeholderOption={t('wiki.assistant.ai.select.level', {
                     ns: appCode,
                   })}
@@ -112,14 +129,18 @@ export const PagesAssistantAI = () => {
                 <Select
                   data-testid="wiki.assistant.ai.select.subject"
                   size="md"
-                  value={value}
+                  selectedValue={value}
                   onValueChange={(v) => {
                     onChange(v);
+                    handleSubjectChange();
                   }}
-                  options={subjects}
+                  options={availableSubjects.map(
+                    (availableSubject) => availableSubject.value,
+                  )}
                   placeholderOption={t('wiki.assistant.ai.select.subject', {
                     ns: appCode,
                   })}
+                  disabled={watch('level')?.length === 0}
                 />
               )}
             />
@@ -137,14 +158,15 @@ export const PagesAssistantAI = () => {
                 <Select
                   data-testid="wiki.assistant.ai.select.sequence"
                   size="md"
-                  value={value}
+                  selectedValue={value}
                   onValueChange={(v) => {
                     onChange(v);
                   }}
-                  options={sequences}
+                  options={availableSequences}
                   placeholderOption={t('wiki.assistant.ai.select.sequence', {
                     ns: appCode,
                   })}
+                  disabled={watch('subject')?.length === 0}
                 />
               )}
             />
@@ -160,7 +182,7 @@ export const PagesAssistantAI = () => {
                   {t('wiki.assistant.ai.keywords.input.label', { ns: appCode })}
                 </Label>
                 <p className="small text-gray-700 p-2">
-                  {`${watch('keywords', '').length || 0} / 80`}
+                  {`${watch('keywords', '')?.length || 0} / 80`}
                 </p>
               </Flex>
               <Input
@@ -178,6 +200,7 @@ export const PagesAssistantAI = () => {
                 placeholder={t('wiki.assistant.ai.keywords.input.placeholder', {
                   ns: appCode,
                 })}
+                disabled={watch('sequence')?.length === 0}
               />
             </FormControl>
           </div>
