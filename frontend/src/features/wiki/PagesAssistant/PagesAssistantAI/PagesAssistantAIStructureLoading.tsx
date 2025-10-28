@@ -53,7 +53,7 @@ export const PagesAssistantAIStructureLoading = () => {
   }, []);
 
   return (
-    <div className="mx-32 my-24">
+    <div className="mx-64 my-40">
       {structureLoading && (
         <div>
           <h2>

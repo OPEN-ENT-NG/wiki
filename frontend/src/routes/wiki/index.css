@@ -42,10 +42,10 @@
 }
 
 .pages-assistant-wrapper .card.card-assistant-ai {
-  border-color: #F9BEEF;
+  border-color: #f9beef;
 }
 
 .pages-assistant-wrapper .card.card-import {
   background-color: var(--edifice-gray-300);
-  border-color: #FFF;
+  border-color: #fff;
 }
