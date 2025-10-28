@@ -40,7 +40,7 @@ export const PagesAssistantAIStructureResult = () => {
   };
 
   return (
-    <div className="mx-32 my-24">
+    <div className="mx-64 my-40">
       <h2>{t('wiki.assistant.ai.structure.result.title', { ns: appCode })}</h2>
       <Grid className="mt-24">
         <Grid.Col sm="5">
