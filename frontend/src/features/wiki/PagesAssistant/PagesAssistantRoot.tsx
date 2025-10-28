@@ -29,7 +29,7 @@ export const PagesAssistantRoot = () => {
   };
 
   return (
-    <div className="pages-assistant-wrapper mx-32">
+    <div className="pages-assistant-wrapper mx-64 my-40">
       <h2 className="my-32">{t('wiki.assistant.title', { ns: appCode })}</h2>
       <Grid>
         {/* MANUAL CREATION */}
