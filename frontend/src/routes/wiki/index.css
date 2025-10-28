@@ -36,3 +36,16 @@
 .pages-assistant-wrapper .card .card-body .card-text.white-space-normal {
   white-space: normal;
 }
+
+.pages-assistant-wrapper .card {
+  border-width: 2px;
+}
+
+.pages-assistant-wrapper .card.card-assistant-ai {
+  border-color: #F9BEEF;
+}
+
+.pages-assistant-wrapper .card.card-import {
+  background-color: var(--edifice-gray-300);
+  border-color: #FFF;
+}
