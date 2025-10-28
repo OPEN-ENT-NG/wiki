@@ -20,8 +20,6 @@ export const PagesAssistantAIStructureResult = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  console.log('pagesStructure', pagesStructure);
-
   useEffect(() => {
     const fetchPagesContent = async () => {
       const pagesContentResponse: PagesContentResponse =
