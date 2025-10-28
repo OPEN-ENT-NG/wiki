@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   FormControl,
+  Grid,
   Input,
   Label,
   Select,
@@ -91,86 +92,88 @@ export const PagesAssistantAIForm = () => {
           role="form"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div>
-            <h3 className="mb-12">
-              {t('wiki.assistant.ai.level', { ns: appCode })}
-            </h3>
-            <Controller
-              name="level"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <Select
-                  data-testid="wiki.assistant.ai.select.level"
-                  size="md"
-                  selectedValue={value}
-                  onValueChange={(v) => {
-                    onChange(v);
-                    handleLevelChange();
-                  }}
-                  options={levelsData.map((level) => level.value)}
-                  placeholderOption={t('wiki.assistant.ai.select.level', {
-                    ns: appCode,
-                  })}
-                />
-              )}
-            />
-          </div>
+          <Flex direction="column" gap="24">
+            <div>
+              <h3 className="mb-12">
+                {t('wiki.assistant.ai.level', { ns: appCode })}
+              </h3>
+              <Controller
+                name="level"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <Select
+                    data-testid="wiki.assistant.ai.select.level"
+                    size="md"
+                    selectedValue={value}
+                    onValueChange={(v) => {
+                      onChange(v);
+                      handleLevelChange();
+                    }}
+                    options={levelsData.map((level) => level.value)}
+                    placeholderOption={t('wiki.assistant.ai.select.level', {
+                      ns: appCode,
+                    })}
+                  />
+                )}
+              />
+            </div>
 
-          <div className="mt-24">
-            <h3 className="mb-12">
-              {t('wiki.assistant.ai.subject', { ns: appCode })}
-            </h3>
-            <Controller
-              name="subject"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <Select
-                  data-testid="wiki.assistant.ai.select.subject"
-                  size="md"
-                  selectedValue={value}
-                  onValueChange={(v) => {
-                    onChange(v);
-                    handleSubjectChange();
-                  }}
-                  options={availableSubjects.map(
-                    (availableSubject) => availableSubject.value,
-                  )}
-                  placeholderOption={t('wiki.assistant.ai.select.subject', {
-                    ns: appCode,
-                  })}
-                  disabled={watch('level')?.length === 0}
-                />
-              )}
-            />
-          </div>
+            <div>
+              <h3 className="mb-12">
+                {t('wiki.assistant.ai.subject', { ns: appCode })}
+              </h3>
+              <Controller
+                name="subject"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <Select
+                    data-testid="wiki.assistant.ai.select.subject"
+                    size="md"
+                    selectedValue={value}
+                    onValueChange={(v) => {
+                      onChange(v);
+                      handleSubjectChange();
+                    }}
+                    options={availableSubjects.map(
+                      (availableSubject) => availableSubject.value,
+                    )}
+                    placeholderOption={t('wiki.assistant.ai.select.subject', {
+                      ns: appCode,
+                    })}
+                    disabled={watch('level')?.length === 0}
+                  />
+                )}
+              />
+            </div>
 
-          <div className="mt-24">
-            <h3 className="mb-12">
-              {t('wiki.assistant.ai.sequence', { ns: appCode })}
-            </h3>
-            <Controller
-              name="sequence"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
-                <Select
-                  data-testid="wiki.assistant.ai.select.sequence"
-                  size="md"
-                  selectedValue={value}
-                  onValueChange={(v) => {
-                    onChange(v);
-                  }}
-                  options={availableSequences}
-                  placeholderOption={t('wiki.assistant.ai.select.sequence', {
-                    ns: appCode,
-                  })}
-                  disabled={watch('subject')?.length === 0}
-                />
-              )}
-            />
-          </div>
+            <div>
+              <h3 className="mb-12">
+                {t('wiki.assistant.ai.sequence', { ns: appCode })}
+              </h3>
+              <Controller
+                name="sequence"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value, onChange } }) => (
+                  <Select
+                    data-testid="wiki.assistant.ai.select.sequence"
+                    size="md"
+                    selectedValue={value}
+                    onValueChange={(v) => {
+                      onChange(v);
+                    }}
+                    options={availableSequences}
+                    placeholderOption={t('wiki.assistant.ai.select.sequence', {
+                      ns: appCode,
+                    })}
+                    disabled={watch('subject')?.length === 0}
+                  />
+                )}
+              />
+            </div>
+          </Flex>
 
           <div className="mt-24">
             <h3 className="mb-12">

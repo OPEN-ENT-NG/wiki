@@ -37,6 +37,7 @@ import {
 } from '~/store/treeview';
 import './index.css';
 import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssistantLeftPane';
+import { use } from 'i18next';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -65,6 +66,8 @@ export const Index = () => {
   const treeData = useTreeData();
   const selectedNodeId = useSelectedNodeId();
   const match = useMatch('/id/:wikiId');
+  const matchPagesAssistant = useMatch('/id/:wikiId/pages/assistant/*');
+
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
   const isOnlyRead = useIsOnlyRead();
   const toastMessages = useToastMessages();
@@ -136,7 +139,7 @@ export const Index = () => {
       <AppHeader />
       <Grid className="flex-grow-1">
         {/* Left Pane */}
-        {!isSmallDevice && (
+        {!isSmallDevice && !matchPagesAssistant && (
           <Grid.Col
             sm="3"
             lg="2"
@@ -211,8 +214,8 @@ export const Index = () => {
         <Grid.Col
           sm="4"
           md="8"
-          lg="6"
-          xl="9"
+          lg={matchPagesAssistant ? '8' : '6'}
+          xl={matchPagesAssistant ? '12' : '9'}
           className={clsx({
             'mt-16 mt-lg-0 mx-lg-0': isSmallDevice,
             'ms-n16 ms-lg-n24 me-n16': !isSmallDevice,
