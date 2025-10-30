@@ -37,11 +37,10 @@ public class WikiExplorerPlugin extends ExplorerPluginResourceMongo {
     private ShareService shareService;
     private final ResourceBrokerPublisher resourcePublisher;
 
-    public static WikiExplorerPlugin create(final Map<String, SecuredAction> securedActions) throws Exception  {
-        final IExplorerPlugin plugin = ExplorerPluginFactory.createMongoPlugin((params)->{
+    public static Future<WikiExplorerPlugin> create(final Map<String, SecuredAction> securedActions) {
+        return ExplorerPluginFactory.createMongoPlugin((params)->{
             return new WikiExplorerPlugin(params.getCommunication(), params.getDb(), securedActions);
-        });
-        return (WikiExplorerPlugin) plugin;
+        }).map(plugin -> (WikiExplorerPlugin) plugin);
     }
 
     protected WikiExplorerPlugin(final IExplorerPluginCommunication communication, final MongoClient mongoClient, final Map<String, SecuredAction> securedActions) {

@@ -104,30 +104,26 @@ public class Wiki extends BaseServer {
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
-        // Create Explorer plugin
-		try {
-			this.plugin = WikiExplorerPlugin.create(securedActions);
-		} catch (Exception e) {
-			return Future.failedFuture(e);
-		}
+        return WikiExplorerPlugin.create(securedActions).compose(p -> {
+            this.plugin = p;
 
-		// Audience Helper
-		AudienceHelper audienceHelper = new AudienceHelper(vertx);
+            // Audience Helper
+            AudienceHelper audienceHelper = new AudienceHelper(vertx);
 
-		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(vertx, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
+            // Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
+		    WikiService wikiService = new WikiServiceMongoImpl(vertx, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
 
-        // Add Wiki Controller
-        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
-		addController(wikiController);
-		
-        // Set Mongo Collection
-        MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
-		
-        setDefaultResourceFilter(new ShareAndOwner());
+            // Add Wiki Controller
+            final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
+            addController(wikiController);
 
-        // Start Explorer plugin
-		this.plugin.start();
+            // Set Mongo Collection
+            MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
+
+            setDefaultResourceFilter(new ShareAndOwner());
+
+            // Start Explorer plugin
+            this.plugin.start();
 
 		audienceRightChecker = audienceHelper.listenForRightsCheck("wiki", "page", wikiService);
         // add broker listener for workspace resources
@@ -136,7 +132,8 @@ public class Wiki extends BaseServer {
         final ShareService shareService = this.plugin.createShareService(new HashMap<>());
         BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
 		// Complete the start promise
-		return Future.succeededFuture();
+            return Future.succeededFuture();
+        });
 	}
 
 	private Optional<JsonObject> getContentTransformerConfig(final String contentTransformerRawConfig) {
