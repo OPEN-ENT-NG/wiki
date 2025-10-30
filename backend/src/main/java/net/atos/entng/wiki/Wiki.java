@@ -90,28 +90,24 @@ public class Wiki extends BaseServer {
 		final IContentTransformerClient contentTransformerClient = ContentTransformerFactoryProvider.getFactory("wiki", contentTransformerConfig).create();
 		final IContentTransformerEventRecorder contentTransformerEventRecorder = new ContentTransformerEventRecorderFactory("wiki", contentTransformerConfig).create();
 
-        // Create Explorer plugin
-		try {
-			this.plugin = WikiExplorerPlugin.create(securedActions);
-		} catch (Exception e) {
-			return Future.failedFuture(e);
-		}
+        return WikiExplorerPlugin.create(securedActions).compose(p -> {
+            this.plugin = p;
+            // Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
+            WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder);
 
-		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder);
+            // Add Wiki Controller
+            final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
+            addController(wikiController);
 
-        // Add Wiki Controller
-        final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
-		addController(wikiController);
-		
-        // Set Mongo Collection
-        MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
-		
-        setDefaultResourceFilter(new ShareAndOwner());
+            // Set Mongo Collection
+            MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
 
-        // Start Explorer plugin
-		this.plugin.start();
-		return Future.succeededFuture();
+            setDefaultResourceFilter(new ShareAndOwner());
+
+            // Start Explorer plugin
+            this.plugin.start();
+            return Future.succeededFuture();
+        });
 	}
 
 	private Optional<JsonObject> getContentTransformerConfig(final String contentTransformerRawConfig) {

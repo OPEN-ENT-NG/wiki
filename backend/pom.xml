@@ -20,7 +20,6 @@
     </scm>
 
     <properties>
-        <mongodb-helper.version>3.0-SNAPSHOT</mongodb-helper.version>
         <entcore.version>6.8-zookeeper-SNAPSHOT</entcore.version>
     </properties>
 
