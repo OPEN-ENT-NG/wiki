@@ -1,4 +1,11 @@
-import { Button, Card, Flex, Grid, useEdificeClient } from '@edifice.io/react';
+import {
+  Button,
+  Card,
+  Flex,
+  Grid,
+  useEdificeClient,
+  useLibraryUrl,
+} from '@edifice.io/react';
 import {
   IconCheck,
   IconClose,
@@ -19,6 +26,7 @@ export const PagesAssistantRoot = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
+  const libraryUrl = useLibraryUrl();
 
   const handleNewPageButtonClick = () => {
     navigate(`/id/${params.wikiId}/page/create`);
@@ -26,6 +34,12 @@ export const PagesAssistantRoot = () => {
 
   const handleAssitantAIButtonClick = () => {
     navigate('ai');
+  };
+
+  const handleLibraryButtonClick = () => {
+    if (libraryUrl) {
+      window.open(libraryUrl, '_blank');
+    }
   };
 
   return (
@@ -125,6 +139,7 @@ export const PagesAssistantRoot = () => {
                 variant="ghost"
                 size="sm"
                 leftIcon={<IconExternalLink />}
+                onClick={handleLibraryButtonClick}
               >
                 {t('wiki.assistant.card.library.button', {
                   ns: appCode,
