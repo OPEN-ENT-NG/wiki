@@ -6,6 +6,7 @@ import {
   Input,
   Label,
   Select,
+  Stepper,
   useEdificeClient,
 } from '@edifice.io/react';
 import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
@@ -77,9 +78,12 @@ export const PagesAssistantAIForm = () => {
   };
 
   return (
-    <div className="pages-assistant-ai-wrapper mx-64 my-40">
+    <div className="pages-assistant-ai-wrapper mx-64 my-24">
       <div>
-        <h2>{t('wiki.assistant.ai.title', { ns: appCode })}</h2>
+        <Stepper currentStep={0} nbSteps={3} />
+        <h2 className="mt-16">
+          {t('wiki.assistant.ai.title', { ns: appCode })}
+        </h2>
         <p className="text-gray-700">
           {t('wiki.assistant.ai.description', { ns: appCode })}
         </p>

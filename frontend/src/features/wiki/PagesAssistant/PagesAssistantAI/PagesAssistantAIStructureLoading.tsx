@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   Flex,
   LoadingScreen,
+  Stepper,
   useEdificeClient,
   useUser,
 } from '@edifice.io/react';
@@ -53,10 +54,11 @@ export const PagesAssistantAIStructureLoading = () => {
   }, []);
 
   return (
-    <div className="mx-64 my-40">
+    <div className="mx-64 my-24">
       {structureLoading && (
         <div>
-          <h2>
+          <Stepper currentStep={1} nbSteps={3} />
+          <h2 className="mt-16">
             {t('wiki.assistant.ai.structure.loading.title', { ns: appCode })}
           </h2>
           <div className="mt-64">
