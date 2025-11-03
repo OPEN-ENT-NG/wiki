@@ -1,4 +1,10 @@
-import { Button, Flex, Grid, useEdificeClient } from '@edifice.io/react';
+import {
+  Button,
+  Flex,
+  Grid,
+  Stepper,
+  useEdificeClient,
+} from '@edifice.io/react';
 import {
   IconArrowRight,
   IconEdit,
@@ -40,8 +46,11 @@ export const PagesAssistantAIStructureResult = () => {
   };
 
   return (
-    <div className="mx-64 my-40">
-      <h2>{t('wiki.assistant.ai.structure.result.title', { ns: appCode })}</h2>
+    <div className="mx-64 my-24">
+      <Stepper currentStep={2} nbSteps={3} />
+      <h2 className="mt-16">
+        {t('wiki.assistant.ai.structure.result.title', { ns: appCode })}
+      </h2>
       <Grid className="mt-24">
         <Grid.Col sm="5">
           <div
