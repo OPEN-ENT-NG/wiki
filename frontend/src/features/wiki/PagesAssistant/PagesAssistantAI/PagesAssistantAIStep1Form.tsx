@@ -1,10 +1,6 @@
 import {
   Button,
   Flex,
-  FormControl,
-  Grid,
-  Input,
-  Label,
   Select,
   Stepper,
   useEdificeClient,
@@ -14,33 +10,35 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigate, useParams } from 'react-router-dom';
 import { usePagesAssistantAI } from './usePagesAssistantAI';
-import { usePagesAssistantActions } from '~/store/assistant';
-import { PagesAssistantAIFormValues } from '~/services/api/assistant/assistant.types';
+import {
+  useFormValuesStore,
+  usePagesAssistantActions,
+} from '~/store/assistant';
+import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
 
-export const PagesAssistantAIForm = () => {
+export const PagesAssistantAIStep1Form = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
   const { levelsData } = usePagesAssistantAI();
+  const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
-  const defaultValues: PagesAssistantAIFormValues = {
-    level: '',
-    subject: '',
-    sequence: '',
-    keywords: '',
+  const defaultValues: PagesAssistantAIStep1FormValues = {
+    level: formValues.level || '',
+    subject: formValues.subject || '',
+    sequence: formValues.sequence || '',
   };
 
   const {
     watch,
-    register,
     handleSubmit,
     setValue,
     control,
     formState: { isValid },
-  } = useForm<PagesAssistantAIFormValues>({
+  } = useForm<PagesAssistantAIStep1FormValues>({
     defaultValues,
   });
 
@@ -54,23 +52,24 @@ export const PagesAssistantAIForm = () => {
     availableSubjects.find((subj) => subj.value === selectedSubject)
       ?.sequences ?? [];
 
-  const onSubmit = async (data: PagesAssistantAIFormValues) => {
-    console.log('Form Data:', data);
-    setFormValues(data);
-    navigate(`/id/${params.wikiId}/pages/assistant/ai/structureLoading`);
+  const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
+    console.log('Form Data:', step1FormValues);
+    // TODO: add values to local storage
+    // Add values to store
+    setFormValues(step1FormValues);
+    // navigate to next step
+    navigate(`/id/${params.wikiId}/pages/assistant/ai/step2Form`);
   };
 
   const handleLevelChange = () => {
     // Reset subject, sequence and keywords when level changes
     setValue('subject', '');
     setValue('sequence', '');
-    setValue('keywords', '');
   };
 
   const handleSubjectChange = () => {
-    // Reset sequence and keywords when subject changes
+    // Reset sequence when subject changes
     setValue('sequence', '');
-    setValue('keywords', '');
   };
 
   const handleBackButtonClick = () => {
@@ -82,10 +81,10 @@ export const PagesAssistantAIForm = () => {
       <div>
         <Stepper currentStep={0} nbSteps={3} />
         <h2 className="mt-16">
-          {t('wiki.assistant.ai.title', { ns: appCode })}
+          {t('wiki.assistant.ai.step1.title', { ns: appCode })}
         </h2>
         <p className="text-gray-700">
-          {t('wiki.assistant.ai.description', { ns: appCode })}
+          {t('wiki.assistant.ai.step1.description', { ns: appCode })}
         </p>
       </div>
 
@@ -99,7 +98,7 @@ export const PagesAssistantAIForm = () => {
           <Flex direction="column" gap="24">
             <div>
               <h3 className="mb-12">
-                {t('wiki.assistant.ai.level', { ns: appCode })}
+                {t('wiki.assistant.ai.step1.level', { ns: appCode })}
               </h3>
               <Controller
                 name="level"
@@ -107,7 +106,7 @@ export const PagesAssistantAIForm = () => {
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <Select
-                    data-testid="wiki.assistant.ai.select.level"
+                    data-testid="wiki.assistant.ai.step1.select.level"
                     size="md"
                     selectedValue={value}
                     onValueChange={(v) => {
@@ -115,9 +114,12 @@ export const PagesAssistantAIForm = () => {
                       handleLevelChange();
                     }}
                     options={levelsData.map((level) => level.value)}
-                    placeholderOption={t('wiki.assistant.ai.select.level', {
-                      ns: appCode,
-                    })}
+                    placeholderOption={t(
+                      'wiki.assistant.ai.step1.select.level',
+                      {
+                        ns: appCode,
+                      },
+                    )}
                   />
                 )}
               />
@@ -125,7 +127,7 @@ export const PagesAssistantAIForm = () => {
 
             <div>
               <h3 className="mb-12">
-                {t('wiki.assistant.ai.subject', { ns: appCode })}
+                {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
               </h3>
               <Controller
                 name="subject"
@@ -133,7 +135,7 @@ export const PagesAssistantAIForm = () => {
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <Select
-                    data-testid="wiki.assistant.ai.select.subject"
+                    data-testid="wiki.assistant.ai.step1.select.subject"
                     size="md"
                     selectedValue={value}
                     onValueChange={(v) => {
@@ -143,9 +145,12 @@ export const PagesAssistantAIForm = () => {
                     options={availableSubjects.map(
                       (availableSubject) => availableSubject.value,
                     )}
-                    placeholderOption={t('wiki.assistant.ai.select.subject', {
-                      ns: appCode,
-                    })}
+                    placeholderOption={t(
+                      'wiki.assistant.ai.step1.select.subject',
+                      {
+                        ns: appCode,
+                      },
+                    )}
                     disabled={watch('level')?.length === 0}
                   />
                 )}
@@ -154,7 +159,7 @@ export const PagesAssistantAIForm = () => {
 
             <div>
               <h3 className="mb-12">
-                {t('wiki.assistant.ai.sequence', { ns: appCode })}
+                {t('wiki.assistant.ai.step1.sequence', { ns: appCode })}
               </h3>
               <Controller
                 name="sequence"
@@ -162,55 +167,25 @@ export const PagesAssistantAIForm = () => {
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
                   <Select
-                    data-testid="wiki.assistant.ai.select.sequence"
+                    data-testid="wiki.assistant.ai.step1.select.sequence"
                     size="md"
                     selectedValue={value}
                     onValueChange={(v) => {
                       onChange(v);
                     }}
                     options={availableSequences}
-                    placeholderOption={t('wiki.assistant.ai.select.sequence', {
-                      ns: appCode,
-                    })}
+                    placeholderOption={t(
+                      'wiki.assistant.ai.step1.select.sequence',
+                      {
+                        ns: appCode,
+                      },
+                    )}
                     disabled={watch('subject')?.length === 0}
                   />
                 )}
               />
             </div>
           </Flex>
-
-          <div className="mt-24">
-            <h3 className="mb-12">
-              {t('wiki.assistant.ai.keywords', { ns: appCode })}
-            </h3>
-            <FormControl id="keywords" className="mb-24">
-              <Flex justify="between">
-                <Label>
-                  {t('wiki.assistant.ai.keywords.input.label', { ns: appCode })}
-                </Label>
-                <p className="small text-gray-700 p-2">
-                  {`${watch('keywords', '')?.length || 0} / 80`}
-                </p>
-              </Flex>
-              <Input
-                data-testid="communities-create-input-title"
-                type="text"
-                {...register('keywords', {
-                  maxLength: 80,
-                  pattern: {
-                    value: /[^ ]/,
-                    message: 'invalid title',
-                  },
-                })}
-                size="md"
-                maxLength={80}
-                placeholder={t('wiki.assistant.ai.keywords.input.placeholder', {
-                  ns: appCode,
-                })}
-                disabled={watch('sequence')?.length === 0}
-              />
-            </FormControl>
-          </div>
 
           <div>
             <Flex className="mt-auto" justify="end">
