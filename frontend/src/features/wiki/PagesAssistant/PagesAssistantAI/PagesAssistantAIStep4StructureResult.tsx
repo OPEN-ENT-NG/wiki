@@ -16,9 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePagesStructureStore } from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
-import { PagesContentResponse } from '~/services/api/assistant/assistant.types';
+import { PagesAssistantAIContentResponse } from '~/services/api/assistant/assistant.types';
 
-export const PagesAssistantAIStructureResult = () => {
+export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ export const PagesAssistantAIStructureResult = () => {
 
   useEffect(() => {
     const fetchPagesContent = async () => {
-      const pagesContentResponse: PagesContentResponse =
+      const pagesContentResponse: PagesAssistantAIContentResponse =
         await assistantService.getPagesContent();
       console.log('pagesContentResponse', pagesContentResponse);
       setContentFinished(true);
@@ -49,7 +49,7 @@ export const PagesAssistantAIStructureResult = () => {
     <div className="mx-64 my-24">
       <Stepper currentStep={2} nbSteps={3} />
       <h2 className="mt-16">
-        {t('wiki.assistant.ai.structure.result.title', { ns: appCode })}
+        {t('wiki.assistant.ai.step4.structure.result.title', { ns: appCode })}
       </h2>
       <Grid className="mt-24">
         <Grid.Col sm="5">
@@ -72,7 +72,7 @@ export const PagesAssistantAIStructureResult = () => {
             <Flex gap="16" className="mb-24">
               <IconWand />
               <span>
-                {t('wiki.assistant.ai.structure.result.info.1', {
+                {t('wiki.assistant.ai.step4.structure.result.info.1', {
                   ns: appCode,
                 })}
               </span>
@@ -80,7 +80,7 @@ export const PagesAssistantAIStructureResult = () => {
             <Flex gap="16" className="mb-24">
               <IconTextPage />
               <span>
-                {t('wiki.assistant.ai.structure.result.info.2', {
+                {t('wiki.assistant.ai.step4.structure.result.info.2', {
                   ns: appCode,
                 })}
               </span>
@@ -88,7 +88,7 @@ export const PagesAssistantAIStructureResult = () => {
             <Flex gap="16">
               <IconEdit />
               <span>
-                {t('wiki.assistant.ai.structure.result.info.3', {
+                {t('wiki.assistant.ai.step4.structure.result.info.3', {
                   ns: appCode,
                 })}
               </span>
@@ -104,16 +104,19 @@ export const PagesAssistantAIStructureResult = () => {
               className="small"
               style={{ color: '#909090', fontStyle: 'italic' }}
             >
-              {t('wiki.assistant.ai.structure.result.wait.info', {
+              {t('wiki.assistant.ai.step4.structure.result.wait.info', {
                 ns: appCode,
               })}
             </span>
           )}
           {contentFinished && (
             <span className="small" style={{ color: '#7DBF85' }}>
-              {t('wiki.assistant.ai.structure.result.wait.info.finished', {
-                ns: appCode,
-              })}
+              {t(
+                'wiki.assistant.ai.step4.structure.result.wait.info.finished',
+                {
+                  ns: appCode,
+                },
+              )}
             </span>
           )}
         </Flex>
@@ -137,7 +140,7 @@ export const PagesAssistantAIStructureResult = () => {
               }}
             >
               <span>
-                {t('wiki.assistant.ai.structure.result.wait.button', {
+                {t('wiki.assistant.ai.step4.structure.result.wait.button', {
                   ns: appCode,
                 })}
               </span>
@@ -146,9 +149,12 @@ export const PagesAssistantAIStructureResult = () => {
           )}
           {contentFinished && (
             <Button onClick={handleGoToWiki} rightIcon={<IconArrowRight />}>
-              {t('wiki.assistant.ai.structure.result.wait.button.finished', {
-                ns: appCode,
-              })}
+              {t(
+                'wiki.assistant.ai.step4.structure.result.wait.button.finished',
+                {
+                  ns: appCode,
+                },
+              )}
             </Button>
           )}
         </Flex>

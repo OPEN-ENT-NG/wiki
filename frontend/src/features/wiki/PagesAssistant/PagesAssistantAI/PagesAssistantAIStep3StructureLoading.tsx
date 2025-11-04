@@ -15,7 +15,7 @@ import {
 } from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 
-export const PagesAssistantAIStructureLoading = () => {
+export const PagesAssistantAIStep3StructureLoading = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const params = useParams();
@@ -47,7 +47,7 @@ export const PagesAssistantAIStructureLoading = () => {
 
       setPagesStructure(pagesStructureResponse?.data?.pages);
       setStructureLoading(false);
-      navigate(`/id/${params.wikiId}/pages/assistant/ai/structureResult`);
+      navigate(`/id/${params.wikiId}/pages/assistant/ai/step4StructureResult`);
     };
 
     fetchPagesStructure();
@@ -59,17 +59,19 @@ export const PagesAssistantAIStructureLoading = () => {
         <div>
           <Stepper currentStep={1} nbSteps={3} />
           <h2 className="mt-16">
-            {t('wiki.assistant.ai.structure.loading.title', { ns: appCode })}
+            {t('wiki.assistant.ai.step3.structure.loading.title', {
+              ns: appCode,
+            })}
           </h2>
           <div className="mt-64">
             <h3>
-              {t('wiki.assistant.ai.structure.loading.description', {
+              {t('wiki.assistant.ai.step3.structure.loading.description', {
                 ns: appCode,
               })}
             </h3>
             <Flex className="text-gray-700 mt-8" gap="4">
               <IconClock />
-              {t('wiki.assistant.ai.structure.loading.subtitle', {
+              {t('wiki.assistant.ai.step3.structure.loading.subtitle', {
                 ns: appCode,
               })}
             </Flex>
