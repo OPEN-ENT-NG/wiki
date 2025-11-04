@@ -18,7 +18,7 @@ import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { Form, useNavigate, useParams } from 'react-router-dom';
 
 export const PagesAssistantAIStep2Form = () => {
-  const step1FormValues = useFormValuesStore();
+  const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export const PagesAssistantAIStep2Form = () => {
   const params = useParams();
 
   const defaultValues: PagesAssistantAIStep2FormValues = {
-    keywords: '',
+    keywords: formValues.keywords || '',
   };
 
   const {
@@ -39,12 +39,17 @@ export const PagesAssistantAIStep2Form = () => {
   });
 
   const onSubmit = async (step2FormValues: PagesAssistantAIStep2FormValues) => {
-    // TODO add values to local storage
-    setFormValues({ ...step1FormValues, ...step2FormValues });
+    // Add values to store
+    setFormValues({ ...formValues, ...step2FormValues });
+    // Navigate to pages structure loading step
     navigate(`/id/${params.wikiId}/pages/assistant/ai/step3StructureLoading`);
   };
 
   const handleBackButtonClick = () => {
+    const keywords = watch('keywords');
+    console.log('keywords', keywords);
+
+    setFormValues({ ...formValues, keywords });
     navigate(`/id/${params.wikiId}/pages/assistant/ai/step1Form`);
   };
 

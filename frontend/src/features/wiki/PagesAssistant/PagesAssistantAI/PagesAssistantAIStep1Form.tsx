@@ -53,16 +53,14 @@ export const PagesAssistantAIStep1Form = () => {
       ?.sequences ?? [];
 
   const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
-    console.log('Form Data:', step1FormValues);
-    // TODO: add values to local storage
     // Add values to store
-    setFormValues(step1FormValues);
-    // navigate to next step
+    setFormValues({ ...formValues, ...step1FormValues });
+    // Navigate to next step
     navigate(`/id/${params.wikiId}/pages/assistant/ai/step2Form`);
   };
 
   const handleLevelChange = () => {
-    // Reset subject, sequence and keywords when level changes
+    // Reset subject, sequence when level changes
     setValue('subject', '');
     setValue('sequence', '');
   };
