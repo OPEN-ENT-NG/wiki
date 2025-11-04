@@ -3,9 +3,9 @@ import {
   mockPagesStructureResponse,
 } from '~/mocks/assistant';
 import {
-  PagesStructureRequest,
-  PagesContentResponse,
-  PagesStructureResponse,
+  PagesAssistantAIStructureRequest,
+  PagesAssistantAIContentResponse,
+  PagesAssistantAIStructureResponse,
 } from './assistant.types';
 
 const createAssistantService = () => ({
@@ -14,12 +14,12 @@ const createAssistantService = () => ({
    * @returns a Promise of PagesStructureResponse
    */
   async getPagesStructure(
-    requestPayload: PagesStructureRequest,
-  ): Promise<PagesStructureResponse> {
+    requestPayload: PagesAssistantAIStructureRequest,
+  ): Promise<PagesAssistantAIStructureResponse> {
     // TODO: call wiki backend API with "requestPayload"
 
     // This is the mocked response
-    return new Promise<PagesStructureResponse>((resolve) => {
+    return new Promise<PagesAssistantAIStructureResponse>((resolve) => {
       setTimeout(() => {
         resolve({
           status: 'success',
@@ -41,9 +41,9 @@ const createAssistantService = () => ({
    * Fetches the content of the pages.
    * @returns a Promise of PagesContentResponse
    */
-  async getPagesContent(): Promise<PagesContentResponse> {
+  async getPagesContent(): Promise<PagesAssistantAIContentResponse> {
     // TODO: call wiki backend API
-    return new Promise<PagesContentResponse>((resolve) => {
+    return new Promise<PagesAssistantAIContentResponse>((resolve) => {
       setTimeout(() => {
         resolve({
           status: 'success',

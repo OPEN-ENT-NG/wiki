@@ -33,7 +33,7 @@ export const PagesAssistantRoot = () => {
   };
 
   const handleAssitantAIButtonClick = () => {
-    navigate('ai');
+    navigate('ai/step1Form');
   };
 
   const handleLibraryButtonClick = () => {
