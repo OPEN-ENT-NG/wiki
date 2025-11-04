@@ -14,15 +14,20 @@ import {
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { usePagesStructureStore } from '~/store/assistant';
+import {
+  usePagesAssistantActions,
+  usePagesStructureStore,
+} from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import { PagesAssistantAIContentResponse } from '~/services/api/assistant/assistant.types';
+import { set } from 'react-hook-form';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const pagesStructure = usePagesStructureStore();
+  const { setFormValues } = usePagesAssistantActions();
   const params = useParams();
   const navigate = useNavigate();
 
@@ -38,10 +43,12 @@ export const PagesAssistantAIStep4StructureResult = () => {
   }, []);
 
   const handleCancelButtonClick = () => {
+    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 
   const handleGoToWiki = () => {
+    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
     navigate(`/id/${params.wikiId}`);
   };
 
