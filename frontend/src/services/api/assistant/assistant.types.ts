@@ -1,14 +1,22 @@
 // ==================================
 // Types for Pages Assistant AI Form Data
 // ==================================
-export interface PagesAssistantAIFormValues {
+export interface PagesAssistantAIStep1FormValues {
   level: string;
   subject: string;
   sequence: string;
-  keywords: string;
 }
 
-export interface PagesStructureRequest extends PagesAssistantAIFormValues {
+export interface PagesAssistantAIStep2FormValues {
+  keywords?: string;
+}
+
+export interface PagesAssistantAIFormValues
+  extends PagesAssistantAIStep1FormValues,
+    PagesAssistantAIStep2FormValues {}
+
+export interface PagesAssistantAIStructureRequest
+  extends PagesAssistantAIFormValues {
   wikiId: string;
   userId: string;
   session: string; // session ID
@@ -18,7 +26,7 @@ export interface PagesStructureRequest extends PagesAssistantAIFormValues {
 // ==================================
 // Types for Pages Structure API
 // ==================================
-export interface PagesStructureResponse {
+export interface PagesAssistantAIStructureResponse {
   status: string;
   message: string;
   model: string;
@@ -28,10 +36,10 @@ export interface PagesStructureResponse {
     prompt_tokens: number;
     total_tokens: number;
   };
-  data: PagesStructureResponseData;
+  data: PagesAssistantAIStructureResponseData;
 }
 
-export interface PagesStructureResponseData {
+export interface PagesAssistantAIStructureResponseData {
   title: string;
   description: string;
   pages: PageStructure[];
@@ -56,7 +64,7 @@ export interface PageStructure {
 // ==================================
 // Types for Pages Content API
 // ==================================
-export interface PagesContentResponse {
+export interface PagesAssistantAIContentResponse {
   status: string;
   message: string;
   model: string;
@@ -66,10 +74,10 @@ export interface PagesContentResponse {
     prompt_tokens: number;
     total_tokens: number;
   };
-  data: PagesStructureResponseData;
+  data: PagesAssistantAIContentResponseData;
 }
 
-export interface PagesContentResponseData {
+export interface PagesAssistantAIContentResponseData {
   title: string;
   description: string;
   pages: PageContent[];
