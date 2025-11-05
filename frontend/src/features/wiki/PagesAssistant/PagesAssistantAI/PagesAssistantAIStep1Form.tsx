@@ -15,6 +15,7 @@ import {
   usePagesAssistantActions,
 } from '~/store/assistant';
 import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
+import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 
 export const PagesAssistantAIStep1Form = () => {
   const { appCode } = useEdificeClient();
@@ -27,15 +28,15 @@ export const PagesAssistantAIStep1Form = () => {
   const { setFormValues } = usePagesAssistantActions();
 
   const defaultValues: PagesAssistantAIStep1FormValues = {
-    level: formValues.level || '',
+    level: formValues.level || '5ème',
     subject: formValues.subject || '',
     sequence: formValues.sequence || '',
   };
 
   const {
-    watch,
     handleSubmit,
     setValue,
+    watch,
     control,
     formState: { isValid },
   } = useForm<PagesAssistantAIStep1FormValues>({
@@ -94,67 +95,66 @@ export const PagesAssistantAIStep1Form = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <Flex direction="column" gap="24">
+            {/* LEVEL */}
             <div>
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.level', { ns: appCode })}
               </h3>
-              <Controller
-                name="level"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <Select
-                    data-testid="wiki.assistant.ai.step1.select.level"
-                    size="md"
-                    selectedValue={value}
-                    onValueChange={(v) => {
-                      onChange(v);
-                      handleLevelChange();
-                    }}
-                    options={levelsData.map((level) => level.value)}
-                    placeholderOption={t(
-                      'wiki.assistant.ai.step1.select.level',
-                      {
-                        ns: appCode,
-                      },
+              <Flex gap="8">
+                {levelsData.map((level, index) => (
+                  <Controller
+                    name="level"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange } }) => (
+                      <SimpleRadioCard
+                        key={index}
+                        label={level.value}
+                        value={level.value}
+                        groupName="levels"
+                        selectedValue={value}
+                        onChange={(v) => {
+                          onChange(v);
+                          handleLevelChange();
+                        }}
+                      />
                     )}
                   />
-                )}
-              />
+                ))}
+              </Flex>
             </div>
 
+            {/* SUBJECT */}
             <div>
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
               </h3>
-              <Controller
-                name="subject"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <Select
-                    data-testid="wiki.assistant.ai.step1.select.subject"
-                    size="md"
-                    selectedValue={value}
-                    onValueChange={(v) => {
-                      onChange(v);
-                      handleSubjectChange();
-                    }}
-                    options={availableSubjects.map(
-                      (availableSubject) => availableSubject.value,
+              <Flex gap="8">
+                {availableSubjects.map((subject, index) => (
+                  <Controller
+                    name="subject"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field: { value, onChange } }) => (
+                      <SimpleRadioCard
+                        key={index}
+                        label={subject.value}
+                        value={subject.value}
+                        image={subject.image}
+                        groupName="subjects"
+                        selectedValue={value}
+                        onChange={(v) => {
+                          onChange(v);
+                          handleSubjectChange();
+                        }}
+                      />
                     )}
-                    placeholderOption={t(
-                      'wiki.assistant.ai.step1.select.subject',
-                      {
-                        ns: appCode,
-                      },
-                    )}
-                    disabled={watch('level')?.length === 0}
                   />
-                )}
-              />
+                ))}
+              </Flex>
             </div>
 
+            {/* SEQUENCE */}
             <div>
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.sequence', { ns: appCode })}
@@ -178,7 +178,7 @@ export const PagesAssistantAIStep1Form = () => {
                         ns: appCode,
                       },
                     )}
-                    disabled={watch('subject')?.length === 0}
+                    disabled={selectedSubject.length === 0}
                   />
                 )}
               />
