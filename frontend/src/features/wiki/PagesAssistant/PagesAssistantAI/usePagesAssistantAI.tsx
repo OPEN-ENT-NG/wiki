@@ -1,3 +1,7 @@
+import histoireIcon from '../icons/hsitoireIcon.svg';
+import technologieIcon from '../icons/technologieIcon.svg';
+import mathematicsIcon from '../icons/mathematicsIcon.svg';
+
 export const usePagesAssistantAI = () => {
   const levelsData = [
     {
@@ -5,6 +9,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
+          image: technologieIcon,
           sequences: [
             "De l'analyse du besoin aux fonctions de l'objet",
             'Imaginer et représenter des solutions techniques en équipe',
@@ -25,6 +30,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Mathématiques',
+          image: mathematicsIcon,
           sequences: [
             'Opérations sur les nombres entiers et décimaux',
             'Les fractions : découverte et simplification',
@@ -41,6 +47,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
+          image: histoireIcon,
           sequences: [
             "Byzance et l'Europe carolingienne",
             "L'Islam : débuts, expansion, sociétés",
@@ -61,6 +68,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
+          image: technologieIcon,
           sequences: [
             'Le Cahier des Charges Fonctionnel (CdCF)',
             "Ergonomie et Design : l'expérience utilisateur (UX)",
@@ -81,6 +89,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Mathématiques',
+          image: mathematicsIcon,
           sequences: [
             'Opérations avec les nombres relatifs',
             'Le calcul littéral',
@@ -97,6 +106,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
+          image: histoireIcon,
           sequences: [
             'Bourgeoisies marchandes, négoces internationaux et traite négrière',
             "L'Europe des Lumières",
@@ -115,6 +125,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
+          image: technologieIcon,
           sequences: [
             'Conduire une démarche de projet en équipe',
             'Innover : Veille technologique et propriété intellectuelle',
@@ -135,6 +146,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Mathématiques',
+          image: mathematicsIcon,
           sequences: [
             'Nombres premiers et décomposition',
             'Les équations et inéquations',
@@ -151,6 +163,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
+          image: histoireIcon,
           sequences: [
             'Civils et militaires dans la Première Guerre mondiale',
             'Démocraties fragilisées et expériences totalitaires',

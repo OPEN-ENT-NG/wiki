@@ -20,7 +20,6 @@ import {
 } from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import { PagesAssistantAIContentResponse } from '~/services/api/assistant/assistant.types';
-import { set } from 'react-hook-form';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
