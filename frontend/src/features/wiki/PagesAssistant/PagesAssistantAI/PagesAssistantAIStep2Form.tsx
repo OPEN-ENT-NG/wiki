@@ -47,8 +47,6 @@ export const PagesAssistantAIStep2Form = () => {
 
   const handleBackButtonClick = () => {
     const keywords = watch('keywords');
-    console.log('keywords', keywords);
-
     setFormValues({ ...formValues, keywords });
     navigate(`/id/${params.wikiId}/pages/assistant/ai/step1Form`);
   };
