@@ -37,7 +37,6 @@ import {
 } from '~/store/treeview';
 import './index.css';
 import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssistantLeftPane';
-import { use } from 'i18next';
 
 export const loader =
   (queryClient: QueryClient) =>
