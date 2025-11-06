@@ -26,9 +26,11 @@ import java.util.Set;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
+import net.atos.entng.wiki.broker.CourseHierarchy;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
+import net.atos.entng.wiki.to.WikiGenerateRequest;
 import org.entcore.common.audience.AudienceRightChecker;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
@@ -36,8 +38,21 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
+import org.entcore.edificewikigenerator.CourseResponse;
 
 public interface WikiService extends AudienceRightChecker {
+
+	/**
+	 * Generate a wiki using AI.
+	 *
+	 * @param user      The user requesting wiki generation.
+     * @param dto       The DTO containing all required fields for wiki generation (level, subject, sequence, keywords).
+     * @param sessionId The session ID extracted from the HTTP request.
+     * @param userAgent The User-Agent string extracted from the HTTP request.
+     * @return Future with the generated wiki ID.
+     */
+	Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent);
+
 	default void getWiki(String id, Handler<Either<String, JsonObject>> handler){
 		getWiki(id, false, handler);
 	}
@@ -129,4 +144,24 @@ public interface WikiService extends AudienceRightChecker {
 	 * @return the list of new page IDs
 	 */
 	Future<List<PageId>> duplicatePage(UserInfos user, String sourceWikiId, String sourcePageId, List<String> targetWikiIdList, boolean shouldIncludeSubPages);
+
+	/**
+	 * Update wiki structure from AI-generated page hierarchy.
+	 * Used by AI generator to populate wiki pages structure.
+	 * 
+	 * @param wikiId The wiki ID to update
+	 * @param structure The AI-generated page structure
+	 * @return Future that completes when structure is updated
+	 */
+	Future<Void> updateWikiStructureFromAI(String wikiId, CourseHierarchy structure);
+
+	/**
+	 * Update wiki content from AI-generated course response.
+	 * Used by AI generator to populate wiki pages with content.
+	 * 
+	 * @param wikiId The wiki ID to update
+	 * @param courseResponse The AI-generated course with full content
+	 * @return Future that completes when content is updated
+	 */
+	Future<Void> updateWikiContentFromAI(String wikiId, CourseResponse courseResponse);
 }

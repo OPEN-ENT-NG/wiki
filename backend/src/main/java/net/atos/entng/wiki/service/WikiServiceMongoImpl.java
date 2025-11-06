@@ -24,8 +24,8 @@ import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-import com.mongodb.client.model.Filters;
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
@@ -36,13 +36,13 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.Wiki;
-import net.atos.entng.wiki.controllers.WikiController;
+import net.atos.entng.wiki.broker.AIWikiGeneratorPublisher;
+import net.atos.entng.wiki.broker.ContentRequest;
+import net.atos.entng.wiki.broker.CourseHierarchy;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
-import net.atos.entng.wiki.to.PageId;
-import net.atos.entng.wiki.to.PageListEntryFlat;
-import net.atos.entng.wiki.to.PageListRequest;
-import net.atos.entng.wiki.to.PageListResponse;
+import net.atos.entng.wiki.to.*;
 import org.bson.conversions.Bson;
+import org.entcore.broker.api.BrokerProxyFactory;
 import org.entcore.broker.api.dto.resources.ResourcesDeletedDTO;
 import org.entcore.broker.api.publisher.BrokerPublisherFactory;
 import org.entcore.broker.api.utils.AddressParameter;
@@ -60,13 +60,15 @@ import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import com.mongodb.BasicDBObject;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
+import org.entcore.edificewikigenerator.Course;
+import org.entcore.edificewikigenerator.CourseResponse;
+import org.entcore.edificewikigenerator.PageStructure;
 
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
 	protected static final Logger log = LoggerFactory.getLogger(WikiServiceMongoImpl.class);
@@ -82,6 +84,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final AudienceHelper audienceHelper;
 	private final ResourceBrokerPublisher resourcePublisher;
+
+	private final AIWikiGeneratorPublisher aiWikiPublisher;
 
 	public WikiServiceMongoImpl(final Vertx vertx, final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
@@ -101,13 +105,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				vertx,
 				new AddressParameter("application", Wiki.APPLICATION)
 		);
+		this.aiWikiPublisher = BrokerProxyFactory.create(AIWikiGeneratorPublisher.class, vertx);
 	}
 
 	@Override
 	public void getWiki(String id, boolean includeContent, Handler<Either<String, JsonObject>> handler) {
 		final Bson query = eq("_id", id);
 
-		JsonObject projection = includeContent? new JsonObject() : new JsonObject()
+		JsonObject projection = includeContent ? new JsonObject() : new JsonObject()
 				.put("pages.content", 0)
 				.put("pages.jsonContent", 0)
 				.put("pages.contentVersion", 0);
@@ -168,12 +173,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void getWikis(UserInfos user,
-			Handler<Either<String, JsonArray>> handler) {
+						 Handler<Either<String, JsonArray>> handler) {
 		// Query : return wikis visible by current user only (i.e. owner or
 		// shared)
 		List<Bson> groups = new ArrayList<>();
 		groups.add(eq("userId", user.getUserId()));
-		if(!user.getGroupsIds().isEmpty()){
+		if (!user.getGroupsIds().isEmpty()) {
 			groups.add(in("groupId", user.getGroupsIds()));
 		}
 		final Bson query = or(
@@ -192,7 +197,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void getPages(String idWiki, String getContent,
-			Handler<Either<String, JsonObject>> handler) {
+						 Handler<Either<String, JsonObject>> handler) {
 		final Bson query = eq("_id", idWiki);
 
 		JsonObject projection = new JsonObject()
@@ -237,18 +242,18 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		mongo.find(collection, MongoQueryBuilder.build(query), sort,
 				projection, MongoDbResult.validResultsHandler(res -> {
 					// If the result is right, we want to filter the pages
-					if(res.isRight()){
+					if (res.isRight()) {
 						// We get the wikis
 						final JsonArray wikis = res.right().getValue();
 						// We iterate over the wikis
-						for(final Object wiki : wikis){
+						for (final Object wiki : wikis) {
 							// We get the wiki
 							final JsonObject wikiJO = (JsonObject) wiki;
 							// We get the pages
 							final JsonArray pages = wikiJO.getJsonArray("pages", new JsonArray());
 							final JsonArray filteredPages = new JsonArray();
 							// We iterate over the pages
-							for(final Object page : pages){
+							for (final Object page : pages) {
 								final JsonObject pageJO = (JsonObject) page;
 								// We check if the page is visible
 								boolean isVisible = pageJO.getBoolean("isVisible", true);
@@ -257,10 +262,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 								// We check if the page is visible
 								boolean isManager = isManager(wikiJO, user);
 								// If the page is visible, we want to return it
-                                if (!onlyVisible || // If onlyVisible is true, we only want to return pages that are visible
-                                    isVisible || // If isVisible is true, we want to return the page
-                                    isManager || // If isManager is true, we want to return the page
-                                    isAuthor) { // If isAuthor is true, we want to return the page
+								if (!onlyVisible || // If onlyVisible is true, we only want to return pages that are visible
+										isVisible || // If isVisible is true, we want to return the page
+										isManager || // If isManager is true, we want to return the page
+										isAuthor) { // If isAuthor is true, we want to return the page
 									filteredPages.add(pageJO);
 								}
 							}
@@ -275,32 +280,32 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void createWiki(UserInfos user, String wikiTitle, String thumbnail, String description,
-	final Optional<Number> folderId,
-			Handler<Either<String, JsonObject>> handler) {
+						   final Optional<Number> folderId,
+						   Handler<Either<String, JsonObject>> handler) {
 
 		JsonObject newWiki = new JsonObject();
 		newWiki
 				.put("title", wikiTitle)
 				.put("description", description)
 				.put("pages", new JsonArray());
-		if(thumbnail!=null && !thumbnail.trim().isEmpty()){
+		if (thumbnail != null && !thumbnail.trim().isEmpty()) {
 			newWiki.put("thumbnail", thumbnail);
 		}
 
 		super.create(newWiki, user, r -> {
-			if(r.isRight()) {
+			if (r.isRight()) {
 				// notify Explorer
 				newWiki.put("version", System.currentTimeMillis());
 				newWiki.put("_id", r.right().getValue().getString("_id"));
 				wikiExplorerPlugin.notifyUpsert(user, newWiki, folderId)
-					.onSuccess(e -> {
-						// on success return 200
-						handler.handle(r);
-					})
-					.onFailure(e -> {
-						// on error return message
-						handler.handle(new Either.Left<>(e.getMessage()));
-					});
+						.onSuccess(e -> {
+							// on success return 200
+							handler.handle(r);
+						})
+						.onFailure(e -> {
+							// on error return message
+							handler.handle(new Either.Left<>(e.getMessage()));
+						});
 			} else {
 				handler.handle(r);
 			}
@@ -309,13 +314,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void updateWiki(UserInfos user, String idWiki, String wikiTitle, String thumbnail, String description,
-			Handler<Either<String, JsonObject>> handler) {
+						   Handler<Either<String, JsonObject>> handler) {
 		JsonObject data = new JsonObject();
 		data
 				.put("title", wikiTitle)
 				.put("description", description);
 
-		if(thumbnail==null || thumbnail.trim().isEmpty()){
+		if (thumbnail == null || thumbnail.trim().isEmpty()) {
 			data.put("thumbnail", "");
 		} else {
 			data.put("thumbnail", thumbnail);
@@ -343,7 +348,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void deleteWiki(UserInfos user, String idWiki,
-			Handler<Either<String, JsonObject>> handler) {
+						   Handler<Either<String, JsonObject>> handler) {
 		super.delete(idWiki, r -> {
 			if (r.isRight()) {
 				// Notify resource deletion via broker and don't wait for completion
@@ -399,9 +404,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	/**
 	 * If {@code page} does not have contentVersion or if version is 0 then old content is transformed to new content.<br />
 	 * Otherwise, nothing is done
+	 *
 	 * @param idWiki ID of the wiki whose page could be transformed
 	 * @param idPage ID of Page whose content could be transformed
-	 * @param page Page whose content could be transformed
+	 * @param page   Page whose content could be transformed
 	 * @return The modified page (actually the same as {@code page})
 	 */
 	private Future<JsonObject> handleOldContent(final String idWiki, final String idPage, final JsonObject page, final boolean originalFormatRequested,
@@ -442,7 +448,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 									.set("pages.$.jsonContent", page.getJsonObject("jsonContent"))
 									.set("pages.$.content", page.getString("content"))
 									.set("pages.$.oldContent", oldPage.getString("content"));
-							mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(),e -> {
+							mongo.update(collection, MongoQueryBuilder.build(queryUpdatePage), modifier.build(), e -> {
 								promise.complete(page);
 							});
 							// Record transformation event
@@ -451,7 +457,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					});
 		}
 		return promise.future().map(fetchedPage -> {
-			if(originalFormatRequested && oldPage.containsKey("oldContent")) {
+			if (originalFormatRequested && oldPage.containsKey("oldContent")) {
 				fetchedPage.put("content", oldPage.getString("oldContent"));
 			}
 			fetchedPage.remove("oldContent");
@@ -464,12 +470,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						   final HttpServerRequest request, final Handler<Either<String, JsonObject>> handler) {
 		final Bson query = eq("_id", wikiId);
 		getWiki(wikiId, wikiRes -> {
-			if(wikiRes.isRight()){
+			if (wikiRes.isRight()) {
 				final JsonObject wiki = wikiRes.right().getValue();
 				// if not a manager of the wiki => the page isVisible
 				final boolean isManager = isManager(wiki, user);
 				final boolean oldVisibility = page.getBoolean("isVisible", true);
-				final boolean newVisibility = isManager? oldVisibility : true;
+				final boolean newVisibility = isManager ? oldVisibility : true;
 				final int lastPosition = wiki.getJsonArray("pages").size();
 				// Add extra fields to page
 				final JsonObject mongoNow = MongoDb.now();
@@ -483,8 +489,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						.put("position", lastPosition)
 						// a manager
 						.put("isVisible", newVisibility);
-						// Set the position of the new page to the last position in the list
-
+				// Set the position of the new page to the last position in the list
 
 
 				// Tiptap Transformer
@@ -556,7 +561,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 								}
 							});
 				});
-			}else{
+			} else {
 				handler.handle(wikiRes);
 			}
 		});
@@ -590,8 +595,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		transformFuture.onComplete(transformerResponse -> {
 			// Mongo update query
 			final Bson query = and(
-				eq("_id", idWiki),
-				elemMatch("pages", new BasicDBObject("_id", idPage))
+					eq("_id", idWiki),
+					elemMatch("pages", new BasicDBObject("_id", idPage))
 			);
 			// Mongo Modifier
 			MongoUpdateBuilder modifier = new MongoUpdateBuilder();
@@ -671,7 +676,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 									// Create or update revision
 									// if page was not visible and is still not visible then we udpate the last revision
 									if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
-										&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
+											&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
 										Future<Void> lastRevisionFuture = this.updateLastRevision(
 												idPage
 												, page.getString("title")
@@ -692,29 +697,29 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 									}
 
 									CompositeFuture
-										.all(futures)
-										.onSuccess(res -> {
-											// notify Explorer that wiki has been updated
-											this.getWiki(idWiki, wikiRes -> {
-												if (wikiRes.isRight()) {
-													final JsonObject wiki = wikiRes.right().getValue();
-													wiki.put("version", System.currentTimeMillis());
-													wikiExplorerPlugin.notifyUpsert(user, wiki)
-															.onSuccess(e -> handler.handle(new Either.Right<>(page)))
-															.onFailure(e -> {
-																log.error("[Wiki] Error while notifying Explorer after page update", e);
-																handler.handle(new Either.Left<>(e.getMessage()));
-															});
-												} else {
-													log.error("[Wiki] Error while updating page", wikiRes.left().getValue());
-													handler.handle(new Either.Left<>(wikiRes.left().getValue()));
-												}
+											.all(futures)
+											.onSuccess(res -> {
+												// notify Explorer that wiki has been updated
+												this.getWiki(idWiki, wikiRes -> {
+													if (wikiRes.isRight()) {
+														final JsonObject wiki = wikiRes.right().getValue();
+														wiki.put("version", System.currentTimeMillis());
+														wikiExplorerPlugin.notifyUpsert(user, wiki)
+																.onSuccess(e -> handler.handle(new Either.Right<>(page)))
+																.onFailure(e -> {
+																	log.error("[Wiki] Error while notifying Explorer after page update", e);
+																	handler.handle(new Either.Left<>(e.getMessage()));
+																});
+													} else {
+														log.error("[Wiki] Error while updating page", wikiRes.left().getValue());
+														handler.handle(new Either.Left<>(wikiRes.left().getValue()));
+													}
+												});
+											})
+											.onFailure(err -> {
+												log.error("[Wiki] Error while updating page", err);
+												handler.handle(new Either.Left<>(err.getMessage()));
 											});
-										})
-										.onFailure(err -> {
-											log.error("[Wiki] Error while updating page", err);
-											handler.handle(new Either.Left<>(err.getMessage()));
-										});
 								} else {
 									String errorMessage = updateResult.body().getString("message", "");
 									log.error(errorMessage);
@@ -732,12 +737,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public Future<PageListResponse> updatePageList(UserInfos user, String idWiki, PageListRequest pageList) {
-		if(pageList.getPages().isEmpty()){
+		if (pageList.getPages().isEmpty()) {
 			return Future.succeededFuture(new PageListResponse(Collections.emptyList()));
 		}
 		final Promise<PageListResponse> promise = Promise.promise();
 		final JsonArray commmands = new JsonArray();
-		for(final PageListEntryFlat entry : pageList.getPages()){
+		for (final PageListEntryFlat entry : pageList.getPages()) {
 			final JsonObject criteria = new JsonObject().put("_id", idWiki).put("pages._id", entry.getId());
 			final JsonObject set = new MongoUpdateBuilder()
 					.set("pages.$.position", entry.getPosition())
@@ -758,8 +763,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	/**
 	 * Update visibility for subpages.
-	 * @param idWiki id of the related wiki
-	 * @param idPage id of the Parent page
+	 *
+	 * @param idWiki    id of the related wiki
+	 * @param idPage    id of the Parent page
 	 * @param isVisible the visibility of the parent page
 	 * @return Future
 	 */
@@ -792,6 +798,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		return promise.future();
 	}
+
 	@Override
 	public Future<Map<String, List<String>>> deletePage(UserInfos user, JsonObject wiki, String idPage) {
 		final Set<String> idPages = new HashSet<>();
@@ -915,7 +922,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	 */
 	@Override
 	public void unsetIndex(String idWiki, String idPage,
-			Handler<Either<String, JsonObject>> handler) {
+						   Handler<Either<String, JsonObject>> handler) {
 
 		final Bson query = and(eq("_id", idWiki), eq("index", idPage));
 
@@ -929,7 +936,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void addComment(UserInfos user, String idWiki, String idPage, String newCommentId,
-			String comment, String replyTo, Handler<Either<String, JsonObject>> handler) {
+						   String comment, String replyTo, Handler<Either<String, JsonObject>> handler) {
 
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
@@ -956,7 +963,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public void deleteComment(String idWiki, String idPage, String idComment,
-			Handler<Either<String, JsonObject>> handler){
+							  Handler<Either<String, JsonObject>> handler) {
 		// Query
 		BasicDBObject idPageDBO = new BasicDBObject("_id", idPage);
 		final Bson query = and(eq("_id", idWiki), elemMatch("pages", idPageDBO));
@@ -1013,7 +1020,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	@Override
 	public Future<Void> createRevision(String wikiId, String pageId, UserInfos user, String pageTitle,
-										 String pageContent, boolean isVisible, Integer position) {
+									   String pageContent, boolean isVisible, Integer position) {
 		final Promise<Void> promise = Promise.promise();
 
 		final JsonObject document = new JsonObject()
@@ -1087,7 +1094,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 			// Find the source page
 			final Optional<Object> sourcePageOpt = pages.stream()
-					.filter(p -> sourcePageId.equals(((JsonObject)p).getString("_id")))
+					.filter(p -> sourcePageId.equals(((JsonObject) p).getString("_id")))
 					.findFirst();
 
 			if (!sourcePageOpt.isPresent()) {
@@ -1111,13 +1118,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject newPage = sourcePage.copy();
 				// Set the new page properties
 				newPage.put("_id", newPageId)
-					   .put("author", user.getUserId())
-					   .put("authorName", user.getUsername())
-					   .put("created", MongoDb.now())
-					   .put("modified", MongoDb.now())
-					   .put("contentVersion", 1)
+						.put("author", user.getUserId())
+						.put("authorName", user.getUsername())
+						.put("created", MongoDb.now())
+						.put("modified", MongoDb.now())
+						.put("contentVersion", 1)
 						.put("comments", new JsonArray())
-					   .remove("parentId");
+						.remove("parentId");
 
 				// Duplicate subpages
 				final JsonArray newSubPages = new JsonArray();
@@ -1132,12 +1139,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						final String newSubPageId = new ObjectId().toString();
 						// Set the new subpage properties
 						newSubPage.put("_id", newSubPageId)
-								 .put("parentId", newPageId)
-								 .put("author", user.getUserId())
-								 .put("authorName", user.getUsername())
-								 .put("created", MongoDb.now())
-								 .put("modified", MongoDb.now())
-								 .put("contentVersion", 1);
+								.put("parentId", newPageId)
+								.put("author", user.getUserId())
+								.put("authorName", user.getUsername())
+								.put("created", MongoDb.now())
+								.put("modified", MongoDb.now())
+								.put("contentVersion", 1);
 						// reset comments
 						newSubPage.put("comments", new JsonArray());
 						// Add the new subpage to the new subpages array
@@ -1162,18 +1169,18 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// Create the query with JsonObject
 				final JsonObject update = new JsonObject()
-					.put("$push", new JsonObject()
-						.put("pages", new JsonObject()
-							.put("$each", allPages)
-						)
-					);
+						.put("$push", new JsonObject()
+								.put("pages", new JsonObject()
+										.put("$each", allPages)
+								)
+						);
 
 				// Create a future for the target wiki
 				final Future<Void> future = getWikiById(targetWikiId).compose(targetWiki -> {
 					// Set the position of the new page
 					newPage.put("position", getMaxPagePosition(targetWiki) + 1);
 					// Check whether the user is manager of the targetWiki
-					if(!isManager(targetWiki, user)){
+					if (!isManager(targetWiki, user)) {
 						// if not manager => make pages visible
 						allPages.forEach(object -> {
 							final JsonObject page = (JsonObject) object;
@@ -1197,8 +1204,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 			// Wait for all duplications to be completed
 			Future.all(futures)
-				.onSuccess(res -> globalPromise.complete(duplicatedPageIds))
-				.onFailure(err -> globalPromise.fail(err.getMessage()));
+					.onSuccess(res -> globalPromise.complete(duplicatedPageIds))
+					.onFailure(err -> globalPromise.fail(err.getMessage()));
 		});
 
 		return globalPromise.future();
@@ -1206,7 +1213,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	/**
 	 * Return Subpages from a Page with given pageId.
-	 * @param wiki the wiki containing the page we want to get subpages
+	 *
+	 * @param wiki    the wiki containing the page we want to get subpages
 	 * @param pageIds the page IDs we want to get subpages
 	 * @return JsonArray<Page> page subpages IDs
 	 */
@@ -1226,9 +1234,11 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		}
 		return subPages;
 	}
+
 	/**
 	 * Return pages from a Page with given _id.
-	 * @param wiki the wiki containing the page we want to get subpages
+	 *
+	 * @param wiki    the wiki containing the page we want to get subpages
 	 * @param pageIds the page IDs we want to get
 	 * @return JsonArray<Page> page IDs
 	 */
@@ -1258,7 +1268,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Check if we are the owner
 		if (rights == null) {
-		    if (userId != null && wiki.getJsonObject("owner") != null) {
+			if (userId != null && wiki.getJsonObject("owner") != null) {
 				return userId.equals(wiki.getJsonObject("owner").getString("userId"));
 			}
 		} else { // Otherwise check rights
@@ -1286,7 +1296,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			myRights.add(ShareRoles.Contrib.getSerializedForUser(user.getUserId()));
 
 			final List<String> groupIds = user.getGroupsIds();
-			if(groupIds != null) {
+			if (groupIds != null) {
 				for (String groupId : user.getGroupsIds()) {
 					myRights.add(ShareRoles.Contrib.getSerializedForGroup(groupId));
 				}
@@ -1377,12 +1387,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 
-	private Integer getMaxPagePosition(final JsonObject wiki){
+	private Integer getMaxPagePosition(final JsonObject wiki) {
 		if (wiki != null) {
 			JsonArray pages = wiki.getJsonArray("pages", new JsonArray());
 			// Find the max position
 			int maxPosition = pages.stream()
-					.map(p -> ((JsonObject)p).getInteger("position", 0))
+					.map(p -> ((JsonObject) p).getInteger("position", 0))
 					.max(Integer::compareTo)
 					.orElse(-1);
 			return maxPosition;
@@ -1393,7 +1403,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private Future<JsonObject> getWikiById(String wikiId) {
 		final Promise<JsonObject> promise = Promise.promise();
-		
+
 		// Get the wiki with the pages position
 		final Bson query = eq("_id", wikiId);
 		final JsonObject projection = new JsonObject().put("pages.position", 1).put("owner", 1).put("shared", true);
@@ -1405,12 +1415,13 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				promise.fail(res.body().getString("message"));
 			}
 		});
-		
+
 		return promise.future();
 	}
 
 	/**
 	 * Called by the audience rights checker when querying Audience APIs.
+	 *
 	 * @param audienceCheckRightRequestMessage
 	 * @return Future<Boolean> true if user has rights to retrieve data about the pages.
 	 */
@@ -1424,13 +1435,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	/**
 	 * Check if the user has access right on all pages.
+	 *
 	 * @param userId
 	 * @param userGroupsIds
 	 * @param pagesIds
 	 * @return
 	 */
 	private Future<Boolean> hasAccessRightsOnAllPages(final String userId, final Set<String> userGroupsIds,
-												final Set<String> pagesIds) {
+													  final Set<String> pagesIds) {
 		final Promise<Boolean> promise = Promise.promise();
 
 		final Bson query = elemMatch("pages", in("_id", pagesIds));
@@ -1459,5 +1471,188 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		return promise.future();
 
+	}
+
+	@Override
+	public Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent) {
+		final Promise<String> promise = Promise.promise();
+
+		// 1. Create empty wiki
+		final String wikiTitle = dto.getSequence();
+		final JsonObject newWiki = new JsonObject()
+				.put("title", wikiTitle)
+				.put("description", "")
+				.put("pages", new JsonArray())
+				.put("aiGenerated", true)
+				.put("aiMetadata", new JsonObject()
+						.put("level", dto.getLevel())
+						.put("subject", dto.getSubject())
+						.put("sequence", dto.getSequence())
+						.put("keywords", dto.getKeywords())
+						.put("generationDate", MongoDb.now()));
+
+		super.create(newWiki, user, createResult -> {
+			if (createResult.isRight()) {
+				final String wikiId = createResult.right().getValue().getString("_id");
+
+				// 2. Create ContentRequest
+				final ContentRequest contentRequest = new ContentRequest(
+						user.getUserId(),
+						wikiId,
+						sessionId != null ? sessionId : "",
+						userAgent != null ? userAgent : "",
+						dto.getLevel(),
+						dto.getSubject(),
+						dto.getSequence(),
+						dto.getKeywords()
+				);
+
+				// 3. Call AI service via publisher (fire and forget)
+				aiWikiPublisher.createWiki(contentRequest)
+						.onSuccess(v -> log.info("AI wiki generation started for wiki: " + wikiId))
+						.onFailure(err -> log.error("Failed to start AI wiki generation for wiki: " + wikiId, err));
+
+				// 4. Return wiki ID immediately
+				promise.complete(wikiId);
+			} else {
+				promise.fail(createResult.left().getValue());
+			}
+		});
+
+		return promise.future();
+	}
+
+	@Override
+	public Future<Void> updateWikiStructureFromAI(String wikiId, CourseHierarchy structure) {
+		final Promise<Void> promise = Promise.promise();
+
+		if (structure == null || structure.getPages() == null || structure.getPages().isEmpty()) {
+			return Future.failedFuture("wiki.structure.null");
+		}
+		if (wikiId == null || wikiId.trim().isEmpty()) {
+			return Future.failedFuture("wiki.id.null");
+		}
+
+		final Bson queryId = eq("_id", wikiId);
+		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
+			final JsonObject body = res.body();
+			if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
+				promise.fail("wiki.id.notfound" + wikiId);
+				return;
+			}
+			final JsonObject wiki = body.getJsonObject("result");
+			final JsonObject owner = wiki.getJsonObject("owner", new JsonObject());
+			final String authorId = owner.getString("userId", "ai-generator");
+			final String authorName = owner.getString("displayName", "AI Generator");
+
+			final JsonArray pages = new JsonArray(
+				structure.getPages().stream()
+					.map(ps -> convertStructureToPage(ps, authorId, authorName))
+					.collect(Collectors.toList())
+			);
+
+			// Build update query
+			final JsonObject query = new JsonObject().put("_id", wikiId);
+			final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+			modifier.set("pages", pages);
+			modifier.set("modified", MongoDb.now());
+			modifier.set("aiMetadata.structureGenerated", true);
+			modifier.set("aiMetadata.structureGeneratedDate", MongoDb.now());
+
+			// Execute update
+			mongo.update(collection, query, modifier.build(), message -> {
+				final JsonObject updateBody = message.body();
+				if ("ok".equals(updateBody.getString("status"))) {
+					log.info("Wiki structure updated successfully for wiki: " + wikiId);
+					promise.complete();
+				} else {
+					final String error = updateBody.getString("message", "Unknown error");
+					log.error("Failed to update wiki structure for wiki: " + wikiId + " - " + error);
+					promise.fail(error);
+				}
+			});
+		});
+
+		return promise.future();
+	}
+
+	@Override
+	public Future<Void> updateWikiContentFromAI(String wikiId, CourseResponse courseResponse) {
+		final Promise<Void> promise = Promise.promise();
+
+		if (courseResponse == null || courseResponse.getData() == null) {
+			return Future.failedFuture("wiki.content.null");
+		}
+
+		if (wikiId == null || wikiId.trim().isEmpty()) {
+			return Future.failedFuture("wiki.id.null");
+		}
+
+		try {
+			final Course course = courseResponse.getData();
+
+			// Use Jackson mapper to convert Course to JsonObject
+			final JsonObject wikiData = JsonObject.mapFrom(course);
+
+			// Store AI usage metadata using mapper
+			final JsonObject aiUsage = JsonObject.mapFrom(courseResponse.getUsage())
+					.put("model", courseResponse.getModel())
+					.put("version", courseResponse.getVersion())
+					.put("status", courseResponse.getStatus());
+
+			// Build update query
+			final JsonObject query = new JsonObject().put("_id", wikiId);
+			final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+			modifier.set("title", wikiData.getString("title"));
+			modifier.set("description", wikiData.getString("description"));
+			modifier.set("pages", wikiData.getJsonArray("pages"));
+			modifier.set("thumbnail", wikiData.getString("thumbnail"));
+			modifier.set("modified", MongoDb.now());
+			modifier.set("aiMetadata.contentGenerated", true);
+			modifier.set("aiMetadata.contentGeneratedDate", MongoDb.now());
+			modifier.set("aiMetadata.usage", aiUsage);
+
+			// Execute update
+			mongo.update(collection, query, modifier.build(), message -> {
+				final JsonObject body = message.body();
+				if ("ok".equals(body.getString("status"))) {
+					log.info("Wiki content updated successfully for wiki: " + wikiId);
+					promise.complete();
+				} else {
+					final String error = body.getString("message", "Unknown error");
+					log.error("Failed to update wiki content for wiki: " + wikiId + " - " + error);
+					promise.fail(error);
+				}
+			});
+		} catch (Exception e) {
+			log.error("Error updating wiki content for wiki: " + wikiId, e);
+			promise.fail(e);
+		}
+
+		return promise.future();
+	}
+
+	/**
+	 * Convert AI PageStructure to MongoDB page format (structure only, no content).
+	 */
+	private JsonObject convertStructureToPage(PageStructure pageStructure, String authorId, String authorName) {
+		final JsonObject page = JsonObject.mapFrom(pageStructure);
+
+		if (!page.containsKey("_id") || page.getString("_id") == null) {
+			page.put("_id", new ObjectId().toString());
+		}
+
+		page.put("isVisible", true);
+
+		final JsonObject now = MongoDb.now();
+		page.put("created", now);
+		page.put("modified", now);
+		page.put("author", authorId);      // Use the actual wiki creator
+		page.put("authorName", authorName);
+
+		page.put("content", "");
+		page.put("contentVersion", 0);
+
+		return page;
 	}
 }
