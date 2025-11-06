@@ -41,8 +41,8 @@
   border-width: 2px;
 }
 
-.pages-assistant-wrapper .card.card-assistant-ai {
-  border-color: #f9beef;
+.pages-assistant-wrapper .card.card-assistant-ai, .pages-assistant-wrapper .card.card-assistant-ai:hover {
+  border-color: #f9beef !important;
 }
 
 .pages-assistant-wrapper .card.card-import {

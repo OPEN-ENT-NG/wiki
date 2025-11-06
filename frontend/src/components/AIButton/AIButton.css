@@ -1,0 +1,36 @@
+/* AIButton.css */
+.btn-ai-wrapper {
+  padding: 2px; /* border thickness */
+  border-radius: 120px;
+  background: linear-gradient(to right, #F9BEEF, #FAEA9C);
+}
+  
+.btn-ai-wrapper .btn-ai {
+  color: #4a4a4a;
+  background: #fff;
+  border: none;
+  border-radius: 120px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.btn-ai-wrapper .btn-ai:hover, .btn-ai-wrapper .btn-ai:active, .btn-ai-wrapper .btn-ai:focus-visible {
+  color: #4a4a4a !important;
+  background: #fff !important;
+}
+
+.btn-ai-wrapper .btn-ai:disabled {
+  background: #fff !important;
+  color: #4a4a4a !important;
+  box-shadow: none !important;
+}
+
+/* Add cursor to wrapper when button is disabled */
+.btn-ai-wrapper:has(.btn-ai:disabled) {
+  cursor: progress;
+}
+
+.btn-ai-wrapper .btn-ai:hover > span {
+  transform: translateY(-2px) !important;
+}
+
