@@ -20,6 +20,7 @@ import {
 } from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import { PagesAssistantAIContentResponse } from '~/services/api/assistant/assistant.types';
+import AIButton from '~/components/AIButton/AIButton';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -135,33 +136,21 @@ export const PagesAssistantAIStep4StructureResult = () => {
             {t('cancel')}
           </Button>
           {!contentFinished && (
-            <Flex
-              align="center"
-              gap="8"
-              className="px-16 py-8"
-              style={{
-                border: 'solid 1px #F9BEEF',
-                borderRadius: '120px',
-                background: 'linear-gradient(to right, #FFF5FD, #FDFAEC)',
-              }}
-            >
-              <span>
-                {t('wiki.assistant.ai.step4.structure.result.wait.button', {
-                  ns: appCode,
-                })}
-              </span>
-              <IconWand />
-            </Flex>
+            <AIButton rightIcon={<IconWand />} disabled={true}>
+              {t('wiki.assistant.ai.step4.structure.result.wait.button', {
+                ns: appCode,
+              })}
+            </AIButton>
           )}
           {contentFinished && (
-            <Button onClick={handleGoToWiki} rightIcon={<IconArrowRight />}>
+            <AIButton onClick={handleGoToWiki} rightIcon={<IconArrowRight />}>
               {t(
                 'wiki.assistant.ai.step4.structure.result.wait.button.finished',
                 {
                   ns: appCode,
                 },
               )}
-            </Button>
+            </AIButton>
           )}
         </Flex>
       </div>
