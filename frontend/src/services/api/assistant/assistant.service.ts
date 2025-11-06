@@ -57,7 +57,7 @@ const createAssistantService = () => ({
           },
           data: mockPagesContentResponse,
         });
-      }, 5000); // 5 seconds delay
+      }, 10000); // 5 seconds delay
     });
   },
 });

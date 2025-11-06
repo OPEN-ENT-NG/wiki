@@ -20,6 +20,7 @@ import assistantAIIcon from './icons/assistantAIIcon.svg';
 import importIcon from './icons/importIcon.svg';
 import inspirationIcon from './icons/inspirationIcon.svg';
 import manualCreation from './icons/manualCreationIcon.svg';
+import AIButton from '~/components/AIButton/AIButton';
 
 export const PagesAssistantRoot = () => {
   const { appCode } = useEdificeClient();
@@ -99,10 +100,7 @@ export const PagesAssistantRoot = () => {
               </div>
             </Card.Body>
             <Card.Footer>
-              <Button
-                className="card-assistant-ai-button"
-                color="tertiary"
-                variant="ghost"
+              <AIButton
                 size="sm"
                 leftIcon={<IconWand />}
                 onClick={handleAssitantAIButtonClick}
@@ -110,7 +108,7 @@ export const PagesAssistantRoot = () => {
                 {t('wiki.assistant.card.ai.button', {
                   ns: appCode,
                 })}
-              </Button>
+              </AIButton>
             </Card.Footer>
           </Card>
         </Grid.Col>
