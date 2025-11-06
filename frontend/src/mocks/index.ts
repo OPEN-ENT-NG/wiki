@@ -621,3 +621,12 @@ export const mockPagesViewCounterResponse = {
   '66dab5f5812656287f15fd41': 1,
   '670541bc088c9c7ceeca2c3f': 2,
 };
+
+export const mockActionItemsAriaLabel = [
+  'read',
+  'move',
+  'duplicate',
+  'history',
+  'print',
+  'delete',
+];
