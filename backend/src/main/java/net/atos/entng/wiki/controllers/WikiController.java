@@ -37,6 +37,7 @@ import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
+import net.atos.entng.wiki.to.WikiGenerateRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
@@ -793,6 +794,25 @@ public class WikiController extends MongoDbControllerHelper {
 					shareResource(request, "wiki.shared", false, params, "title");
 				}
 			}
+		});
+	}
+
+	@Post("/generate")
+	@ApiDoc("Generate a wiki using AI")
+	@SecuredAction("wiki.generate")
+	public void generateWiki(final HttpServerRequest request) {
+		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user -> {
+			RequestUtils.bodyToJson(request, pathPrefix + "wikiGenerate", payload -> {
+				WikiGenerateRequest dto = payload.mapTo(WikiGenerateRequest.class);
+				final String userAgent = Optional.ofNullable(request.getHeader("User-Agent")).orElse("");
+				final String sessionId = UserUtils.getSessionId(request).orElse("");
+				wikiService.generateWiki(user, dto, sessionId, userAgent)
+						.onSuccess(wikiId -> renderJson(request, new JsonObject().put("wikiId", wikiId)))
+						.onFailure(err -> {
+							log.error("Error generating wiki", err);
+							renderJson(request, new JsonObject().put("error", err.getMessage()), 500);
+						});
+			});
 		});
 	}
 

@@ -26,6 +26,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
+import net.atos.entng.wiki.broker.AIWikiGeneratorListenerImpl;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
@@ -122,6 +123,8 @@ public class Wiki extends BaseServer {
         // add broker listener for share service
         final ShareService shareService = this.plugin.createShareService(new HashMap<>());
         BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
+		// add broker listener for wiki ai service
+		BrokerProxyUtils.addBrokerProxy(new AIWikiGeneratorListenerImpl(wikiService), vertx);
 		// Complete the start promise
 		startPromise.tryComplete();
 	}
