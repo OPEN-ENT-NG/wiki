@@ -1,4 +1,4 @@
-import { mockWikiPagesWithoutContent } from '~/mocks';
+import { mockActionItemsAriaLabel, mockWikiPagesWithoutContent } from '~/mocks';
 import { render, screen, within } from '~/mocks/setup';
 import { PageList } from './list';
 
@@ -177,9 +177,11 @@ describe('Pages List', () => {
     render(<PageList />);
 
     const buttons = screen.getAllByRole('button');
+
     buttons.forEach((button) => {
       const ariaLabel = button.getAttribute('aria-label');
-      expect(ariaLabel).toMatch(/^wiki\.list\.toolbar\.action/);
+      // Check that ariaLabel matches one of the expected
+      expect(mockActionItemsAriaLabel).toContain(ariaLabel);
       expect(button).toBeDisabled();
     });
 
