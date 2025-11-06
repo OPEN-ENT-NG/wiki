@@ -11,7 +11,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>3.3-develop-pedago-SNAPSHOT</version>
+    <version>3.3-feat-ia-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
@@ -22,7 +22,7 @@
     <properties>
         <web-utils.version>3.2-SNAPSHOT</web-utils.version>
         <mongodb-helper.version>3.0-SNAPSHOT</mongodb-helper.version>
-        <entcore.version>6.9-develop-pedago-SNAPSHOT</entcore.version>
+        <entcore.version>6.9-feat-ia-SNAPSHOT</entcore.version>
         <wiki-generator.version>0.1.0</wiki-generator.version>
     </properties>
 
