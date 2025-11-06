@@ -14,7 +14,7 @@ const createAssistantService = () => ({
    * @returns a Promise of PagesStructureResponse
    */
   async getPagesStructure(
-    requestPayload: PagesAssistantAIStructureRequest,
+    _: PagesAssistantAIStructureRequest,
   ): Promise<PagesAssistantAIStructureResponse> {
     // TODO: call wiki backend API with "requestPayload"
 
