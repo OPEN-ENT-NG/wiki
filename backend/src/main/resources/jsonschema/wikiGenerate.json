@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "level": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "keywords": {
+      "type": "string"
+    }
+  },
+  "required": ["level", "subject", "sequence"],
+  "additionalProperties": false
+}

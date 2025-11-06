@@ -83,5 +83,10 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.entcore.edificewikigenerator</groupId>
+            <artifactId>edifice-wiki-generator-client</artifactId>
+            <version>${wiki-generator.version}</version>
+        </dependency>
     </dependencies>
 </project>
