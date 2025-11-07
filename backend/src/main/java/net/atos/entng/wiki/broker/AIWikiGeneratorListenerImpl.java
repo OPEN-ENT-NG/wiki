@@ -1,6 +1,5 @@
 package net.atos.entng.wiki.broker;
 
-import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.service.WikiService;
@@ -43,22 +42,22 @@ public class AIWikiGeneratorListenerImpl implements EdificeWikiGeneratorListener
     }
 
     @Override
-    public Future<Void> updateWikiContent(CourseResponse courseResponse) {
+    public void updateWikiContent(CourseResponse courseResponse) {
         if (courseResponse == null || courseResponse.getData() == null) {
             log.error("Received null wiki content");
-            return Future.failedFuture("wiki.content.null");
+            return;
         }
         
         final String wikiId = courseResponse.getData().getId();
         if (wikiId == null || wikiId.trim().isEmpty()) {
             log.error("Wiki ID is null or empty in content update");
-            return Future.failedFuture("wiki.id.null");
+            return;
         }
         
         log.info("Updating wiki content for wiki: " + wikiId);
         
         // Delegate to service
-        return wikiService.updateWikiContentFromAI(wikiId, courseResponse)
+        wikiService.updateWikiContentFromAI(wikiId, courseResponse)
             .onSuccess(v -> log.info("Wiki content updated successfully for wiki: " + wikiId))
             .onFailure(err -> log.error("Failed to update wiki content for wiki: " + wikiId, err));
     }
