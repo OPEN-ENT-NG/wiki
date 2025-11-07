@@ -36,9 +36,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.Wiki;
-import net.atos.entng.wiki.broker.AIWikiGeneratorPublisher;
-import net.atos.entng.wiki.broker.ContentRequest;
-import net.atos.entng.wiki.broker.CourseHierarchy;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.to.*;
 import org.bson.conversions.Bson;
@@ -66,9 +63,7 @@ import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
-import org.entcore.edificewikigenerator.Course;
-import org.entcore.edificewikigenerator.CourseResponse;
-import org.entcore.edificewikigenerator.PageStructure;
+import org.entcore.edificewikigenerator.*;
 
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
 	protected static final Logger log = LoggerFactory.getLogger(WikiServiceMongoImpl.class);
@@ -85,7 +80,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	private final AudienceHelper audienceHelper;
 	private final ResourceBrokerPublisher resourcePublisher;
 
-	private final AIWikiGeneratorPublisher aiWikiPublisher;
+	private final EdificeWikiGeneratorPublisher aiWikiPublisher;
 
 	public WikiServiceMongoImpl(final Vertx vertx, final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
@@ -105,7 +100,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				vertx,
 				new AddressParameter("application", Wiki.APPLICATION)
 		);
-		this.aiWikiPublisher = BrokerProxyFactory.create(AIWikiGeneratorPublisher.class, vertx);
+		this.aiWikiPublisher = BrokerProxyFactory.create(EdificeWikiGeneratorPublisher.class, vertx);
 	}
 
 	@Override
@@ -1508,9 +1503,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				);
 
 				// 3. Call AI service via publisher (fire and forget)
-				aiWikiPublisher.createWiki(contentRequest)
-						.onSuccess(v -> log.info("AI wiki generation started for wiki: " + wikiId))
-						.onFailure(err -> log.error("Failed to start AI wiki generation for wiki: " + wikiId, err));
+				aiWikiPublisher.createWiki(contentRequest);
+                log.info("AI wiki generation started for wiki: " + wikiId);
+						/*.onSuccess(v -> log.info("AI wiki generation started for wiki: " + wikiId))
+						.onFailure(err -> log.error("Failed to start AI wiki generation for wiki: " + wikiId, err));*/
 
 				// 4. Return wiki ID immediately
 				promise.complete(wikiId);

@@ -26,7 +26,6 @@ import java.util.Set;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
-import net.atos.entng.wiki.broker.CourseHierarchy;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.PageListResponse;
@@ -38,6 +37,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
+import org.entcore.edificewikigenerator.CourseHierarchy;
 import org.entcore.edificewikigenerator.CourseResponse;
 
 public interface WikiService extends AudienceRightChecker {
