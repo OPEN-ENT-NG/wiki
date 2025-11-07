@@ -23,7 +23,7 @@
         <web-utils.version>3.2-develop-pedago-SNAPSHOT</web-utils.version>
         <mongodb-helper.version>3.0-develop-pedago-SNAPSHOT</mongodb-helper.version>
         <entcore.version>6.9-develop-pedago-SNAPSHOT</entcore.version>
-        <wiki-generator.version>0.1.0</wiki-generator.version>
+        <wiki-generator.version>0.1.2</wiki-generator.version>
     </properties>
 
     <repositories>

@@ -4,13 +4,15 @@ import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.service.WikiService;
+import org.entcore.edificewikigenerator.CourseHierarchy;
 import org.entcore.edificewikigenerator.CourseResponse;
+import org.entcore.edificewikigenerator.EdificeWikiGeneratorListener;
 
 /**
  * Listener implementation for AI wiki generator events.
  * Handles asynchronous updates from the AI service by delegating to WikiService.
  */
-public class AIWikiGeneratorListenerImpl implements AIWikiGeneratorListener {
+public class AIWikiGeneratorListenerImpl implements EdificeWikiGeneratorListener {
     private static final Logger log = LoggerFactory.getLogger(AIWikiGeneratorListenerImpl.class);
     
     private final WikiService wikiService;
@@ -20,22 +22,22 @@ public class AIWikiGeneratorListenerImpl implements AIWikiGeneratorListener {
     }
 
     @Override
-    public Future<Void> updateWikiStructure(CourseHierarchy structure) {
+    public void updateWikiStructure(CourseHierarchy structure) {
         if (structure == null) {
             log.error("Received null wiki structure");
-            return Future.failedFuture("wiki.structure.null");
+            return;
         }
         
-        final String wikiId = structure.getId();
+        final String wikiId = structure.getWikiId();
         if (wikiId == null || wikiId.trim().isEmpty()) {
             log.error("Wiki ID is null or empty in structure update");
-            return Future.failedFuture("wiki.id.null");
+            return;
         }
         
         log.info("Updating wiki structure for wiki: " + wikiId);
         
         // Delegate to service
-        return wikiService.updateWikiStructureFromAI(wikiId, structure)
+        wikiService.updateWikiStructureFromAI(wikiId, structure)
             .onSuccess(v -> log.info("Wiki structure updated successfully for wiki: " + wikiId))
             .onFailure(err -> log.error("Failed to update wiki structure for wiki: " + wikiId, err));
     }
