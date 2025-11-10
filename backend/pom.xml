@@ -23,7 +23,7 @@
         <web-utils.version>3.2-SNAPSHOT</web-utils.version>
         <mongodb-helper.version>3.0-SNAPSHOT</mongodb-helper.version>
         <entcore.version>6.9-feat-ia-SNAPSHOT</entcore.version>
-        <wiki-generator.version>0.1.2</wiki-generator.version>
+        <wiki-generator.version>0.1.2-alpha.0</wiki-generator.version>
     </properties>
 
     <repositories>

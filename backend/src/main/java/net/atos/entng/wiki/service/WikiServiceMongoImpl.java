@@ -39,7 +39,6 @@ import net.atos.entng.wiki.Wiki;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.to.*;
 import org.bson.conversions.Bson;
-import org.entcore.broker.api.BrokerProxyFactory;
 import org.entcore.broker.api.dto.resources.ResourcesDeletedDTO;
 import org.entcore.broker.api.publisher.BrokerPublisherFactory;
 import org.entcore.broker.api.utils.AddressParameter;
@@ -82,7 +81,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 	private final EdificeWikiGeneratorPublisher aiWikiPublisher;
 
-	public WikiServiceMongoImpl(final Vertx vertx, final String collection, final WikiExplorerPlugin plugin,
+    private final String plateformId;
+
+	public WikiServiceMongoImpl(final Vertx vertx, final String pfId,
+                                final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
 								final IContentTransformerEventRecorder contentTransformerEventRecorder,
 								final AudienceHelper audienceHelper) {
@@ -100,7 +102,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				vertx,
 				new AddressParameter("application", Wiki.APPLICATION)
 		);
-		this.aiWikiPublisher = BrokerProxyFactory.create(EdificeWikiGeneratorPublisher.class, vertx);
+		this.aiWikiPublisher = new EdificeWikiGeneratorPublisher(vertx);
+        this.plateformId = pfId;
 	}
 
 	@Override
@@ -1499,7 +1502,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 						dto.getLevel(),
 						dto.getSubject(),
 						dto.getSequence(),
-						dto.getKeywords()
+						dto.getKeywords(),
+                        plateformId
 				);
 
 				// 3. Call AI service via publisher (fire and forget)
