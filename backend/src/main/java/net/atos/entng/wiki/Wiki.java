@@ -34,12 +34,11 @@ import net.atos.entng.wiki.listeners.ResourceBrokerListenerImpl;
 import net.atos.entng.wiki.service.WikiRepositoryEvents;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
+import org.entcore.broker.api.ENTBrokerListener;
 import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.api.utils.BrokerProxyUtils;
 import org.entcore.common.audience.AudienceHelper;
@@ -69,9 +68,12 @@ public class Wiki extends BaseServer {
 
 	private MessageConsumer<Object> audienceRightChecker;
 
+    private final List<ENTBrokerListener> listeners = new ArrayList<>();
+
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
 		super.start(startPromise);
+        listeners.clear();
 
 		WikiConfig wikiConfig = new WikiConfig(config);
 
@@ -102,8 +104,9 @@ public class Wiki extends BaseServer {
 		// Audience Helper
 		AudienceHelper audienceHelper = new AudienceHelper(vertx);
 
+        final String platformId = config.getString("platform-name", "unnamed-pf");
 		// Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-		WikiService wikiService = new WikiServiceMongoImpl(vertx, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
+		WikiService wikiService = new WikiServiceMongoImpl(vertx, platformId, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
 
         // Add Wiki Controller
         final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
@@ -124,7 +127,7 @@ public class Wiki extends BaseServer {
         final ShareService shareService = this.plugin.createShareService(new HashMap<>());
         BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
 		// add broker listener for wiki ai service
-		BrokerProxyUtils.addBrokerProxy(new AIWikiGeneratorListenerImpl(wikiService), vertx);
+        listeners.add(new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService));
 		// Complete the start promise
 		startPromise.tryComplete();
 	}
@@ -152,5 +155,8 @@ public class Wiki extends BaseServer {
 		if (audienceRightChecker != null) {
 			audienceRightChecker.unregister();
 		}
+        for (ENTBrokerListener listener : listeners) {
+            listener.stop();
+        }
 	}
 }
