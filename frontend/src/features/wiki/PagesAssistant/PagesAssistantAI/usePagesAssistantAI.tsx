@@ -1,6 +1,6 @@
-import histoireIcon from '../icons/hsitoireIcon.svg';
-import technologieIcon from '../icons/technologieIcon.svg';
-import mathematicsIcon from '../icons/mathematicsIcon.svg';
+import historyIcon from '../icons/historyIcon.png';
+import technologyIcon from '../icons/technologyIcon.png';
+import mathematicsIcon from '../icons/mathematicsIcon.png';
 
 export const usePagesAssistantAI = () => {
   const levelsData = [
@@ -9,7 +9,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
-          image: technologieIcon,
+          image: technologyIcon,
           sequences: [
             "De l'analyse du besoin aux fonctions de l'objet",
             'Imaginer et représenter des solutions techniques en équipe',
@@ -47,7 +47,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
-          image: histoireIcon,
+          image: historyIcon,
           sequences: [
             "Byzance et l'Europe carolingienne",
             "L'Islam : débuts, expansion, sociétés",
@@ -68,7 +68,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
-          image: technologieIcon,
+          image: technologyIcon,
           sequences: [
             'Le Cahier des Charges Fonctionnel (CdCF)',
             "Ergonomie et Design : l'expérience utilisateur (UX)",
@@ -106,7 +106,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
-          image: histoireIcon,
+          image: historyIcon,
           sequences: [
             'Bourgeoisies marchandes, négoces internationaux et traite négrière',
             "L'Europe des Lumières",
@@ -125,7 +125,7 @@ export const usePagesAssistantAI = () => {
       subjects: [
         {
           value: 'Technologie',
-          image: technologieIcon,
+          image: technologyIcon,
           sequences: [
             'Conduire une démarche de projet en équipe',
             'Innover : Veille technologique et propriété intellectuelle',
@@ -163,7 +163,7 @@ export const usePagesAssistantAI = () => {
         },
         {
           value: 'Histoire',
-          image: histoireIcon,
+          image: historyIcon,
           sequences: [
             'Civils et militaires dans la Première Guerre mondiale',
             'Démocraties fragilisées et expériences totalitaires',
