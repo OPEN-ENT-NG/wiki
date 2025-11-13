@@ -1484,7 +1484,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				.put("aiGenerated", true)
 				.put("aiMetadata", new JsonObject()
 						.put("level", dto.getLevel())
-						.put("subject", dto.getSubject())
+						.put("subject", dto.getSequence())
 						.put("sequence", dto.getSequence())
 						.put("keywords", dto.getKeywords())
 						.put("generationDate", MongoDb.now()));
@@ -1588,46 +1588,90 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			return Future.failedFuture("wiki.id.null");
 		}
 
-		try {
-			final Course course = courseResponse.getCourse();
+		// Fetch wiki to get author info
+		final Bson queryId = eq("_id", wikiId);
+		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
+			final JsonObject body = res.body();
+			if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
+				promise.fail("wiki.id.notfound: " + wikiId);
+				return;
+			}
 
-			// Use Jackson mapper to convert Course to JsonObject
-			final JsonObject wikiData = JsonObject.mapFrom(course);
+			try {
+				final JsonObject wiki = body.getJsonObject("result");
+				final JsonObject owner = wiki.getJsonObject("owner", new JsonObject());
+				final String authorId = owner.getString("userId", "ai-generator");
+				final String authorName = owner.getString("displayName", "AI Generator");
 
-			// Store AI usage metadata using mapper
-			final JsonObject aiUsage = JsonObject.mapFrom(courseResponse.getUsage())
-					.put("model", courseResponse.getModel())
-					.put("version", courseResponse.getVersion())
-					.put("status", courseResponse.getStatus());
+				final Course course = courseResponse.getCourse();
+				final JsonObject wikiData = JsonObject.mapFrom(course);
 
-			// Build update query
-			final JsonObject query = new JsonObject().put("_id", wikiId);
-			final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-			modifier.set("title", wikiData.getString("title"));
-			modifier.set("description", wikiData.getString("description"));
-			modifier.set("pages", wikiData.getJsonArray("pages"));
-			modifier.set("thumbnail", wikiData.getString("thumbnail"));
-			modifier.set("modified", MongoDb.now());
-			modifier.set("aiMetadata.contentGenerated", true);
-			modifier.set("aiMetadata.contentGeneratedDate", MongoDb.now());
-			modifier.set("aiMetadata.usage", aiUsage);
+				// Enrich pages with author info and _id
+				final JsonArray pages = wikiData.getJsonArray("pages", new JsonArray());
+				final JsonArray enrichedPages = new JsonArray();
+				final JsonObject now = MongoDb.now();
 
-			// Execute update
-			mongo.update(collection, query, modifier.build(), message -> {
-				final JsonObject body = message.body();
-				if ("ok".equals(body.getString("status"))) {
-					log.info("Wiki content updated successfully for wiki: " + wikiId);
-					promise.complete();
-				} else {
-					final String error = body.getString("message", "Unknown error");
-					log.error("Failed to update wiki content for wiki: " + wikiId + " - " + error);
-					promise.fail(error);
+				for (Object pageObj : pages) {
+					JsonObject page = (JsonObject) pageObj;
+					
+					// Generate _id if not present
+					if (!page.containsKey("_id") || page.getString("_id") == null) {
+						page.put("_id", new ObjectId().toString());
+					}
+					
+					// Set author info
+					page.put("author", authorId);
+					page.put("authorName", authorName);
+					
+					// Set timestamps if not present
+					if (!page.containsKey("created")) {
+						page.put("created", now);
+					}
+					page.put("modified", now);
+					
+					// Set default visibility
+					if (!page.containsKey("isVisible")) {
+						page.put("isVisible", true);
+					}
+					
+					enrichedPages.add(page);
 				}
-			});
-		} catch (Exception e) {
-			log.error("Error updating wiki content for wiki: " + wikiId, e);
-			promise.fail(e);
-		}
+
+				// Store AI usage metadata
+				final JsonObject aiUsage = JsonObject.mapFrom(courseResponse.getUsage())
+						.put("model", courseResponse.getModel())
+						.put("version", courseResponse.getVersion())
+						.put("status", courseResponse.getStatus());
+
+				// Build update query
+				final JsonObject query = new JsonObject().put("_id", wikiId);
+				final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+				modifier.set("title", wikiData.getString("title"));
+				modifier.set("description", wikiData.getString("description"));
+				modifier.set("pages", enrichedPages);
+				modifier.set("thumbnail", wikiData.getString("thumbnail"));
+				modifier.set("modified", now);
+				modifier.set("aiMetadata.contentGenerated", true);
+				modifier.set("aiMetadata.contentGeneratedDate", now);
+				modifier.set("aiMetadata.usage", aiUsage);
+
+				// Execute update
+				mongo.update(collection, query, modifier.build(), message -> {
+					final JsonObject updateBody = message.body();
+					if ("ok".equals(updateBody.getString("status"))) {
+						log.info("Wiki content updated successfully for wiki: " + wikiId);
+						promise.complete();
+					} else {
+						final String error = updateBody.getString("message", "Unknown error");
+						log.error("Failed to update wiki content for wiki: " + wikiId + " - " + error);
+						promise.fail(error);
+					}
+				});
+			} catch (Exception e) {
+				log.error("Error updating wiki content for wiki: " + wikiId, e);
+				promise.fail(e);
+			}
+		});
 
 		return promise.future();
 	}
