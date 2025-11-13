@@ -34,7 +34,7 @@ export class WikiResourceService extends ResourceService {
    * @returns resource url
    */
   getViewUrl(resourceId: string): string {
-    return `/id/${resourceId}`;
+    return `/wiki/id/${resourceId}`;
   }
 
   /**
