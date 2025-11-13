@@ -1495,15 +1495,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// 2. Create ContentRequest
 				final ContentRequest contentRequest = new ContentRequest(
-                        dto.getKeywords(),
-                        plateformId,
-                        user.getUserId(),
-                        wikiId,
-                        sessionId != null ? sessionId : "",
                         userAgent != null ? userAgent : "",
-                        dto.getLevel(),
                         dto.getSequence(),
-                        dto.getSubject()
+                        dto.getKeywords(),
+                        dto.getLevel(),
+                        plateformId,
+                        sessionId != null ? sessionId : "",
+                        dto.getSubject(),
+                        user.getUserId(),
+                        wikiId
 				);
 
 				// 3. Call AI service via publisher (fire and forget)
@@ -1580,7 +1580,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	public Future<Void> updateWikiContentFromAI(String wikiId, CourseResponse courseResponse) {
 		final Promise<Void> promise = Promise.promise();
 
-		if (courseResponse == null || courseResponse.getData() == null) {
+		if (courseResponse == null || courseResponse.getCourse() == null) {
 			return Future.failedFuture("wiki.content.null");
 		}
 
@@ -1589,7 +1589,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		}
 
 		try {
-			final Course course = courseResponse.getData();
+			final Course course = courseResponse.getCourse();
 
 			// Use Jackson mapper to convert Course to JsonObject
 			final JsonObject wikiData = JsonObject.mapFrom(course);
