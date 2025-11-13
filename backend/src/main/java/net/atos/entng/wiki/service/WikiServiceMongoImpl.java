@@ -1537,7 +1537,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
 			final JsonObject body = res.body();
 			if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
-				promise.fail("wiki.id.notfound" + wikiId);
+				promise.fail("wiki.id.notfound: " + wikiId);
 				return;
 			}
 			final JsonObject wiki = body.getJsonObject("result");
@@ -1564,7 +1564,24 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject updateBody = message.body();
 				if ("ok".equals(updateBody.getString("status"))) {
 					log.info("Wiki structure updated successfully for wiki: " + wikiId);
-					promise.complete();
+					
+					// Create UserInfos from owner
+					final UserInfos user = new UserInfos();
+					user.setUserId(authorId);
+					user.setUsername(authorName);
+					
+					// Update wiki with new pages and version
+					wiki.put("pages", pages);
+					wiki.put("version", System.currentTimeMillis());
+					wiki.put("modified", MongoDb.now());
+					
+					// Notify Explorer (folder is not set, using default Optional.empty())
+					wikiExplorerPlugin.notifyUpsert(user, wiki)
+						.onSuccess(e -> promise.complete())
+						.onFailure(e -> {
+							log.error("[Wiki] Error while notifying Explorer after structure generation", e);
+							promise.fail(e.getMessage());
+						});
 				} else {
 					final String error = updateBody.getString("message", "Unknown error");
 					log.error("Failed to update wiki structure for wiki: " + wikiId + " - " + error);
