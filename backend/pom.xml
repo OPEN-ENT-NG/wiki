@@ -85,7 +85,7 @@
 
         <dependency>
             <groupId>org.entcore.edificewikigenerator</groupId>
-            <artifactId>edifice-wiki-generator-client</artifactId>
+            <artifactId>edifice-wiki-generator-client-vertx</artifactId>
             <version>${wiki-generator.version}</version>
         </dependency>
     </dependencies>
