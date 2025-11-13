@@ -48,12 +48,12 @@ public class AIWikiGeneratorListenerImpl extends AbstractEdificeWikiGeneratorLis
 
     @Override
     public Future<Void> onUpdateWikiContent(CourseResponse courseResponse) {
-        if (courseResponse == null || courseResponse.getData() == null) {
+        if (courseResponse == null || courseResponse.getCourse() == null) {
             log.error("Received null wiki content");
             return failedFuture("Received null wiki content");
         }
         
-        final String wikiId = courseResponse.getData().getId();
+        final String wikiId = courseResponse.getWikiId();
         if (wikiId == null || wikiId.trim().isEmpty()) {
             log.error("Wiki ID is null or empty in content update");
             return failedFuture("Wiki ID is null or empty in content update");
