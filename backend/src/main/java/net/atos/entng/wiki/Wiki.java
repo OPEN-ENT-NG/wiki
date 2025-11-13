@@ -21,6 +21,7 @@ package net.atos.entng.wiki;
 
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.MessageConsumer;
@@ -35,6 +36,7 @@ import net.atos.entng.wiki.service.WikiRepositoryEvents;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
@@ -128,8 +130,10 @@ public class Wiki extends BaseServer {
         BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
 		// add broker listener for wiki ai service
         listeners.add(new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService));
-		// Complete the start promise
-		startPromise.tryComplete();
+        List<Future<Void>> futureListeners = listeners.stream().map(ENTBrokerListener::start).collect(Collectors.toList());
+        Future.all(futureListeners).mapEmpty()
+                .onSuccess(e -> startPromise.tryComplete())
+                .onFailure(startPromise::fail);
 	}
 
 	private Optional<JsonObject> getContentTransformerConfig(final Vertx vertx) {
