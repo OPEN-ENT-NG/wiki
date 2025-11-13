@@ -1495,15 +1495,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// 2. Create ContentRequest
 				final ContentRequest contentRequest = new ContentRequest(
-						user.getUserId(),
-						wikiId,
-						sessionId != null ? sessionId : "",
-						userAgent != null ? userAgent : "",
-						dto.getLevel(),
-						dto.getSubject(),
-						dto.getSequence(),
-						dto.getKeywords(),
-                        plateformId
+                        dto.getKeywords(),
+                        plateformId,
+                        user.getUserId(),
+                        wikiId,
+                        sessionId != null ? sessionId : "",
+                        userAgent != null ? userAgent : "",
+                        dto.getLevel(),
+                        dto.getSequence(),
+                        dto.getSubject()
 				);
 
 				// 3. Call AI service via publisher (fire and forget)
