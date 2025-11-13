@@ -11,17 +11,20 @@ public class WikiGenerateRequest {
     private final String subject;
     private final String sequence;
     private final String keywords;
+    private final String wikiId;
 
     @JsonCreator
     public WikiGenerateRequest(
             @JsonProperty("level") String level,
             @JsonProperty("subject") String subject,
             @JsonProperty("sequence") String sequence,
-            @JsonProperty("keywords") String keywords) {
+            @JsonProperty("keywords") String keywords,
+            @JsonProperty("wikiId") String wikiId) {
         this.level = level;
         this.subject = subject;
         this.sequence = sequence;
         this.keywords = keywords;
+        this.wikiId = wikiId;
     }
 
     public String getLevel() {
@@ -38,6 +41,10 @@ public class WikiGenerateRequest {
 
     public String getKeywords() {
         return keywords;
+    }
+
+    public String getWikiId() {
+        return wikiId;
     }
 
     public JsonObject toJson() {

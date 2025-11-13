@@ -16,6 +16,9 @@
     },
     "keywords": {
       "type": "string"
+    },
+    "wikiId": {
+      "type": "string"
     }
   },
   "required": ["level", "subject", "sequence"],

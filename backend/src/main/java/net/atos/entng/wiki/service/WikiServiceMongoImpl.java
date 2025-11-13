@@ -1470,54 +1470,100 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 
 	}
-
+	
 	@Override
 	public Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent) {
 		final Promise<String> promise = Promise.promise();
 
-		// 1. Create empty wiki
-		final String wikiTitle = dto.getSequence();
-		final JsonObject newWiki = new JsonObject()
-				.put("title", wikiTitle)
-				.put("description", "")
-				.put("pages", new JsonArray())
-				.put("aiGenerated", true)
-				.put("aiMetadata", new JsonObject()
+		if (dto.getWikiId() != null && !dto.getWikiId().trim().isEmpty()) {
+			final String wikiId = dto.getWikiId();
+
+			final Bson query = eq("_id", wikiId);
+			mongo.findOne(collection, MongoQueryBuilder.build(query), res -> {
+				final JsonObject body = res.body();
+				if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
+					promise.fail("wiki.id.notfound: " + wikiId);
+					return;
+				}
+
+				final JsonObject existingWiki = body.getJsonObject("result");
+				final JsonObject owner = existingWiki.getJsonObject("owner", new JsonObject());
+
+				if (!user.getUserId().equals(owner.getString("userId"))) {
+					promise.fail("wiki.not.owner");
+					return;
+				}
+
+				final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
+				final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+				modifier.set("modified", MongoDb.now());
+				modifier.set("aiGenerated", true);
+				modifier.set("aiMetadata", new JsonObject()
 						.put("level", dto.getLevel())
-						.put("subject", dto.getSequence())
+						.put("subject", dto.getSubject())
 						.put("sequence", dto.getSequence())
 						.put("keywords", dto.getKeywords())
 						.put("generationDate", MongoDb.now()));
 
-		super.create(newWiki, user, createResult -> {
-			if (createResult.isRight()) {
-				final String wikiId = createResult.right().getValue().getString("_id");
+				mongo.update(collection, updateQuery, modifier.build(), updateResult -> {
+					if ("ok".equals(updateResult.body().getString("status"))) {
+						final ContentRequest contentRequest = new ContentRequest(
+								userAgent != null ? userAgent : "",
+								dto.getSequence(),
+								dto.getKeywords(),
+								dto.getLevel(),
+								plateformId,
+								sessionId != null ? sessionId : "",
+								dto.getSubject(),
+								user.getUserId(),
+								wikiId
+						);
 
-				// 2. Create ContentRequest
-				final ContentRequest contentRequest = new ContentRequest(
-                        userAgent != null ? userAgent : "",
-                        dto.getSequence(),
-                        dto.getKeywords(),
-                        dto.getLevel(),
-                        plateformId,
-                        sessionId != null ? sessionId : "",
-                        dto.getSubject(),
-                        user.getUserId(),
-                        wikiId
-				);
+						aiWikiPublisher.createWiki(contentRequest);
+						log.info("AI wiki regeneration started for wiki: " + wikiId);
+						promise.complete(wikiId);
+					} else {
+						promise.fail(updateResult.body().getString("message", "wiki.update.failed"));
+					}
+				});
+			});
+		} else {
+			final JsonObject newWiki = new JsonObject()
+					.put("title", dto.getSubject())
+					.put("description", "")
+					.put("pages", new JsonArray())
+					.put("aiGenerated", true)
+					.put("aiMetadata", new JsonObject()
+							.put("level", dto.getLevel())
+							.put("subject", dto.getSubject())
+							.put("sequence", dto.getSequence())
+							.put("keywords", dto.getKeywords())
+							.put("generationDate", MongoDb.now()));
 
-				// 3. Call AI service via publisher (fire and forget)
-				aiWikiPublisher.createWiki(contentRequest);
-                log.info("AI wiki generation started for wiki: " + wikiId);
-						/*.onSuccess(v -> log.info("AI wiki generation started for wiki: " + wikiId))
-						.onFailure(err -> log.error("Failed to start AI wiki generation for wiki: " + wikiId, err));*/
+			super.create(newWiki, user, createResult -> {
+				if (createResult.isRight()) {
+					final String wikiId = createResult.right().getValue().getString("_id");
 
-				// 4. Return wiki ID immediately
-				promise.complete(wikiId);
-			} else {
-				promise.fail(createResult.left().getValue());
-			}
-		});
+					final ContentRequest contentRequest = new ContentRequest(
+							userAgent != null ? userAgent : "",
+							dto.getSequence(),
+							dto.getKeywords(),
+							dto.getLevel(),
+							plateformId,
+							sessionId != null ? sessionId : "",
+							dto.getSubject(),
+							user.getUserId(),
+							wikiId
+					);
+
+					aiWikiPublisher.createWiki(contentRequest);
+					log.info("AI wiki generation started for wiki: " + wikiId);
+					promise.complete(wikiId);
+				} else {
+					promise.fail(createResult.left().getValue());
+				}
+			});
+		}
 
 		return promise.future();
 	}
@@ -1564,17 +1610,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject updateBody = message.body();
 				if ("ok".equals(updateBody.getString("status"))) {
 					log.info("Wiki structure updated successfully for wiki: " + wikiId);
-					
+
 					// Create UserInfos from owner
 					final UserInfos user = new UserInfos();
 					user.setUserId(authorId);
 					user.setUsername(authorName);
-					
+
 					// Update wiki with new pages and version
 					wiki.put("pages", pages);
 					wiki.put("version", System.currentTimeMillis());
 					wiki.put("modified", MongoDb.now());
-					
+
 					// Notify Explorer (folder is not set, using default Optional.empty())
 					wikiExplorerPlugin.notifyUpsert(user, wiki)
 						.onSuccess(e -> promise.complete())
@@ -1605,7 +1651,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			return Future.failedFuture("wiki.id.null");
 		}
 
-		// Fetch wiki to get author info
+		// Fetch wiki to get author info AND existing pages
 		final Bson queryId = eq("_id", wikiId);
 		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
 			final JsonObject body = res.body();
@@ -1620,37 +1666,67 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final String authorId = owner.getString("userId", "ai-generator");
 				final String authorName = owner.getString("displayName", "AI Generator");
 
+				final JsonArray existingPages = wiki.getJsonArray("pages", new JsonArray());
+				final Map<String, String> titleToIdMap = new HashMap<>();
+				final Map<Integer, String> positionToIdMap = new HashMap<>();
+
+				for (int i = 0; i < existingPages.size(); i++) {
+					final JsonObject existingPage = existingPages.getJsonObject(i);
+					final String pageId = existingPage.getString("_id");
+					final String pageTitle = existingPage.getString("title");
+
+					if (pageTitle != null) {
+						titleToIdMap.put(pageTitle.toLowerCase().trim(), pageId);
+					}
+					positionToIdMap.put(i, pageId);
+				}
+
 				final Course course = courseResponse.getCourse();
 				final JsonObject wikiData = JsonObject.mapFrom(course);
 
-				// Enrich pages with author info and _id
+				// Enrich pages with author info and _id (from existing wiki or generated)
 				final JsonArray pages = wikiData.getJsonArray("pages", new JsonArray());
 				final JsonArray enrichedPages = new JsonArray();
 				final JsonObject now = MongoDb.now();
 
-				for (Object pageObj : pages) {
-					JsonObject page = (JsonObject) pageObj;
-					
-					// Generate _id if not present
-					if (!page.containsKey("_id") || page.getString("_id") == null) {
-						page.put("_id", new ObjectId().toString());
+				for (int i = 0; i < pages.size(); i++) {
+					final JsonObject page = pages.getJsonObject(i);
+
+					final String pageTitle = page.getString("title");
+					String existingPageId = null;
+
+					if (pageTitle != null) {
+						existingPageId = titleToIdMap.get(pageTitle.toLowerCase().trim());
 					}
-					
+
+					if (existingPageId == null) {
+						existingPageId = positionToIdMap.get(i);
+					}
+
+					if (existingPageId == null) {
+						existingPageId = new ObjectId().toString();
+						log.info("Generated new page ID for page: " + pageTitle + " with title " + pageTitle);
+					} else {
+						log.info("Reused existing page ID for page: " + pageTitle + " with title " + pageTitle);
+					}
+
+					page.put("_id", existingPageId);
+
 					// Set author info
 					page.put("author", authorId);
 					page.put("authorName", authorName);
-					
-					// Set timestamps if not present
+
+					// Set timestamps
 					if (!page.containsKey("created")) {
 						page.put("created", now);
 					}
 					page.put("modified", now);
-					
+
 					// Set default visibility
 					if (!page.containsKey("isVisible")) {
 						page.put("isVisible", true);
 					}
-					
+
 					enrichedPages.add(page);
 				}
 
