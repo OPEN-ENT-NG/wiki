@@ -57,12 +57,24 @@
             <artifactId>common</artifactId>
             <version>${entcore.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.entcore.edificewikigenerator</groupId>
+                    <artifactId>edifice-wiki-generator-client-vertx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.entcore</groupId>
             <artifactId>tests</artifactId>
             <version>${entcore.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.entcore.edificewikigenerator</groupId>
+                    <artifactId>edifice-wiki-generator-client-vertx</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.gatling.highcharts</groupId>
