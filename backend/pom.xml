@@ -23,7 +23,7 @@
         <web-utils.version>3.2-develop-pedago-SNAPSHOT</web-utils.version>
         <mongodb-helper.version>3.0-develop-pedago-SNAPSHOT</mongodb-helper.version>
         <entcore.version>6.9-develop-pedago-SNAPSHOT</entcore.version>
-        <wiki-generator.version>0.1.2-alpha.1</wiki-generator.version>
+        <wiki-generator.version>0.1.2-alpha.3</wiki-generator.version>
     </properties>
 
     <repositories>
@@ -86,7 +86,7 @@
 
         <dependency>
             <groupId>org.entcore.edificewikigenerator</groupId>
-            <artifactId>edifice-wiki-generator-client</artifactId>
+            <artifactId>edifice-wiki-generator-client-vertx</artifactId>
             <version>${wiki-generator.version}</version>
         </dependency>
     </dependencies>
