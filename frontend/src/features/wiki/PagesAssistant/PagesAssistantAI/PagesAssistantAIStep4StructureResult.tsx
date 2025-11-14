@@ -21,6 +21,7 @@ import {
 import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { odeServices } from '@edifice.io/client';
+import { baseURL } from '~/services';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -56,7 +57,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
 
   const handleGoToWiki = () => {
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
-    navigate(`/id/${params.wikiId}`);
+    window.location.href = `${baseURL}/id/${params.wikiId}`; // need to refresh the page to work properly
   };
 
   return (
