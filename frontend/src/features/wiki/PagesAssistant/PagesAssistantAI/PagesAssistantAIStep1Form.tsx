@@ -103,6 +103,7 @@ export const PagesAssistantAIStep1Form = () => {
               <Flex gap="8">
                 {levelsData.map((level, index) => (
                   <Controller
+                    key={index}
                     name="level"
                     control={control}
                     rules={{ required: true }}
@@ -132,6 +133,7 @@ export const PagesAssistantAIStep1Form = () => {
               <Flex gap="8">
                 {availableSubjects.map((subject, index) => (
                   <Controller
+                    key={index}
                     name="subject"
                     control={control}
                     rules={{ required: true }}

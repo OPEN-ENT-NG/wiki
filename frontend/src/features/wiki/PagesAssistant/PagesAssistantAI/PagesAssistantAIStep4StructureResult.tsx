@@ -18,9 +18,9 @@ import {
   usePagesAssistantActions,
   usePagesStructureStore,
 } from '~/store/assistant';
-import { assistantService } from '~/services/api/assistant/assistant.service';
-import { PagesAssistantAIContentResponse } from '~/services/api/assistant/assistant.types';
 import AIButton from '~/components/AIButton/AIButton';
+import { WikiDto } from '~/models';
+import { odeServices } from '@edifice.io/client';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -32,14 +32,21 @@ export const PagesAssistantAIStep4StructureResult = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPagesContent = async () => {
-      const pagesContentResponse: PagesAssistantAIContentResponse =
-        await assistantService.getPagesContent();
-      console.log('pagesContentResponse', pagesContentResponse);
-      setContentFinished(true);
-    };
+    const intervalId = setInterval(async () => {
+      const wikiResponse = await odeServices
+        .http()
+        .get<WikiDto>(`/wiki/${params.wikiId}`);
 
-    fetchPagesContent();
+      if (wikiResponse.aiMetadata?.contentGenerated) {
+        clearInterval(intervalId);
+        setContentFinished(true);
+      }
+    }, 5000);
+
+    // Cleanup: stop interval when component unmounts
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, []);
 
   const handleCancelButtonClick = () => {

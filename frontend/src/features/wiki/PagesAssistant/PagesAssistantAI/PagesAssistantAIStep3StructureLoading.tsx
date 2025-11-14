@@ -5,7 +5,6 @@ import {
   LoadingScreen,
   Stepper,
   useEdificeClient,
-  useUser,
 } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 import { IconClock } from '@edifice.io/react/icons';
@@ -14,6 +13,8 @@ import {
   useFormValuesStore,
 } from '~/store/assistant';
 import { assistantService } from '~/services/api/assistant/assistant.service';
+import { odeServices } from '@edifice.io/client';
+import { WikiDto } from '~/models';
 
 export const PagesAssistantAIStep3StructureLoading = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
@@ -23,34 +24,46 @@ export const PagesAssistantAIStep3StructureLoading = () => {
   const { t } = useTranslation();
   const { setPagesStructure } = usePagesAssistantActions();
   const formValues = useFormValuesStore();
-  const user = useUser();
 
   useEffect(() => {
-    const fetchPagesStructure = async () => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    const generate = async () => {
       setStructureLoading(true);
 
-      const pagesStructureRequest = {
+      const generateRequestPayload = {
         ...formValues,
         wikiId: params.wikiId || '',
-        userId: user.user?.userId || '',
-        session: user.user?.sessionMetadata._id || '',
-        browser: navigator.userAgent,
       };
-      console.log('pagesStructureRequest', pagesStructureRequest);
 
-      // Call asstistant service to get pages structure
-      const pagesStructureResponse = await assistantService.getPagesStructure(
-        pagesStructureRequest,
-      );
+      await assistantService.generate(generateRequestPayload);
 
-      console.log('pagesStructureResponse', pagesStructureResponse);
+      intervalId = setInterval(async () => {
+        const wikiResponse = await odeServices
+          .http()
+          .get<WikiDto>(`/wiki/${params.wikiId}`);
 
-      setPagesStructure(pagesStructureResponse?.data?.pages);
-      setStructureLoading(false);
-      navigate(`/id/${params.wikiId}/pages/assistant/ai/step4StructureResult`);
+        if (wikiResponse.aiMetadata?.structureGenerated) {
+          if (intervalId) clearInterval(intervalId);
+          setStructureLoading(false);
+
+          setPagesStructure(
+            wikiResponse.pages.map((page) => ({ title: page.title })),
+          );
+
+          navigate(
+            `/id/${params.wikiId}/pages/assistant/ai/step4ContentLoading`,
+          );
+        }
+      }, 3000);
     };
 
-    fetchPagesStructure();
+    generate();
+
+    // Cleanup: stop interval when component unmounts
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, []);
 
   return (
