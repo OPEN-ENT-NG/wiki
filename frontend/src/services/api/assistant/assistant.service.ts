@@ -1,65 +1,28 @@
 import {
-  mockPagesContentResponse,
-  mockPagesStructureResponse,
-} from '~/mocks/assistant';
-import {
-  PagesAssistantAIStructureRequest,
-  PagesAssistantAIContentResponse,
-  PagesAssistantAIStructureResponse,
+  AssistantGenerateRequest,
+  AssistantGenerateResponse,
 } from './assistant.types';
+import { odeServices } from '@edifice.io/client';
 
-const createAssistantService = () => ({
+/**
+ * Services for Assistant API
+ * @param baseURL app base URL
+ * @returns services methods for Assistant API
+ */
+const createAssistantService = (baseURL: string) => ({
   /**
-   * Fetches the structure of the pages.
+   * Generate the wiki pages and then the pages content.
    * @returns a Promise of PagesStructureResponse
    */
-  async getPagesStructure(
-    _: PagesAssistantAIStructureRequest,
-  ): Promise<PagesAssistantAIStructureResponse> {
-    // TODO: call wiki backend API with "requestPayload"
-
-    // This is the mocked response
-    return new Promise<PagesAssistantAIStructureResponse>((resolve) => {
-      setTimeout(() => {
-        resolve({
-          status: 'success',
-          message: 'Course has been successfully generated.',
-          model: 'gpt-4.1-mini-2025-04-14',
-          version: '0.1.0',
-          usage: {
-            completion_tokens: 2910,
-            prompt_tokens: 1372,
-            total_tokens: 4282,
-          },
-          data: mockPagesStructureResponse,
-        });
-      }, 5000); // 5 seconds delay
-    });
-  },
-
-  /**
-   * Fetches the content of the pages.
-   * @returns a Promise of PagesContentResponse
-   */
-  async getPagesContent(): Promise<PagesAssistantAIContentResponse> {
-    // TODO: call wiki backend API
-    return new Promise<PagesAssistantAIContentResponse>((resolve) => {
-      setTimeout(() => {
-        resolve({
-          status: 'success',
-          message: 'Course has been successfully generated.',
-          model: 'gpt-4.1-mini-2025-04-14',
-          version: '0.1.0',
-          usage: {
-            completion_tokens: 2910,
-            prompt_tokens: 1372,
-            total_tokens: 4282,
-          },
-          data: mockPagesContentResponse,
-        });
-      }, 10000); // 5 seconds delay
-    });
+  async generate(
+    requestPayload: AssistantGenerateRequest,
+  ): Promise<AssistantGenerateResponse> {
+    const response = await odeServices
+      .http()
+      .post<AssistantGenerateResponse>(`${baseURL}/generate`, requestPayload);
+    return response;
   },
 });
 
-export const assistantService = createAssistantService();
+export const baseURL = '/wiki';
+export const assistantService = createAssistantService(baseURL);

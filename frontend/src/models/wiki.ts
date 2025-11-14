@@ -1,6 +1,32 @@
 import { Created, Modified } from './date';
 import { Page, PageDto } from './page';
 
+export interface AIMetadata {
+  level: string;
+  subject: string;
+  sequence: string;
+  keywords: string;
+  generationDate: {
+    $date: string;
+  };
+  contentGenerated: boolean;
+  contentGeneratedDate: {
+    $date: string;
+  };
+  usage: {
+    completion_tokens: number;
+    prompt_tokens: number;
+    total_tokens: number;
+    model: string;
+    version: string;
+    status: string;
+  };
+  structureGenerated: boolean;
+  structureGeneratedDate: {
+    $date: string;
+  };
+}
+
 export interface WikiDto {
   _id: string;
   title: string;
@@ -12,6 +38,8 @@ export interface WikiDto {
   rights: string[];
   index?: string;
   shared?: string[];
+  aiGenerated?: boolean;
+  aiMetadata?: AIMetadata;
 }
 
 export interface WikiPagesDto {
