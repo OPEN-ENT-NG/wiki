@@ -52,7 +52,7 @@ export const PagesAssistantAIStep3StructureLoading = () => {
           );
 
           navigate(
-            `/id/${params.wikiId}/pages/assistant/ai/step4ContentLoading`,
+            `/id/${params.wikiId}/pages/assistant/ai/step4StructureResult`,
           );
         }
       }, 3000);
