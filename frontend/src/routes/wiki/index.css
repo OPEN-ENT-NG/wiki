@@ -41,6 +41,11 @@
   border-width: 2px;
 }
 
+.pages-assistant-wrapper .card .card-footer {
+  background-color: #fff;
+  padding-bottom: 24px;
+}
+
 .pages-assistant-wrapper .card.card-assistant-ai, .pages-assistant-wrapper .card.card-assistant-ai:hover {
   border-color: #f9beef !important;
 }
@@ -48,4 +53,8 @@
 .pages-assistant-wrapper .card.card-import {
   background-color: var(--edifice-gray-300);
   border-color: #fff;
+}
+
+.pages-assistant-wrapper .card.card-import .card-footer {
+  background-color: var(--edifice-gray-300);
 }
