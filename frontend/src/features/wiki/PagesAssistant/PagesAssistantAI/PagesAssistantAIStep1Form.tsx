@@ -5,7 +5,11 @@ import {
   Stepper,
   useEdificeClient,
 } from '@edifice.io/react';
-import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
+import {
+  IconQuestion,
+  IconRafterLeft,
+  IconRafterRight,
+} from '@edifice.io/react/icons';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigate, useParams } from 'react-router-dom';
@@ -75,6 +79,13 @@ export const PagesAssistantAIStep1Form = () => {
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 
+  const handleSubjectSuggestionClick = () => {
+    window.open(
+      'https://survey.edifice.io/index.php/679298?newtest=Y&lang=fr',
+      '_blank',
+    );
+  };
+
   return (
     <div className="pages-assistant-ai-wrapper mx-64 my-24">
       <div>
@@ -130,7 +141,7 @@ export const PagesAssistantAIStep1Form = () => {
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
               </h3>
-              <Flex gap="8">
+              <Flex gap="8" align="center">
                 {availableSubjects.map((subject, index) => (
                   <Controller
                     key={index}
@@ -153,6 +164,17 @@ export const PagesAssistantAIStep1Form = () => {
                     )}
                   />
                 ))}
+                <Button
+                  variant="outline"
+                  color="tertiary"
+                  leftIcon={<IconQuestion />}
+                  onClick={handleSubjectSuggestionClick}
+                  style={{ height: '65px' }}
+                >
+                  {t('wiki.assistant.ai.step1.subject.suggestion', {
+                    ns: appCode,
+                  })}
+                </Button>
               </Flex>
             </div>
 

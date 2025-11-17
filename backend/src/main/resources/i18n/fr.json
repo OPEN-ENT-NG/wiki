@@ -62,6 +62,7 @@
   "wiki.assistant.ai.step1.description": "Choisissez le niveau, la matière, la séquence de votre cours",
   "wiki.assistant.ai.step1.level": "Niveau",
   "wiki.assistant.ai.step1.subject": "Matière",
+  "wiki.assistant.ai.step1.subject.suggestion": "Suggérer une matière",
   "wiki.assistant.ai.step1.sequence": "Séquence",
   "wiki.assistant.ai.step1.select.level": "-- Choisir un niveau --",
   "wiki.assistant.ai.step1.select.subject": "-- Choisir une matière --",
