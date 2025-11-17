@@ -1715,6 +1715,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					// Set author info
 					page.put("author", authorId);
 					page.put("authorName", authorName);
+					// Set lastContributer info
+					page.put("lastContributer", authorId);
+					page.put("lastContributerName", authorName);
 
 					// Set timestamps
 					if (!page.containsKey("created")) {
@@ -1739,7 +1742,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				// Build update query
 				final JsonObject query = new JsonObject().put("_id", wikiId);
 				final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-				modifier.set("title", wikiData.getString("title"));
+				//modifier.set("title", wikiData.getString("title"));
 				modifier.set("description", wikiData.getString("description"));
 				modifier.set("pages", enrichedPages);
 				modifier.set("thumbnail", wikiData.getString("thumbnail"));
