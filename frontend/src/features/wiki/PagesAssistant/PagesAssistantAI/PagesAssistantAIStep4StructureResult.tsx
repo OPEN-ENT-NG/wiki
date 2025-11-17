@@ -150,8 +150,11 @@ export const PagesAssistantAIStep4StructureResult = () => {
               disabled={true}
             ></AIButton>
           )}
-          {contentFinished && (
-            <AIButton onClick={handleGoToWiki} rightIcon={<IconArrowRight />}>
+          {!contentFinished && (
+            <AIButton
+              onClick={handleGoToWiki}
+              rightIcon={<IconArrowRight color="#ECBE30" />}
+            >
               {t(
                 'wiki.assistant.ai.step4.structure.result.wait.button.finished',
                 {
