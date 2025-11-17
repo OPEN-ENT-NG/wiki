@@ -169,6 +169,7 @@ export const PagesAssistantAIStep1Form = () => {
                   color="tertiary"
                   leftIcon={<IconQuestion />}
                   onClick={handleSubjectSuggestionClick}
+                  className="border-gray-400"
                   style={{ height: '65px' }}
                 >
                   {t('wiki.assistant.ai.step1.subject.suggestion', {
