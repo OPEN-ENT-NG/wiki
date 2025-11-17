@@ -22,6 +22,7 @@ import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { odeServices } from '@edifice.io/client';
 import { baseURL } from '~/services';
+import aiIconButton from './../icons/aiIconButton.svg';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -135,7 +136,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
             </span>
           )}
         </Flex>
-        <Flex justify="end" align="center" gap="16">
+        <Flex justify="end" align="center" gap="16" className="loading">
           <Button
             variant="ghost"
             color="tertiary"
@@ -144,11 +145,10 @@ export const PagesAssistantAIStep4StructureResult = () => {
             {t('cancel')}
           </Button>
           {!contentFinished && (
-            <AIButton rightIcon={<IconWand />} disabled={true}>
-              {t('wiki.assistant.ai.step4.structure.result.wait.button', {
-                ns: appCode,
-              })}
-            </AIButton>
+            <AIButton
+              leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
+              disabled={true}
+            ></AIButton>
           )}
           {contentFinished && (
             <AIButton onClick={handleGoToWiki} rightIcon={<IconArrowRight />}>

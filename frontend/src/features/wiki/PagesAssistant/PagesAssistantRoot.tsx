@@ -11,11 +11,11 @@ import {
   IconClose,
   IconExternalLink,
   IconPlus,
-  IconWand,
 } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import aiIconButton from './icons/aiIconButton.svg';
 import assistantAIIcon from './icons/assistantAIIcon.svg';
 import importIcon from './icons/importIcon.svg';
 import inspirationIcon from './icons/inspirationIcon.svg';
@@ -102,7 +102,7 @@ export const PagesAssistantRoot = () => {
             <Card.Footer>
               <AIButton
                 size="sm"
-                leftIcon={<IconWand />}
+                leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
                 onClick={handleAssitantAIButtonClick}
               >
                 {t('wiki.assistant.card.ai.button', {

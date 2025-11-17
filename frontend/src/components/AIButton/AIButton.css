@@ -2,7 +2,7 @@
 .btn-ai-wrapper {
   padding: 2px; /* border thickness */
   border-radius: 120px;
-  background: linear-gradient(to right, #F9BEEF, #FAEA9C);
+  background: linear-gradient(to right, #C232AA, #ECBE30);
 }
   
 .btn-ai-wrapper .btn-ai {
@@ -12,10 +12,19 @@
   border-radius: 120px;
   padding-left: 16px;
   padding-right: 16px;
+  min-width: 128px;
+}
+
+/* Add gradient text styling */
+.btn-ai-wrapper .btn-ai > span {
+  background: linear-gradient(to right, #C232AA, #ECBE30);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
 }
 
 .btn-ai-wrapper .btn-ai:hover, .btn-ai-wrapper .btn-ai:active, .btn-ai-wrapper .btn-ai:focus-visible {
-  color: #4a4a4a !important;
   background: #fff !important;
 }
 
@@ -34,3 +43,16 @@
   transform: translateY(-2px) !important;
 }
 
+.loading .btn-ai-wrapper .btn-ai img {
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
