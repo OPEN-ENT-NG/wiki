@@ -150,7 +150,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
               disabled={true}
             ></AIButton>
           )}
-          {!contentFinished && (
+          {contentFinished && (
             <AIButton
               onClick={handleGoToWiki}
               rightIcon={<IconArrowRight color="#ECBE30" />}
