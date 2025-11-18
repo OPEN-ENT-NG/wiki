@@ -54,6 +54,8 @@ const SimpleRadioCard = forwardRef(
     ref: Ref<HTMLLabelElement>,
   ) => {
     const isSelected = selectedValue === value;
+    const minWidth = image ? '265px' : '120px';
+    const justifyContent = image ? 'start' : 'center';
 
     // Handle keyboard interaction for accessibility
     const handleKeyDown = (event: React.KeyboardEvent<HTMLLabelElement>) => {
@@ -80,11 +82,11 @@ const SimpleRadioCard = forwardRef(
           !isSelected && 'bg-gray-200',
           restProps.className,
         )}
-        style={{ minWidth: '120px' }}
+        style={{ minWidth: minWidth }}
         onKeyDown={handleKeyDown}
         {...restProps}
       >
-        <Flex justify="between" align="center" gap="8" className="p-8">
+        <Flex justify={justifyContent} align="center" gap="8" className="p-8">
           {image && (
             <img
               src={image}
@@ -105,6 +107,7 @@ const SimpleRadioCard = forwardRef(
             checked={isSelected}
             onChange={onChange}
             aria-labelledby={`radio-card-label-${value}`}
+            className="d-none"
           />
         </Flex>
       </label>
