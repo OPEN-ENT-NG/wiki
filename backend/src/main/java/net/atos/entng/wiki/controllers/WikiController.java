@@ -181,6 +181,42 @@ public class WikiController extends MongoDbControllerHelper {
 	}
 
 	/**
+	 * Display react front view /id/:id/pages/assistant
+	 * @param request
+	 */
+	@Get("/id/:id/pages/assistant")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+	public void viewAssistantPage(HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
+	}
+
+	/**
+	 * Display react front view /id/:id/pages/assistant/ai/step1Form
+	 * @param request
+	 */
+	@Get("/id/:id/pages/assistant/ai/step1Form")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+	public void viewAssistantAIStep1FormPage(HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
+	}
+
+	/**
+	 * Display react front view /id/:id/pages/assistant/ai/step2Form
+	 * @param request
+	 */
+	@Get("/id/:id/pages/assistant/ai/step2Form")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
+	public void viewAssistantAIStep2FormPage(HttpServerRequest request) {
+		renderView(request, new JsonObject(), "index.html", null);
+		// Create event "access to application Wiki" and store it, for module "statistics"
+		eventHelper.onAccess(request);
+	}
+
+	/**
      * Display react front print /print/id/:id
      * @param request
      */
