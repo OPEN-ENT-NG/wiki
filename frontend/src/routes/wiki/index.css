@@ -58,3 +58,12 @@
 .pages-assistant-wrapper .card.card-import .card-footer {
   background-color: var(--edifice-gray-300);
 }
+
+.pages-assistant-ai-wrapper .dropdown {
+  min-width: 100%;
+}
+
+.pages-assistant-ai-wrapper .dropdown .dropdown-toggle {
+  min-width: 100%;
+  margin-bottom: 24px;
+}
