@@ -175,6 +175,8 @@ export const PagesAssistantRoot = () => {
               </div>
             </Card.Body>
             <Card.Footer>
+              <div style={{ minHeight: '40px' }}></div>
+              {/* Commented out for future use
               <Flex gap="12" justify="center">
                 <Button
                   color="tertiary"
@@ -197,6 +199,7 @@ export const PagesAssistantRoot = () => {
                   })}
                 </Button>
               </Flex>
+              */}
             </Card.Footer>
           </Card>
         </Grid.Col>
