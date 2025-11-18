@@ -1,10 +1,11 @@
 import { SortableTree } from '@edifice.io/react';
 
+// TODO: Implement the full Pages Assistant left pane functionality
 export const PagesAssistantLeftPane = () => {
   const treeData = [
     {
       id: '1',
-      name: 'Pages Assistant Overview',
+      name: 'Création libre',
       title: 'Getting Started with Pages Assistant',
     },
   ];
