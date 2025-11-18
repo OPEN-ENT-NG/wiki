@@ -4,6 +4,7 @@ import {
   Flex,
   Grid,
   useEdificeClient,
+  useHasWorkflow,
   useLibraryUrl,
 } from '@edifice.io/react';
 import {
@@ -21,6 +22,7 @@ import importIcon from './icons/importIcon.svg';
 import inspirationIcon from './icons/inspirationIcon.svg';
 import manualCreation from './icons/manualCreationIcon.svg';
 import AIButton from '~/components/AIButton/AIButton';
+import { workflows } from '~/config';
 
 export const PagesAssistantRoot = () => {
   const { appCode } = useEdificeClient();
@@ -28,6 +30,7 @@ export const PagesAssistantRoot = () => {
   const navigate = useNavigate();
   const params = useParams();
   const libraryUrl = useLibraryUrl();
+  const hasGenerateWorkflow = useHasWorkflow(workflows.generate);
 
   const handleNewPageButtonClick = () => {
     navigate(`/id/${params.wikiId}/page/create`);
@@ -80,38 +83,40 @@ export const PagesAssistantRoot = () => {
         </Grid.Col>
 
         {/* AI ASSISTANT */}
-        <Grid.Col sm="2" md="4" lg="4" xl="6">
-          <Card
-            isSelectable={false}
-            isClickable={false}
-            className="card-assistant-ai h-full"
-          >
-            <Card.Body>
-              <Card.Image imageSrc={assistantAIIcon} />
-              <div className="text-truncate">
-                <Card.Title>
-                  <p>{t('wiki.assistant.card.ai.title', { ns: appCode })}</p>
-                </Card.Title>
-                <Card.Text className="white-space-normal">
-                  {t('wiki.assistant.card.ai.description', {
+        {hasGenerateWorkflow && (
+          <Grid.Col sm="2" md="4" lg="4" xl="6">
+            <Card
+              isSelectable={false}
+              isClickable={false}
+              className="card-assistant-ai h-full"
+            >
+              <Card.Body>
+                <Card.Image imageSrc={assistantAIIcon} />
+                <div className="text-truncate">
+                  <Card.Title>
+                    <p>{t('wiki.assistant.card.ai.title', { ns: appCode })}</p>
+                  </Card.Title>
+                  <Card.Text className="white-space-normal">
+                    {t('wiki.assistant.card.ai.description', {
+                      ns: appCode,
+                    })}
+                  </Card.Text>
+                </div>
+              </Card.Body>
+              <Card.Footer>
+                <AIButton
+                  size="sm"
+                  leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
+                  onClick={handleAssitantAIButtonClick}
+                >
+                  {t('wiki.assistant.card.ai.button', {
                     ns: appCode,
                   })}
-                </Card.Text>
-              </div>
-            </Card.Body>
-            <Card.Footer>
-              <AIButton
-                size="sm"
-                leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
-                onClick={handleAssitantAIButtonClick}
-              >
-                {t('wiki.assistant.card.ai.button', {
-                  ns: appCode,
-                })}
-              </AIButton>
-            </Card.Footer>
-          </Card>
-        </Grid.Col>
+                </AIButton>
+              </Card.Footer>
+            </Card>
+          </Grid.Col>
+        )}
 
         {/* LIBRARY INSPIRATION */}
         <Grid.Col sm="2" md="4" lg="4" xl="6">
