@@ -4,6 +4,7 @@ export const workflows = {
   create: 'net.atos.entng.wiki.controllers.WikiController|createWiki',
   publish: 'net.atos.entng.wiki.controllers.WikiController|publish',
   print: 'net.atos.entng.wiki.controllers.WikiController|print',
+  generate: 'net.atos.entng.wiki.controllers.WikiController|generateWiki',
 };
 
 export const rights = {
