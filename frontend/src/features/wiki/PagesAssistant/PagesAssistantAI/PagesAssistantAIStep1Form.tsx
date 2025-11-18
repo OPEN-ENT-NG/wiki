@@ -111,6 +111,13 @@ export const PagesAssistantAIStep1Form = () => {
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.level', { ns: appCode })}
               </h3>
+              {/* TODO: Improve layout of level radio cards */}
+              <Flex direction="row">
+                <span className="fw-bold pb-8" style={{ width: '385px' }}>
+                  Collège
+                </span>
+                <span className="fw-bold pb-8">Lycée</span>
+              </Flex>
               <Flex gap="8">
                 {levelsData.map((level, index) => (
                   <Controller
