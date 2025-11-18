@@ -1,15 +1,15 @@
 import {
   Button,
   Card,
-  Flex,
+  //Flex,
   Grid,
   useEdificeClient,
   useHasWorkflow,
   useLibraryUrl,
 } from '@edifice.io/react';
 import {
-  IconCheck,
-  IconClose,
+  //IconCheck,
+  //IconClose,
   IconExternalLink,
   IconPlus,
 } from '@edifice.io/react/icons';
@@ -119,38 +119,40 @@ export const PagesAssistantRoot = () => {
         )}
 
         {/* LIBRARY INSPIRATION */}
-        <Grid.Col sm="2" md="4" lg="4" xl="6">
-          <Card isSelectable={false} isClickable={false} className="h-full">
-            <Card.Body>
-              <Card.Image imageSrc={inspirationIcon} />
-              <div className="text-truncate">
-                <Card.Title>
-                  <p>
-                    {t('wiki.assistant.card.library.title', { ns: appCode })}
-                  </p>
-                </Card.Title>
-                <Card.Text className="white-space-normal">
-                  {t('wiki.assistant.card.library.description', {
+        {libraryUrl && (
+          <Grid.Col sm="2" md="4" lg="4" xl="6">
+            <Card isSelectable={false} isClickable={false} className="h-full">
+              <Card.Body>
+                <Card.Image imageSrc={inspirationIcon} />
+                <div className="text-truncate">
+                  <Card.Title>
+                    <p>
+                      {t('wiki.assistant.card.library.title', { ns: appCode })}
+                    </p>
+                  </Card.Title>
+                  <Card.Text className="white-space-normal">
+                    {t('wiki.assistant.card.library.description', {
+                      ns: appCode,
+                    })}
+                  </Card.Text>
+                </div>
+              </Card.Body>
+              <Card.Footer>
+                <Button
+                  color="tertiary"
+                  variant="ghost"
+                  size="sm"
+                  leftIcon={<IconExternalLink />}
+                  onClick={handleLibraryButtonClick}
+                >
+                  {t('wiki.assistant.card.library.button', {
                     ns: appCode,
                   })}
-                </Card.Text>
-              </div>
-            </Card.Body>
-            <Card.Footer>
-              <Button
-                color="tertiary"
-                variant="ghost"
-                size="sm"
-                leftIcon={<IconExternalLink />}
-                onClick={handleLibraryButtonClick}
-              >
-                {t('wiki.assistant.card.library.button', {
-                  ns: appCode,
-                })}
-              </Button>
-            </Card.Footer>
-          </Card>
-        </Grid.Col>
+                </Button>
+              </Card.Footer>
+            </Card>
+          </Grid.Col>
+        )}
 
         {/* IMPORT */}
         <Grid.Col sm="2" md="4" lg="4" xl="6">
