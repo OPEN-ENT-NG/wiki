@@ -2,9 +2,9 @@
 .btn-ai-wrapper {
   padding: 2px; /* border thickness */
   border-radius: 120px;
-  background: linear-gradient(to right, #C232AA, #ECBE30);
+  background: linear-gradient(to right, #c232aa, #ecbe30);
 }
-  
+
 .btn-ai-wrapper .btn-ai {
   color: #4a4a4a;
   background: #fff;
@@ -17,14 +17,16 @@
 
 /* Add gradient text styling */
 .btn-ai-wrapper .btn-ai > span {
-  background: linear-gradient(to right, #C232AA, #ECBE30);
+  background: linear-gradient(to right, #c232aa, #ecbe30);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-ai-wrapper .btn-ai:hover, .btn-ai-wrapper .btn-ai:active, .btn-ai-wrapper .btn-ai:focus-visible {
+.btn-ai-wrapper .btn-ai:hover,
+.btn-ai-wrapper .btn-ai:active,
+.btn-ai-wrapper .btn-ai:focus-visible {
   background: #fff !important;
 }
 
@@ -49,7 +51,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
