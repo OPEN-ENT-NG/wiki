@@ -139,10 +139,10 @@ export const action =
     const lastPage = wiki
       ? findLastPage(wiki, { beforePageId: params.pageId })
       : undefined;
-    // redirect to last page if it exists, otherwise redirect to wiki
+    // redirect to last page if it exists, otherwise redirect to pages assistant
     return lastPage
       ? redirect(`/id/${params.wikiId}/page/${lastPage._id}`)
-      : redirect(`/id/${params.wikiId}`);
+      : redirect(`/id/${params.wikiId}/pages/assistant`);
   };
 
 export const visibleAction = pageEditAction;
