@@ -46,7 +46,8 @@
   padding-bottom: 24px;
 }
 
-.pages-assistant-wrapper .card.card-assistant-ai, .pages-assistant-wrapper .card.card-assistant-ai:hover {
+.pages-assistant-wrapper .card.card-assistant-ai,
+.pages-assistant-wrapper .card.card-assistant-ai:hover {
   border-color: #f9beef !important;
 }
 
