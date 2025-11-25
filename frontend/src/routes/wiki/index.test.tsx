@@ -1,11 +1,16 @@
-import { mockWiki } from '~/mocks';
+import { mockWiki, mockWikiWithoutPages } from '~/mocks';
 import { renderWithRouter } from '~/mocks/renderWithRouter';
 import { renderHook, screen, waitFor } from '~/mocks/setup';
-import { Page } from '~/routes/page';
 import { Index } from '~/routes/wiki';
+import { useGetWiki } from '~/services';
+
+const mocks = vi.hoisted(() => {
+  return {
+    useMatch: vi.fn(),
+  };
+});
 
 const mockedUseNavigate = vi.fn();
-const mockedUseMatch = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const router =
@@ -16,7 +21,7 @@ vi.mock('react-router-dom', async () => {
     ...router,
     useLoaderData: () => mockWiki,
     useNavigate: () => mockedUseNavigate,
-    useMatch: () => mockedUseMatch,
+    useMatch: (pattern: string) => mocks.useMatch(pattern),
   };
 });
 
@@ -46,28 +51,63 @@ vi.mock('~/store/wiki', async () => {
   };
 });
 
+vi.mock('~/services', () => ({
+  useGetWiki: vi.fn(),
+  wikiQueryOptions: {
+    findOne: vi.fn(),
+  },
+}));
+
 describe('Index Route', () => {
+  beforeEach(() => {
+    // Set default mock for useGetWiki with pages
+    vi.mocked(useGetWiki).mockReturnValue({
+      data: mockWiki,
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    // Set default mock for useMatch
+    mocks.useMatch.mockReturnValue(null);
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  beforeEach(() => {
-    renderWithRouter(`/id/${mockWiki._id}`, <Index />);
-  });
+  it('should trigger a navigation to the Assistant page', async () => {
+    // match the wiki route
+    mocks.useMatch.mockImplementation((pattern: string) => {
+      if (pattern === '/id/:wikiId') {
+        return true;
+      }
+    });
+    // Mock useGetWiki to return a wiki without pages
+    vi.mocked(useGetWiki).mockReturnValue({
+      data: mockWikiWithoutPages,
+    } as any);
 
-  it('should navigate to the Index page', async () => {
+    renderWithRouter(`/id/${mockWikiWithoutPages._id}`, <Index />);
+
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /wiki.create.new.page/i }));
+      expect(mockedUseNavigate).toHaveBeenCalledWith(
+        `/id/${mockWikiWithoutPages._id}/pages/assistant`,
+        { replace: true },
+      );
     });
   });
 
   it('should render the AppHeader', async () => {
+    renderWithRouter(`/id/${mockWiki._id}`, <Index />);
+
     await waitFor(() => {
       expect(screen.findByLabelText('breadcrumb'));
     });
   });
 
   it('should render Index page if no data found', async () => {
+    renderWithRouter(`/id/${mockWiki._id}`, <Index />);
+
     const { result } = renderHook(() => {
       return false;
     });
@@ -76,6 +116,21 @@ describe('Index Route', () => {
   });
 
   it('should render Menu component', async () => {
+    // match the wiki route
+    mocks.useMatch.mockImplementation((pattern: string) => {
+      if (pattern === '/id/:wikiId') {
+        return true;
+      }
+      if (pattern === '/id/:wikiId/pages/assistant/*') {
+        return false;
+      }
+    });
+
+    renderWithRouter(
+      `/id/${mockWiki._id}/page/${mockWiki.pages[0]._id}`,
+      <Index />,
+    );
+
     await waitFor(() => {
       expect(screen.getByRole('navigation', { name: /wiki.pagelist/i }));
     });
@@ -90,18 +145,19 @@ describe('Index Route', () => {
   });
 
   it('should trigger a navigation if the data has an indexed/default page', async () => {
+    mocks.useMatch.mockImplementation((pattern: string) => {
+      if (pattern === '/id/:wikiId') {
+        return true;
+      }
+    });
+
+    renderWithRouter(`/id/${mockWiki._id}`, <Index />);
+
     await waitFor(() => {
       expect(mockedUseNavigate).toHaveBeenCalledWith(
         `/id/${mockWiki._id}/page/${mockWiki.pages[0]._id}`,
         { replace: true },
       );
     });
-  });
-
-  it('should navigate to the page route if data is found', async () => {
-    renderWithRouter(
-      `/id/${mockWiki._id}/page/${mockWiki.pages[0]._id}`,
-      <Page />,
-    );
   });
 });

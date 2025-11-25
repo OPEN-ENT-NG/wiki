@@ -21,7 +21,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { AppHeader, DropdownTreeview, NewPage } from '~/features';
+
 import { useFeedData } from '~/hooks/useFeedData';
 import { useIsOnlyRead } from '~/hooks/useIsOnlyRead';
 import { useMenu } from '~/hooks/useMenu';
@@ -37,6 +37,9 @@ import {
 } from '~/store/treeview';
 import './index.css';
 import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssistantLeftPane';
+import { AppHeader } from '~/features/app/AppHeader/AppHeader';
+import { NewPage } from '~/features/wiki/NewPage/NewPage';
+import { DropdownTreeview } from '~/features/wiki/DropdownTreeview/DropdownTreeview';
 
 export const loader =
   (queryClient: QueryClient) =>
