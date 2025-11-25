@@ -406,6 +406,22 @@ export const mockWikisWithPages = [
   },
 ];
 
+export const mockWikiWithoutPages = {
+  _id: '423a3e89_nopages',
+  title: 'Définitions Espanol',
+  pages: [],
+  owner: {
+    userId: 'b6db229d',
+    displayName: 'Author',
+  },
+  modified: {
+    $date: 1501842229907,
+    thumbnail: '',
+    shared: [],
+    index: '580f3f8ee4b07ac1b023b2db',
+  },
+};
+
 export const mockWikiPages = {
   pages: [
     {
