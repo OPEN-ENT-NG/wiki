@@ -59,6 +59,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
           {
             path: 'pages/assistant',
             element: <PagesAssistantRoot />,
+            errorElement: <PageError withoutLayout={true} />,
           },
           {
             path: 'pages/assistant/ai/step1Form',
