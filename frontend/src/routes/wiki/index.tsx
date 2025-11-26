@@ -40,6 +40,7 @@ import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssi
 import { AppHeader } from '~/features/app/AppHeader/AppHeader';
 import { NewPage } from '~/features/wiki/NewPage/NewPage';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview/DropdownTreeview';
+import { WikiEmptyScreen } from '~/features';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -236,7 +237,7 @@ export const Index = () => {
               {!isOnlyRead && <NewPage />}
             </>
           )}
-          <Outlet />
+          {match ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
     </>

@@ -3,6 +3,7 @@ import { renderWithRouter } from '~/mocks/renderWithRouter';
 import { renderHook, screen, waitFor } from '~/mocks/setup';
 import { Index } from '~/routes/wiki';
 import { useGetWiki } from '~/services';
+import { useUserRights } from '~/store';
 
 const mocks = vi.hoisted(() => {
   return {
@@ -28,6 +29,10 @@ vi.mock('react-router-dom', async () => {
 vi.mock('@uidotdev/usehooks', () => ({
   useMediaQuery: vi.fn(),
   usePrevious: vi.fn(),
+}));
+
+vi.mock('~/store/rights', () => ({
+  useUserRights: vi.fn(),
 }));
 
 vi.mock('~/store/treeview', () => ({
@@ -75,7 +80,14 @@ describe('Index Route', () => {
     vi.clearAllMocks();
   });
 
-  it('should trigger a navigation to the Assistant page', async () => {
+  it('should trigger a navigation to the Assistant page if user is contrib', async () => {
+    vi.mocked(useUserRights).mockReturnValue({
+      manager: true,
+      creator: false,
+      contrib: true,
+      read: false,
+    });
+
     // match the wiki route
     mocks.useMatch.mockImplementation((pattern: string) => {
       if (pattern === '/id/:wikiId') {
