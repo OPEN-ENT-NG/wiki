@@ -34,7 +34,10 @@ export const useRedirectDefaultPage = () => {
         }
       } else {
         // Redirect to Pages Assistant if no pages exist
-        if (!redirectingToDefaultPage) {
+        if (
+          !redirectingToDefaultPage &&
+          (userRights.manager || userRights.creator || userRights.contrib)
+        ) {
           setRedirectingToDefaultPage(true);
           return navigate(`/id/${wiki?._id}/pages/assistant`, {
             replace: true,

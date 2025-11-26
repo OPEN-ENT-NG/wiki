@@ -23,6 +23,7 @@ import inspirationIcon from './icons/inspirationIcon.svg';
 import manualCreation from './icons/manualCreationIcon.svg';
 import AIButton from '~/components/AIButton/AIButton';
 import { workflows } from '~/config';
+import { useUserRights } from '~/store';
 
 export const PagesAssistantRoot = () => {
   const { appCode } = useEdificeClient();
@@ -31,6 +32,7 @@ export const PagesAssistantRoot = () => {
   const params = useParams();
   const libraryUrl = useLibraryUrl();
   const hasGenerateWorkflow = useHasWorkflow(workflows.generate);
+  const userRights = useUserRights();
 
   const handleNewPageButtonClick = () => {
     navigate(`/id/${params.wikiId}/page/create`);
@@ -45,6 +47,10 @@ export const PagesAssistantRoot = () => {
       window.open(libraryUrl, '_blank');
     }
   };
+
+  if (!userRights.manager && !userRights.creator && !userRights.contrib) {
+    throw new Error('Unauthorized access to Pages Assistant');
+  }
 
   return (
     <div className="pages-assistant-wrapper mx-64 my-40">
