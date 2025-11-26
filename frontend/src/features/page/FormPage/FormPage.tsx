@@ -15,7 +15,7 @@ import { Form, useNavigation } from 'react-router-dom';
 import { ButtonGroup } from '~/components/ButtonGroup';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
-import { MAX_TITLE_LENGTH } from '~/config';
+import { MAX_TITLE_LENGTH } from '~/config/constants';
 import { useFormPage } from '~/hooks';
 import { useCancelPage } from '~/hooks/useCancelPage';
 import { Page } from '~/models';
