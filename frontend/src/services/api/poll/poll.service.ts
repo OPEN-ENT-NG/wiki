@@ -27,7 +27,6 @@ const createPollService = (baseURL: string) => ({
     pollName: string,
     requestPayload: PollRequestPayload,
   ): Promise<void> {
-    console.log('poll requestPayload', requestPayload);
 
     // store in the local storage that the user has voted to this poll
     localStorage.setItem(`wiki_poll_${pollName}_voted`, requestPayload.vote);
