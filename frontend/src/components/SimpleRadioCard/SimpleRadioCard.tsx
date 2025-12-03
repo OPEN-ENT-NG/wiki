@@ -7,7 +7,7 @@ export interface RadioCardProps {
   /**
    * The currently selected value in the radio group.
    */
-  selectedValue: string;
+  selectedValue: string | undefined;
   /**
    * The value associated with this specific radio card.
    */

@@ -20,10 +20,10 @@ import {
 import { Index, loader as wikiLoader } from './wiki';
 import { pageEditAction } from './page/pageEditAction';
 import { PagesAssistantRoot } from '~/features/wiki/PagesAssistant/PagesAssistantRoot';
-import { PagesAssistantAIStep1Form } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStep1Form';
-import { PagesAssistantAIStep3StructureLoading } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStep3StructureLoading';
-import { PagesAssistantAIStep4StructureResult } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStep4StructureResult';
-import { PagesAssistantAIStep2Form } from '~/features/wiki/PagesAssistant/PagesAssistantAI/PagesAssistantAIStep2Form';
+import { PagesAssistantAIStep1Form } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep1Form';
+import { PagesAssistantAIStep3StructureLoading } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep3StructureLoading';
+import { PagesAssistantAIStep4StructureResult } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep4StructureResult';
+import { PagesAssistantAIStep2Form } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep2Form';
 
 export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
