@@ -11,7 +11,6 @@ import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.models.poll.Poll;
 import net.atos.entng.wiki.models.poll.Vote;
 import net.atos.entng.wiki.models.poll.VotesSummary;
-import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import org.bson.conversions.Bson;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.utils.StringUtils;
