@@ -22,7 +22,6 @@ export const PagesAssistantImportPollCard = () => {
    * @param answer Import PDF feature poll answer
    */
   const submitPollVote = async (vote: PollVote) => {
-    console.log('poll answer', vote);
     await pollService.submitPollVote(IMPORT_PDF_POLL_ID, {
       vote,
     });
