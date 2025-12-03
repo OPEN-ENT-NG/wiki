@@ -13,7 +13,7 @@ export const PagesAssistantAICard = () => {
   /**
    * Handle click on AI Assistant card button
    */
-  const handleAssitantAIButtonClick = () => {
+  const handleAssistantAIButtonClick = () => {
     navigate('ai/step1Form');
   };
 
@@ -40,7 +40,7 @@ export const PagesAssistantAICard = () => {
         <AIButton
           size="sm"
           leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
-          onClick={handleAssitantAIButtonClick}
+          onClick={handleAssistantAIButtonClick}
         >
           {t('wiki.assistant.card.ai.button', {
             ns: appCode,
