@@ -2,7 +2,6 @@ package net.atos.entng.wiki.service.poll;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
-import io.netty.resolver.InetNameResolver;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonArray;
