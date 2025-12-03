@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Vote for a Poll",
+  "type": "object",
+  "properties": {
+    "vote": {
+      "type": "string",
+      "minLength": 2
+    }
+  },
+  "required": ["vote"],
+  "additionalProperties": false
+}
