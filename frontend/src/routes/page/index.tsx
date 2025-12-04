@@ -65,9 +65,7 @@ const RevisionModal = lazy(
 
 const ConfirmVisibilityModal = lazy(
   async () =>
-    await import(
-      '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'
-    ),
+    await import('~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'),
 );
 
 export const loader =

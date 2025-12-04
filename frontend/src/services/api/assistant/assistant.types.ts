@@ -12,8 +12,7 @@ export interface PagesAssistantAIStep2FormValues {
 }
 
 export interface PagesAssistantAIFormValues
-  extends PagesAssistantAIStep1FormValues,
-    PagesAssistantAIStep2FormValues {}
+  extends PagesAssistantAIStep1FormValues, PagesAssistantAIStep2FormValues {}
 
 export interface AssistantGenerateRequest extends PagesAssistantAIFormValues {
   wikiId: string;

@@ -51,7 +51,7 @@
   border-color: #f9beef !important;
 }
 
-.pages-assistant-wrapper .card.card-assistant-ai .badge-beta{
+.pages-assistant-wrapper .card.card-assistant-ai .badge-beta {
   position: absolute;
   top: 0px;
   right: 0px;
@@ -61,7 +61,7 @@
   min-width: 120px;
   min-height: 30px;
   font-size: 1.4rem;
-  background-color: #FAEA9C;
+  background-color: #faea9c;
   border-bottom-left-radius: 12px;
 }
 
@@ -76,9 +76,15 @@
 
 .pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-down:hover,
 .pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-up:hover,
-.pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-down.selected,
+.pages-assistant-wrapper
+  .card.card-import
+  .card-footer
+  .btn-thumb-down.selected,
 .pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-up.selected {
-  background-color: rgba(var(--edifice-white-rgb), var(--edifice-white-opacity, 1));
+  background-color: rgba(
+    var(--edifice-white-rgb),
+    var(--edifice-white-opacity, 1)
+  );
 }
 
 .pages-assistant-ai-wrapper .dropdown {
