@@ -51,6 +51,20 @@
   border-color: #f9beef !important;
 }
 
+.pages-assistant-wrapper .card.card-assistant-ai .badge-beta{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  min-height: 30px;
+  font-size: 1.4rem;
+  background-color: #FAEA9C;
+  border-bottom-left-radius: 12px;
+}
+
 .pages-assistant-wrapper .card.card-import {
   background-color: var(--edifice-gray-300);
   border-color: #fff;
