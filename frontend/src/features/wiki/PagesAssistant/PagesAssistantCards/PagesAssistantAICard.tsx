@@ -28,6 +28,7 @@ export const PagesAssistantAICard = () => {
         <div className="text-truncate">
           <Card.Title>
             <p>{t('wiki.assistant.card.ai.title', { ns: appCode })}</p>
+            <div className="badge-beta">Version Beta</div>
           </Card.Title>
           <Card.Text className="white-space-normal">
             {t('wiki.assistant.card.ai.description', {
