@@ -4,10 +4,10 @@
 export interface PagesAssistantAIStep1FormValues {
   level: string;
   subject: string;
-  sequence: string;
 }
 
 export interface PagesAssistantAIStep2FormValues {
+  sequence: string;
   keywords?: string;
 }
 

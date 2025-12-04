@@ -1,10 +1,4 @@
-import {
-  Button,
-  Flex,
-  Select,
-  Stepper,
-  useEdificeClient,
-} from '@edifice.io/react';
+import { Button, Flex, Stepper, useEdificeClient } from '@edifice.io/react';
 import {
   IconQuestion,
   IconRafterLeft,
@@ -31,12 +25,6 @@ export const PagesAssistantAIStep1Form = () => {
   const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
-  const defaultValues: PagesAssistantAIStep1FormValues = {
-    level: formValues.level || '5ème',
-    subject: formValues.subject || '',
-    sequence: formValues.sequence || '',
-  };
-
   const {
     handleSubmit,
     setValue,
@@ -44,18 +32,16 @@ export const PagesAssistantAIStep1Form = () => {
     control,
     formState: { isValid },
   } = useForm<PagesAssistantAIStep1FormValues>({
-    defaultValues,
+    defaultValues: {
+      level: formValues.level || '5ème',
+      subject: formValues.subject || '',
+    },
   });
 
   const selectedLevel = watch('level');
-  const selectedSubject = watch('subject');
 
   const availableSubjects =
     levelsData.find((lvl) => lvl.value === selectedLevel)?.subjects ?? [];
-
-  const availableSequences =
-    availableSubjects.find((subj) => subj.value === selectedSubject)
-      ?.sequences ?? [];
 
   const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
     // Add values to store
@@ -67,12 +53,6 @@ export const PagesAssistantAIStep1Form = () => {
   const handleLevelChange = () => {
     // Reset subject, sequence when level changes
     setValue('subject', '');
-    setValue('sequence', '');
-  };
-
-  const handleSubjectChange = () => {
-    // Reset sequence when subject changes
-    setValue('sequence', '');
   };
 
   const handleBackButtonClick = () => {
@@ -165,7 +145,6 @@ export const PagesAssistantAIStep1Form = () => {
                         selectedValue={value}
                         onChange={(v) => {
                           onChange(v);
-                          handleSubjectChange();
                         }}
                       />
                     )}
@@ -185,40 +164,10 @@ export const PagesAssistantAIStep1Form = () => {
                 </Button>
               </Flex>
             </div>
-
-            {/* SEQUENCE */}
-            <div>
-              <h3 className="mb-12">
-                {t('wiki.assistant.ai.step1.sequence', { ns: appCode })}
-              </h3>
-              <Controller
-                name="sequence"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onChange } }) => (
-                  <Select
-                    data-testid="wiki.assistant.ai.step1.select.sequence"
-                    size="md"
-                    selectedValue={value}
-                    onValueChange={(v) => {
-                      onChange(v);
-                    }}
-                    options={availableSequences}
-                    placeholderOption={t(
-                      'wiki.assistant.ai.step1.select.sequence',
-                      {
-                        ns: appCode,
-                      },
-                    )}
-                    disabled={selectedSubject.length === 0}
-                  />
-                )}
-              />
-            </div>
           </Flex>
 
           <div>
-            <Flex className="mt-auto" justify="end">
+            <Flex className="mt-24" justify="end">
               <Button
                 variant="ghost"
                 color="tertiary"

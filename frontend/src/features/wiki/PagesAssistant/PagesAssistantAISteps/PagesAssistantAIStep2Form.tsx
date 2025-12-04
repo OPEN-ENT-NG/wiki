@@ -4,6 +4,7 @@ import {
   FormControl,
   Input,
   Label,
+  Select,
   Stepper,
   useEdificeClient,
 } from '@edifice.io/react';
@@ -13,30 +14,39 @@ import {
   useFormValuesStore,
   usePagesAssistantActions,
 } from '~/store/assistant';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { Form, useNavigate, useParams } from 'react-router-dom';
+import { usePagesAssistantAI } from './usePagesAssistantAI';
 
 export const PagesAssistantAIStep2Form = () => {
-  const formValues = useFormValuesStore();
-  const { setFormValues } = usePagesAssistantActions();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
-  const defaultValues: PagesAssistantAIStep2FormValues = {
-    keywords: formValues.keywords || '',
-  };
+  const { levelsData } = usePagesAssistantAI();
+  const formValues = useFormValuesStore();
+  const { setFormValues } = usePagesAssistantActions();
 
   const {
     watch,
     handleSubmit,
     register,
+    control,
     formState: { isValid },
   } = useForm<PagesAssistantAIStep2FormValues>({
-    defaultValues,
+    defaultValues: {
+      sequence: formValues.sequence || '',
+      keywords: formValues.keywords || '',
+    },
   });
+
+  const availableSubjects =
+    levelsData.find((lvl) => lvl.value === formValues.level)?.subjects ?? [];
+  const availableSequences =
+    availableSubjects.find((subj) => subj.value === formValues.subject)
+      ?.sequences ?? [];
 
   const onSubmit = async (step2FormValues: PagesAssistantAIStep2FormValues) => {
     // Add values to store
@@ -69,6 +79,34 @@ export const PagesAssistantAIStep2Form = () => {
           role="form"
           onSubmit={handleSubmit(onSubmit)}
         >
+          {/* SEQUENCE */}
+          <div>
+            <h3 className="mb-12">
+              {t('wiki.assistant.ai.step1.sequence', { ns: appCode })}
+            </h3>
+            <Controller
+              name="sequence"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  data-testid="wiki.assistant.ai.step1.select.sequence"
+                  size="md"
+                  selectedValue={value}
+                  onValueChange={(v) => {
+                    onChange(v);
+                  }}
+                  options={availableSequences}
+                  placeholderOption={t(
+                    'wiki.assistant.ai.step1.select.sequence',
+                    {
+                      ns: appCode,
+                    },
+                  )}
+                />
+              )}
+            />
+          </div>
           <FormControl id="keywords" className="mb-24">
             <Flex justify="between">
               <Label>
