@@ -7,9 +7,7 @@ import { getOpenConfirmVisibilityModal } from '~/store';
 
 const ConfirmVisibilityModal = lazy(
   async () =>
-    await import(
-      '~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'
-    ),
+    await import('~/features/page/ConfirmVisibilityModal/ConfirmVisibilityModal'),
 );
 
 /**
