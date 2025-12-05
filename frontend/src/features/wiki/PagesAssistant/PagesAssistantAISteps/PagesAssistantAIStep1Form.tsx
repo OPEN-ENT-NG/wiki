@@ -1,4 +1,10 @@
-import { Button, Flex, Stepper, useEdificeClient } from '@edifice.io/react';
+import {
+  Button,
+  Flex,
+  Grid,
+  Stepper,
+  useEdificeClient,
+} from '@edifice.io/react';
 import {
   IconQuestion,
   IconRafterLeft,
@@ -7,13 +13,14 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigate, useParams } from 'react-router-dom';
-import { usePagesAssistantAI } from './usePagesAssistantAI';
+import { useJsonLevels } from './useJsonLevels';
 import {
   useFormValuesStore,
   usePagesAssistantActions,
 } from '~/store/assistant';
 import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
+import { useMemo } from 'react';
 
 export const PagesAssistantAIStep1Form = () => {
   const { appCode } = useEdificeClient();
@@ -21,7 +28,7 @@ export const PagesAssistantAIStep1Form = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const { levelsData } = usePagesAssistantAI();
+  const { levelsData } = useJsonLevels();
   const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
@@ -40,8 +47,13 @@ export const PagesAssistantAIStep1Form = () => {
 
   const selectedLevel = watch('level');
 
-  const availableSubjects =
-    levelsData.find((lvl) => lvl.value === selectedLevel)?.subjects ?? [];
+  const availableSubjects = useMemo(
+    () =>
+      levelsData
+        .find((lvl) => lvl.value === selectedLevel)
+        ?.subjects.sort((a, b) => (a.value > b.value ? 1 : -1)) ?? [],
+    [levelsData, selectedLevel],
+  );
 
   const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
     // Add values to store
@@ -86,18 +98,20 @@ export const PagesAssistantAIStep1Form = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <Flex direction="column" gap="24">
-            {/* LEVEL */}
+            {/* LEVELS */}
             <div>
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.level', { ns: appCode })}
               </h3>
-              {/* TODO: Improve layout of level radio cards */}
-              <Flex direction="row">
-                <span className="fw-bold pb-8" style={{ width: '385px' }}>
-                  Collège
-                </span>
-                <span className="fw-bold pb-8">Lycée</span>
-              </Flex>
+              {/* TODO: REFACTOR GRID & FLEX SYSTEM FOR LEVELS FOR BETTER RESPONSIVNESS */}
+              <Grid className="gap-8">
+                <Grid.Col sm="2" md="4" lg="4" xl="6">
+                  <span className="fw-bold pb-8">Collège</span>
+                </Grid.Col>
+                <Grid.Col sm="2" md="4" lg="4" xl="6">
+                  <span className="fw-bold pb-8">Lycée</span>
+                </Grid.Col>
+              </Grid>
               <Flex gap="8">
                 {levelsData.map((level, index) => (
                   <Controller
@@ -123,46 +137,50 @@ export const PagesAssistantAIStep1Form = () => {
               </Flex>
             </div>
 
-            {/* SUBJECT */}
+            {/* SUBJECTS */}
             <div>
               <h3 className="mb-12">
                 {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
               </h3>
-              <Flex gap="8" align="center">
-                {availableSubjects.map((subject, index) => (
-                  <Controller
-                    key={index}
-                    name="subject"
-                    control={control}
-                    rules={{ required: true }}
-                    render={({ field: { value, onChange } }) => (
-                      <SimpleRadioCard
-                        key={index}
-                        label={subject.value}
-                        value={subject.value}
-                        image={subject.image}
-                        groupName="subjects"
-                        selectedValue={value}
-                        onChange={(v) => {
-                          onChange(v);
-                        }}
-                      />
-                    )}
-                  />
+              <Grid className="gap-12">
+                {availableSubjects.sort().map((subject, index) => (
+                  <Grid.Col sm="2" md="4" lg="4" xl="3" key={index}>
+                    <Controller
+                      key={index}
+                      name="subject"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field: { value, onChange } }) => (
+                        <SimpleRadioCard
+                          key={index}
+                          label={subject.value}
+                          value={subject.value}
+                          image={subject.image}
+                          groupName="subjects"
+                          selectedValue={value}
+                          onChange={(v) => {
+                            onChange(v);
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid.Col>
                 ))}
-                <Button
-                  variant="outline"
-                  color="tertiary"
-                  leftIcon={<IconQuestion />}
-                  onClick={handleSubjectSuggestionClick}
-                  className="border-gray-400"
-                  style={{ height: '65px' }}
-                >
-                  {t('wiki.assistant.ai.step1.subject.suggestion', {
-                    ns: appCode,
-                  })}
-                </Button>
-              </Flex>
+              </Grid>
+
+              {/* Subject suggestion "card" button */}
+              <Button
+                variant="outline"
+                color="tertiary"
+                leftIcon={<IconQuestion />}
+                onClick={handleSubjectSuggestionClick}
+                className="border-gray-400 mt-12"
+                style={{ height: '65px' }}
+              >
+                {t('wiki.assistant.ai.step1.subject.suggestion', {
+                  ns: appCode,
+                })}
+              </Button>
             </div>
           </Flex>
 
