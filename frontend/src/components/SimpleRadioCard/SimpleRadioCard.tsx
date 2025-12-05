@@ -54,7 +54,6 @@ const SimpleRadioCard = forwardRef(
     ref: Ref<HTMLLabelElement>,
   ) => {
     const isSelected = selectedValue === value;
-    const minWidth = image ? '265px' : '120px';
     const justifyContent = image ? 'start' : 'center';
 
     // Handle keyboard interaction for accessibility
@@ -76,17 +75,22 @@ const SimpleRadioCard = forwardRef(
         tabIndex={0}
         className={clsx(
           'border border-2 rounded-3',
+          'w-100',
           isSelected && 'border-secondary',
           isSelected && 'bg-blue-200',
           !isSelected && 'border-gray-300',
           !isSelected && 'bg-gray-200',
           restProps.className,
         )}
-        style={{ minWidth: minWidth }}
         onKeyDown={handleKeyDown}
         {...restProps}
       >
-        <Flex justify={justifyContent} align="center" gap="8" className="p-8">
+        <Flex
+          justify={justifyContent}
+          align="center"
+          gap="8"
+          className="p-8 w-100"
+        >
           {image && (
             <img
               src={image}
@@ -96,7 +100,10 @@ const SimpleRadioCard = forwardRef(
           )}
           <span
             id={`radio-card-label-${value}`}
-            className={clsx(isSelected && 'fw-bold')}
+            className={clsx(
+              isSelected && 'fw-bold',
+              'text-truncate text-truncate-2',
+            )}
           >
             {label}
           </span>
