@@ -105,10 +105,10 @@ export const PagesAssistantAIStep1Form = () => {
               </h3>
               {/* TODO: REFACTOR GRID & FLEX SYSTEM FOR LEVELS FOR BETTER RESPONSIVNESS */}
               <Grid className="gap-8">
-                <Grid.Col sm="2" md="4" lg="4" xl="6">
+                <Grid.Col sm="3" md="5" lg="5" xl="7">
                   <span className="fw-bold pb-8">Collège</span>
                 </Grid.Col>
-                <Grid.Col sm="2" md="4" lg="4" xl="6">
+                <Grid.Col sm="1" md="3" lg="3" xl="5">
                   <span className="fw-bold pb-8">Lycée</span>
                 </Grid.Col>
               </Grid>
