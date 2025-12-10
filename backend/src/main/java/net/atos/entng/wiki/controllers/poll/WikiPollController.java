@@ -68,7 +68,7 @@ public class WikiPollController extends MongoDbControllerHelper {
 
     @Post("/polls/:name/vote")
     @ApiDoc("Submit a vote for a poll.")
-    @SecuredAction(value = "wiki.votePoll")
+    @SecuredAction(value = "", type = ActionType.AUTHENTICATED)
     public void submitPollVote(final HttpServerRequest request) {
         final String requestPollName = request.params().get("name");
 
