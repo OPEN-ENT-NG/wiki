@@ -40,7 +40,7 @@ export const PagesAssistantAIStep1Form = () => {
     formState: { isValid },
   } = useForm<PagesAssistantAIStep1FormValues>({
     defaultValues: {
-      level: formValues.level || '5ème',
+      level: formValues.level || '6ème',
       subject: formValues.subject || '',
     },
   });
