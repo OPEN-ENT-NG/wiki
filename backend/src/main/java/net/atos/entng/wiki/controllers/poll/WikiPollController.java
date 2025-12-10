@@ -3,6 +3,7 @@ package net.atos.entng.wiki.controllers.poll;
 import fr.wseduc.rs.ApiDoc;
 import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Post;
+import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.request.RequestUtils;
 import io.vertx.core.Vertx;
@@ -95,14 +96,14 @@ public class WikiPollController extends MongoDbControllerHelper {
                             // If the poll does not exist, create it and submit the vote
                             if (poll == null) {
                                 wikiPollService.createPoll(requestPollName, pollDescription, userInfo.getUserId(), userInfo.getUsername(), userInfo.getEmail())
-                                        .onSuccess(createdPollId -> {
+                                        .onSuccess(createdPollId ->
                                             wikiPollService.submitPollVote(createdPollId, vote)
                                                     .onSuccess(v -> renderJson(request, new JsonObject().put("status", "vote recorded")))
                                                     .onFailure(err -> {
                                                         log.error("Error submitting poll vote", err);
                                                         renderJson(request, new JsonObject().put("error", err.getMessage()), 500);
-                                                    });
-                                        })
+                                                    })
+                                        )
                                         .onFailure(err -> {
                                             log.error("Error creating poll", err);
                                             renderJson(request, new JsonObject().put("error", err.getMessage()), 500);
