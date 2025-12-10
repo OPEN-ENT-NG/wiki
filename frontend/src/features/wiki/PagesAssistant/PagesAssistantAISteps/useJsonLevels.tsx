@@ -3,7 +3,6 @@ import anglaisIcon from '../icons/subjects/anglais.png';
 import artsPlastiquesIcon from '../icons/subjects/arts_plastiques.png';
 import biologieEcologieIcon from '../icons/subjects/biologie_ecologie.png';
 import educationMoraleCiviqueIcon from '../icons/subjects/education_morale_civique.png';
-import educationMusicaleIcon from '../icons/subjects/education_musicale.png';
 import enseignementScientifiqueIcon from '../icons/subjects/enseignement_scientifique.png';
 import epsIcon from '../icons/subjects/eps.png';
 import espagnolIcon from '../icons/subjects/espagnol.png';
@@ -33,118 +32,43 @@ export const useJsonLevels = () => {
       value: '6ème',
       subjects: [
         {
-          value: 'Français',
-          image: francaisIcon,
-          sequences: [
-            "Le monstre, aux limites de l'humain",
-            "Récits d'aventures",
-            'Récits de création ; création poétique',
-            'Résister au plus fort : ruses, mensonges et masques',
-          ],
-        },
-        {
           value: 'Mathématiques',
           image: mathematiquesIcon,
           sequences: [
-            'Nombres et calculs',
-            'Grandeurs et mesures',
-            'Espace et géométrie',
+            'Les nombres entiers et décimaux',
+            'Les fractions',
+            'Algèbre',
+            'Les longueurs',
+            'Les aires',
+            'Les volumes',
+            'Le repérage dans le temps et les durées',
+            'Étude de configurations planes',
+            "La vision dans l'espace",
+            'Organisation et gestion de données',
+            'Les probabilités',
           ],
         },
         {
           value: 'Histoire-géographie',
           image: histoireIcon,
           sequences: [
-            "La longue histoire de l'humanité et des migrations",
-            'Récits fondateurs, croyances et citoyenneté dans la Méditerranée antique au Ier millénaire avant J.-C.',
-            "L'Empire romain dans le monde antique",
-            'Habiter une métropole',
-            'Habiter un espace de faible densité',
-            'Habiter les littoraux',
-            'Le monde habité',
+            "Histoire : La longue histoire de l'humanité et des migrations",
+            'Histoire : Récits fondateurs, croyances et citoyenneté dans la Méditerranée antique au Ier millénaire avant J.-C',
+            "Histoire : L'empire romain dans le monde antique",
+            'Géographie : Habiter une métropole',
+            'Géographie : Habiter un espace de faible densité',
+            'Géographie : Habiter les littoraux',
+            'Géographie : Le monde habité',
           ],
         },
         {
           value: 'Enseignement moral et civique',
           image: educationMoraleCiviqueIcon,
           sequences: [
-            'Respecter autrui',
-            'Acquérir et partager les valeurs de la République',
-            'Construire une culture civique',
-          ],
-        },
-        {
-          value: 'Sciences et technologie',
-          image: enseignementScientifiqueIcon,
-          sequences: [
-            'Matière, mouvement, énergie, information',
-            'Le vivant, sa diversité et les fonctions qui le caractérisent',
-            'Matériaux et objets techniques',
-            'La planète Terre. Les êtres vivants dans leur environnement',
-          ],
-        },
-        {
-          value: 'Anglais',
-          image: anglaisIcon,
-          sequences: [
-            'La personne et la vie quotidienne',
-            'Des repères géographiques, historiques et culturels dans la langue étudiée',
-            "L'imaginaire",
-          ],
-        },
-        {
-          value: 'Allemand',
-          image: allemandIcon,
-          sequences: [
-            'La personne et la vie quotidienne',
-            'Des repères géographiques, historiques et culturels dans la langue étudiée',
-            "L'imaginaire",
-          ],
-        },
-        {
-          value: 'Espagnol',
-          image: espagnolIcon,
-          sequences: [
-            'La personne et la vie quotidienne',
-            'Des repères géographiques, historiques et culturels dans la langue étudiée',
-            "L'imaginaire",
-          ],
-        },
-        {
-          value: 'Italien',
-          image: italienIcon,
-          sequences: [
-            'La personne et la vie quotidienne',
-            'Des repères géographiques, historiques et culturels dans la langue étudiée',
-            "L'imaginaire",
-          ],
-        },
-        {
-          value: 'Arts plastiques',
-          image: artsPlastiquesIcon,
-          sequences: [
-            "La représentation ; l'image, la réalité et la fiction",
-            "La matérialité de l'œuvre ; l'objet et l'œuvre",
-            "L'œuvre, l'espace, l'auteur, le spectateur",
-          ],
-        },
-        {
-          value: 'Éducation musicale',
-          image: educationMusicaleIcon,
-          sequences: [
-            "Réaliser des projets musicaux d'interprétation ou de création",
-            'Écouter, comparer, construire une culture musicale et artistique',
-            'Explorer, imaginer, créer et produire',
-          ],
-        },
-        {
-          value: 'Éducation physique et sportive',
-          image: epsIcon,
-          sequences: [
-            'Produire une performance optimale, mesurable à une échéance donnée',
-            'Adapter ses déplacements à des environnements variés',
-            "S'exprimer devant les autres par une prestation artistique et/ou acrobatique",
-            'Conduire et maîtriser un affrontement collectif ou interindividuel',
+            'Apprendre à vivre dans une société démocratique',
+            "Représenter les autres et servir l'intérêt général",
+            "Respecter des règles et en comprendre la finalité : l'exemple de la laïcité à l'école",
+            "Avoir des droits en tant que personne et respecter ceux des autres : l'exemple du droit à la vie privée",
           ],
         },
       ],
