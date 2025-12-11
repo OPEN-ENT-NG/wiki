@@ -74,8 +74,10 @@ const SimpleRadioCard = forwardRef(
         role="button"
         tabIndex={0}
         className={clsx(
+          'simple-radio-card-container',
           'border border-2 rounded-3',
           'w-100',
+          isSelected && 'selected',
           isSelected && 'border-secondary',
           isSelected && 'bg-blue-200',
           !isSelected && 'border-gray-300',
