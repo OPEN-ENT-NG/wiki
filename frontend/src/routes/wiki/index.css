@@ -95,3 +95,11 @@
   min-width: 100%;
   margin-bottom: 24px;
 }
+
+.pages-assistant-ai-wrapper .simple-radio-card-container {
+  transition: border-color 0.5s ease;
+}
+
+.pages-assistant-ai-wrapper .simple-radio-card-container:hover:not(.selected) {
+  border-color: var(--edifice-secondary-bg-subtle) !important;
+}
