@@ -62,109 +62,115 @@ export const PagesAssistantAIStep4StructureResult = () => {
   };
 
   return (
-    <div className="mx-64 my-24">
-      <Stepper currentStep={2} nbSteps={3} />
-      <h2 className="mt-16">
-        {t('wiki.assistant.ai.step4.structure.result.title', { ns: appCode })}
-      </h2>
-      <Grid className="mt-24">
-        <Grid.Col sm="5">
-          <div
-            className="px-16 pt-16 rounded"
-            style={{
-              border: 'solid 1px #F9BEEF',
-              background: 'linear-gradient(to right, #FFF5FD, #FDFAEC)',
-            }}
-          >
-            {pagesStructure.map((page, index) => (
-              <div key={index}>
-                <p className="mb-16">{page.title}</p>
+    <Flex justify="center">
+      <div className="col-12 col-md-10 col-lg-8">
+        <div className="my-24">
+          <Stepper currentStep={2} nbSteps={3} />
+          <h2 className="mt-16">
+            {t('wiki.assistant.ai.step4.structure.result.title', {
+              ns: appCode,
+            })}
+          </h2>
+          <Grid className="mt-24">
+            <Grid.Col sm="5">
+              <div
+                className="px-16 pt-16 rounded"
+                style={{
+                  border: 'solid 1px #F9BEEF',
+                  background: 'linear-gradient(to right, #FFF5FD, #FDFAEC)',
+                }}
+              >
+                {pagesStructure.map((page, index) => (
+                  <div key={index}>
+                    <p className="mb-16">{page.title}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </Grid.Col>
-        <Grid.Col sm="7">
-          <div className="p-16">
-            <Flex gap="16" className="mb-24">
-              <IconWand />
-              <span>
-                {t('wiki.assistant.ai.step4.structure.result.info.1', {
-                  ns: appCode,
-                })}
-              </span>
-            </Flex>
-            <Flex gap="16" className="mb-24">
-              <IconTextPage />
-              <span>
-                {t('wiki.assistant.ai.step4.structure.result.info.2', {
-                  ns: appCode,
-                })}
-              </span>
-            </Flex>
-            <Flex gap="16">
-              <IconEdit />
-              <span>
-                {t('wiki.assistant.ai.step4.structure.result.info.3', {
-                  ns: appCode,
-                })}
-              </span>
-            </Flex>
-          </div>
-        </Grid.Col>
-      </Grid>
+            </Grid.Col>
+            <Grid.Col sm="7">
+              <div className="p-16">
+                <Flex gap="16" className="mb-24">
+                  <IconWand />
+                  <span>
+                    {t('wiki.assistant.ai.step4.structure.result.info.1', {
+                      ns: appCode,
+                    })}
+                  </span>
+                </Flex>
+                <Flex gap="16" className="mb-24">
+                  <IconTextPage />
+                  <span>
+                    {t('wiki.assistant.ai.step4.structure.result.info.2', {
+                      ns: appCode,
+                    })}
+                  </span>
+                </Flex>
+                <Flex gap="16">
+                  <IconEdit />
+                  <span>
+                    {t('wiki.assistant.ai.step4.structure.result.info.3', {
+                      ns: appCode,
+                    })}
+                  </span>
+                </Flex>
+              </div>
+            </Grid.Col>
+          </Grid>
 
-      <div className="mt-24">
-        <Flex justify="end" className="mb-8">
-          {!contentFinished && (
-            <span
-              className="small"
-              style={{ color: '#909090', fontStyle: 'italic' }}
-            >
-              {t('wiki.assistant.ai.step4.structure.result.wait.info', {
-                ns: appCode,
-              })}
-            </span>
-          )}
-          {contentFinished && (
-            <span className="small" style={{ color: '#7DBF85' }}>
-              {t(
-                'wiki.assistant.ai.step4.structure.result.wait.info.finished',
-                {
-                  ns: appCode,
-                },
+          <div className="mt-24">
+            <Flex justify="end" className="mb-8">
+              {!contentFinished && (
+                <span
+                  className="small"
+                  style={{ color: '#909090', fontStyle: 'italic' }}
+                >
+                  {t('wiki.assistant.ai.step4.structure.result.wait.info', {
+                    ns: appCode,
+                  })}
+                </span>
               )}
-            </span>
-          )}
-        </Flex>
-        <Flex justify="end" align="center" gap="16" className="loading">
-          <Button
-            variant="ghost"
-            color="tertiary"
-            onClick={handleCancelButtonClick}
-          >
-            {t('cancel')}
-          </Button>
-          {!contentFinished && (
-            <AIButton
-              leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
-              disabled={true}
-            ></AIButton>
-          )}
-          {contentFinished && (
-            <AIButton
-              onClick={handleGoToWiki}
-              rightIcon={<IconArrowRight color="#ECBE30" />}
-            >
-              {t(
-                'wiki.assistant.ai.step4.structure.result.wait.button.finished',
-                {
-                  ns: appCode,
-                },
+              {contentFinished && (
+                <span className="small" style={{ color: '#7DBF85' }}>
+                  {t(
+                    'wiki.assistant.ai.step4.structure.result.wait.info.finished',
+                    {
+                      ns: appCode,
+                    },
+                  )}
+                </span>
               )}
-            </AIButton>
-          )}
-        </Flex>
+            </Flex>
+            <Flex justify="end" align="center" gap="16" className="loading">
+              <Button
+                variant="ghost"
+                color="tertiary"
+                onClick={handleCancelButtonClick}
+              >
+                {t('cancel')}
+              </Button>
+              {!contentFinished && (
+                <AIButton
+                  leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
+                  disabled={true}
+                ></AIButton>
+              )}
+              {contentFinished && (
+                <AIButton
+                  onClick={handleGoToWiki}
+                  rightIcon={<IconArrowRight color="#ECBE30" />}
+                >
+                  {t(
+                    'wiki.assistant.ai.step4.structure.result.wait.button.finished',
+                    {
+                      ns: appCode,
+                    },
+                  )}
+                </AIButton>
+              )}
+            </Flex>
+          </div>
+        </div>
       </div>
-    </div>
+    </Flex>
   );
 };

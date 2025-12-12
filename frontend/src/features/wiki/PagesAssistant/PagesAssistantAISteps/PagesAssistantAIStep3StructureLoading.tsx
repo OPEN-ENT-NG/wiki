@@ -64,37 +64,41 @@ export const PagesAssistantAIStep3StructureLoading = () => {
   }, []);
 
   return (
-    <div className="mx-64 my-24">
-      {structureLoading && (
-        <div>
-          <Stepper currentStep={1} nbSteps={3} />
-          <h2 className="mt-16">
-            {t('wiki.assistant.ai.step3.structure.loading.title', {
-              ns: appCode,
-            })}
-          </h2>
-          <div className="text-center">
-            <Flex justify="center" align="center">
-              <Lottie
-                animationData={loadingAnimation}
-                loop={true}
-                style={{ width: 250 }}
-              />
-            </Flex>
-            <h3 className="mt-16">
-              {t('wiki.assistant.ai.step3.structure.loading.description', {
-                ns: appCode,
-              })}
-            </h3>
-            <Flex justify="center" className="text-gray-700 mt-8" gap="4">
-              <IconClock />
-              {t('wiki.assistant.ai.step3.structure.loading.subtitle', {
-                ns: appCode,
-              })}
-            </Flex>
-          </div>
+    <Flex justify="center">
+      <div className="col-12 col-md-10 col-lg-8">
+        <div className="my-24">
+          {structureLoading && (
+            <div>
+              <Stepper currentStep={1} nbSteps={3} />
+              <h2 className="mt-16">
+                {t('wiki.assistant.ai.step3.structure.loading.title', {
+                  ns: appCode,
+                })}
+              </h2>
+              <div className="text-center">
+                <Flex justify="center" align="center">
+                  <Lottie
+                    animationData={loadingAnimation}
+                    loop={true}
+                    style={{ width: 250 }}
+                  />
+                </Flex>
+                <h3 className="mt-16">
+                  {t('wiki.assistant.ai.step3.structure.loading.description', {
+                    ns: appCode,
+                  })}
+                </h3>
+                <Flex justify="center" className="text-gray-700 mt-8" gap="4">
+                  <IconClock />
+                  {t('wiki.assistant.ai.step3.structure.loading.subtitle', {
+                    ns: appCode,
+                  })}
+                </Flex>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </Flex>
   );
 };
