@@ -13,14 +13,14 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Form, useNavigate, useParams } from 'react-router-dom';
-import { useJsonLevels } from './useJsonLevels';
+import { useLevels } from './useLevels';
 import {
   useFormValuesStore,
   usePagesAssistantActions,
 } from '~/store/assistant';
 import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
-import { useMemo } from 'react';
+import { useSubjects } from './useSubjects';
 
 export const PagesAssistantAIStep1Form = () => {
   const { appCode } = useEdificeClient();
@@ -28,7 +28,7 @@ export const PagesAssistantAIStep1Form = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const { levelsData } = useJsonLevels();
+  const { collegeLevels, lyceeLevels } = useLevels();
   const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
@@ -47,13 +47,7 @@ export const PagesAssistantAIStep1Form = () => {
 
   const selectedLevel = watch('level');
 
-  const availableSubjects = useMemo(
-    () =>
-      levelsData
-        .find((lvl) => lvl.value === selectedLevel)
-        ?.subjects.sort((a, b) => (a.value > b.value ? 1 : -1)) ?? [],
-    [levelsData, selectedLevel],
-  );
+  const { subjects } = useSubjects(selectedLevel);
 
   const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
     // Add values to store
@@ -105,38 +99,71 @@ export const PagesAssistantAIStep1Form = () => {
                   <h3 className="mb-12">
                     {t('wiki.assistant.ai.step1.level', { ns: appCode })}
                   </h3>
-                  {/* TODO: REFACTOR GRID & FLEX SYSTEM FOR LEVELS FOR BETTER RESPONSIVNESS */}
                   <Grid className="gap-8">
-                    <Grid.Col sm="3" md="5" lg="5" xl="7">
-                      <span className="fw-bold pb-8">Collège</span>
+                    {/* COLLEGE LEVELS */}
+                    <Grid.Col sm="5" md="5" lg="5" xl="7">
+                      <p className="fw-bold pb-8">
+                        {t('wiki.assistant.ai.step1.level.college', {
+                          ns: appCode,
+                        })}
+                      </p>
+                      <Flex gap="8">
+                        {collegeLevels.map((level, index) => (
+                          <Controller
+                            key={index}
+                            name="level"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <SimpleRadioCard
+                                key={index}
+                                label={level.value}
+                                value={level.value}
+                                groupName="levels"
+                                selectedValue={value}
+                                onChange={(v) => {
+                                  onChange(v);
+                                  handleLevelChange();
+                                }}
+                              />
+                            )}
+                          />
+                        ))}
+                      </Flex>
                     </Grid.Col>
-                    <Grid.Col sm="1" md="3" lg="3" xl="5">
-                      <span className="fw-bold pb-8">Lycée</span>
+
+                    {/* LYCEE LEVELS */}
+                    <Grid.Col sm="3" md="3" lg="3" xl="5">
+                      <p className="fw-bold pb-8">
+                        {t('wiki.assistant.ai.step1.level.lycee', {
+                          ns: appCode,
+                        })}
+                      </p>
+                      <Flex gap="8">
+                        {lyceeLevels.map((level, index) => (
+                          <Controller
+                            key={index}
+                            name="level"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field: { value, onChange } }) => (
+                              <SimpleRadioCard
+                                key={index}
+                                label={level.value}
+                                value={level.value}
+                                groupName="levels"
+                                selectedValue={value}
+                                onChange={(v) => {
+                                  onChange(v);
+                                  handleLevelChange();
+                                }}
+                              />
+                            )}
+                          />
+                        ))}
+                      </Flex>
                     </Grid.Col>
                   </Grid>
-                  <Flex gap="8">
-                    {levelsData.map((level, index) => (
-                      <Controller
-                        key={index}
-                        name="level"
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field: { value, onChange } }) => (
-                          <SimpleRadioCard
-                            key={index}
-                            label={level.value}
-                            value={level.value}
-                            groupName="levels"
-                            selectedValue={value}
-                            onChange={(v) => {
-                              onChange(v);
-                              handleLevelChange();
-                            }}
-                          />
-                        )}
-                      />
-                    ))}
-                  </Flex>
                 </div>
 
                 {/* SUBJECTS */}
@@ -145,8 +172,8 @@ export const PagesAssistantAIStep1Form = () => {
                     {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
                   </h3>
                   <Grid className="gap-12">
-                    {availableSubjects.sort().map((subject, index) => (
-                      <Grid.Col sm="2" md="4" lg="4" xl="3" key={index}>
+                    {subjects.map((subject, index) => (
+                      <Grid.Col sm="2" md="4" lg="4" xl="4">
                         <Controller
                           key={index}
                           name="subject"
@@ -172,7 +199,7 @@ export const PagesAssistantAIStep1Form = () => {
 
                   {/* Subject suggestion "card" button */}
                   <Grid className="gap-12">
-                    <Grid.Col sm="2" md="4" lg="4" xl="3">
+                    <Grid.Col sm="2" md="4" lg="4" xl="4">
                       <Button
                         variant="outline"
                         color="tertiary"
