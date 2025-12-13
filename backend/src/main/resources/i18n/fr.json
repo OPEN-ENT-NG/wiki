@@ -61,6 +61,8 @@
   "wiki.assistant.ai.step1.title": "Création assistée",
   "wiki.assistant.ai.step1.description": "Choisissez le niveau et la matière de votre cours",
   "wiki.assistant.ai.step1.level": "Niveau",
+  "wiki.assistant.ai.step1.level.college": "Collège",
+  "wiki.assistant.ai.step1.level.lycee": "Lycée",
   "wiki.assistant.ai.step1.subject": "Matières et spécialités",
   "wiki.assistant.ai.step1.subject.suggestion": "Suggérer une matière",
   "wiki.assistant.ai.step1.sequence": "Séquence",

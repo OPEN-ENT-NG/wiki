@@ -26,8 +26,13 @@ import stmgIcon from '../icons/subjects/stmg.png';
 import svtIcon from '../icons/subjects/svt.png';
 import technologieIcon from '../icons/subjects/technologie.png';
 
-export const useJsonLevels = () => {
-  const levelsData = [
+/**
+ * Hook that returns the College and Lycee levels tree:
+ * - A level has an array of Subjects,
+ * - A subject has an array of Sequences
+ */
+export const useLevels = () => {
+  const collegeLevels = [
     {
       value: '6ème',
       subjects: [
@@ -352,6 +357,9 @@ export const useJsonLevels = () => {
         },
       ],
     },
+  ];
+
+  const lyceeLevels = [
     {
       value: 'Seconde',
       subjects: [
@@ -1184,6 +1192,7 @@ export const useJsonLevels = () => {
   ];
 
   return {
-    levelsData,
+    collegeLevels,
+    lyceeLevels,
   };
 };

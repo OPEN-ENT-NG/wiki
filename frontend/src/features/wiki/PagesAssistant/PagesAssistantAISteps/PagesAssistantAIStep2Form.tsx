@@ -17,8 +17,8 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { Form, useNavigate, useParams } from 'react-router-dom';
-import { useJsonLevels } from './useJsonLevels';
 import { useMemo } from 'react';
+import { useSubjects } from './useSubjects';
 
 export const PagesAssistantAIStep2Form = () => {
   const { appCode } = useEdificeClient();
@@ -26,8 +26,8 @@ export const PagesAssistantAIStep2Form = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const { levelsData } = useJsonLevels();
   const formValues = useFormValuesStore();
+  const { subjects } = useSubjects(formValues.level);
   const { setFormValues } = usePagesAssistantActions();
 
   const {
@@ -43,19 +43,12 @@ export const PagesAssistantAIStep2Form = () => {
     },
   });
 
-  const availableSubjects =
-    useMemo(
-      () =>
-        levelsData.find((lvl) => lvl.value === formValues.level)?.subjects ??
-        [],
-      [levelsData, formValues.level],
-    ) || [];
   const availableSequences =
     useMemo(
       () =>
-        availableSubjects.find((subj) => subj.value === formValues.subject)
-          ?.sequences ?? [],
-      [availableSubjects, formValues.subject],
+        subjects.find((subj) => subj.value === formValues.subject)?.sequences ??
+        [],
+      [subjects, formValues.subject],
     ) || [];
 
   const onSubmit = async (step2FormValues: PagesAssistantAIStep2FormValues) => {
