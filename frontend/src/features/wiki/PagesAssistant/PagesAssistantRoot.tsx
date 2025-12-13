@@ -13,6 +13,8 @@ import { PagesAssistantAICard } from './PagesAssistantCards/PagesAssistantAICard
 import { PagesAssistantLibraryCard } from './PagesAssistantCards/PagesAssistantLibraryCard';
 import { PagesAssistantImportPollCard } from './PagesAssistantCards/PagesAssistantImportPollCard';
 
+import './styles/styles.css';
+
 export const PagesAssistantRoot = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
