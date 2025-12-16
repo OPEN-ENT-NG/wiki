@@ -1,0 +1,21 @@
+{
+  "name": "net.atos~wiki",
+  "config": {
+    "main": "net.atos.entng.wiki.Wiki",
+    "port": 8030,
+    "csrf-token": {{ csrfToken | default('true') }},
+    "app-name": "Wiki",
+    "app-address": "/wiki",
+    "app-icon": "wiki-large",
+    "platform-name": "{{ platform_name }}",
+    "app-type" : "END_USER",
+    "host": "https://{{ host }}",
+    "ssl": true,
+    "auto-redeploy": false,
+    "userbook-host": "https://{{ host }}",
+    "integration-mode": "{{ integration_mode|default('HTTP') }}",
+    "mode": "prod",
+    "pagination-limit": {{ wikiPaginationLimit | default(5) }},
+    "searching-event": {{ wikiSearchingEvent | default('true') }}
+  }
+}
