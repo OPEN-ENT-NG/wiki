@@ -2,6 +2,7 @@ import {
   Button,
   Flex,
   Grid,
+  RadioCard,
   Stepper,
   useEdificeClient,
 } from '@edifice.io/react';
@@ -115,17 +116,19 @@ export const PagesAssistantAIStep1Form = () => {
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
-                              <SimpleRadioCard
+                              <RadioCard
                                 key={index}
-                                label={level.value}
                                 value={level.value}
                                 groupName="levels"
                                 selectedValue={value}
+                                hideRadioButton={true}
                                 onChange={(v) => {
                                   onChange(v);
                                   handleLevelChange();
                                 }}
-                              />
+                              >
+                                <RadioCard.Title>{level.value}</RadioCard.Title>
+                              </RadioCard>
                             )}
                           />
                         ))}
@@ -173,7 +176,7 @@ export const PagesAssistantAIStep1Form = () => {
                   </h3>
                   <Grid className="gap-12">
                     {subjects.map((subject, index) => (
-                      <Grid.Col sm="2" md="4" lg="4" xl="4">
+                      <Grid.Col key={index} sm="2" md="4" lg="4" xl="4">
                         <Controller
                           key={index}
                           name="subject"
