@@ -157,6 +157,7 @@ export const Page = () => {
   const navigate = useNavigate();
   const userRights = useUserRights();
   const canComment = userRights.comment;
+  const canSeeViewsCounter = userRights.manager || userRights.creator;
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -267,10 +268,12 @@ export const Page = () => {
         focus={null}
       />
       <Flex justify="end">
-        <ViewsCounter
-          viewsCounter={pageViewsDetails?.viewsCounter || 0}
-          onClick={() => handleViewsCounterClick()}
-        />
+        {canSeeViewsCounter && (
+          <ViewsCounter
+            viewsCounter={pageViewsDetails?.viewsCounter || 0}
+            onClick={() => handleViewsCounterClick()}
+          />
+        )}
       </Flex>
       {showComments && (
         <CommentProvider
