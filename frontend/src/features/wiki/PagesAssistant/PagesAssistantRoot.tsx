@@ -1,4 +1,5 @@
 import {
+  Flex,
   Grid,
   useEdificeClient,
   useHasWorkflow,
@@ -28,33 +29,39 @@ export const PagesAssistantRoot = () => {
   }
 
   return (
-    <div className="pages-assistant-wrapper mx-64 my-40">
-      <h2 className="my-32">{t('wiki.assistant.title', { ns: appCode })}</h2>
-      <Grid>
-        {/* MANUAL CREATION */}
-        <Grid.Col sm="2" md="4" lg="4" xl="6">
-          <PagesAssistantManualCreationCard />
-        </Grid.Col>
+    <Flex justify="center">
+      <div className="col-12 col-md-10 col-lg-8">
+        <div className="pages-assistant-wrapper my-40">
+          <h2 className="my-32">
+            {t('wiki.assistant.title', { ns: appCode })}
+          </h2>
+          <Grid>
+            {/* MANUAL CREATION */}
+            <Grid.Col sm="4" md="8" lg="8" xl="6">
+              <PagesAssistantManualCreationCard />
+            </Grid.Col>
 
-        {/* AI ASSISTANT */}
-        {hasGenerateWorkflow && (
-          <Grid.Col sm="2" md="4" lg="4" xl="6">
-            <PagesAssistantAICard />
-          </Grid.Col>
-        )}
+            {/* AI ASSISTANT */}
+            {hasGenerateWorkflow && (
+              <Grid.Col sm="4" md="8" lg="8" xl="6">
+                <PagesAssistantAICard />
+              </Grid.Col>
+            )}
 
-        {/* LIBRARY INSPIRATION */}
-        {libraryUrl && (
-          <Grid.Col sm="2" md="4" lg="4" xl="6">
-            <PagesAssistantLibraryCard />
-          </Grid.Col>
-        )}
+            {/* LIBRARY INSPIRATION */}
+            {libraryUrl && (
+              <Grid.Col sm="4" md="8" lg="8" xl="6">
+                <PagesAssistantLibraryCard />
+              </Grid.Col>
+            )}
 
-        {/* IMPORT */}
-        <Grid.Col sm="2" md="4" lg="4" xl="6">
-          <PagesAssistantImportPollCard />
-        </Grid.Col>
-      </Grid>
-    </div>
+            {/* IMPORT */}
+            <Grid.Col sm="4" md="8" lg="8" xl="6">
+              <PagesAssistantImportPollCard />
+            </Grid.Col>
+          </Grid>
+        </div>
+      </div>
+    </Flex>
   );
 };
