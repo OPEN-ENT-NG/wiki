@@ -6,12 +6,12 @@
     <parent>
         <groupId>io.edifice</groupId>
         <artifactId>app-parent</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>3.5-zookeeper-SNAPSHOT</version>
+    <version>3.5-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
@@ -20,7 +20,7 @@
     </scm>
 
     <properties>
-        <entcore.version>6.10-zookeeper-SNAPSHOT</entcore.version>
+        <entcore.version>6.13-SNAPSHOT</entcore.version>
         <wiki-generator.version>0.1.8</wiki-generator.version>
     </properties>
 
