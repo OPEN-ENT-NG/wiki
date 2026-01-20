@@ -21,7 +21,7 @@
 
     <properties>
         <entcore.version>6.13-SNAPSHOT</entcore.version>
-        <wiki-generator.version>0.1.8</wiki-generator.version>
+        <wiki-generator.version>0.2.1-alpha.5</wiki-generator.version>
     </properties>
 
     <repositories>
