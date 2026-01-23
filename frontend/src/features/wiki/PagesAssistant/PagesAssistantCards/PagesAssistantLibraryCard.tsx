@@ -1,11 +1,10 @@
 import {
   Button,
-  Card,
+  PromotionCard,
   useEdificeClient,
   useLibraryUrl,
 } from '@edifice.io/react';
-import { IconExternalLink } from '@edifice.io/react/icons';
-import inspirationIcon from '../icons/inspirationIcon.svg';
+import { IconExternalLink, IconTeacher } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 
 export const PagesAssistantLibraryCard = () => {
@@ -23,21 +22,22 @@ export const PagesAssistantLibraryCard = () => {
   };
 
   return (
-    <Card isSelectable={false} isClickable={false} className="h-full">
-      <Card.Body>
-        <Card.Image imageSrc={inspirationIcon} />
-        <div className="text-truncate">
-          <Card.Title>
-            <p>{t('wiki.assistant.card.library.title', { ns: appCode })}</p>
-          </Card.Title>
-          <Card.Text className="white-space-normal">
-            {t('wiki.assistant.card.library.description', {
-              ns: appCode,
-            })}
-          </Card.Text>
-        </div>
-      </Card.Body>
-      <Card.Footer>
+    <PromotionCard>
+      <PromotionCard.Icon
+        backgroundColor="#F6ECF9"
+        icon={<IconTeacher color="#823AA1" />}
+      />
+      <PromotionCard.Body>
+        <PromotionCard.Title>
+          {t('wiki.assistant.card.library.title', { ns: appCode })}
+        </PromotionCard.Title>
+        <PromotionCard.Description>
+          {t('wiki.assistant.card.library.description', {
+            ns: appCode,
+          })}
+        </PromotionCard.Description>
+      </PromotionCard.Body>
+      <PromotionCard.Footer>
         <Button
           color="tertiary"
           variant="ghost"
@@ -49,7 +49,7 @@ export const PagesAssistantLibraryCard = () => {
             ns: appCode,
           })}
         </Button>
-      </Card.Footer>
-    </Card>
+      </PromotionCard.Footer>
+    </PromotionCard>
   );
 };

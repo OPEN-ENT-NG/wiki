@@ -6,6 +6,7 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 import {
+  IconAiFill,
   IconArrowRight,
   IconEdit,
   IconTextPage,
@@ -22,7 +23,6 @@ import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { odeServices } from '@edifice.io/client';
 import { baseURL } from '~/services';
-import aiIconButton from './../icons/aiIconButton.svg';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -150,7 +150,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
               </Button>
               {!contentFinished && (
                 <AIButton
-                  leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
+                  leftIcon={<IconAiFill color="#C232AA" />}
                   disabled={true}
                 ></AIButton>
               )}

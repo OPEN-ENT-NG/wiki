@@ -1,51 +1,27 @@
-.pages-assistant-wrapper .card .card-body .card-text.white-space-normal {
-  white-space: normal;
+.pages-assistant-wrapper .promotion-card {
+  height: 100%;
 }
 
-.pages-assistant-wrapper .card {
-  border-width: 2px;
+.pages-assistant-wrapper .promotion-card.ai-border-gradient {
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(to right, #f9beef, #faea9c) border-box;
+  border-radius: 2.4rem;
+  border: 3px solid transparent;
 }
 
-.pages-assistant-wrapper .card .card-footer {
-  background-color: #fff;
-  padding-bottom: 24px;
+.pages-assistant-wrapper .promotion-card .ai-background-gradient {
+  background: linear-gradient(
+    90deg,
+    rgba(254, 225, 250, 1) 0%,
+    rgba(252, 248, 226, 1) 100%
+  );
 }
 
-.pages-assistant-wrapper .card.card-assistant-ai,
-.pages-assistant-wrapper .card.card-assistant-ai:hover {
-  border-color: #f9beef !important;
-}
-
-.pages-assistant-wrapper .card.card-assistant-ai .badge-beta {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 120px;
-  min-height: 30px;
-  font-size: 1.4rem;
-  background-color: #faea9c;
-  border-bottom-left-radius: 12px;
-}
-
-.pages-assistant-wrapper .card.card-import {
-  background-color: var(--edifice-gray-300);
-  border-color: #fff;
-}
-
-.pages-assistant-wrapper .card.card-import .card-footer {
-  background-color: var(--edifice-gray-300);
-}
-
-.pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-down:hover,
-.pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-up:hover,
-.pages-assistant-wrapper
-  .card.card-import
-  .card-footer
-  .btn-thumb-down.selected,
-.pages-assistant-wrapper .card.card-import .card-footer .btn-thumb-up.selected {
+.pages-assistant-wrapper .promotion-card .btn-thumb-down:hover,
+.pages-assistant-wrapper .promotion-card .btn-thumb-up:hover,
+.pages-assistant-wrapper .promotion-card .btn-thumb-down.selected,
+.pages-assistant-wrapper .promotion-card .btn-thumb-up.selected {
   background-color: rgba(
     var(--edifice-white-rgb),
     var(--edifice-white-opacity, 1)
