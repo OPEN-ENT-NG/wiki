@@ -1,9 +1,8 @@
-import { Card, useEdificeClient } from '@edifice.io/react';
+import { PromotionCard, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 import AIButton from '~/components/AIButton/AIButton';
-import aiIconButton from '../icons/aiIconButton.svg';
-import assistantAIIcon from '../icons/assistantAIIcon.svg';
 import { useNavigate } from 'react-router-dom';
+import { IconAiFill, IconExercizerAi } from '@edifice.io/react/icons';
 
 export const PagesAssistantAICard = () => {
   const { appCode } = useEdificeClient();
@@ -18,36 +17,35 @@ export const PagesAssistantAICard = () => {
   };
 
   return (
-    <Card
-      isSelectable={false}
-      isClickable={false}
-      className="card-assistant-ai h-full"
-    >
-      <Card.Body>
-        <Card.Image imageSrc={assistantAIIcon} />
-        <div className="text-truncate">
-          <Card.Title>
-            <p>{t('wiki.assistant.card.ai.title', { ns: appCode })}</p>
-            <div className="badge-beta">Version Beta</div>
-          </Card.Title>
-          <Card.Text className="white-space-normal">
-            {t('wiki.assistant.card.ai.description', {
-              ns: appCode,
-            })}
-          </Card.Text>
-        </div>
-      </Card.Body>
-      <Card.Footer>
+    <PromotionCard className="ai-border-gradient">
+      <PromotionCard.Header backgroundColor="#FAEA9C">
+        {t('wiki.assistant.card.ai.header', { ns: appCode })}
+      </PromotionCard.Header>
+      <PromotionCard.Icon
+        className="ai-background-gradient"
+        icon={<IconExercizerAi color="#C232AA" />}
+      />
+      <PromotionCard.Body>
+        <PromotionCard.Title>
+          {t('wiki.assistant.card.ai.title', { ns: appCode })}
+        </PromotionCard.Title>
+        <PromotionCard.Description>
+          {t('wiki.assistant.card.ai.description', {
+            ns: appCode,
+          })}
+        </PromotionCard.Description>
+      </PromotionCard.Body>
+      <PromotionCard.Footer>
         <AIButton
           size="sm"
-          leftIcon={<img src={aiIconButton} alt="AI Assistant Icon" />}
+          leftIcon={<IconAiFill color="#C232AA" />}
           onClick={handleAssistantAIButtonClick}
         >
           {t('wiki.assistant.card.ai.button', {
             ns: appCode,
           })}
         </AIButton>
-      </Card.Footer>
-    </Card>
+      </PromotionCard.Footer>
+    </PromotionCard>
   );
 };

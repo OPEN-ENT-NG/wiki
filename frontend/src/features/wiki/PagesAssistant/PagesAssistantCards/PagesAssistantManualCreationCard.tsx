@@ -1,8 +1,7 @@
-import { Button, Card, useEdificeClient } from '@edifice.io/react';
-import manualCreation from '../icons/manualCreationIcon.svg';
+import { Button, PromotionCard, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { IconPlus } from '@edifice.io/react/icons';
+import { IconPlus, IconWrite } from '@edifice.io/react/icons';
 
 export const PagesAssistantManualCreationCard = () => {
   const { appCode } = useEdificeClient();
@@ -18,21 +17,22 @@ export const PagesAssistantManualCreationCard = () => {
   };
 
   return (
-    <Card isSelectable={false} isClickable={false} className="h-full">
-      <Card.Body>
-        <Card.Image imageSrc={manualCreation}></Card.Image>
-        <div className="text-truncate">
-          <Card.Title>
-            {t('wiki.assistant.card.manual.title', { ns: appCode })}
-          </Card.Title>
-          <Card.Text className="white-space-normal">
-            {t('wiki.assistant.card.manual.description', {
-              ns: appCode,
-            })}
-          </Card.Text>
-        </div>
-      </Card.Body>
-      <Card.Footer>
+    <PromotionCard>
+      <PromotionCard.Icon
+        backgroundColor="#FFEFE3"
+        icon={<IconWrite color="#FF8D2E" />}
+      />
+      <PromotionCard.Body>
+        <PromotionCard.Title>
+          {t('wiki.assistant.card.manual.title', { ns: appCode })}
+        </PromotionCard.Title>
+        <PromotionCard.Description>
+          {t('wiki.assistant.card.manual.description', {
+            ns: appCode,
+          })}
+        </PromotionCard.Description>
+      </PromotionCard.Body>
+      <PromotionCard.Footer>
         <Button
           color="tertiary"
           variant="ghost"
@@ -44,7 +44,7 @@ export const PagesAssistantManualCreationCard = () => {
             ns: appCode,
           })}
         </Button>
-      </Card.Footer>
-    </Card>
+      </PromotionCard.Footer>
+    </PromotionCard>
   );
 };
