@@ -160,7 +160,7 @@ public interface WikiService extends AudienceRightChecker {
 	 * Used by AI generator to populate wiki pages with content.
 	 * 
 	 * @param wikiId The wiki ID to update
-	 * @param courseResponse The AI-generated course with full content
+	 * @param courseResponse The AI-generated course contains one page only at a time, allows frontend to stream content updates.
 	 * @return Future that completes when content is updated
 	 */
 	Future<Void> updateWikiContentFromAI(String wikiId, CourseResponse courseResponse);

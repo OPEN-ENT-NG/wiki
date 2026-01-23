@@ -1668,7 +1668,6 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				final JsonArray existingPages = wiki.getJsonArray("pages", new JsonArray());
 				final Map<String, String> titleToIdMap = new HashMap<>();
-				final Map<Integer, String> positionToIdMap = new HashMap<>();
 
 				for (int i = 0; i < existingPages.size(); i++) {
 					final JsonObject existingPage = existingPages.getJsonObject(i);
@@ -1678,60 +1677,62 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					if (pageTitle != null) {
 						titleToIdMap.put(pageTitle.toLowerCase().trim(), pageId);
 					}
-					positionToIdMap.put(i, pageId);
 				}
 
-				final Course course = courseResponse.getCourse();
-				final JsonObject wikiData = JsonObject.mapFrom(course);
+				// Generated course from AI is returning one page at a time, allowing frontend to stream content
+				final JsonObject generatedWiki = JsonObject.mapFrom(courseResponse.getCourse());
 
-				// Enrich pages with author info and _id (from existing wiki or generated)
-				final JsonArray pages = wikiData.getJsonArray("pages", new JsonArray());
-				final JsonArray enrichedPages = new JsonArray();
+				// Get the single generated page
+				final JsonObject generatedPage = generatedWiki.getJsonArray("pages", new JsonArray()).getJsonObject(0);
+
+				final String generatedPageTitle = generatedPage.getString("title");
+				String existingPageId = null;
+
+				if (generatedPageTitle != null) {
+					existingPageId = titleToIdMap.get(generatedPageTitle.toLowerCase().trim());
+				}
+
+				if (existingPageId == null) {
+					existingPageId = new ObjectId().toString();
+					log.info("Generated new page ID for page: " + existingPageId + " with title " + generatedPageTitle);
+				} else {
+					log.info("Reused existing page ID for page: " + existingPageId + " with title " + generatedPageTitle);
+				}
+				final String pageId = existingPageId;
+
+				generatedPage.put("_id", pageId);
+
+				// Set author info
+				generatedPage.put("author", authorId);
+				generatedPage.put("authorName", authorName);
+				// Set lastContributer info
+				generatedPage.put("lastContributer", authorId);
+				generatedPage.put("lastContributerName", authorName);
+
+				// Set timestamps
 				final JsonObject now = MongoDb.now();
-
-				for (int i = 0; i < pages.size(); i++) {
-					final JsonObject page = pages.getJsonObject(i);
-
-					final String pageTitle = page.getString("title");
-					String existingPageId = null;
-
-					if (pageTitle != null) {
-						existingPageId = titleToIdMap.get(pageTitle.toLowerCase().trim());
-					}
-
-					if (existingPageId == null) {
-						existingPageId = positionToIdMap.get(i);
-					}
-
-					if (existingPageId == null) {
-						existingPageId = new ObjectId().toString();
-						log.info("Generated new page ID for page: " + pageTitle + " with title " + pageTitle);
-					} else {
-						log.info("Reused existing page ID for page: " + pageTitle + " with title " + pageTitle);
-					}
-
-					page.put("_id", existingPageId);
-
-					// Set author info
-					page.put("author", authorId);
-					page.put("authorName", authorName);
-					// Set lastContributer info
-					page.put("lastContributer", authorId);
-					page.put("lastContributerName", authorName);
-
-					// Set timestamps
-					if (!page.containsKey("created")) {
-						page.put("created", now);
-					}
-					page.put("modified", now);
-
-					// Set default visibility
-					if (!page.containsKey("isVisible")) {
-						page.put("isVisible", true);
-					}
-
-					enrichedPages.add(page);
+				if (!generatedPage.containsKey("created")) {
+					generatedPage.put("created", now);
 				}
+				generatedPage.put("modified", now);
+
+				// Set default visibility
+				if (!generatedPage.containsKey("isVisible")) {
+					generatedPage.put("isVisible", true);
+				}
+
+				// Create a JsonArray of pages from the existing pages with the generated page
+				JsonArray updatedPages = new JsonArray(
+					existingPages.stream()
+						.map(page -> {
+							JsonObject jsonPage = (JsonObject) page;
+							if (pageId.equals(jsonPage.getString("_id"))) {
+								return jsonPage.mergeIn(generatedPage, true); // Replace the matching page
+							}
+							return jsonPage; // Keep the original page
+						})
+						.collect(Collectors.toList())
+				);
 
 				// Store AI usage metadata
 				final JsonObject aiUsage = JsonObject.mapFrom(courseResponse.getUsage())
@@ -1743,9 +1744,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject query = new JsonObject().put("_id", wikiId);
 				final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
 				//modifier.set("title", wikiData.getString("title"));
-				modifier.set("description", wikiData.getString("description"));
-				modifier.set("pages", enrichedPages);
-				modifier.set("thumbnail", wikiData.getString("thumbnail"));
+				modifier.set("description", generatedWiki.getString("description"));
+				modifier.set("pages", updatedPages);
+				modifier.set("thumbnail", generatedWiki.getString("thumbnail"));
 				modifier.set("modified", now);
 				modifier.set("aiMetadata.contentGenerated", true);
 				modifier.set("aiMetadata.contentGeneratedDate", now);
