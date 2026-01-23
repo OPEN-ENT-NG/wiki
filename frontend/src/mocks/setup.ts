@@ -2,6 +2,9 @@
  * DO NOT MODIFY
  */
 
+// Load polyfills FIRST before any other imports
+import './polyfills';
+
 import '@testing-library/jest-dom/vitest';
 import { RenderOptions, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
