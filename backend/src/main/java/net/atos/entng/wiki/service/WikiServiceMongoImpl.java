@@ -1721,6 +1721,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					generatedPage.put("isVisible", true);
 				}
 
+				// Set AI generation metadata
+				JsonObject pageAIMetadata = new JsonObject()
+						.put("contentGenerated", true)
+						.put("contentGeneratedDate", now);
+				generatedPage.put("aiMetadata", pageAIMetadata);
+
 				// Create a JsonArray of pages from the existing pages with the generated page
 				JsonArray updatedPages = new JsonArray(
 					existingPages.stream()
@@ -1793,6 +1799,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		page.put("content", "");
 		page.put("contentVersion", 0);
+		page.put("aiMetadata", new JsonObject().put("contentGenerated", false).put("contentGeneratedDate", null));
 
 		return page;
 	}
