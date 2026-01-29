@@ -53,6 +53,10 @@ export interface Page {
   parentId?: string;
   error?: any;
   views?: number;
+  aiMetadata?: {
+    contentGenerated?: boolean; // true if the AI generation is finished
+    contentGeneratedDate?: Created;
+  };
 }
 
 export interface PageWithoutContent {

@@ -1,20 +1,20 @@
-import { TreeItem } from 'node_modules/@edifice.io/react/dist/components/Tree/types';
 import { useStore } from 'zustand';
 
 import { createStore } from 'zustand/vanilla';
+import { WikiTreeItem } from '~/models';
 
 /**
  * https://doichevkostia.dev/blog/authentication-store-with-zustand/
  */
 
 interface State {
-  treeData: TreeItem[];
+  treeData: WikiTreeItem[];
   selectedNodeId: string | null;
 }
 
 type Action = {
   actions: {
-    setTreeData: (treeData: TreeItem[]) => void;
+    setTreeData: (treeData: WikiTreeItem[]) => void;
     setSelectedNodeId: (selectedNodeId: string | null) => void;
   };
 };

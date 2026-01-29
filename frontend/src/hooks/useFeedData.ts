@@ -40,6 +40,11 @@ export const useFeedData = () => {
               children: Object.values(childPages)
                 .slice()
                 .sort((a, b) => (a.position ?? 0) - (b.position ?? 0)),
+              aiMetadata: {
+                contentGenerated: page.aiMetadata?.contentGenerated || false,
+                contentGeneratedDate:
+                  page.aiMetadata?.contentGeneratedDate || undefined,
+              },
             };
           }
           return {
@@ -48,6 +53,11 @@ export const useFeedData = () => {
             section: true,
             position: page.position,
             isVisible: page.isVisible,
+            aiMetadata: {
+              contentGenerated: page.aiMetadata?.contentGenerated || false,
+              contentGeneratedDate:
+                page.aiMetadata?.contentGeneratedDate || undefined,
+            },
           };
         });
 
