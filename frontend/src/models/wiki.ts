@@ -1,3 +1,4 @@
+import { TreeItem } from '@edifice.io/react';
 import { Created, Modified } from './date';
 import { Page, PageDto } from './page';
 
@@ -66,3 +67,10 @@ export interface Owner {
 }
 
 export type Shared = string[];
+
+export interface WikiTreeItem extends TreeItem {
+  aiMetadata?: {
+    contentGenerated?: boolean;
+    contentGeneratedDate?: Created;
+  };
+}

@@ -58,7 +58,8 @@ export const PagesAssistantAIStep4StructureResult = () => {
 
   const handleGoToWiki = () => {
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
-    window.location.href = `${baseURL}/id/${params.wikiId}`; // need to refresh the page to work properly
+    // TODO fix navigation issue (need to refresh the page to work properly )
+    window.location.href = `${baseURL}/id/${params.wikiId}`;
   };
 
   return (
