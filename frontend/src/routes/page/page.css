@@ -1,0 +1,8 @@
+/* TEMPORARY FIX: hide the AI generated H1 */
+.wiki-page-content .tiptap > h1:first-child {
+  display: none;
+}
+
+.wiki-page-content h2 {
+  padding: 24px 0 12px 0;
+}
