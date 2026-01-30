@@ -56,6 +56,7 @@ import {
 import { getToastActions } from '~/store/toast';
 import { findLastPage } from '~/utils/findLastPage';
 import loadingAnimation from '../../features/wiki/PagesAssistant/animations/loading.json';
+import './page.css';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -291,14 +292,16 @@ export const Page = () => {
           </div>
         </div>
       )}
-      <Editor
-        ref={editorRef}
-        content={data.content}
-        mode="read"
-        variant="ghost"
-        visibility="protected"
-        focus={null}
-      />
+      <div className="wiki-page-content">
+        <Editor
+          ref={editorRef}
+          content={data.content}
+          mode="read"
+          variant="ghost"
+          visibility="protected"
+          focus={null}
+        />
+      </div>
       <Flex justify="end">
         {canSeeViewsCounter && (
           <ViewsCounter
