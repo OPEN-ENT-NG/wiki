@@ -10,6 +10,7 @@ import { ViewsCounter, ViewsModal } from '@edifice.io/react/audience';
 import { CommentProvider } from '@edifice.io/react/comments';
 import { Editor, EditorRef } from '@edifice.io/react/editor';
 import { QueryClient } from '@tanstack/react-query';
+import Lottie from 'lottie-react';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -54,6 +55,7 @@ import {
 } from '~/store';
 import { getToastActions } from '~/store/toast';
 import { findLastPage } from '~/utils/findLastPage';
+import loadingAnimation from '../../features/wiki/PagesAssistant/animations/loading.json';
 
 const DeletePageModal = lazy(
   async () => await import('~/features/page/DeletePageModal/DeletePageModal'),
@@ -162,9 +164,10 @@ export const Page = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
   const { setSelectedNodeId } = useTreeActions();
-  const { getPageVersionFromRoute } = useRevision();
+  const { getPageVersionFromRoute, getPageFromRoute } = useRevision();
   const { isPending, error, data, showComments, isRevision } =
     getPageVersionFromRoute();
+  const { refetch: refetchPage } = getPageFromRoute();
 
   const { data: pageViewsDetails } = useGetPageViewsDetails({
     pageId: params.pageId || '',
@@ -180,6 +183,18 @@ export const Page = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  /** Polling to check if AI content generation is finished */
+  useEffect(() => {
+    // Only poll if page has AI metadata and content is not yet generated
+    if (data?.aiMetadata && !data.aiMetadata.contentGenerated) {
+      const interval = setInterval(() => {
+        refetchPage();
+      }, 5000); // Poll every 5 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [data?.aiMetadata, refetchPage]);
 
   const createComment = useCreateComment();
   const deleteComment = useDeleteComment();
@@ -236,7 +251,7 @@ export const Page = () => {
       ) : (
         <PageHeader page={data} wikiId={params.wikiId} />
       )}
-      {data.contentVersion === 0 ? (
+      {!data.aiMetadata && data.contentVersion === 0 ? (
         <Alert
           type="warning"
           className="my-24"
@@ -259,6 +274,23 @@ export const Page = () => {
           {t('wiki.oldFormat.text')}
         </Alert>
       ) : null}
+      {data.aiMetadata && !data.aiMetadata.contentGenerated && (
+        <div className="m-auto">
+          <Lottie
+            animationData={loadingAnimation}
+            loop={true}
+            style={{ width: 250 }}
+          />
+          <div
+            className="small"
+            style={{ color: '#909090', fontStyle: 'italic' }}
+          >
+            {t('wiki.assistant.ai.step4.structure.result.wait.info', {
+              ns: appCode,
+            })}
+          </div>
+        </div>
+      )}
       <Editor
         ref={editorRef}
         content={data.content}
