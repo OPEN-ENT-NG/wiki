@@ -11,7 +11,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>3.5-SNAPSHOT</version>
+    <version>3.5-develop-enabling-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
