@@ -10,7 +10,7 @@
   </parent>
   <groupId>net.atos</groupId>
   <artifactId>wiki</artifactId>
-  <version>3.6-SNAPSHOT</version>
+  <version>3.6-develop-enabling-SNAPSHOT</version>
   <scm>
     <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
     <developerConnection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</developerConnection>
