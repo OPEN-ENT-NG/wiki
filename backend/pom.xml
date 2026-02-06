@@ -11,7 +11,7 @@
 
     <groupId>net.atos</groupId>
     <artifactId>wiki</artifactId>
-    <version>3.5-SNAPSHOT</version>
+    <version>3.5.1</version>
 
     <scm>
         <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
@@ -20,7 +20,7 @@
     </scm>
 
     <properties>
-        <entcore.version>6.13-SNAPSHOT</entcore.version>
+        <entcore.version>6.13.2</entcore.version>
         <wiki-generator.version>0.2.1-alpha.5</wiki-generator.version>
     </properties>
 
