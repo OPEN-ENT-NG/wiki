@@ -92,5 +92,5 @@ export const useFeedData = () => {
             (a.position ?? newTree.length) - (b.position ?? newTree.length),
         ),
     );
-  }, [data, newTree, setTreeData]);
+  }, [data, setTreeData]);
 };
