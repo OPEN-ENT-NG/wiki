@@ -1,5 +1,5 @@
 import { odeServices } from '@edifice.io/client';
-import { PollRequestPayload } from './poll.types';
+import { Poll, PollRequestPayload } from './poll.types';
 
 export const IMPORT_PDF_POLL_ID = 'import-pdf';
 
@@ -10,12 +10,15 @@ export const IMPORT_PDF_POLL_ID = 'import-pdf';
  */
 const createPollService = (baseURL: string) => ({
   /**
-   * Get user poll vote from local storage.
-   * @param pollId poll id to retrieve the vote
-   * @returns user poll vote from local storage
+   * Get Poll by Poll Name
+   * @param pollName Poll name to retrieve
+   * @returns a Poll object representing the Poll
    */
-  getPollVote(pollId: string): string | null {
-    return localStorage.getItem(`wiki_poll_${pollId}_voted`);
+  async getPoll(pollName: string): Promise<Poll> {
+    const poll = await odeServices
+      .http()
+      .get<Poll>(`${baseURL}/polls/${pollName}`);
+    return poll;
   },
 
   /**
@@ -27,9 +30,6 @@ const createPollService = (baseURL: string) => ({
     pollName: string,
     requestPayload: PollRequestPayload,
   ): Promise<void> {
-    // store in the local storage that the user has voted to this poll
-    localStorage.setItem(`wiki_poll_${pollName}_voted`, requestPayload.vote);
-
     // send the vote to the backend
     await odeServices
       .http()

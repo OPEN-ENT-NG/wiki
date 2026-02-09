@@ -1,5 +1,7 @@
 package net.atos.entng.wiki.models.poll;
 
+import io.vertx.core.json.JsonObject;
+
 import java.util.Date;
 import java.util.List;
 
@@ -84,5 +86,9 @@ public class Poll {
 
     public void setAuthorEmail(String authorEmail) {
         this.authorEmail = authorEmail;
+    }
+
+    public JsonObject toJson() {
+        return JsonObject.mapFrom(this);
     }
 }

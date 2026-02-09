@@ -93,6 +93,7 @@
   "wiki.assistant.card.import.button.yes": "Oui !",
   "wiki.assistant.card.import.description": "Transformer un PDF ou un document numérique en Cours et Wiki, ça vous intéresse qu'on le développe ?",
   "wiki.assistant.card.import.title": "Import d'un cours (Sondage)",
+  "wiki.assistant.card.import.voteRecorded": "Votre vote a bien été enregistré.",
   "wiki.assistant.card.library.button": "Voir la Bibliothèque",
   "wiki.assistant.card.library.description": "En manque d'inspiration ? La Bibliothèque vous propose des séquences pédagogiques et des cours conçus par des enseignants.",
   "wiki.assistant.card.library.title": "Inspiration",
