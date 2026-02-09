@@ -36,7 +36,7 @@ public class WikiPollController extends MongoDbControllerHelper {
     @SecuredAction(value = "wiki.getPoll")
     public void getPoll(final HttpServerRequest request) {
         wikiPollService.getPoll(request.params().get("name"))
-                .onSuccess(results -> renderJson(request, new JsonObject().put("results", results)))
+                .onSuccess(results -> renderJson(request, results.toJson()))
                 .onFailure(err -> {
                     log.error("Error retrieving poll results", err);
                     renderJson(request, new JsonObject().put("error", err.getMessage()), 500);

@@ -646,3 +646,24 @@ export const mockActionItemsAriaLabel = [
   'print',
   'delete',
 ];
+
+export const mockPoll = {
+  _id: '4a8e4ce9-d73f-431c-9e82-722d1c9af33c',
+  name: 'import-pdf',
+  description: null,
+  votes: [
+    {
+      vote: 'YES',
+      userId: '6827095a-4877-4709-b238-068687b9ede2',
+      userName: 'BAILLY Catherine',
+      userEmail: '',
+      created: null,
+      modified: 1770629786139,
+    },
+  ],
+  created: 1770629784998,
+  modified: null,
+  authorId: '6827095a-4877-4709-b238-068687b9ede2',
+  authorName: 'BAILLY Catherine',
+  authorEmail: '',
+};

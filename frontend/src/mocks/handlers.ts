@@ -4,6 +4,7 @@ import {
   mockPage,
   mockPagesIDsForViewCounter,
   mockPagesViewCounterResponse,
+  mockPoll,
   mockRevision,
   mockWiki,
   mockWikiPagesWithoutContent,
@@ -319,4 +320,7 @@ export const handlers = [
       return HttpResponse.json('', { status: 200 });
     },
   ),
+  http.get(`${baseURL}/polls/:pollName`, () => {
+    return HttpResponse.json(mockPoll, { status: 200 });
+  }),
 ];
