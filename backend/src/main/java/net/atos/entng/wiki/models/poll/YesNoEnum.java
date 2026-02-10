@@ -1,9 +1,9 @@
-package net.atos.entng.wiki.service.poll;
+package net.atos.entng.wiki.models.poll;
 
 /**
  * Enumeration representing possible votes in a wiki poll.
  */
-public enum ImportPdfPollVote {
+public enum YesNoEnum {
     YES,
     NO,
 }

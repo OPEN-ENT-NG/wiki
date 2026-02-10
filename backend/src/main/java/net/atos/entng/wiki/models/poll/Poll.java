@@ -1,6 +1,8 @@
 package net.atos.entng.wiki.models.poll;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.vertx.core.json.JsonObject;
+import net.atos.entng.wiki.service.MongoDateDeserializer;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +12,9 @@ public class Poll {
     private String name;
     private String description;
     private List<Vote> votes;
+    @JsonDeserialize(using = MongoDateDeserializer.class)
     private Date created;
+    @JsonDeserialize(using = MongoDateDeserializer.class)
     private Date modified;
     private String authorId;
     private String authorName;
