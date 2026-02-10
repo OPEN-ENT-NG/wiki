@@ -15,7 +15,7 @@ import org.bson.conversions.Bson;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.utils.StringUtils;
 
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,46 +47,7 @@ public class WikiPollServiceMongoImpl extends MongoDbCrudService implements Wiki
                 JsonObject result = res.body().getJsonObject("result");
 
                 if (result != null) {
-                    // Manually handle the votes field
-                    JsonArray votesArray = result.getJsonArray("votes");
-                    List<Vote> votes = votesArray
-                            .stream()
-                            .map(vote -> {
-                                JsonObject voteJson = (JsonObject) vote;
-
-                                // Preprocess the "modified" field
-                                if (voteJson.containsKey("modified") && voteJson.getJsonObject("modified").containsKey("$date")) {
-                                    String modifiedDateStr = voteJson.getJsonObject("modified").getString("$date");
-                                    try {
-                                        Date modifiedDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(modifiedDateStr);
-                                        voteJson.put("modified", modifiedDate); // Replace with the Date object
-                                    } catch (Exception e) {
-                                        log.error("Error parsing modified date", e);
-                                    }
-                                }
-
-                                return voteJson.mapTo(Vote.class);
-                            })
-                            .collect(Collectors.toList());
-                    // Remove votes to avoid mapping issues
-                    result.remove("votes");
-
-                    // Map the rest of the fields to Poll
-                    // Preprocess the "created" field
-                    if (result.containsKey("created") && result.getJsonObject("created").containsKey("$date")) {
-                        String createdDateStr = result.getJsonObject("created").getString("$date");
-                        try {
-                            Date createdDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX").parse(createdDateStr);
-                            result.put("created", createdDate); // Replace with the Date object
-                        } catch (Exception e) {
-                            log.error("Error parsing date", e);
-                        }
-                    }
-
-                    Poll poll = result.mapTo(Poll.class);
-                    poll.setVotes(votes); // Set the votes manually
-
-                    promise.complete(poll);
+                    promise.complete(result.mapTo(Poll.class));
                 } else {
                     promise.complete(null);
                 }
