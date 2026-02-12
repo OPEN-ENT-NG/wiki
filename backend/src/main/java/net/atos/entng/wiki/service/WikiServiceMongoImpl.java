@@ -1711,9 +1711,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 				// Set timestamps
 				final JsonObject now = MongoDb.now();
-				if (!generatedPage.containsKey("created")) {
-					generatedPage.put("created", now);
-				}
+				generatedPage.put("created", now);
 				generatedPage.put("modified", now);
 
 				// Set default visibility
