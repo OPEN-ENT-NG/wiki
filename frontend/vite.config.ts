@@ -1,18 +1,23 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react';
 import { resolve } from 'node:path';
-import { defineConfig, loadEnv } from 'vite';
+import { BuildOptions, defineConfig, loadEnv } from 'vite';
+import dts from 'vite-plugin-dts';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {
   hashEdificeBootstrap,
   queryHashVersion,
 } from './plugins/vite-plugin-edifice';
+import { dependencies } from './package.json';
 
 export default ({ mode }: { mode: string }) => {
   // Checking environement files
   const envFile = loadEnv(mode, process.cwd());
   const envs = { ...process.env, ...envFile };
   const hasEnvFile = Object.keys(envFile).length;
+
+  const isProduction = mode === 'production';
+  const isLibMode = mode === 'lib';
 
   // Proxy variables
   const headers = hasEnvFile
@@ -37,6 +42,68 @@ export default ({ mode }: { mode: string }) => {
         target: 'http://localhost:8090',
         changeOrigin: false,
       };
+
+  const build: BuildOptions = {
+    outDir: './dist',
+    emptyOutDir: true,
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
+    assetsDir: 'public',
+    chunkSizeWarningLimit: 5000,
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: true,
+      },
+    },
+  };
+
+  const buildLib: BuildOptions = {
+    outDir: 'lib',
+    lib: {
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+      },
+      formats: ['es'],
+    },
+    rollupOptions: {
+      treeshake: true,
+      external: [
+        ...Object.keys(dependencies || {}),
+        'react/jsx-runtime',
+        /^@edifice\.(io|client|react|bootstrap)(\/.*)?$/,
+        /^react(\/.*)?$/,
+        /^react-dom(\/.*)?$/,
+      ],
+      output: {
+        entryFileNames: `[name].js`,
+        chunkFileNames: `[name].js`,
+        assetFileNames: `[name].[ext]`,
+      },
+    },
+  };
+
+  const reactPlugin = react(
+    isLibMode
+      ? {
+          babel: {
+            plugins: ['@babel/plugin-transform-react-pure-annotations'],
+          },
+        }
+      : {},
+  );
+
+  const dtsPlugin = isLibMode && dts({ tsconfigPath: './tsconfig.app.json' });
+
+  const plugins = [
+    reactPlugin,
+    dtsPlugin,
+    tsconfigPaths(),
+    hashEdificeBootstrap({
+      hash: queryHashVersion,
+    }),
+  ];
 
   /* Replace "/" the name of your application (e.g : blog | mindmap | collaborativewall) */
   return defineConfig({
@@ -86,29 +153,9 @@ export default ({ mode }: { mode: string }) => {
       host: 'localhost',
     },
 
-    plugins: [
-      react(),
-      tsconfigPaths(),
-      hashEdificeBootstrap({
-        hash: queryHashVersion,
-      }),
-    ],
+    plugins,
 
-    build: {
-      outDir: './dist',
-      emptyOutDir: true,
-      reportCompressedSize: true,
-      commonjsOptions: {
-        transformMixedEsModules: true,
-      },
-      assetsDir: 'public',
-      chunkSizeWarningLimit: 5000,
-      rollupOptions: {
-        output: {
-          inlineDynamicImports: true,
-        },
-      },
-    },
+    build: isProduction ? build : buildLib,
 
     test: {
       watch: false,

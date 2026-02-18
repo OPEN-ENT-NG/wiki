@@ -25,6 +25,96 @@ import { PagesAssistantAIStep3StructureLoading } from '~/features/wiki/PagesAssi
 import { PagesAssistantAIStep4StructureResult } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep4StructureResult';
 import { PagesAssistantAIStep2Form } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep2Form';
 
+export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
+  {
+    path: 'id/:wikiId',
+    loader: wikiLoader(queryClient),
+    element: <Index />,
+    children: [
+      {
+        path: 'pages',
+        element: <PageList />,
+        loader: pagesLoader(queryClient),
+      },
+      {
+        path: 'pages/destroy',
+        action: deleteListAction(queryClient),
+      },
+      {
+        path: 'pages/assistant',
+        element: <PagesAssistantRoot />,
+        errorElement: <PageError withoutLayout={true} />,
+      },
+      {
+        path: 'pages/assistant/ai/step1Form',
+        element: <PagesAssistantAIStep1Form />,
+      },
+      {
+        path: 'pages/assistant/ai/step2Form',
+        element: <PagesAssistantAIStep2Form />,
+      },
+      {
+        path: 'pages/assistant/ai/step3StructureLoading',
+        element: <PagesAssistantAIStep3StructureLoading />,
+      },
+      {
+        path: 'pages/assistant/ai/step4StructureResult',
+        element: <PagesAssistantAIStep4StructureResult />,
+      },
+      {
+        path: 'page/:pageId',
+        element: <Page />,
+        action: pageEditAction(queryClient),
+        loader: pageLoader(queryClient),
+      },
+      {
+        path: 'page/:pageId/destroy',
+        action: deleteAction(queryClient),
+      },
+      {
+        path: 'page/create',
+        element: <CreatePage />,
+        action: createAction(queryClient),
+      },
+      {
+        path: 'page/:pageId/edit',
+        element: <EditPage />,
+        action: pageEditAction(queryClient),
+      },
+      {
+        path: 'page/:pageId/subpage/create',
+        element: <CreatePage />,
+        action: createAction(queryClient),
+      },
+      {
+        path: 'page/:pageId/version/:versionId',
+        element: <Page />,
+        loader: pageLoader(queryClient),
+      },
+      {
+        path: 'page/:pageId/oldformat',
+        element: <OldFormat />,
+        loader: oldFormatLoader(queryClient),
+        action: pageEditAction(queryClient, 'oldformat'),
+      },
+      {
+        path: 'page/:pageId/oldformat/edit',
+        element: <EditPage />,
+        action: pageEditAction(queryClient, 'oldformat'),
+      },
+      {
+        path: 'page/:pageId/oldformat/destroy',
+        action: deleteAction(queryClient),
+      },
+      {
+        path: 'page/:pageId/oldformat/subpage/create',
+        element: <CreatePage />,
+        action: createAction(queryClient),
+      },
+    ],
+  },
+];
+
 export const routes = (queryClient: QueryClient): RouteObject[] => [
   /* Main route */
   {
@@ -42,93 +132,7 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
         index: true,
         element: <Explorer config={explorerConfig} />,
       },
-      {
-        path: 'id/:wikiId',
-        loader: wikiLoader(queryClient),
-        element: <Index />,
-        children: [
-          {
-            path: 'pages',
-            element: <PageList />,
-            loader: pagesLoader(queryClient),
-          },
-          {
-            path: 'pages/destroy',
-            action: deleteListAction(queryClient),
-          },
-          {
-            path: 'pages/assistant',
-            element: <PagesAssistantRoot />,
-            errorElement: <PageError withoutLayout={true} />,
-          },
-          {
-            path: 'pages/assistant/ai/step1Form',
-            element: <PagesAssistantAIStep1Form />,
-          },
-          {
-            path: 'pages/assistant/ai/step2Form',
-            element: <PagesAssistantAIStep2Form />,
-          },
-          {
-            path: 'pages/assistant/ai/step3StructureLoading',
-            element: <PagesAssistantAIStep3StructureLoading />,
-          },
-          {
-            path: 'pages/assistant/ai/step4StructureResult',
-            element: <PagesAssistantAIStep4StructureResult />,
-          },
-          {
-            path: 'page/:pageId',
-            element: <Page />,
-            action: pageEditAction(queryClient),
-            loader: pageLoader(queryClient),
-          },
-          {
-            path: 'page/:pageId/destroy',
-            action: deleteAction(queryClient),
-          },
-          {
-            path: 'page/create',
-            element: <CreatePage />,
-            action: createAction(queryClient),
-          },
-          {
-            path: 'page/:pageId/edit',
-            element: <EditPage />,
-            action: pageEditAction(queryClient),
-          },
-          {
-            path: 'page/:pageId/subpage/create',
-            element: <CreatePage />,
-            action: createAction(queryClient),
-          },
-          {
-            path: 'page/:pageId/version/:versionId',
-            element: <Page />,
-            loader: pageLoader(queryClient),
-          },
-          {
-            path: 'page/:pageId/oldformat',
-            element: <OldFormat />,
-            loader: oldFormatLoader(queryClient),
-            action: pageEditAction(queryClient, 'oldformat'),
-          },
-          {
-            path: 'page/:pageId/oldformat/edit',
-            element: <EditPage />,
-            action: pageEditAction(queryClient, 'oldformat'),
-          },
-          {
-            path: 'page/:pageId/oldformat/destroy',
-            action: deleteAction(queryClient),
-          },
-          {
-            path: 'page/:pageId/oldformat/subpage/create',
-            element: <CreatePage />,
-            action: createAction(queryClient),
-          },
-        ],
-      },
+      ...wikiRoutes(queryClient),
     ],
   },
   {

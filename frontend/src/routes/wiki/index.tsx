@@ -43,6 +43,7 @@ import { AppHeader } from '~/features/app/AppHeader/AppHeader';
 import { NewPage } from '~/features/wiki/NewPage/NewPage';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview/DropdownTreeview';
 import { WikiEmptyScreen } from '~/features';
+import { useWikiAppContext } from '~/components/WikiApp/providers/WikiAppProvider.hook';
 
 export const loader =
   (queryClient: QueryClient) =>
@@ -103,6 +104,8 @@ export const Index = () => {
    * Handle trashed resources
    */
   useTrashedResource(params.wikiId!);
+
+  const { header } = useWikiAppContext();
 
   const handleOnTreeItemClick = (pageId: ID) =>
     navigate(`/id/${data?._id}/page/${pageId}`);
@@ -166,7 +169,7 @@ export const Index = () => {
 
   return (
     <>
-      <AppHeader />
+      {header && <AppHeader />}
       <Grid className="flex-grow-1">
         {/* Left Pane */}
         {!isSmallDevice && !matchPagesAssistant && (

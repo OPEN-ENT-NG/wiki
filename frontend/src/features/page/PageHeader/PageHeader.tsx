@@ -30,6 +30,7 @@ import { Page } from '~/models';
 import { useGetPage } from '~/services';
 import { useUserRights, useWikiActions } from '~/store';
 import { ActionDropdownMenuOptions } from '../../app/AppActions/AppActions';
+import { useWikiAppContext } from '~/components/WikiApp/providers/WikiAppProvider.hook';
 
 export const PageHeader = ({
   page,
@@ -60,6 +61,7 @@ export const PageHeader = ({
   const submit = useSubmit();
   const { t } = useTranslation(appCode);
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
+  const { actions } = useWikiAppContext();
 
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
@@ -76,7 +78,7 @@ export const PageHeader = ({
 
   const handleEditPage = () => navigate(`edit`);
 
-  const dropdownOptions: ActionDropdownMenuOptions[] = [
+  let dropdownOptions: ActionDropdownMenuOptions[] = [
     {
       id: 'visibility',
       label: page.isVisible
@@ -118,6 +120,10 @@ export const PageHeader = ({
       visibility: (canContrib && user?.userId === page.author) || canManage,
     },
   ];
+
+  if (actions?.length) {
+    dropdownOptions = [...dropdownOptions, ...actions];
+  }
 
   return (
     <div
