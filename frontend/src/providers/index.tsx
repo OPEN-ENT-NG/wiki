@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ReactNode } from 'react';
+import WikiAppProvider from '~/components/WikiApp/providers/WikiAppProvider';
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -34,7 +35,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'wiki',
         }}
       >
-        {children}
+        <WikiAppProvider>{children}</WikiAppProvider>
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
