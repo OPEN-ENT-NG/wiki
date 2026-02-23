@@ -1,7 +1,11 @@
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { render } from './setup';
+import type { RenderResult } from '@testing-library/react';
 
-export const renderWithRouter = (path = '/', element: JSX.Element) => {
+export const renderWithRouter = (
+  path = '/',
+  element: JSX.Element,
+): RenderResult => {
   const routes = [
     {
       path,

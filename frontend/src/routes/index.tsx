@@ -152,7 +152,9 @@ export const routes = (queryClient: QueryClient): RouteObject[] => [
 
 export const basename = import.meta.env.PROD ? '/wiki' : '/';
 
-export const router = (queryClient: QueryClient) =>
+export const router = (
+  queryClient: QueryClient,
+): ReturnType<typeof createBrowserRouter> =>
   createBrowserRouter(routes(queryClient), {
     basename,
   });

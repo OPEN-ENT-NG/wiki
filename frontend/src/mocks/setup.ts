@@ -6,7 +6,7 @@
 import './polyfills';
 
 import '@testing-library/jest-dom/vitest';
-import { RenderOptions, render } from '@testing-library/react';
+import { RenderOptions, render, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReactElement } from 'react';
 import { afterAll, afterEach, beforeAll } from 'vitest';
@@ -28,7 +28,7 @@ const user = userEvent.setup();
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>,
-) => {
+): RenderResult & { user: typeof user } => {
   return {
     user,
     ...render(ui, { wrapper: CustomProviders, ...options }),
