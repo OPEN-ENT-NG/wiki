@@ -79,6 +79,9 @@
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "2.1.9"
   },
+  "resolutions": {
+    "katex": "0.16.33"
+  },
   "packageManager": "pnpm@9.12.2",
   "engines": {
     "node": "20"
