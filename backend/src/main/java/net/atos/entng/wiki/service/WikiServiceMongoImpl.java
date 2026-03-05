@@ -1580,6 +1580,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			return Future.failedFuture("wiki.id.null");
 		}
 
+		log.info("Received Pages Structure with " + structure.getPages().size() + " pages for wiki: " + wikiId);
+
 		final Bson queryId = eq("_id", wikiId);
 		mongo.findOne(collection, MongoQueryBuilder.build(queryId), null, null, null,
 				ReadPreference.primary(), res -> {
