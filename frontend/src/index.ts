@@ -1,1 +1,1 @@
-export { default as WikiApp } from './components/WikiApp/components/WikiApp';
+export { default as WikiApp } from './components/WikiApp/WikiApp';

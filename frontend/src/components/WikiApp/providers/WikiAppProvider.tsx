@@ -1,4 +1,4 @@
-import { WikiAction } from '../components/WikiApp';
+import { WikiAction } from '../WikiApp';
 import { WikiAppContext } from './WikiAppProvider.context';
 
 export interface WikiAppProviderProps {

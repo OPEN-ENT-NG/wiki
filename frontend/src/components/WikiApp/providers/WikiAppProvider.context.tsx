@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { WikiAction } from '../components/WikiApp';
+import { WikiAction } from '../WikiApp';
 
 export interface WikiAppContextProps {
   wikiId: string;

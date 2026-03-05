@@ -12,7 +12,7 @@ import { EdificeThemeProvider } from '@edifice.io/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { LoadingScreen } from '@edifice.io/react';
 import { wikiRoutes } from '~/routes';
-import WikiAppProvider from '../providers/WikiAppProvider';
+import WikiAppProvider from './providers/WikiAppProvider';
 
 export interface WikiAction {
   id: string;
