@@ -26,6 +26,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.mongodb.ReadPreference;
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
@@ -1580,7 +1581,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		}
 
 		final Bson queryId = eq("_id", wikiId);
-		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
+		mongo.findOne(collection, MongoQueryBuilder.build(queryId), null, null, null,
+				ReadPreference.primary(), res -> {
 			final JsonObject body = res.body();
 			if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
 				promise.fail("wiki.id.notfound: " + wikiId);
@@ -1653,7 +1655,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		// Fetch wiki to get author info AND existing pages
 		final Bson queryId = eq("_id", wikiId);
-		mongo.findOne(collection, MongoQueryBuilder.build(queryId), res -> {
+		mongo.findOne(collection, MongoQueryBuilder.build(queryId), null, null, null,
+				ReadPreference.primary(), res -> {
 			final JsonObject body = res.body();
 			if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
 				promise.fail("wiki.id.notfound: " + wikiId);
@@ -1667,7 +1670,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final String authorName = owner.getString("displayName", "AI Generator");
 
 				final JsonArray existingPages = wiki.getJsonArray("pages", new JsonArray());
+				final int existingPagesSize = existingPages.size();
 				final Map<String, String> titleToIdMap = new HashMap<>();
+				final Map<String, Integer> titleToPositionMap = new HashMap<>();
 
 				for (int i = 0; i < existingPages.size(); i++) {
 					final JsonObject existingPage = existingPages.getJsonObject(i);
@@ -1676,6 +1681,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 					if (pageTitle != null) {
 						titleToIdMap.put(pageTitle.toLowerCase().trim(), pageId);
+						titleToPositionMap.put(pageTitle.toLowerCase().trim(), i);
 					}
 				}
 
@@ -1686,17 +1692,20 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				final JsonObject generatedPage = generatedWiki.getJsonArray("pages", new JsonArray()).getJsonObject(0);
 
 				final String generatedPageTitle = generatedPage.getString("title");
+
 				String existingPageId = null;
+				int pagePositionWithinExistingPages = 0;
 
 				if (generatedPageTitle != null) {
 					existingPageId = titleToIdMap.get(generatedPageTitle.toLowerCase().trim());
+					pagePositionWithinExistingPages = titleToPositionMap.get(generatedPageTitle.toLowerCase().trim());
 				}
 
 				if (existingPageId == null) {
 					existingPageId = new ObjectId().toString();
-					log.info("Generated new page ID for page: " + existingPageId + " with title " + generatedPageTitle);
+					log.info("Generated new page ID for page " + (pagePositionWithinExistingPages + 1) + "/" + existingPagesSize + ": " + existingPageId + " with title " + generatedPageTitle);
 				} else {
-					log.info("Reused existing page ID for page: " + existingPageId + " with title " + generatedPageTitle);
+					log.info("Reused existing page ID for page " + (pagePositionWithinExistingPages + 1) + "/" + existingPagesSize + ": " + existingPageId + " with title " + generatedPageTitle);
 				}
 				final String pageId = existingPageId;
 
