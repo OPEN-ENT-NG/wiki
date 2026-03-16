@@ -31,6 +31,7 @@ export interface Page {
   _id: string;
   title: string;
   content: string;
+  jsonContent?: any;
   contentPlain: string;
   contentVersion: number;
   author: string;

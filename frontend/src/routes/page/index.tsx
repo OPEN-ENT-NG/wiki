@@ -295,7 +295,7 @@ export const Page = () => {
       <div className="wiki-page-content">
         <Editor
           ref={editorRef}
-          content={data.content}
+          content={data?.jsonContent ?? data?.content ?? ''}
           mode="read"
           variant="ghost"
           visibility="protected"

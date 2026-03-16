@@ -106,7 +106,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
 
         <FormControl id="content" className="mt-16 page-content-editor">
           <Editor
-            content={page?.content ?? ''}
+            content={page?.jsonContent ?? page?.content ?? ''}
             mode="edit"
             visibility="protected"
             onContentChange={handleContentChange}

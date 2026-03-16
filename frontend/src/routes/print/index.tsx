@@ -83,7 +83,7 @@ export const Component = () => {
           <PageHeader page={page} isPrint={true} />
           <Editor
             ref={editorRef}
-            content={page.content}
+            content={page?.jsonContent ?? page?.content ?? ''}
             mode="read"
             variant="ghost"
             visibility="protected"
