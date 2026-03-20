@@ -10,7 +10,7 @@ export interface WikiAppProviderProps {
 
 export function WikiAppProvider({
   wikiId,
-  header = false,
+  header = true,
   actions = [],
   children,
 }: WikiAppProviderProps) {

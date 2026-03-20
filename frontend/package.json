@@ -85,6 +85,12 @@
   "resolutions": {
     "katex": "0.16.33"
   },
+  "exports": {
+    "./lib": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
   "files": [
     "lib"
   ],

@@ -35,7 +35,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'wiki',
         }}
       >
-        <WikiAppProvider>{children}</WikiAppProvider>
+        <WikiAppProvider header={true}>{children}</WikiAppProvider>
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
