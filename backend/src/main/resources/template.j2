@@ -2,6 +2,10 @@
   "name": "net.atos~wiki",
   "config": {
     "main": "net.atos.entng.wiki.Wiki",
+    "probes": [
+      "org.entcore.common.http.health.Neo4jProbe",
+      "org.entcore.common.http.health.MongoProbe"
+    ],
     "port": 8030,
     "csrf-token": {{ csrfToken | default('true') }},
     "app-name": "Wiki",
