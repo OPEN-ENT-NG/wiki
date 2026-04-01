@@ -22,23 +22,10 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-if [[ "$*" == *"--no-user"* ]]
+if [ -z ${USER_UID:+x} ]
 then
-  USER_OPTION=""
-else
-  case `uname -s` in
-    MINGW* | Darwin*)
-      USER_UID=1000
-      GROUP_GID=1000
-      ;;
-    *)
-      if [ -z ${USER_UID:+x} ]
-      then
-        USER_UID=`id -u`
-        GROUP_GID=`id -g`
-      fi
-  esac
-  USER_OPTION="-u $USER_UID:$GROUP_GID"
+  export USER_UID=1000
+  export GROUP_GID=1000
 fi
 
 # options
@@ -69,7 +56,7 @@ init() {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm install
   else
-    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm install"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm install"
   fi
 }
 
@@ -77,7 +64,7 @@ build () {
   if [ "$NO_DOCKER" = "true" ] ; then
     pnpm run build
   else
-    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm $USER_OPTION node sh -c "pnpm build"
+    docker-compose run -e NPM_TOKEN -e TIPTAP_PRO_TOKEN --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm build"
   fi
   status=$?
   if [ $status != 0 ];
@@ -144,6 +131,39 @@ cleanDependencies() {
   rm -rf node_modules && rm -f pnpm-lock.yaml && pnpm install
 }
 
+
+publishNPM () {
+  echo "[publish] Publish package..."
+
+  # Récupération de la branche locale
+  LOCAL_BRANCH=`echo $GIT_BRANCH | sed -e "s|origin/||g"`
+  # Récupération de la date et du timestamp
+  TIMESTAMP=`date +%Y%m%d%H%M%S`
+  # Récupération du dernier tag stable
+  LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
+  LATEST_TAG=${LATEST_TAG#v}
+
+  # Définition du tag de la branche
+  if [ "$LOCAL_BRANCH" = "main" ]; then
+    TAG_BRANCH="latest"
+  else
+    TAG_BRANCH=$LOCAL_BRANCH
+  fi
+
+
+  # Création de la nouvelle version
+  if [ "$LOCAL_BRANCH" = "main" ]; then
+    NEW_VERSION="$LATEST_TAG"
+  else
+    # Mettre à jour la version dans tous les packages avec la version exacte
+    NEW_VERSION="$LATEST_TAG-$LOCAL_BRANCH.$TIMESTAMP"
+    echo "[publish] Update version with the exact version"
+    docker compose run -e NPM_TOKEN=$NPM_TOKEN --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm exec npm version $NEW_VERSION --no-git-tag-version"
+  fi
+  
+  docker compose run -e NPM_TOKEN=$NPM_PUBLIC_TOKEN --rm -u "$USER_UID:$GROUP_GID" node sh -c "pnpm publish --no-git-checks --access public --tag $TAG_BRANCH"
+}
+
 for param in "$@"
 do
   case $param in
@@ -161,6 +181,9 @@ do
       ;;
     cleanDependencies)
       cleanDependencies
+      ;;
+    publishNPM)
+      publishNPM
       ;;
     *)
       echo "Invalid argument : $param"

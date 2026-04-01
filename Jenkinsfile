@@ -6,6 +6,7 @@ pipeline {
   environment {
     NPM_TOKEN = credentials('npm-token')
     TIPTAP_PRO_TOKEN = credentials('tiptap-pro-token')
+    NPM_PUBLIC_TOKEN = credentials('npm-public-token')
   }
 
   stages {
@@ -41,6 +42,21 @@ pipeline {
     stage('Build image') {
       steps {
         sh 'edifice image --archs=linux/amd64 --force'
+      }
+    }
+
+    stage('Publish NPM Wiki App package') {
+      when {
+        expression {
+          return env.DRY_RUN != 'true'
+        }
+      }
+      steps {
+        withEnv(["NPM_TOKEN=${env.NPM_PUBLIC_TOKEN}"]) {
+          script {
+            sh 'cd frontend && ./build.sh publishNPM'
+          }
+        }
       }
     }
   }
