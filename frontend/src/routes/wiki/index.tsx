@@ -93,7 +93,7 @@ export const Index = () => {
   /**
    * Redirect to the default page if exist otherwise to Pages Assistant
    */
-  useRedirectDefaultPage();
+  const { isRedirecting } = useRedirectDefaultPage();
 
   /**
    * Feed treeData
@@ -276,7 +276,7 @@ export const Index = () => {
               {!isOnlyRead && <NewPage />}
             </>
           )}
-          {match ? <WikiEmptyScreen /> : <Outlet />}
+          {match && !isRedirecting ? <WikiEmptyScreen /> : <Outlet />}
         </Grid.Col>
       </Grid>
     </>
