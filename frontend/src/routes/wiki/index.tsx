@@ -276,7 +276,11 @@ export const Index = () => {
               {!isOnlyRead && <NewPage />}
             </>
           )}
-          {match && !isRedirecting ? <WikiEmptyScreen /> : <Outlet />}
+          {match && !hasPages && !isRedirecting ? (
+            <WikiEmptyScreen />
+          ) : (
+            <Outlet />
+          )}
         </Grid.Col>
       </Grid>
     </>

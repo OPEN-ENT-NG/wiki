@@ -22,10 +22,10 @@ import {
 import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { odeServices } from '@edifice.io/client';
-import { baseURL } from '~/services';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
+  const [generatedWiki, setGeneratedWiki] = useState<WikiDto>();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const pagesStructure = usePagesStructureStore();
@@ -42,6 +42,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
       if (wikiResponse.aiMetadata?.contentGenerated) {
         clearInterval(intervalId);
         setContentFinished(true);
+        setGeneratedWiki(wikiResponse);
       }
     }, 5000);
 
@@ -58,8 +59,11 @@ export const PagesAssistantAIStep4StructureResult = () => {
 
   const handleGoToWiki = () => {
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
-    // TODO fix navigation issue (need to refresh the page to work properly )
-    window.location.href = `${baseURL}/id/${params.wikiId}`;
+    if (generatedWiki?.pages?.length) {
+      navigate(`/id/${params.wikiId}/page/${generatedWiki.pages[0]._id}`);
+    } else {
+      navigate(`/id/${params.wikiId}`);
+    }
   };
 
   return (
