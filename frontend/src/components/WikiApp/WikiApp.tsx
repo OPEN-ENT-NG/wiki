@@ -26,9 +26,15 @@ export interface WikiAppProps {
   wikiId: string;
   header?: boolean;
   actions?: WikiAction[];
+  className?: string;
 }
 
-const WikiApp: React.FC<WikiAppProps> = ({ wikiId, header, actions }) => {
+const WikiApp: React.FC<WikiAppProps> = ({
+  wikiId,
+  header,
+  actions,
+  className,
+}) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wikiRootRef = useRef<Root | null>(null);
   const routerRef = useRef<ReturnType<typeof createMemoryRouter> | null>(null);
@@ -98,7 +104,7 @@ const WikiApp: React.FC<WikiAppProps> = ({ wikiId, header, actions }) => {
     return <LoadingScreen />;
   }
 
-  return <div ref={containerRef} />;
+  return <div ref={containerRef} className={className} />;
 };
 
 export default WikiApp;
