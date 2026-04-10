@@ -12,6 +12,7 @@ import {
   IconTextPage,
   IconWand,
 } from '@edifice.io/react/icons';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -21,6 +22,7 @@ import {
 } from '~/store/assistant';
 import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
+import { wikiQueryOptions } from '~/services';
 import { odeServices } from '@edifice.io/client';
 
 export const PagesAssistantAIStep4StructureResult = () => {
@@ -32,6 +34,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
   const { setFormValues } = usePagesAssistantActions();
   const params = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
@@ -57,8 +60,19 @@ export const PagesAssistantAIStep4StructureResult = () => {
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 
-  const handleGoToWiki = () => {
+  const handleGoToWiki = async () => {
+    if (!params.wikiId) {
+      return;
+    }
+
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
+
+    // force query invalidation and fetch again before navigating to the wiki page
+    await queryClient.invalidateQueries({
+      queryKey: wikiQueryOptions.findOne(params.wikiId).queryKey,
+    });
+    await queryClient.fetchQuery(wikiQueryOptions.findOne(params.wikiId));
+
     if (generatedWiki?.pages?.length) {
       navigate(`/id/${params.wikiId}/page/${generatedWiki.pages[0]._id}`);
     } else {
