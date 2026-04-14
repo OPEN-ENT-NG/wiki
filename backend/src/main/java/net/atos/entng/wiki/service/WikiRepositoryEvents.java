@@ -156,6 +156,34 @@ public class WikiRepositoryEvents extends MongoDbRepositoryEvents {
 		return userIds;
 	}
 
+    /**
+     * Change author of each page in the imported wiki
+     * This method is called during import in <org.entcore.common.user.RepositoryEvents.importResources()>
+     * @param document The wiki to import
+     * @param _collectionName in this case, it always equals "wiki"
+     * @param _importId ID of the import, with format: {import timestamp}_{user ID}
+     * @param userId importer's ENT ID
+     * @param _userLogin importer's login
+     * @param userName importer's display name
+     * @return transformed document
+     */
+    @Override
+    protected JsonObject transformDocumentBeforeImport(JsonObject document, String _collectionName,
+                                                       String _importId, String userId, String _userLogin,
+                                                       String userName) {
+        JsonArray pages = document.getJsonArray("pages");
+        // Iterate over pages
+        for(final Object page : pages){
+            if(page instanceof JsonObject){
+                final JsonObject pageObject = (JsonObject) page;
+                // Update author and authorName properties
+                pageObject.put("author", userId);
+                pageObject.put("authorName", userName);
+            }
+        }
+        return document;
+    }
+
 	/**
 	 * Filter out pages that are not visible
 	 * @param resources
