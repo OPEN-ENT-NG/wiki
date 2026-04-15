@@ -1,3 +1,13 @@
 # .husky/pre-commit
 
+# Do nothing if no frontend files have been staged
+if ! git diff --cached --name-only --diff-filter=ACMR | grep -q '^frontend/'; then
+	echo "No staged changes in frontend/. Skipping frontend pre-commit checks."
+	exit 0
+fi
+
+# Pre-commit frontend checks:
+# - pre-commit: lint
+# - unit test
+# - build
 cd frontend && pnpm run pre-commit && pnpm run test && pnpm run build
