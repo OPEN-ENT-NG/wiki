@@ -144,7 +144,7 @@ publishNPM () {
   LATEST_TAG=${LATEST_TAG#v}
 
   # Définition du tag de la branche
-  if [ "$LOCAL_BRANCH" = "main" ]; then
+  if [ "$LOCAL_BRANCH" = "master" ]; then
     TAG_BRANCH="latest"
   else
     TAG_BRANCH=$LOCAL_BRANCH
@@ -152,7 +152,7 @@ publishNPM () {
 
 
   # Création de la nouvelle version
-  if [ "$LOCAL_BRANCH" = "main" ]; then
+  if [ "$LOCAL_BRANCH" = "master" ]; then
     NEW_VERSION="$LATEST_TAG"
   else
     # Mettre à jour la version dans tous les packages avec la version exacte
