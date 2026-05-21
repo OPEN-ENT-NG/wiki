@@ -104,6 +104,7 @@ export const useRevision = () => {
       data: {
         ...page.data,
         content: revision.data?.content ?? page.data?.content,
+        jsonContent: revision.data?.jsonContent,
         lastContributer: revision.data?.userId ?? page.data?.lastContributer,
         lastContributerName:
           revision.data?.username ?? page.data?.lastContributerName,

@@ -8,6 +8,7 @@ export interface Revision {
   username: string;
   title: string;
   content: string;
+  jsonContent: string;
   isVisible: boolean;
   date: Created;
 }

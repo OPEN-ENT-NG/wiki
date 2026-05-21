@@ -553,6 +553,7 @@ export const mockRevision: Revision[] = [
     title: 'title rev',
     isVisible: true,
     content: 'content rev',
+    jsonContent: '',
     date: {
       $date: 1720431608340,
     },
@@ -566,6 +567,7 @@ export const mockRevision: Revision[] = [
     isVisible: true,
     title: 'title 2',
     content: '',
+    jsonContent: '',
     date: {
       $date: 1720184598119,
     },
@@ -579,6 +581,7 @@ export const mockRevision: Revision[] = [
     isVisible: false,
     title: 'title 3',
     content: '',
+    jsonContent: '',
     date: {
       $date: 1720184598119,
     },
