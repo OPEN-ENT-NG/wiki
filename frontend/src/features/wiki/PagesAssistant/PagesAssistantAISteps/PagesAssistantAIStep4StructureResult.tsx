@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Flex,
   Grid,
@@ -124,7 +125,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
                     })}
                   </span>
                 </Flex>
-                <Flex gap="16">
+                <Flex gap="16" className="mb-24">
                   <IconEdit />
                   <span>
                     {t('wiki.assistant.ai.step4.structure.result.info.3', {
@@ -132,6 +133,9 @@ export const PagesAssistantAIStep4StructureResult = () => {
                     })}
                   </span>
                 </Flex>
+                <Alert type="warning">
+                  {t('wiki.assistant.ai.step4.structure.result.warning')}
+                </Alert>
               </div>
             </Grid.Col>
           </Grid>
