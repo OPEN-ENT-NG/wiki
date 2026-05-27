@@ -1307,6 +1307,26 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return false;
 	}
 
+	public static boolean isRead(final JsonObject wiki, final UserInfos user) {
+		final JsonArray rights = wiki.getJsonArray("rights");
+
+		if (rights != null) {
+			final Set<String> myRights = new HashSet<>();
+			myRights.add(ShareRoles.Read.getSerializedForUser(user.getUserId()));
+
+			final List<String> groupIds = user.getGroupsIds();
+			if (groupIds != null) {
+				for (String groupId : user.getGroupsIds()) {
+					myRights.add(ShareRoles.Read.getSerializedForGroup(groupId));
+				}
+			}
+
+			return rights.stream().anyMatch(myRights::contains);
+		}
+
+		return false;
+	}
+
 	public static boolean isPageAuthor(final JsonObject page, final String userId) {
 		return page.getString("author") != null
 				&& page.getString("author").equals(userId);
@@ -1450,12 +1470,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			if ("ok".equals(res.body().getString("status"))) {
 				final JsonObject wiki = res.body().getJsonObject("result");
 				if (wiki != null) {
+					this.addNormalizedShares(wiki);
+
 					// Check if user is manager or has rights on the wiki
 					UserInfos userInfos = new UserInfos();
 					userInfos.setUserId(userId);
 					userInfos.setGroupsIds(new ArrayList<>(userGroupsIds));
 
-					if (isManager(wiki, userInfos) || isContrib(wiki, userInfos)) {
+					if (isManager(wiki, userInfos) || isRead(wiki, userInfos)) {
 						promise.complete(Boolean.TRUE);
 					} else {
 						promise.complete(Boolean.FALSE);
