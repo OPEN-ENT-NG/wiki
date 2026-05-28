@@ -1,10 +1,10 @@
 import { createContext } from 'react';
-import { ActionDropdownMenuOptions } from '~/features';
+import { AdditionalActions } from '../WikiApp';
 
 export interface WikiAppContextProps {
   wikiId?: string;
   header?: boolean;
-  actions?: ActionDropdownMenuOptions[];
+  additionalActions?: AdditionalActions;
 }
 
 export const WikiAppContext = createContext<WikiAppContextProps | null>(null);

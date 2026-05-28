@@ -15,17 +15,44 @@ import { wikiRoutes } from '~/routes';
 import WikiAppProvider from './providers/WikiAppProvider';
 import { ActionDropdownMenuOptions } from '~/features';
 
+/**
+ * Wiki App Component Props
+ */
 export interface WikiAppProps {
+  /** Wiki Id to retrieve wiki information and pages */
   wikiId: string;
+  /**
+   * Show or not the Wiki application header.
+   * When Wiki is integrated in an app (for example Communities) then we can hide the Wiki app header.
+   */
   header?: boolean;
-  actions?: ActionDropdownMenuOptions[];
+  /** Additional Actions to show in the Wiki Page dropdown menu */
+  additionalActions?: AdditionalActions;
+  /** Additional CSS classes for styling purposes, can be helpful to fix some visual integration issues inside another app. */
   className?: string;
 }
 
+/**
+ * Additional Actions to show in the Wiki Page dropdown menu.
+ * Those actions can be displayed in a specific Dropdown Menu Group if the dropdownMenuGroupLabel is set.
+ */
+export interface AdditionalActions {
+  /** Additional Actions */
+  actions: ActionDropdownMenuOptions[];
+  /** Dropdown Menu Group Label */
+  dropdownMenuGroupLabel?: string;
+}
+
+/**
+ * Wiki App component that can be called to integrate Wiki App inside another app.
+ * For example "Cours à la Une" in Communities.
+ *
+ * See WikiAppProps to know what props can be passed to the component.
+ */
 const WikiApp: React.FC<WikiAppProps> = ({
   wikiId,
   header,
-  actions,
+  additionalActions,
   className,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -70,7 +97,11 @@ const WikiApp: React.FC<WikiAppProps> = ({
       <QueryClientProvider client={queryClient}>
         <EdificeClientProvider params={{ app: 'wiki' }}>
           <EdificeThemeProvider>
-            <WikiAppProvider wikiId={wikiId} header={header} actions={actions}>
+            <WikiAppProvider
+              wikiId={wikiId}
+              header={header}
+              additionalActions={additionalActions}
+            >
               <RouterProvider router={routerRef.current} />
             </WikiAppProvider>
           </EdificeThemeProvider>

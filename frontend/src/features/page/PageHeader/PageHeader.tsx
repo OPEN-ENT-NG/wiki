@@ -61,7 +61,9 @@ export const PageHeader = ({
   const submit = useSubmit();
   const { t } = useTranslation(appCode);
   const isSmallDevice = useMediaQuery('only screen and (max-width: 1024px)');
-  const { actions } = useWikiAppContext();
+
+  // Additional actions coming from an app using WikiApp (for example "Cours à la Une" in Communities)
+  const { additionalActions } = useWikiAppContext();
 
   const canContrib = userRights.contrib;
   const canManage = userRights.manager;
@@ -122,8 +124,12 @@ export const PageHeader = ({
     },
   ];
 
-  if (actions?.length) {
-    dropdownOptions = [...dropdownOptions, ...actions];
+  // if additionalActions are not in a specific DropdownMenuGroup then concatenate them in the existing dropdownOptions
+  if (
+    additionalActions?.actions?.length &&
+    !additionalActions?.dropdownMenuGroupLabel
+  ) {
+    dropdownOptions = [...dropdownOptions, ...additionalActions.actions];
   }
 
   return (
@@ -176,6 +182,31 @@ export const PageHeader = ({
                         </Fragment>
                       ))}
                     </Dropdown.MenuGroup>
+
+                    {/* Specific additional dropdown menu group with actions */}
+                    {additionalActions?.dropdownMenuGroupLabel && (
+                      <Dropdown.MenuGroup
+                        label={additionalActions.dropdownMenuGroupLabel}
+                      >
+                        {additionalActions.actions.map((option) => (
+                          <Fragment key={option.id}>
+                            {option.type === 'divider' ? (
+                              <Dropdown.Separator />
+                            ) : (
+                              option.visibility && (
+                                <Dropdown.Item
+                                  icon={option.icon}
+                                  className={option.className}
+                                  onClick={() => option.action(null)}
+                                >
+                                  {option.label}
+                                </Dropdown.Item>
+                              )
+                            )}
+                          </Fragment>
+                        ))}
+                      </Dropdown.MenuGroup>
+                    )}
                   </Dropdown.Menu>
                 </div>
               )}
