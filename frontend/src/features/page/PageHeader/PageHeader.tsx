@@ -185,27 +185,27 @@ export const PageHeader = ({
 
                     {/* Specific additional dropdown menu group with actions */}
                     {additionalActions?.dropdownMenuGroupLabel && (
-                      <Dropdown.MenuGroup
-                        label={additionalActions.dropdownMenuGroupLabel}
-                      >
-                        {additionalActions.actions.map((option) => (
-                          <Fragment key={option.id}>
-                            {option.type === 'divider' ? (
-                              <Dropdown.Separator />
-                            ) : (
-                              option.visibility && (
-                                <Dropdown.Item
-                                  icon={option.icon}
-                                  className={option.className}
-                                  onClick={() => option.action(null)}
-                                >
-                                  {option.label}
-                                </Dropdown.Item>
-                              )
-                            )}
-                          </Fragment>
-                        ))}
-                      </Dropdown.MenuGroup>
+                      <>
+                        <Dropdown.Separator />
+                        <Dropdown.MenuGroup
+                          label={additionalActions.dropdownMenuGroupLabel}
+                        >
+                          {additionalActions.actions.map((option) => (
+                            <Fragment key={option.id}>
+                              {option.type !== 'divider' &&
+                                option.visibility && (
+                                  <Dropdown.Item
+                                    icon={option.icon}
+                                    className={option.className}
+                                    onClick={() => option.action(null)}
+                                  >
+                                    {option.label}
+                                  </Dropdown.Item>
+                                )}
+                            </Fragment>
+                          ))}
+                        </Dropdown.MenuGroup>
+                      </>
                     )}
                   </Dropdown.Menu>
                 </div>
