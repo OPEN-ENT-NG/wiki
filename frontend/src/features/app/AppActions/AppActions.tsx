@@ -19,6 +19,7 @@ import { useWikiActions } from '~/store/wiki';
 export type ActionDropdownMenuOptions = {
   id: string;
   visibility: boolean;
+  className?: string;
 } & DropdownMenuOptions;
 
 export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
@@ -72,22 +73,26 @@ export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
           />
 
           <Dropdown.Menu>
-            {dropdownOptions.map((option) => (
-              <Fragment key={option.id}>
-                {option.type === 'divider' ? (
-                  <Dropdown.Separator />
-                ) : (
-                  option.visibility && (
-                    <Dropdown.Item
-                      icon={option.icon}
-                      onClick={() => option.action(null)}
-                    >
-                      {option.label}
-                    </Dropdown.Item>
-                  )
-                )}
-              </Fragment>
-            ))}
+            <Dropdown.MenuGroup
+              label={t('wiki.app.actions.dropdown.menugroup.label')}
+            >
+              {dropdownOptions.map((option) => (
+                <Fragment key={option.id}>
+                  {option.type === 'divider' ? (
+                    <Dropdown.Separator />
+                  ) : (
+                    option.visibility && (
+                      <Dropdown.Item
+                        icon={option.icon}
+                        onClick={() => option.action(null)}
+                      >
+                        {option.label}
+                      </Dropdown.Item>
+                    )
+                  )}
+                </Fragment>
+              ))}
+            </Dropdown.MenuGroup>
           </Dropdown.Menu>
         </div>
       )}

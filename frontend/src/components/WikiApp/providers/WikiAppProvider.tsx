@@ -1,10 +1,10 @@
-import { WikiAction } from '../WikiApp';
+import { ActionDropdownMenuOptions } from '~/features';
 import { WikiAppContext } from './WikiAppProvider.context';
 
 export interface WikiAppProviderProps {
   wikiId?: string;
   header?: boolean;
-  actions?: WikiAction[];
+  actions?: ActionDropdownMenuOptions[];
   children: React.ReactNode;
 }
 

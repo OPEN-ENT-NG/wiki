@@ -118,6 +118,7 @@ export const PageHeader = ({
       icon: <IconDelete />,
       action: () => setOpenDeleteModal(true),
       visibility: (canContrib && user?.userId === page.author) || canManage,
+      className: 'text-danger-800',
     },
   ];
 
@@ -153,24 +154,28 @@ export const PageHeader = ({
                     variant="outline"
                     icon={<IconOptions />}
                   />
-
                   <Dropdown.Menu>
-                    {dropdownOptions.map((option) => (
-                      <Fragment key={option.id}>
-                        {option.type === 'divider' ? (
-                          <Dropdown.Separator />
-                        ) : (
-                          option.visibility && (
-                            <Dropdown.Item
-                              icon={option.icon}
-                              onClick={() => option.action(null)}
-                            >
-                              {option.label}
-                            </Dropdown.Item>
-                          )
-                        )}
-                      </Fragment>
-                    ))}
+                    <Dropdown.MenuGroup
+                      label={t('wiki.page.dropdown.menugroup.label')}
+                    >
+                      {dropdownOptions.map((option) => (
+                        <Fragment key={option.id}>
+                          {option.type === 'divider' ? (
+                            <Dropdown.Separator />
+                          ) : (
+                            option.visibility && (
+                              <Dropdown.Item
+                                icon={option.icon}
+                                className={option.className}
+                                onClick={() => option.action(null)}
+                              >
+                                {option.label}
+                              </Dropdown.Item>
+                            )
+                          )}
+                        </Fragment>
+                      ))}
+                    </Dropdown.MenuGroup>
                   </Dropdown.Menu>
                 </div>
               )}

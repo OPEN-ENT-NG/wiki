@@ -13,19 +13,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { LoadingScreen } from '@edifice.io/react';
 import { wikiRoutes } from '~/routes';
 import WikiAppProvider from './providers/WikiAppProvider';
-
-export interface WikiAction {
-  id: string;
-  label: string;
-  icon: JSX.Element;
-  action: () => void;
-  visibility: boolean;
-}
+import { ActionDropdownMenuOptions } from '~/features';
 
 export interface WikiAppProps {
   wikiId: string;
   header?: boolean;
-  actions?: WikiAction[];
+  actions?: ActionDropdownMenuOptions[];
   className?: string;
 }
 
