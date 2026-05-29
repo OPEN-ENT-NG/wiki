@@ -10,19 +10,19 @@
   </parent>
   <groupId>net.atos</groupId>
   <artifactId>wiki</artifactId>
-  <version>3.5-SNAPSHOT</version>
+  <version>3.6.0</version>
   <scm>
     <connection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</connection>
     <developerConnection>scm:git:https://github.com/OPEN-ENT-NG/wiki.git</developerConnection>
     <url>https://github.com/OPEN-ENT-NG/wiki</url>
   </scm>
   <properties>
-    <entcore.version>6.14-SNAPSHOT</entcore.version>
+    <entcore.version>6.15.0</entcore.version>
     <wiki-generator.version>0.2.1-alpha.5</wiki-generator.version>
-    <modMongoVersion>4.1-SNAPSHOT</modMongoVersion>
-    <modJsonSchemaValidatorVersion>2.1-SNAPSHOT</modJsonSchemaValidatorVersion>
-    <entCoreLibsVersion>6.14-SNAPSHOT</entCoreLibsVersion>
-    <entCoreVersion>6.14-SNAPSHOT</entCoreVersion>
+    <modMongoVersion>4.2.0</modMongoVersion>
+    <modJsonSchemaValidatorVersion>2.2.0</modJsonSchemaValidatorVersion>
+    <entCoreLibsVersion>6.15.0</entCoreLibsVersion>
+    <entCoreVersion>6.15.0</entCoreVersion>
   </properties>
   <repositories>
     <repository>
