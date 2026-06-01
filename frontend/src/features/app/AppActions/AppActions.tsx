@@ -3,6 +3,7 @@ import {
   DropdownMenuOptions,
   IconButton,
   IconButtonProps,
+  useEdificeClient,
 } from '@edifice.io/react';
 import {
   IconOptions,
@@ -25,7 +26,8 @@ export type ActionDropdownMenuOptions = {
 export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
   const userRights = useUserRights();
 
-  const { t } = useTranslation();
+  const { appCode } = useEdificeClient();
+  const { t } = useTranslation(appCode);
   const { setOpenShareModal, setOpenUpdateModal, setOpenPrintModal } =
     useWikiActions();
 

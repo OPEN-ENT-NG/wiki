@@ -134,7 +134,9 @@ export const PagesAssistantAIStep4StructureResult = () => {
                   </span>
                 </Flex>
                 <Alert type="warning">
-                  {t('wiki.assistant.ai.step4.structure.result.warning')}
+                  {t('wiki.assistant.ai.step4.structure.result.warning', {
+                    ns: appCode,
+                  })}
                 </Alert>
               </div>
             </Grid.Col>
