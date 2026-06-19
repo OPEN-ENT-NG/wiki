@@ -28,27 +28,30 @@ export const AppActions = ({ canPrint }: { canPrint: boolean }) => {
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
+
+  const { t: portalTranslation } = useTranslation();
+
   const { setOpenShareModal, setOpenUpdateModal, setOpenPrintModal } =
     useWikiActions();
 
   const dropdownOptions: ActionDropdownMenuOptions[] = [
     {
       id: 'share',
-      label: t('share'),
+      label: portalTranslation('share'),
       icon: <IconShare />,
       action: () => setOpenShareModal(true),
       visibility: userRights.manager,
     },
     {
       id: 'properties',
-      label: t('properties'),
+      label: portalTranslation('properties'),
       icon: <IconSettings />,
       action: () => setOpenUpdateModal(true),
       visibility: userRights.manager,
     },
     {
       id: 'print',
-      label: t('print'),
+      label: portalTranslation('print'),
       icon: <IconPrint />,
       action: () => setOpenPrintModal(true),
       visibility: true,
