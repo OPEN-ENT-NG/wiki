@@ -87,4 +87,18 @@ describe('PageHeader component', () => {
     const editButton = screen.queryByRole('button', { name: 'wiki.page.edit' });
     expect(editButton).not.toBeInTheDocument();
   });
+
+  it('should not render edit button before rights are loaded', () => {
+    mocks.useUserRights.mockReturnValue({
+      contrib: false,
+      creator: false,
+      manager: false,
+      read: false,
+    });
+
+    render(<PageHeader page={mockWikiWithOnePage.pages[0]} />);
+
+    const editButton = screen.queryByRole('button', { name: 'wiki.page.edit' });
+    expect(editButton).not.toBeInTheDocument();
+  });
 });
