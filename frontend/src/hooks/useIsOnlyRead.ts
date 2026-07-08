@@ -4,10 +4,7 @@ export const useIsOnlyRead = () => {
   const userRights = useUserRights();
 
   const isOnlyRead =
-    userRights.read &&
-    !userRights.contrib &&
-    !userRights.creator &&
-    !userRights.manager;
+    !userRights.contrib && !userRights.creator && !userRights.manager;
 
   return isOnlyRead;
 };
