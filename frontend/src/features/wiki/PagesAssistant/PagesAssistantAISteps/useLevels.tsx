@@ -1158,6 +1158,8 @@ export const useLevels = () => {
             'Innovations scientifiques et responsabilité',
             'Diversité et inclusion',
             'Territoire et mémoire',
+            'La richesse des métissages dans le monde hispanique',
+            'Enjeux et formes de communication',
           ],
         },
         {
