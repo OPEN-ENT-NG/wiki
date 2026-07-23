@@ -54,7 +54,7 @@ export const PagesAssistantAIStep4StructureResult = () => {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, []);
+  }, [params.wikiId]);
 
   const handleCancelButtonClick = () => {
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });

@@ -20,6 +20,8 @@
     "integration-mode": "{{ integration_mode|default('HTTP') }}",
     "mode": "prod",
     "pagination-limit": {{ wikiPaginationLimit | default(5) }},
-    "searching-event": {{ wikiSearchingEvent | default('true') }}
+    "searching-event": {{ wikiSearchingEvent | default('true') }},
+    "publicConf": {
+      "screeb-app-id": "{{ screebAppId | default('') }}"
   }
 }
