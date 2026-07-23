@@ -65,6 +65,7 @@
   "wiki.assistant.ai.step1.level.lycee": "Lycée",
   "wiki.assistant.ai.step1.select.level": "-- Choisir un niveau --",
   "wiki.assistant.ai.step1.select.sequence": "-- Choisir une séquence --",
+  "wiki.assistant.ai.step1.button.add.sequence": "Suggérer une séquence",
   "wiki.assistant.ai.step1.select.subject": "-- Choisir une matière ou une spécialité --",
   "wiki.assistant.ai.step1.sequence": "Séquence pédagogique",
   "wiki.assistant.ai.step1.subject": "Matières et spécialités",

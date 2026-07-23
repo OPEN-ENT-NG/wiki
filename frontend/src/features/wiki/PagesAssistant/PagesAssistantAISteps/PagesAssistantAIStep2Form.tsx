@@ -1,10 +1,10 @@
 import {
   Button,
+  Dropdown,
   Flex,
   FormControl,
   Input,
   Label,
-  Select,
   Stepper,
   useEdificeClient,
 } from '@edifice.io/react';
@@ -94,21 +94,45 @@ export const PagesAssistantAIStep2Form = () => {
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { value, onChange } }) => (
-                    <Select
+                    <Dropdown
+                      block
                       data-testid="wiki.assistant.ai.step1.select.sequence"
-                      size="md"
-                      selectedValue={value}
-                      onValueChange={(v) => {
-                        onChange(v);
-                      }}
-                      options={availableSequences}
-                      placeholderOption={t(
-                        'wiki.assistant.ai.step1.select.sequence',
-                        {
-                          ns: appCode,
-                        },
-                      )}
-                    />
+                    >
+                      <Dropdown.Trigger
+                        size="md"
+                        label={
+                          <span className="text-truncate">
+                            {value ||
+                              t('wiki.assistant.ai.step1.select.sequence', {
+                                ns: appCode,
+                              })}
+                          </span>
+                        }
+                      />
+                      <Dropdown.Menu role="listbox">
+                        {availableSequences.map((sequence) => (
+                          <Dropdown.Item
+                            key={sequence}
+                            type="action"
+                            onClick={() => onChange(sequence)}
+                          >
+                            {sequence}
+                          </Dropdown.Item>
+                        ))}
+                        <Flex justify="center" className="mt-8">
+                          <Button
+                            data-testid="suggest-sequence-cours-IA"
+                            type="button"
+                            color="secondary"
+                            variant="filled"
+                          >
+                            {t('wiki.assistant.ai.step1.button.add.sequence', {
+                              ns: appCode,
+                            })}
+                          </Button>
+                        </Flex>
+                      </Dropdown.Menu>
+                    </Dropdown>
                   )}
                 />
               </div>

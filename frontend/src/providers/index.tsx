@@ -1,5 +1,9 @@
 import { ERROR_CODE } from '@edifice.io/client';
-import { EdificeClientProvider, EdificeThemeContext } from '@edifice.io/react';
+import {
+  EdificeClientProvider,
+  EdificeScreebProvider,
+  EdificeThemeContext,
+} from '@edifice.io/react';
 import {
   QueryCache,
   QueryClient,
@@ -35,7 +39,9 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'wiki',
         }}
       >
-        <WikiAppProvider header={true}>{children}</WikiAppProvider>
+        <EdificeScreebProvider>
+          <WikiAppProvider header={true}>{children}</WikiAppProvider>
+        </EdificeScreebProvider>
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
