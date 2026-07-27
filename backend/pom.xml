@@ -17,12 +17,12 @@
     <url>https://github.com/OPEN-ENT-NG/wiki</url>
   </scm>
   <properties>
-    <entcore.version>6.16-develop-enabling-SNAPSHOT</entcore.version>
+    <entcore.version>6.16-SNAPSHOT</entcore.version>
     <wiki-generator.version>1.0.3-alpha-7</wiki-generator.version>
     <modMongoVersion>4.2-SNAPSHOT</modMongoVersion>
     <modJsonSchemaValidatorVersion>2.2-SNAPSHOT</modJsonSchemaValidatorVersion>
     <entCoreLibsVersion>6.16-SNAPSHOT</entCoreLibsVersion>
-    <entCoreVersion>6.16-develop-enabling-SNAPSHOT</entCoreVersion>
+    <entCoreVersion>6.16-SNAPSHOT</entCoreVersion>
   </properties>
   <repositories>
     <repository>
