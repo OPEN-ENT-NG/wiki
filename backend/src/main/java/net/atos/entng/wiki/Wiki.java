@@ -81,7 +81,7 @@ public class Wiki extends BaseServer {
 		super.start(promise);
         listeners.clear();
 		promise.future()
-				.compose(init -> SharedDataHelper.getInstance().getMulti("server", "content-transformer"))
+				.compose(init -> SharedDataHelper.getInstance().getLocalMulti("server", "content-transformer"))
 				.compose(this::initWiki)
 				.onComplete(startPromise);
 	}
