@@ -8,12 +8,10 @@ import {
 } from '@edifice.io/react';
 import {
   IconAiFill,
-  IconArrowRight,
   IconEdit,
   IconTextPage,
   IconWand,
 } from '@edifice.io/react/icons';
-import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -23,8 +21,8 @@ import {
 } from '~/store/assistant';
 import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
-import { wikiQueryOptions } from '~/services';
 import { odeServices } from '@edifice.io/client';
+import { ButtonAIScreebActivate } from './ButtonAIScreebActivate';
 
 export const PagesAssistantAIStep4StructureResult = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -35,7 +33,6 @@ export const PagesAssistantAIStep4StructureResult = () => {
   const { setFormValues } = usePagesAssistantActions();
   const params = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
@@ -59,26 +56,6 @@ export const PagesAssistantAIStep4StructureResult = () => {
   const handleCancelButtonClick = () => {
     setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
     navigate(`/id/${params.wikiId}/pages/assistant`);
-  };
-
-  const handleGoToWiki = async () => {
-    if (!params.wikiId) {
-      return;
-    }
-
-    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
-
-    // force query invalidation and fetch again before navigating to the wiki page
-    await queryClient.invalidateQueries({
-      queryKey: wikiQueryOptions.findOne(params.wikiId).queryKey,
-    });
-    await queryClient.fetchQuery(wikiQueryOptions.findOne(params.wikiId));
-
-    if (generatedWiki?.pages?.length) {
-      navigate(`/id/${params.wikiId}/page/${generatedWiki.pages[0]._id}`);
-    } else {
-      navigate(`/id/${params.wikiId}`);
-    }
   };
 
   return (
@@ -179,18 +156,8 @@ export const PagesAssistantAIStep4StructureResult = () => {
                   disabled={true}
                 ></AIButton>
               )}
-              {contentFinished && (
-                <AIButton
-                  onClick={handleGoToWiki}
-                  rightIcon={<IconArrowRight color="#ECBE30" />}
-                >
-                  {t(
-                    'wiki.assistant.ai.step4.structure.result.wait.button.finished',
-                    {
-                      ns: appCode,
-                    },
-                  )}
-                </AIButton>
+              {contentFinished && generatedWiki && (
+                <ButtonAIScreebActivate generatedWiki={generatedWiki} />
               )}
             </Flex>
           </div>

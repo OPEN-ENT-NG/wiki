@@ -15,7 +15,11 @@ import {
   usePagesAssistantActions,
 } from '~/store/assistant';
 import { Controller, useForm } from 'react-hook-form';
-import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
+import {
+  IconPlus,
+  IconRafterLeft,
+  IconRafterRight,
+} from '@edifice.io/react/icons';
 import { Form, useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useSubjects } from './useSubjects';
@@ -124,7 +128,9 @@ export const PagesAssistantAIStep2Form = () => {
                             data-testid="suggest-sequence-cours-IA"
                             type="button"
                             color="secondary"
-                            variant="filled"
+                            variant="outline"
+                            style={{ width: '100%' }}
+                            leftIcon={<IconPlus />}
                           >
                             {t('wiki.assistant.ai.step1.button.add.sequence', {
                               ns: appCode,
