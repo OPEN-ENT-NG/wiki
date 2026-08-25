@@ -31,7 +31,13 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const Providers = ({ children }: { children: ReactNode }) => {
+export const Providers = ({
+  children,
+  withScreeb = true,
+}: {
+  children: ReactNode;
+  withScreeb?: boolean;
+}) => {
   return (
     <QueryClientProvider client={queryClient}>
       <EdificeClientProvider
@@ -39,9 +45,13 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'wiki',
         }}
       >
-        <EdificeScreebProvider>
+        {withScreeb ? (
+          <EdificeScreebProvider>
+            <WikiAppProvider header={true}>{children}</WikiAppProvider>
+          </EdificeScreebProvider>
+        ) : (
           <WikiAppProvider header={true}>{children}</WikiAppProvider>
-        </EdificeScreebProvider>
+        )}
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
@@ -59,7 +69,7 @@ export const CustomProviders = ({
   } as any;
 
   return (
-    <Providers>
+    <Providers withScreeb={false}>
       <EdificeThemeContext.Provider value={themeContextValue}>
         {children}
       </EdificeThemeContext.Provider>
