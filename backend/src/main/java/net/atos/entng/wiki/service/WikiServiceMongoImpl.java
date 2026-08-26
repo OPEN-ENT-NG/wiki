@@ -1591,6 +1591,15 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 
+    @Override
+    public Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent) {
+        final Promise<String> promise = Promise.promise();
+
+        // TODO: implement
+
+        return promise.future();
+    }
+
 	@Override
 	public Future<Void> updateWikiStructureFromAI(String wikiId, CourseHierarchy structure) {
 		final Promise<Void> promise = Promise.promise();

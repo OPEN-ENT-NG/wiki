@@ -26,10 +26,7 @@ import java.util.Set;
 
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
-import net.atos.entng.wiki.to.PageId;
-import net.atos.entng.wiki.to.PageListRequest;
-import net.atos.entng.wiki.to.PageListResponse;
-import net.atos.entng.wiki.to.WikiGenerateRequest;
+import net.atos.entng.wiki.to.*;
 import org.entcore.common.audience.AudienceRightChecker;
 import org.entcore.common.user.UserInfos;
 import io.vertx.core.Handler;
@@ -52,6 +49,17 @@ public interface WikiService extends AudienceRightChecker {
      * @return Future with the generated wiki ID.
      */
 	Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent);
+
+    /**
+     * Use AI to generate a wiki instance based on a provided pdf file.
+     *
+     * @param user      The user requesting wiki generation.
+     * @param dto       The DTO containing all required fields for pdf transformation (file address, TODO more params ?)
+     * @param sessionId The session ID extracted from the HTTP request.
+     * @param userAgent The User-Agent string extracted from the HTTP request.
+     * @return Future with the generated wiki ID.
+     */
+    Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent);
 
 	default void getWiki(String id, Handler<Either<String, JsonObject>> handler){
 		getWiki(id, false, handler);

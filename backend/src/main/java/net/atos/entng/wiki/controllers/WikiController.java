@@ -20,7 +20,6 @@
 package net.atos.entng.wiki.controllers;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,10 +33,10 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.NotificationServiceImpl;
 import net.atos.entng.wiki.service.WikiService;
 
-import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import net.atos.entng.wiki.to.PageId;
 import net.atos.entng.wiki.to.PageListRequest;
 import net.atos.entng.wiki.to.WikiGenerateRequest;
+import net.atos.entng.wiki.to.WikiPdfImportRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
@@ -851,6 +850,25 @@ public class WikiController extends MongoDbControllerHelper {
 			});
 		});
 	}
+
+    @Post("/generate/from-pdf")
+    @ApiDoc("Generate a wiki by importing a pdf using AI")
+    @SecuredAction("wiki.generate")
+    public void generateFromPdf(final HttpServerRequest request) {
+        UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user ->
+            RequestUtils.bodyToJson(request, pathPrefix + "wikiPdfImport", payload -> {
+                WikiPdfImportRequest dto = WikiPdfImportRequest.fromJson(payload);
+                final String userAgent = Optional.ofNullable(request.getHeader("User-Agent")).orElse("");
+                final String sessionId = UserUtils.getSessionId(request).orElse("");
+                wikiService.generateFromPdf(user, dto, sessionId, userAgent)
+                    .onSuccess(wikiId -> renderJson(request, new JsonObject().put("wikiId", wikiId)))
+                    .onFailure(err -> {
+                        log.error("Error generating wiki from pdf", err);
+                        renderJson(request, new JsonObject().put("error", err.getMessage()), 500);
+                    });
+            })
+        );
+    }
 
 	private void deleteRevisions(final String idWiki, final String idPage) {
 		wikiService.deleteRevisions(idWiki, idPage, new Handler<Either<String, JsonObject>>() {
