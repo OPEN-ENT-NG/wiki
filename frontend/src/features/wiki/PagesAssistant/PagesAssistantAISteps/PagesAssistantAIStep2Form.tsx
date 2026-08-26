@@ -131,6 +131,7 @@ export const PagesAssistantAIStep2Form = () => {
                             variant="outline"
                             style={{ width: '100%' }}
                             leftIcon={<IconPlus />}
+                            onClick={() => {}}
                           >
                             {t('wiki.assistant.ai.step1.button.add.sequence', {
                               ns: appCode,

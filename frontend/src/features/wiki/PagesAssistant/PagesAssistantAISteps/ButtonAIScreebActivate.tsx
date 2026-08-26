@@ -30,9 +30,8 @@ export const ButtonAIScreebActivate = ({
 
     const surveyHooks = {
       version: '1.0.0',
-      onSurveyCompleted: (payload: unknown) =>
-        console.log('responses:', payload),
-      onSurveyHidden: (payload: unknown) => console.log('dismissed:', payload),
+      onSurveyCompleted: () => {},
+      onSurveyHidden: () => {},
     } as any;
 
     window.setTimeout(() => {
