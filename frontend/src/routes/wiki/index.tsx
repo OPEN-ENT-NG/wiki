@@ -44,26 +44,25 @@ import { NewPage } from '~/features/wiki/NewPage/NewPage';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview/DropdownTreeview';
 import { WikiEmptyScreen } from '~/features';
 import { useWikiAppContext } from '~/components/WikiApp/providers/WikiAppProvider.hook';
+import WikiUnauthorizedScreen from '~/features/wiki/WikiUnauthorizedScreen/WikiUnauthorizedScreen';
 
 export const loader =
   (queryClient: QueryClient) =>
   async ({ params }: LoaderFunctionArgs) => {
-    const data = await queryClient.ensureQueryData(
-      wikiQueryOptions.findOne(params.wikiId!),
-    );
+    try {
+      const data = await queryClient.ensureQueryData(
+        wikiQueryOptions.findOne(params.wikiId!),
+      );
 
-    const userRights = await checkUserRight(data.rights, 'comment');
-    const { setUserRights } = getUserRightsActions();
-    setUserRights(userRights);
+      const userRights = await checkUserRight(data.rights, 'comment');
+      const { setUserRights } = getUserRightsActions();
+      setUserRights(userRights);
 
-    /* if (odeServices.http().isResponseError()) {
-      throw new Response('', {
-        status: odeServices.http().latestResponse.status,
-        statusText: odeServices.http().latestResponse.statusText,
-      });
-    } */
-
-    return data;
+      return data;
+    } catch {
+      // let Index render depending on isError instead of bubbling up to errorElement
+      return null;
+    }
   };
 
 export const Index = () => {
@@ -86,7 +85,7 @@ export const Index = () => {
   const { data: menu, handleOnMenuClick } = useMenu({
     onMenuClick: setSelectedNodeId,
   });
-  const { data, refetch } = useGetWiki(params.wikiId!);
+  const { data, refetch, isError } = useGetWiki(params.wikiId!);
 
   const hasPages = data && data?.pages?.length > 0;
 
@@ -144,6 +143,8 @@ export const Index = () => {
 
   /** Polling to check if AI content generation is finished */
   useEffect(() => {
+    if (isError) return;
+
     const interval = setInterval(() => {
       const generatingContentPages = data?.pages?.filter(
         (page) => page.aiMetadata && !page.aiMetadata.contentGenerated,
@@ -158,7 +159,7 @@ export const Index = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [refetch, data]);
+  }, [refetch, data, isError]);
 
   /** returns true if page content is ready (manual page or generated AI content that is ready) */
   const isNodeContentReady = useCallback(
@@ -166,6 +167,10 @@ export const Index = () => {
       !node.aiMetadata || (node.aiMetadata && node.aiMetadata.contentGenerated),
     [],
   );
+
+  if (isError) {
+    return <WikiUnauthorizedScreen />;
+  }
 
   return (
     <>
