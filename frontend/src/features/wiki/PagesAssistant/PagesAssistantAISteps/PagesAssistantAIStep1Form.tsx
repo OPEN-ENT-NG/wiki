@@ -108,15 +108,14 @@ export const PagesAssistantAIStep1Form = () => {
                         })}
                       </p>
                       <Flex gap="8">
-                        {collegeLevels.map((level, index) => (
+                        {collegeLevels.map((level) => (
                           <Controller
-                            key={index}
+                            key={level.value}
                             name="level"
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
                               <SimpleRadioCard
-                                key={index}
                                 label={level.value}
                                 value={level.value}
                                 groupName="levels"
@@ -140,15 +139,14 @@ export const PagesAssistantAIStep1Form = () => {
                         })}
                       </p>
                       <Flex gap="8">
-                        {lyceeLevels.map((level, index) => (
+                        {lyceeLevels.map((level) => (
                           <Controller
-                            key={index}
+                            key={level.value}
                             name="level"
                             control={control}
                             rules={{ required: true }}
                             render={({ field: { value, onChange } }) => (
                               <SimpleRadioCard
-                                key={index}
                                 label={level.value}
                                 value={level.value}
                                 groupName="levels"
@@ -172,16 +170,14 @@ export const PagesAssistantAIStep1Form = () => {
                     {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
                   </h3>
                   <Grid className="gap-12">
-                    {subjects.map((subject, index) => (
-                      <Grid.Col sm="2" md="4" lg="4" xl="4">
+                    {subjects.map((subject) => (
+                      <Grid.Col key={subject.value} sm="2" md="4" lg="4" xl="4">
                         <Controller
-                          key={index}
                           name="subject"
                           control={control}
                           rules={{ required: true }}
                           render={({ field: { value, onChange } }) => (
                             <SimpleRadioCard
-                              key={index}
                               label={subject.value}
                               value={subject.value}
                               image={subject.image}
