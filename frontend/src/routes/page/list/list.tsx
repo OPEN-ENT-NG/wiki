@@ -161,12 +161,14 @@ export const PageList = () => {
             })}
       </em>
       <span className="g-col-1">{formatDate(node.modified.$date)}</span>
-      <span className="g-col-1" data-testid="pageViewsSpan">
-        <ViewsCounter
-          viewsCounter={getPageViewCount(node._id)}
-          onClick={() => handleViewsCounterClick(node._id)}
-        />
-      </span>
+      {!isOnlyRead && (
+        <span className="g-col-1" data-testid="pageViewsSpan">
+          <ViewsCounter
+            viewsCounter={getPageViewCount(node._id)}
+            onClick={() => handleViewsCounterClick(node._id)}
+          />
+        </span>
+      )}
       {!isOnlyRead && (
         <div className="g-col-1 d-inline-grid">
           <Badge
@@ -201,17 +203,19 @@ export const PageList = () => {
           <p className="text-truncate text-truncate-2">{node.title}</p>
         </div>
         <div className="d-inline-grid">
-          <Badge
-            variant={{
-              type: 'content',
-              background: true,
-              level: node.isVisible ? 'warning' : 'info',
-            }}
-          >
-            {node.isVisible
-              ? t('wiki.table.body.visible')
-              : t('wiki.table.body.invisible')}
-          </Badge>
+          {!isOnlyRead && (
+            <Badge
+              variant={{
+                type: 'content',
+                background: true,
+                level: node.isVisible ? 'warning' : 'info',
+              }}
+            >
+              {node.isVisible
+                ? t('wiki.table.body.visible')
+                : t('wiki.table.body.invisible')}
+            </Badge>
+          )}
         </div>
       </div>
       <em className="text-gray-600">{formatDate(node.modified.$date)}</em>

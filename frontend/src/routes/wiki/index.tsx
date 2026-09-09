@@ -269,7 +269,7 @@ export const Index = () => {
             'd-flex': match && !isSmallDevice,
           })}
         >
-          {isSmallDevice && showNewPageButton && (
+          {isSmallDevice && (
             <>
               <DropdownTreeview
                 selectedNodeId={selectedNodeId}
@@ -278,7 +278,7 @@ export const Index = () => {
                   !isOnlyRead ? handleOnTreeItemCreateChildren : undefined
                 }
               />
-              {!isOnlyRead && <NewPage />}
+              {showNewPageButton && <NewPage />}
             </>
           )}
           {match && !hasPages && !isRedirecting ? (
