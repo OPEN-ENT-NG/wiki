@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   useIsAuthorOrManager: vi.fn(),
   useGetPagesViewsCounter: vi.fn(),
   useGetPageViewsDetails: vi.fn(),
+  useIsOnlyRead: vi.fn(),
 }));
 
 vi.mock('react-router-dom', async () => {
@@ -48,6 +49,11 @@ vi.mock('~/hooks/useIsAuthorOrManager', () => ({
   useIsAuthorOrManager: mocks.useIsAuthorOrManager,
 }));
 
+//mock isOnlyRead
+vi.mock('~/hooks/useIsOnlyRead', () => ({
+  useIsOnlyRead: mocks.useIsOnlyRead,
+}));
+
 describe('Pages List', () => {
   const mockedData = mockWikiPagesWithoutContent.pages
     ?.filter((page) => page.isVisible)
@@ -71,6 +77,7 @@ describe('Pages List', () => {
       isManagerOfWiki: true,
       isManagerOfSelectedPage: false,
     });
+    mocks.useIsOnlyRead.mockReturnValue(false);
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query) => ({
@@ -233,6 +240,14 @@ describe('Pages List', () => {
     const viewsCounterSpan = screen.getAllByTestId('pageViewsSpan');
 
     expect(viewsCounterSpan).toHaveLength(mockedData.length);
+  });
+
+  it('should not render pages views counter when user has only read rights', async () => {
+    mocks.useIsOnlyRead.mockReturnValue(true);
+
+    render(<PageList />);
+
+    expect(screen.queryByTestId('pageViewsSpan')).not.toBeInTheDocument();
   });
 
   describe('Views Modal', () => {
