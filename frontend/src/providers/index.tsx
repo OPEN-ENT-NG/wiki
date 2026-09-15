@@ -1,5 +1,9 @@
 import { ERROR_CODE } from '@edifice.io/client';
-import { EdificeClientProvider, EdificeThemeContext } from '@edifice.io/react';
+import {
+  EdificeClientProvider,
+  EdificeScreebProvider,
+  EdificeThemeContext,
+} from '@edifice.io/react';
 import {
   QueryCache,
   QueryClient,
@@ -27,7 +31,13 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const Providers = ({ children }: { children: ReactNode }) => {
+export const Providers = ({
+  children,
+  withScreeb = true,
+}: {
+  children: ReactNode;
+  withScreeb?: boolean;
+}) => {
   return (
     <QueryClientProvider client={queryClient}>
       <EdificeClientProvider
@@ -35,7 +45,13 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           app: 'wiki',
         }}
       >
-        <WikiAppProvider header={true}>{children}</WikiAppProvider>
+        {withScreeb ? (
+          <EdificeScreebProvider>
+            <WikiAppProvider header={true}>{children}</WikiAppProvider>
+          </EdificeScreebProvider>
+        ) : (
+          <WikiAppProvider header={true}>{children}</WikiAppProvider>
+        )}
       </EdificeClientProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
@@ -53,7 +69,7 @@ export const CustomProviders = ({
   } as any;
 
   return (
-    <Providers>
+    <Providers withScreeb={false}>
       <EdificeThemeContext.Provider value={themeContextValue}>
         {children}
       </EdificeThemeContext.Provider>
