@@ -8,6 +8,17 @@ import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { wikiQueryOptions } from '~/services';
 
+// useScreeb() throws when no ScreebProvider is mounted (i.e. no screeb-app-id
+// configured), instead of returning undefined gracefully. Guard it here so the
+// AI assistant keeps working normally when Screeb is not configured/enabled.
+const useSafeTriggerSurvey = () => {
+  try {
+    return useScreeb().triggerSurvey;
+  } catch {
+    return undefined;
+  }
+};
+
 export const ButtonAIScreebActivate = ({
   generatedWiki,
 }: {
@@ -19,7 +30,7 @@ export const ButtonAIScreebActivate = ({
   const params = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { triggerSurvey } = useScreeb();
+  const triggerSurvey = useSafeTriggerSurvey();
 
   const handleGoToWiki = async () => {
     if (!params.wikiId) {
@@ -34,9 +45,11 @@ export const ButtonAIScreebActivate = ({
       onSurveyHidden: () => {},
     } as any;
 
-    window.setTimeout(() => {
-      triggerSurvey('d4872bb4-7901-4a4f-8cee-4eb7872ad822', surveyHooks);
-    }, 30_000);
+    if (triggerSurvey) {
+      window.setTimeout(() => {
+        triggerSurvey('d4872bb4-7901-4a4f-8cee-4eb7872ad822', surveyHooks);
+      }, 30_000);
+    }
 
     // force query invalidation and fetch again before navigating to the wiki page
     await queryClient.invalidateQueries({
