@@ -46,6 +46,7 @@ import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.audience.to.AudienceCheckRightRequestMessage;
+import org.entcore.common.bus.WorkspaceHelper;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.bson.types.ObjectId;
 import org.entcore.common.explorer.IdAndVersion;
@@ -78,6 +79,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
 
 	private final AudienceHelper audienceHelper;
+    private final WorkspaceHelper workspaceHelper;
 	private final ResourceBrokerPublisher resourcePublisher;
 
 	private final EdificeWikiGeneratorPublisher aiWikiPublisher;
@@ -88,7 +90,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
                                 final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
 								final IContentTransformerEventRecorder contentTransformerEventRecorder,
-								final AudienceHelper audienceHelper) {
+								final AudienceHelper audienceHelper,
+                                final WorkspaceHelper workspaceHelper) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
@@ -97,6 +100,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		this.contentTransformerClient = contentTransformerClient;
 		this.contentTransformerEventRecorder = contentTransformerEventRecorder;
 		this.audienceHelper = audienceHelper;
+        this.workspaceHelper = workspaceHelper;
 		// Initialize resource publisher for deletion notifications
 		this.resourcePublisher = BrokerPublisherFactory.create(
 				ResourceBrokerPublisher.class,
@@ -1590,6 +1594,25 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		return promise.future();
 	}
+
+    @Override
+    public Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent) {
+        final Promise<String> promise = Promise.promise();
+
+        // TODO: implement
+        // 1. Upload pdf to wikigen bucket
+        // 2. Query wikigen
+        // 3. Receive structure -> create wiki
+        // 4. Receive page ->
+        //    - create page
+        //    - scan for images
+        //    - fetch any image from wikigen bucket
+        //    - add it to workspace
+        //    - replace link in the page content
+        //    - persist page
+
+        return promise.future();
+    }
 
 	@Override
 	public Future<Void> updateWikiStructureFromAI(String wikiId, CourseHierarchy structure) {

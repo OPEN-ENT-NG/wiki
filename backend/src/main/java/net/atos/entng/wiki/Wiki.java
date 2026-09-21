@@ -42,10 +42,12 @@ import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
 import net.atos.entng.wiki.service.poll.WikiPollService;
 import net.atos.entng.wiki.service.poll.WikiPollServiceMongoImpl;
+import org.apache.commons.lang3.tuple.Pair;
 import org.entcore.broker.api.ENTBrokerListener;
 import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.api.utils.BrokerProxyUtils;
 import org.entcore.common.audience.AudienceHelper;
+import org.entcore.common.bus.WorkspaceHelper;
 import org.entcore.common.editor.ContentTransformerEventRecorderFactory;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.entcore.common.explorer.IExplorerPluginClient;
@@ -57,6 +59,9 @@ import org.entcore.common.resources.ResourceBrokerRepositoryEvents;
 import org.entcore.common.service.impl.MongoDbSearchService;
 import org.entcore.common.share.ShareService;
 import org.entcore.common.share.impl.ShareBrokerListenerImpl;
+import org.entcore.common.storage.Storage;
+import org.entcore.common.storage.StorageFactory;
+import org.entcore.common.storage.impl.MongoDBApplicationStorage;
 import org.entcore.common.user.RepositoryEvents;
 
 import static java.util.Optional.empty;
@@ -68,6 +73,7 @@ public class Wiki extends BaseServer {
 	public static final String WIKI_COLLECTION = "wiki";
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
 	public static final String WIKI_POLLS_COLLECTION = "wikiPolls";
+    public static final String DOCUMENTS_COLLECTION = "documents";
 
 	private WikiExplorerPlugin plugin;
 
@@ -81,14 +87,18 @@ public class Wiki extends BaseServer {
 		super.start(promise);
         listeners.clear();
 		promise.future()
-				.compose(init -> SharedDataHelper.getInstance().getLocalMulti("server", "content-transformer"))
-				.compose(this::initWiki)
-				.onComplete(startPromise);
+            .compose(init -> SharedDataHelper.getInstance().getLocalMulti("server", "content-transformer"))
+            .compose(configMap ->
+                StorageFactory.build(vertx, config, new MongoDBApplicationStorage(DOCUMENTS_COLLECTION, Wiki.class.getSimpleName()))
+                    .map(storageFactory -> Pair.of(configMap, storageFactory)))
+            .compose(configPair -> initWiki(configPair.getLeft(), configPair.getRight()))
+            .onComplete(startPromise);
 	}
 
-	public Future<Void> initWiki(final Map<String, Object> wikiConfigMap){
+	public Future<Void> initWiki(final Map<String, Object> wikiConfigMap, StorageFactory storageFactory){
 
 		WikiConfig wikiConfig = new WikiConfig(config);
+        WorkspaceHelper workspaceHelper = new WorkspaceHelper(vertx.eventBus(), storageFactory.getStorage());
 
 		// Set Explorer Plugin
         final IExplorerPluginClient mainClient = IExplorerPluginClient.withBus(vertx, APPLICATION, WIKI_TYPE);
@@ -119,7 +129,8 @@ public class Wiki extends BaseServer {
 
             final String platformId = config.getString("platform-name", "unnamed-pf");
             // Pass the Explorer plugin, the Tiptap transformer and the event recorder to the Wiki Service
-            WikiService wikiService = new WikiServiceMongoImpl(vertx, platformId, WIKI_COLLECTION, this.plugin, contentTransformerClient, contentTransformerEventRecorder, audienceHelper);
+            WikiService wikiService = new WikiServiceMongoImpl(vertx, platformId, WIKI_COLLECTION, this.plugin,
+                contentTransformerClient, contentTransformerEventRecorder, audienceHelper, workspaceHelper);
 
             // Add Wiki Controller
             final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
