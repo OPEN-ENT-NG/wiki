@@ -62,8 +62,12 @@ public class AIWikiGeneratorListenerImpl extends AbstractEdificeWikiGeneratorLis
         log.info("Updating wiki content for wiki: " + wikiId);
         
         // Delegate to service
-        return wikiService.updateWikiContentFromAI(wikiId, courseResponse)
-            .onSuccess(v -> log.info("Wiki content updated successfully for wiki: " + wikiId))
-            .onFailure(err -> log.error("Failed to update wiki content for wiki: " + wikiId, err));
+        return wikiService.transformPage(courseResponse)
+            .otherwise(courseResponse)
+            .compose(transformedCourse ->
+            wikiService.updateWikiContentFromAI(wikiId, transformedCourse)
+                .onSuccess(v -> log.info("Wiki content updated successfully for wiki: " + wikiId))
+                .onFailure(err -> log.error("Failed to update wiki content for wiki: " + wikiId, err))
+        );
     }
 }

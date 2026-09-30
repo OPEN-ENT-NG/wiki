@@ -23,6 +23,7 @@ import static com.mongodb.client.model.Filters.*;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
 import fr.wseduc.transformer.to.ContentTransformerResponse;
 import fr.wseduc.webutils.Utils;
+import io.netty.handler.codec.http.HttpRequest;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
@@ -46,6 +48,7 @@ import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.proxy.ResourceBrokerPublisher;
 import org.entcore.common.audience.AudienceHelper;
 import org.entcore.common.audience.to.AudienceCheckRightRequestMessage;
+import org.entcore.common.bus.WorkspaceHelper;
 import org.entcore.common.editor.IContentTransformerEventRecorder;
 import org.bson.types.ObjectId;
 import org.entcore.common.explorer.IdAndVersion;
@@ -53,6 +56,7 @@ import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import org.entcore.common.share.ShareNormalizer;
 import org.entcore.common.share.ShareRoles;
+import org.entcore.common.storage.Storage;
 import org.entcore.common.user.UserInfos;
 import org.entcore.common.utils.StringUtils;
 import io.vertx.core.json.JsonArray;
@@ -78,7 +82,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
 
 	private final AudienceHelper audienceHelper;
+    private final WorkspaceHelper workspaceHelper;
 	private final ResourceBrokerPublisher resourcePublisher;
+
+    private final Storage wikiGenStorage;
 
 	private final EdificeWikiGeneratorPublisher aiWikiPublisher;
 
@@ -88,7 +95,9 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
                                 final String collection, final WikiExplorerPlugin plugin,
 								final IContentTransformerClient contentTransformerClient,
 								final IContentTransformerEventRecorder contentTransformerEventRecorder,
-								final AudienceHelper audienceHelper) {
+								final AudienceHelper audienceHelper,
+                                final WorkspaceHelper workspaceHelper,
+                                final Storage wikiGenStorage) {
 		super(collection);
 		this.collection = collection;
 		this.mongo = MongoDb.getInstance();
@@ -97,12 +106,14 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		this.contentTransformerClient = contentTransformerClient;
 		this.contentTransformerEventRecorder = contentTransformerEventRecorder;
 		this.audienceHelper = audienceHelper;
+        this.workspaceHelper = workspaceHelper;
 		// Initialize resource publisher for deletion notifications
 		this.resourcePublisher = BrokerPublisherFactory.create(
 				ResourceBrokerPublisher.class,
 				vertx,
 				new AddressParameter("application", Wiki.APPLICATION)
 		);
+        this.wikiGenStorage = wikiGenStorage;
 		this.aiWikiPublisher = new EdificeWikiGeneratorPublisher(vertx);
         this.plateformId = pfId;
 	}
@@ -1500,103 +1511,147 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 
 	}
-	
-	@Override
-	public Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent) {
-		final Promise<String> promise = Promise.promise();
 
-		if (dto.getWikiId() != null && !dto.getWikiId().trim().isEmpty()) {
-			final String wikiId = dto.getWikiId();
+    /**
+     * Verifies that a wiki exists AND is owned by given user
+     * @param wikiId ID of the wiki to lookup
+     * @param userId the user ID to test for wiki ownership
+     * @return the wiki ID if all checks are successful
+     */
+    private Future<String> checkWikiOwner(String wikiId, String userId) {
+        final Promise<String> promise = Promise.promise();
+        final Bson query = eq("_id", wikiId);
+        mongo.findOne(collection, MongoQueryBuilder.build(query), res -> {
+            final JsonObject body = res.body();
+            if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
+                promise.fail("wiki.id.notfound: " + wikiId);
+            }
+            final JsonObject existingWiki = body.getJsonObject("result");
+            final JsonObject owner = existingWiki.getJsonObject("owner", new JsonObject());
+            if (!userId.equals(owner.getString("userId"))) {
+                promise.fail("wiki.not.owner");
+            } else {
+                promise.complete(wikiId);
+            }
+        });
+        return promise.future();
+    }
 
-			final Bson query = eq("_id", wikiId);
-			mongo.findOne(collection, MongoQueryBuilder.build(query), res -> {
-				final JsonObject body = res.body();
-				if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
-					promise.fail("wiki.id.notfound: " + wikiId);
-					return;
-				}
+    private Future<JsonObject> mongoUpdate(JsonObject criteria, JsonObject objNew) {
+        final Promise<JsonObject> promise = Promise.promise();
+        mongo.update(collection, criteria, objNew, updateResult -> {
+            if ("ok".equals(updateResult.body().getString("status"))) {
+                promise.complete(updateResult.body());
+            } else {
+                promise.fail(updateResult.body().getString("message", "wiki.update.failed"));
+            }
+        });
+        return promise.future();
+    }
 
-				final JsonObject existingWiki = body.getJsonObject("result");
-				final JsonObject owner = existingWiki.getJsonObject("owner", new JsonObject());
+    @Override
+    public Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent) {
+        final String wikiId = dto.getWikiId();
+        return this.checkWikiOwner(
+            wikiId, user.getUserId()
+        ).compose(_wikiId -> {
+            final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
+            final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+            modifier.set("modified", MongoDb.now());
+            modifier.set("aiGenerated", true);
+            modifier.set("aiMetadata", new JsonObject()
+                .put("level", dto.getLevel())
+                .put("subject", dto.getSubject())
+                .put("sequence", dto.getSequence())
+                .put("keywords", dto.getKeywords())
+                .put("generationDate", MongoDb.now()));
+            return mongoUpdate(updateQuery, modifier.build());
+        }).compose( _updatedResult -> {
+            final ContentRequest contentRequest = new ContentRequest(
+                userAgent != null ? userAgent : "",
+                dto.getSequence(),
+                dto.getKeywords(),
+                dto.getLevel(),
+                plateformId,
+                sessionId != null ? sessionId : "",
+                dto.getSubject(),
+                user.getUserId(),
+                wikiId
+            );
+            return aiWikiPublisher.createWiki(contentRequest).compose(jobAccepted -> {
+                if(jobAccepted.isAccepted()) {
+                    log.info("AI wiki generation started for wiki: " + wikiId);
+                    return Future.succeededFuture(wikiId);
+                } else {
+                    final String errorStr = jobAccepted.getReason();
+                    log.info("AI wiki generation failed with error: " + errorStr);
+                    return Future.failedFuture(errorStr);
+                }
+            });
+        });
+    }
 
-				if (!user.getUserId().equals(owner.getString("userId"))) {
-					promise.fail("wiki.not.owner");
-					return;
-				}
+    private Future<String> transferFileToBucket(String fileId) {
+        final Promise<String> promise = Promise.promise();
+        this.workspaceHelper.readFile(fileId, fileBuffer -> { //TODO: implement streaming in WorkspaceHelper
+            if (fileBuffer != null) {
+                this.wikiGenStorage.writeBuffer(fileId, fileBuffer, Wiki.PDF_CONTENT_TYPE, fileId, uploadResult -> {
+                //this.wikiGenStorage.writeUploadFile(request, uploadResult -> {
+                    if ("ok".equals(uploadResult.getString("status"))) {
+                        promise.complete(uploadResult.getString("_id"));
+                    } else {
+                        promise.fail("An error occurred while uploading file: " + uploadResult);
+                    }
+                });
+            } else {
+                promise.fail("Unknown error occurred while reading file in " + this.workspaceHelper.getClass());
+            }
+        });
+        return promise.future();
+    }
 
-				final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
-				final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-				modifier.set("modified", MongoDb.now());
-				modifier.set("aiGenerated", true);
-				modifier.set("aiMetadata", new JsonObject()
-						.put("level", dto.getLevel())
-						.put("subject", dto.getSubject())
-						.put("sequence", dto.getSequence())
-						.put("keywords", dto.getKeywords())
-						.put("generationDate", MongoDb.now()));
-
-				mongo.update(collection, updateQuery, modifier.build(), updateResult -> {
-					if ("ok".equals(updateResult.body().getString("status"))) {
-						final ContentRequest contentRequest = new ContentRequest(
-								userAgent != null ? userAgent : "",
-								dto.getSequence(),
-								dto.getKeywords(),
-								dto.getLevel(),
-								plateformId,
-								sessionId != null ? sessionId : "",
-								dto.getSubject(),
-								user.getUserId(),
-								wikiId
-						);
-
-						aiWikiPublisher.createWiki(contentRequest);
-						log.info("AI wiki regeneration started for wiki: " + wikiId);
-						promise.complete(wikiId);
-					} else {
-						promise.fail(updateResult.body().getString("message", "wiki.update.failed"));
-					}
-				});
-			});
-		} else {
-			final JsonObject newWiki = new JsonObject()
-					.put("title", dto.getSubject())
-					.put("description", "")
-					.put("pages", new JsonArray())
-					.put("aiGenerated", true)
-					.put("aiMetadata", new JsonObject()
-							.put("level", dto.getLevel())
-							.put("subject", dto.getSubject())
-							.put("sequence", dto.getSequence())
-							.put("keywords", dto.getKeywords())
-							.put("generationDate", MongoDb.now()));
-
-			super.create(newWiki, user, createResult -> {
-				if (createResult.isRight()) {
-					final String wikiId = createResult.right().getValue().getString("_id");
-
-					final ContentRequest contentRequest = new ContentRequest(
-							userAgent != null ? userAgent : "",
-							dto.getSequence(),
-							dto.getKeywords(),
-							dto.getLevel(),
-							plateformId,
-							sessionId != null ? sessionId : "",
-							dto.getSubject(),
-							user.getUserId(),
-							wikiId
-					);
-
-					aiWikiPublisher.createWiki(contentRequest);
-					log.info("AI wiki generation started for wiki: " + wikiId);
-					promise.complete(wikiId);
-				} else {
-					promise.fail(createResult.left().getValue());
-				}
-			});
-		}
-
-		return promise.future();
-	}
+    @Override
+    public Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent) {
+        final String wikiId = dto.getWikiId();
+        return this.checkWikiOwner(wikiId, user.getUserId())
+            .compose(_wikiId -> {
+                final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
+                final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+                modifier.set("modified", MongoDb.now());
+                modifier.set("aiGenerated", true);
+                modifier.set("aiMetadata", new JsonObject()
+                    .put("pdfImport", true)
+                    .put("generationDate", MongoDb.now()));
+                return mongoUpdate(updateQuery, modifier.build());
+            }).compose( _updatedResult ->
+                this.transferFileToBucket(dto.getFileId())
+            ).compose( pdfFileS3Id -> {
+                final FileCheckRequest fileCheckRequest = new FileCheckRequest(
+                    pdfFileS3Id,
+                    plateformId,
+                    user.getUserId()
+                );
+                return aiWikiPublisher.checkFile(fileCheckRequest).compose(fileCheckResponse -> {
+                    final Promise<String> promise = Promise.promise();
+                    if(fileCheckResponse.isUsable()) {
+                        final ContentTransformRequest transformRequest = new ContentTransformRequest(
+                            userAgent != null ? userAgent : "",
+                            pdfFileS3Id,
+                            plateformId,
+                            sessionId != null ? sessionId : "",
+                            user.getUserId(),
+                            wikiId
+                        );
+                        aiWikiPublisher.transformWiki(transformRequest);
+                        log.info("Wiki PDF import started for wiki: " + wikiId);
+                        promise.complete(wikiId);
+                    } else {
+                        promise.fail("Pdf file is not usable: " + fileCheckResponse.getReason());
+                    }
+                    return promise.future();
+                });
+            });
+    }
 
 	@Override
 	public Future<Void> updateWikiStructureFromAI(String wikiId, CourseHierarchy structure) {
@@ -1672,6 +1727,80 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 
+    public Future<CourseResponse> transformPage(CourseResponse courseResponse) {
+        // If course is not from pdf import, no need to transform pages
+        if(!courseResponse.isFromPdf()) {
+            return Future.succeededFuture(courseResponse);
+        }
+
+        final Promise<CourseResponse> promise = Promise.promise();
+        // Generated course from AI is returning one page at a time, allowing frontend to stream content
+        final Course generatedWiki = courseResponse.getCourse();
+        // Get the single generated page
+        final Page generatedPage = generatedWiki.getPages().get(0);
+        // Get all images to process
+        final List<PageImage> images = generatedPage.getImages();
+        if(images.isEmpty()) {
+            return Future.succeededFuture(courseResponse);
+        }
+        // Read images from wikigen bucket, write them to workspace and return document id
+        List<Future> imageCopyFutures = new ArrayList<>();
+        for (final PageImage image : images) {
+            final Promise<String> imagePromise = Promise.promise();
+            this.wikiGenStorage.readFile(image.getId(), bufferRes -> {
+                if (bufferRes != null) {
+                    final UserInfos userInfos = new UserInfos();
+                    userInfos.setUsername(generatedPage.getAuthorName());
+                    userInfos.setUserId(generatedPage.getAuthor());
+                    final String imageName = generatedWiki.getTitle() + " " + generatedPage.getTitle() + " " + image.getName();
+                    final String contentType = image.getContentType();
+                    this.workspaceHelper.addDocument(bufferRes, contentType, userInfos, imageName, Wiki.APPLICATION,
+                        false, new JsonArray(), documentResult -> {
+                            if (documentResult.succeeded()) {
+                                String imagePath = documentResult.result().body().getString("_id");
+                                imagePromise.complete(imagePath);
+                            } else {
+                                imagePromise.fail(documentResult.cause());
+                            }
+                        });
+                } else {
+                    imagePromise.fail("Unknown error occurred while reading file in " + this.workspaceHelper.getClass());
+                }
+            });
+            imageCopyFutures.add(imagePromise.future());
+        }
+
+        // Wait for processing of all images, replace image url in the page's content and jsonContent
+        final CompositeFuture composite = CompositeFuture.join(imageCopyFutures);
+        composite.onComplete(_cf -> {
+            String content = generatedPage.getContent();
+            String jsonContentStr = JsonObject.mapFrom(generatedPage.getJsonContent()).toString();
+            for (int i = 0; i < composite.size(); i++) {
+                String id = "copy-failed";
+                if(composite.succeeded(i)) {
+                    id = composite.resultAt(i);
+                } else {
+                    // non-blocking failure: do replace the image url to not expose wikigen bucket url to users
+                    log.info("Failed to copy an image from the wiki page: " + generatedPage.getTitle());
+                }
+                final String oldPath = images.get(i).getUrl();
+                final String newPath = "/workspace/document/" + id;
+                content = content.replace(oldPath, newPath);
+                jsonContentStr = jsonContentStr.replace(oldPath, newPath);
+            }
+            try {
+                final JsonContent jsonContent = new JsonObject(jsonContentStr).mapTo(JsonContent.class);
+                final CourseResponse modifiedCourse = replacePageInCourseResponse(content, jsonContent, courseResponse);
+                promise.complete(modifiedCourse);
+            } catch(Error e) {
+                log.error(e.getStackTrace());
+                promise.fail("Failed to translate json content: " + e.getMessage());
+            }
+        }).onFailure(promise::fail);
+
+        return promise.future();
+    }
+
 	@Override
 	public Future<Void> updateWikiContentFromAI(String wikiId, CourseResponse courseResponse) {
 		final Promise<Void> promise = Promise.promise();
@@ -1708,11 +1837,12 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				for (int i = 0; i < existingPages.size(); i++) {
 					final JsonObject existingPage = existingPages.getJsonObject(i);
 					final String pageId = existingPage.getString("_id");
-					final String pageTitle = existingPage.getString("title");
+                    final String pageTitle = existingPage.getString("title");
+                    final Integer pagePosition = existingPage.getInteger("position");
 
 					if (pageTitle != null) {
 						titleToIdMap.put(pageTitle.toLowerCase().trim(), pageId);
-						titleToPositionMap.put(pageTitle.toLowerCase().trim(), i);
+						titleToPositionMap.put(pageTitle.toLowerCase().trim(), pagePosition);
 					}
 				}
 
@@ -1841,4 +1971,50 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
 		return page;
 	}
+
+    // Util method to change wiki page content, since we don't have setters in the DTO class
+    private static CourseResponse replacePageInCourseResponse(
+        String modifiedContent,
+        JsonContent modifiedJsonContent,
+        CourseResponse originalCourse
+    ) {
+        final Course wiki = originalCourse.getCourse();
+        final Page originalPage = wiki.getPages().get(0);
+        final List<Page> pages = new ArrayList<>();
+        pages.add(new Page(
+            originalPage.getId(),
+            originalPage.getAuthor(),
+            originalPage.getAuthorName(),
+            modifiedContent,
+            originalPage.getContentVersion(),
+            originalPage.getCreated(),
+            new ArrayList<>(),
+            originalPage.isIsVisible(),
+            modifiedJsonContent,
+            originalPage.getLastContributer(),
+            originalPage.getLastContributerName(),
+            originalPage.getModified(),
+            originalPage.getPosition(),
+            originalPage.getTitle()
+        ));
+        return new CourseResponse(
+            new Course(
+                wiki.getId(),
+                wiki.getCreated(),
+                wiki.getDescription(),
+                wiki.getModified(),
+                wiki.getOwner(),
+                pages,
+                wiki.getThumbnail(),
+                wiki.getTitle()
+            ),
+            originalCourse.isFromPdf(),
+            originalCourse.getMessage(),
+            originalCourse.getModel(),
+            originalCourse.getStatus(),
+            originalCourse.getUsage(),
+            originalCourse.getVersion(),
+            originalCourse.getWikiId()
+        );
+    }
 }
