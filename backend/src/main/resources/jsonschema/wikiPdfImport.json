@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "fileId": {
+      "type": "string"
+    },
+    "wikiId": {
+      "type": "string"
+    }
+  },
+  "required": ["fileId", "wikiId"],
+  "additionalProperties": false
+}
