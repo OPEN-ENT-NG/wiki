@@ -29,7 +29,6 @@ import io.vertx.core.json.JsonObject;
 import net.atos.entng.wiki.broker.AIWikiGeneratorListenerImpl;
 import net.atos.entng.wiki.config.WikiConfig;
 import net.atos.entng.wiki.controllers.WikiController;
-import net.atos.entng.wiki.controllers.poll.WikiPollController;
 import net.atos.entng.wiki.explorer.WikiExplorerPlugin;
 import net.atos.entng.wiki.listeners.ResourceBrokerListenerImpl;
 import net.atos.entng.wiki.service.WikiRepositoryEvents;
@@ -40,8 +39,6 @@ import java.util.stream.Collectors;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
-import net.atos.entng.wiki.service.poll.WikiPollService;
-import net.atos.entng.wiki.service.poll.WikiPollServiceMongoImpl;
 import org.entcore.broker.api.ENTBrokerListener;
 import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.api.utils.BrokerProxyUtils;
@@ -67,7 +64,6 @@ public class Wiki extends BaseServer {
 
 	public static final String WIKI_COLLECTION = "wiki";
 	public static final String REVISIONS_COLLECTION = "wikiRevisions";
-	public static final String WIKI_POLLS_COLLECTION = "wikiPolls";
 
 	private WikiExplorerPlugin plugin;
 
@@ -124,13 +120,6 @@ public class Wiki extends BaseServer {
             // Add Wiki Controller
             final WikiController wikiController = new WikiController(WIKI_COLLECTION, wikiConfig, this.plugin, wikiService);
             addController(wikiController);
-
-            // Wiki Poll Service
-            WikiPollService wikiPollService = new WikiPollServiceMongoImpl(WIKI_POLLS_COLLECTION);
-
-            // Add WikiPoll Controller
-            final WikiPollController wikiPollController = new WikiPollController(WIKI_POLLS_COLLECTION, wikiPollService);
-            addController(wikiPollController);
 
             // Set Mongo Collection
             MongoDbConf.getInstance().setCollection(WIKI_COLLECTION);
