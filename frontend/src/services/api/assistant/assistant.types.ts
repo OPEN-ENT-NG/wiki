@@ -36,3 +36,12 @@ export interface PageStructure {
   // lastContributer: string;
   // lastContributerName: string;
 }
+
+export interface AssistantImportPDFRequest {
+  fileId: string;
+  wikiId: string;
+}
+
+export interface AssistantImportPDFResponse {
+  wikiId: string;
+}
