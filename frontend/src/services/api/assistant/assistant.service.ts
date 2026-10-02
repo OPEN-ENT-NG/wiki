@@ -1,6 +1,8 @@
 import {
   AssistantGenerateRequest,
   AssistantGenerateResponse,
+  AssistantImportPDFRequest,
+  AssistantImportPDFResponse,
 } from './assistant.types';
 import { odeServices } from '@edifice.io/client';
 
@@ -20,6 +22,20 @@ const createAssistantService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .post<AssistantGenerateResponse>(`${baseURL}/generate`, requestPayload);
+    return response;
+  },
+
+  /**
+   * Post the pdf import for AI Course generation
+   * @param requestPayload the request payload
+   * @returns
+   */
+  async importPDF(
+    requestPayload: AssistantImportPDFRequest,
+  ): Promise<AssistantImportPDFResponse> {
+    const response = await odeServices
+      .http()
+      .post<AssistantImportPDFResponse>(`${baseURL}/pdfimport`, requestPayload);
     return response;
   },
 });

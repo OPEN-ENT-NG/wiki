@@ -12,7 +12,7 @@ import { useUserRights } from '~/store';
 import { PagesAssistantManualCreationCard } from './PagesAssistantCards/PagesAssistantManualCreationCard';
 import { PagesAssistantAICard } from './PagesAssistantCards/PagesAssistantAICard';
 import { PagesAssistantLibraryCard } from './PagesAssistantCards/PagesAssistantLibraryCard';
-import { PagesAssistantImportPollCard } from './PagesAssistantCards/PagesAssistantImportPollCard';
+import { PagesAssistantImportPDFCard } from './PagesAssistantCards/PagesAssistantImportPdfCard';
 
 import './styles/styles.css';
 
@@ -57,7 +57,7 @@ export const PagesAssistantRoot = () => {
 
             {/* IMPORT */}
             <Grid.Col sm="4" md="8" lg="8" xl="6">
-              <PagesAssistantImportPollCard />
+              <PagesAssistantImportPDFCard />
             </Grid.Col>
           </Grid>
         </div>
