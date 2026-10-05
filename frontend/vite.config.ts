@@ -8,7 +8,7 @@ import {
   hashEdificeBootstrap,
   queryHashVersion,
 } from './plugins/vite-plugin-edifice';
-import { dependencies } from './package.json';
+import { dependencies, peerDependencies } from './package.json';
 
 export default ({ mode }: { mode: string }) => {
   // Checking environement files
@@ -71,6 +71,7 @@ export default ({ mode }: { mode: string }) => {
       treeshake: true,
       external: [
         ...Object.keys(dependencies || {}),
+        ...Object.keys(peerDependencies || {}),
         'react/jsx-runtime',
         /^@edifice\.(io|client|react|bootstrap)(\/.*)?$/,
         /^react(\/.*)?$/,
@@ -118,6 +119,15 @@ export default ({ mode }: { mode: string }) => {
           'node_modules/@edifice.io/bootstrap/dist/images',
         ),
       },
+      dedupe: [
+        'react',
+        'react-dom',
+        '@edifice.io/react',
+        '@edifice.io/client',
+        '@tanstack/react-query',
+        'react-hook-form',
+        'react-i18next',
+      ],
     },
 
     server: {
