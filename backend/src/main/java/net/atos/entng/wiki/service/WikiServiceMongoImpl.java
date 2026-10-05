@@ -672,26 +672,46 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 										futures.add(updateSubpagesVisibilityFuture);
 									}
 
-									// Create or update revision
-									// if page was not visible and is still not visible then we udpate the last revision
+									// revision creation future
+									final Future<Void> createRevisionFuture = this.createRevision(
+											idWiki,
+											idPage,
+											user,
+											page.getString("title", dbPage.getString("title")),
+											page.getString("content", dbPage.getString("content")),
+											page.getBoolean("isVisible", dbPage.getBoolean("isVisible")),
+											page.getInteger("position", dbPage.getInteger("position")));
+
+									// if page was not visible and is still not visible
 									if (Boolean.FALSE.equals(dbPage.getBoolean("isVisible"))
 											&& Boolean.FALSE.equals(page.getBoolean("isVisible"))) {
-										Future<Void> lastRevisionFuture = this.updateLastRevision(
-												idPage
-												, page.getString("title")
-												, page.getString("content")
-												, page.getBoolean("isVisible")
-												, page.getInteger("position"));
-										futures.add(lastRevisionFuture);
-									} else { // otherwise we create a new revision
-										final Future<Void> createRevisionFuture = this.createRevision(
-												idWiki,
-												idPage,
-												user,
-												page.getString("title", dbPage.getString("title")),
-												page.getString("content", dbPage.getString("content")),
-												page.getBoolean("isVisible", dbPage.getBoolean("isVisible")),
-												page.getInteger("position", dbPage.getInteger("position")));
+										this.getLastRevisionByPageId(idPage)
+												.onSuccess(lastRevisionRes -> {
+														JsonArray result = lastRevisionRes.getJsonArray("results");
+														// if page has at least one revision then we udpate the latest revision
+														if (!result.isEmpty()) {
+															JsonObject lastRevision = result.getJsonObject(0);
+															if (lastRevision != null
+																	&& !StringUtils.isEmpty(lastRevision.getString("_id"))) {
+																// update revision future
+																Future<Void> updateLastRevision = this.updateLastRevision(
+																		lastRevision,
+																		idPage
+																		, page.getString("title")
+																		, page.getString("content")
+																		, page.getBoolean("isVisible")
+																		, page.getInteger("position"));
+																futures.add(updateLastRevision);
+															}
+														} else {
+															// if no revision found then create a new revision
+															// (can be the case of a duplicated hidden page, see: #PEDAGO-4004)
+															log.info("[Wiki] No revisions found for pageId " + idPage +", a new revision will be created.");
+															futures.add(createRevisionFuture);
+														}
+												});
+									} else {
+										// otherwise we create a new revision
 										futures.add(createRevisionFuture);
 									}
 
@@ -1368,40 +1388,27 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 		return promise.future();
 	}
 
-	private Future<Void> updateLastRevision(String pageId, String pageTitle, String pageContent,
+	private Future<Void> updateLastRevision(JsonObject lastRevision, String pageId, String pageTitle, String pageContent,
 											boolean isVisible, Integer position) {
 		final Promise<Void> promise = Promise.promise();
 
-		Future<JsonObject> lastRevisionFuture = this.getLastRevisionByPageId(pageId);
-		lastRevisionFuture
-				.onSuccess(lastRevisionRes -> {
-					JsonArray result = lastRevisionRes.getJsonArray("results");
-					if (!result.isEmpty()) {
-						JsonObject lastRevision = result.getJsonObject(0);
+		final Bson query = eq("_id", lastRevision.getString("_id"));
 
-						final Bson query = eq("_id", lastRevision.getString("_id"));
+		final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+		modifier.set("title", pageTitle)
+				.set("content", pageContent)
+				.set("isVisible", isVisible)
+				.set("position", position)
+				.set("date", MongoDb.now());
 
-						final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
-						modifier.set("title", pageTitle)
-								.set("content", pageContent)
-								.set("isVisible", isVisible)
-								.set("position", position)
-								.set("date", MongoDb.now());
-
-						mongo.update(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), modifier.build(), res -> {
-							if ("ok".equals(res.body().getString("status"))) {
-								promise.complete();
-							} else {
-								log.error("Error updating revision " + lastRevision.getString("_id") + " - " + res.body().getString("message"));
-								promise.fail(res.body().getString("message"));
-							}
-						});
-					} else {
-						String errorMessage = "Error retrieving last revision of page: " + pageId;
-						log.error(errorMessage);
-						promise.fail(errorMessage);
-					}
-				});
+		mongo.update(REVISIONS_COLLECTION, MongoQueryBuilder.build(query), modifier.build(), res -> {
+			if ("ok".equals(res.body().getString("status"))) {
+				promise.complete();
+			} else {
+				log.error("Error updating revision " + lastRevision.getString("_id") + " - " + res.body().getString("message"));
+				promise.fail(res.body().getString("message"));
+			}
+		});
 
 		return promise.future();
 	}
