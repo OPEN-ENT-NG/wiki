@@ -76,6 +76,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	private final ShareNormalizer shareNormalizer;
 
 	private final IContentTransformerClient contentTransformerClient;
+	/** Optional transformer extensions used by wiki pages: H5P activity blocks (edifice-h5p). */
+	private static final Set<String> TRANSFORMATION_EXTENSIONS = Collections.singleton("h5p");
 
 	private final IContentTransformerEventRecorder contentTransformerEventRecorder;
 
@@ -432,7 +434,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			Set<ContentTransformerFormat> desiredFormats = new HashSet<>();
 			desiredFormats.add(ContentTransformerFormat.HTML);
 			desiredFormats.add(ContentTransformerFormat.JSON);
-			final ContentTransformerRequest transformerRequest = new ContentTransformerRequest(desiredFormats, 0, page.getString("content"), null);
+			final ContentTransformerRequest transformerRequest = new ContentTransformerRequest(desiredFormats, 0, page.getString("content"), null, TRANSFORMATION_EXTENSIONS);
 			contentTransformerClient.transform(transformerRequest)
 					.onComplete(response -> {
 						if (response.failed()) {
@@ -512,7 +514,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 							desiredFormats,
 							page.getInteger("contentVersion", 0),
 							page.getString("content", ""),
-							null
+							null,
+							TRANSFORMATION_EXTENSIONS
 					);
 
 					contentTransformerResponseFuture = this.contentTransformerClient
@@ -592,7 +595,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 					desiredFormats,
 					page.getInteger("contentVersion", 0),
 					page.getString("content", ""),
-					null
+					null,
+					TRANSFORMATION_EXTENSIONS
 			);
 
 			transformFuture = this.contentTransformerClient.transform(transformerRequest);

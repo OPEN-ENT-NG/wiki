@@ -33,6 +33,10 @@
     ]
   },
   "dependencies": {
+    "@edifice.io/bootstrap": "feat-h5p",
+    "@edifice.io/client": "feat-h5p",
+    "@edifice.io/h5p-frontend": "develop",
+    "@edifice.io/react": "feat-h5p",
     "@react-spring/web": "9.7.5",
     "@uidotdev/usehooks": "2.4.1",
     "clsx": "2.1.1",

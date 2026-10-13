@@ -16,6 +16,7 @@ import { ButtonGroup } from '~/components/ButtonGroup';
 import { CancelModal } from '~/components/CancelModal';
 import { Toggle } from '~/components/Toggle';
 import { MAX_TITLE_LENGTH } from '~/config/constants';
+import { useH5PExtensions } from '~/features/h5p/useH5PExtensions';
 import { useFormPage } from '~/hooks';
 import { useCancelPage } from '~/hooks/useCancelPage';
 import { Page } from '~/models';
@@ -47,6 +48,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
   } = useFormPage(page);
 
   const isToggleDisabled = disableToggle();
+  const h5p = useH5PExtensions('edit');
 
   const { handleOnButtonCancel, handleClosePage, isBlocked, blocker } =
     useCancelPage(isDirty, page);
@@ -111,6 +113,7 @@ export const FormPage = ({ page }: { page?: Page }) => {
             visibility="protected"
             onContentChange={handleContentChange}
             focus={null}
+            extensions={h5p.extensions}
           />
           <input type="hidden" {...register('content')} />
         </FormControl>
@@ -134,6 +137,8 @@ export const FormPage = ({ page }: { page?: Page }) => {
           </Button>
         </ButtonGroup>
       </Form>
+      {/* Outside the page form: the H5P editor must never submit it. */}
+      {h5p.modal}
       <Suspense>
         {isBlocked ? (
           <CancelModal

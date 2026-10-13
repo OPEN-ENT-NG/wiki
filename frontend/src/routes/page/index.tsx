@@ -28,6 +28,7 @@ import {
   MAX_REPLIES,
   MAX_REPLY_LENGTH,
 } from '~/config';
+import { useH5PExtensions } from '~/features/h5p/useH5PExtensions';
 import { DuplicateModal } from '~/features/page/DuplicateModal/DuplicateModal';
 import { MoveModal } from '~/features/page/MoveModal/MoveModal';
 import { PageHeader } from '~/features/page/PageHeader/PageHeader';
@@ -164,6 +165,7 @@ export const Page = () => {
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
+  const h5p = useH5PExtensions('read');
   const { setSelectedNodeId } = useTreeActions();
   const { getPageVersionFromRoute, getPageFromRoute } = useRevision();
   const { isPending, error, data, showComments, isRevision } =
@@ -300,6 +302,7 @@ export const Page = () => {
           variant="ghost"
           visibility="protected"
           focus={null}
+          extensions={h5p.extensions}
         />
       </div>
       <Flex justify="end">
