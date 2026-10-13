@@ -32,9 +32,10 @@
     ]
   },
   "dependencies": {
-    "@edifice.io/bootstrap": "develop",
-    "@edifice.io/client": "develop",
-    "@edifice.io/react": "develop",
+    "@edifice.io/bootstrap": "feat-h5p",
+    "@edifice.io/client": "feat-h5p",
+    "@edifice.io/h5p-frontend": "develop",
+    "@edifice.io/react": "feat-h5p",
     "@react-spring/web": "9.7.5",
     "@tanstack/react-query": "5.81.5",
     "@uidotdev/usehooks": "2.4.1",
