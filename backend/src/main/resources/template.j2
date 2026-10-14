@@ -21,6 +21,19 @@
     "mode": "prod",
     "pagination-limit": {{ wikiPaginationLimit | default(5) }},
     "searching-event": {{ wikiSearchingEvent | default('true') }},
+{% if wikiGenS3Host is defined %}
+    "wiki-gen": {
+      "s3": {
+        "uri": "{{ wikiGenS3Host }}",
+        "accessKey": "{{ wikiGenS3AccessKey }}",
+        "secretKey": "{{ wikiGenS3SecretKey }}",
+        "region": "{{ wikiGenS3Region }}",
+        "bucket": "{{ wikiGenS3Bucket }}",
+        "ssec": "{{ wikiGenS3ssec }}",
+        "flat": true
+      }
+    },
+{% endif %}
     "publicConf": {
       "screeb-app-id": "{{ screebAppId | default('') }}"
     }
