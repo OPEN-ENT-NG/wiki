@@ -121,7 +121,7 @@ export const usePagesAssistantImportPdfCard = () => {
 
     try {
       await assistantService.importPDF({
-        fileId: element._id,
+        fileId: element.file!,
         wikiId: wiki._id,
       });
 
