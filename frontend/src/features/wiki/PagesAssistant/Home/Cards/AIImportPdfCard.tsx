@@ -6,15 +6,15 @@ import {
 import { IconAiFill, IconUpload } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import AIButton from '~/components/AIButton/AIButton';
-import { usePagesAssistantImportPdfCard } from '~/features/wiki/PagesAssistant/PagesAssistantCards/usePagesAssistantImportPdfCard';
+import { useAIImportPdfCard } from './useAIImportPdfCard';
 
-export const PagesAssistantImportPDFCard = () => {
+export const AIImportPdfCard = () => {
   const {
     mediaLibraryRef,
     handleImportButtonClick,
     handleMediaLibrarySuccess,
     handleMediaLibraryCancel,
-  } = usePagesAssistantImportPdfCard();
+  } = useAIImportPdfCard();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
 

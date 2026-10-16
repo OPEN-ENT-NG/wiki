@@ -38,7 +38,7 @@ import {
   useTreeData,
 } from '~/store/treeview';
 import './index.css';
-import { PagesAssistantLeftPane } from '~/features/wiki/PagesAssistant/PagesAssistantLeftPane';
+import { LeftPane } from '~/features/wiki/PagesAssistant/Home/LeftPane';
 import { AppHeader } from '~/features/app/AppHeader/AppHeader';
 import { NewPage } from '~/features/wiki/NewPage/NewPage';
 import { DropdownTreeview } from '~/features/wiki/DropdownTreeview/DropdownTreeview';
@@ -202,7 +202,7 @@ export const Index = () => {
               </>
             ) : null}
 
-            {showPagesAssistantLeftPane && <PagesAssistantLeftPane />}
+            {showPagesAssistantLeftPane && <LeftPane />}
             {showNewPageButton && <NewPage />}
 
             {treeData && (

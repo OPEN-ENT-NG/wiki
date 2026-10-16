@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IconPlus, IconWrite } from '@edifice.io/react/icons';
 
-export const PagesAssistantManualCreationCard = () => {
+export const ManualCreationCard = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();

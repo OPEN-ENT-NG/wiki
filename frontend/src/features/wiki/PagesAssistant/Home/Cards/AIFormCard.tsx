@@ -4,7 +4,7 @@ import AIButton from '~/components/AIButton/AIButton';
 import { useNavigate } from 'react-router-dom';
 import { IconAiFill, IconExercizerAi } from '@edifice.io/react/icons';
 
-export const PagesAssistantAICard = () => {
+export const AIFormCard = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();

@@ -13,7 +13,7 @@ import { WikiDto } from '~/models';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../animations/loading.json';
 
-export const PagesAssistantAIStep3StructureLoading = () => {
+export const AIFormStep3StructureLoading = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const params = useParams();
@@ -48,9 +48,7 @@ export const PagesAssistantAIStep3StructureLoading = () => {
             wikiResponse.pages.map((page) => ({ title: page.title })),
           );
 
-          navigate(
-            `/id/${params.wikiId}/pages/assistant/ai/step4StructureResult`,
-          );
+          navigate(`/id/${params.wikiId}/pages/assistant/ai/structureResult`);
         }
       }, 3000);
     };

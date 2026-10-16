@@ -22,7 +22,7 @@ import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } fr
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { useSubjects } from './useSubjects';
 
-export const PagesAssistantAIStep1Form = () => {
+export const AIFormStep1 = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();

@@ -9,14 +9,14 @@ import { useTranslation } from 'react-i18next';
 
 import { workflows } from '~/config';
 import { useUserRights } from '~/store';
-import { PagesAssistantManualCreationCard } from './PagesAssistantCards/PagesAssistantManualCreationCard';
-import { PagesAssistantAICard } from './PagesAssistantCards/PagesAssistantAICard';
-import { PagesAssistantLibraryCard } from './PagesAssistantCards/PagesAssistantLibraryCard';
-import { PagesAssistantImportPDFCard } from './PagesAssistantCards/PagesAssistantImportPdfCard';
 
-import './styles/styles.css';
+import '../styles.css';
+import { ManualCreationCard } from './Cards/ManualCreationCard';
+import { AIFormCard } from './Cards/AIFormCard';
+import { LibraryCard } from './Cards/LibraryCard';
+import { AIImportPdfCard } from './Cards/AIImportPdfCard';
 
-export const PagesAssistantRoot = () => {
+export const Home = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const libraryUrl = useLibraryUrl();
@@ -38,26 +38,26 @@ export const PagesAssistantRoot = () => {
           <Grid>
             {/* MANUAL CREATION */}
             <Grid.Col sm="4" md="8" lg="8" xl="6">
-              <PagesAssistantManualCreationCard />
+              <ManualCreationCard />
             </Grid.Col>
 
             {/* AI ASSISTANT */}
             {hasGenerateWorkflow && (
               <Grid.Col sm="4" md="8" lg="8" xl="6">
-                <PagesAssistantAICard />
+                <AIFormCard />
               </Grid.Col>
             )}
 
             {/* LIBRARY INSPIRATION */}
             {libraryUrl && (
               <Grid.Col sm="4" md="8" lg="8" xl="6">
-                <PagesAssistantLibraryCard />
+                <LibraryCard />
               </Grid.Col>
             )}
 
             {/* IMPORT */}
             <Grid.Col sm="4" md="8" lg="8" xl="6">
-              <PagesAssistantImportPDFCard />
+              <AIImportPdfCard />
             </Grid.Col>
           </Grid>
         </div>

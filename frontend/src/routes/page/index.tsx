@@ -55,7 +55,7 @@ import {
 } from '~/store';
 import { getToastActions } from '~/store/toast';
 import { findLastPage } from '~/utils/findLastPage';
-import loadingAnimation from '../../features/wiki/PagesAssistant/animations/loading.json';
+import loadingAnimation from '../../features/wiki/PagesAssistant/AI/animations/loading.json';
 import './page.css';
 
 const DeletePageModal = lazy(

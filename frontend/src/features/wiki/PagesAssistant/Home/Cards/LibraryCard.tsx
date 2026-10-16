@@ -7,7 +7,7 @@ import {
 import { IconExternalLink, IconTeacher } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 
-export const PagesAssistantLibraryCard = () => {
+export const LibraryCard = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const libraryUrl = useLibraryUrl();

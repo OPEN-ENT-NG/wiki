@@ -24,7 +24,7 @@ import { Form, useNavigate, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useSubjects } from './useSubjects';
 
-export const PagesAssistantAIStep2Form = () => {
+export const AIFormStep2 = () => {
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
