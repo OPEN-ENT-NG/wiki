@@ -1,12 +1,14 @@
-import { SortableTree } from '@edifice.io/react';
+import { SortableTree, useEdificeClient } from '@edifice.io/react';
+import { useTranslation } from 'react-i18next';
 
-// TODO: Implement the full Pages Assistant left pane functionality
-export const PagesAssistantLeftPane = () => {
+export const LeftPane = () => {
+  const { appCode } = useEdificeClient();
+  const { t } = useTranslation();
+
   const treeData = [
     {
       id: '1',
-      name: 'Création libre',
-      title: 'Getting Started with Pages Assistant',
+      name: t('wiki.assistant.leftPane', { ns: appCode }),
     },
   ];
 

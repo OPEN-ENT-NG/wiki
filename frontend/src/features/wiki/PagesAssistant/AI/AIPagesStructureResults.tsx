@@ -22,9 +22,9 @@ import {
 import AIButton from '~/components/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { odeServices } from '@edifice.io/client';
-import { ButtonAIScreebActivate } from './ButtonAIScreebActivate';
+import { ButtonAIScreebActivate } from './Form/ButtonAIScreebActivate';
 
-export const PagesAssistantAIStep4StructureResult = () => {
+export const AIPagesStructureResults = () => {
   const [contentFinished, setContentFinished] = useState(false);
   const [generatedWiki, setGeneratedWiki] = useState<WikiDto>();
   const { appCode } = useEdificeClient();
