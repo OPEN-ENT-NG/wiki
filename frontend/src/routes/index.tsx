@@ -19,11 +19,12 @@ import {
 } from './page/list/list';
 import { Index, loader as wikiLoader } from './wiki';
 import { pageEditAction } from './page/pageEditAction';
-import { PagesAssistantRoot } from '~/features/wiki/PagesAssistant/PagesAssistantRoot';
-import { PagesAssistantAIStep1Form } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep1Form';
-import { PagesAssistantAIStep3StructureLoading } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep3StructureLoading';
-import { PagesAssistantAIStep4StructureResult } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep4StructureResult';
-import { PagesAssistantAIStep2Form } from '~/features/wiki/PagesAssistant/PagesAssistantAISteps/PagesAssistantAIStep2Form';
+import { Home } from '~/features/wiki/PagesAssistant/Home/Home';
+import { AIFormStep1 } from '~/features/wiki/PagesAssistant/AI/Form/AIFormStep1';
+import { AIFormStep3StructureLoading } from '~/features/wiki/PagesAssistant/AI/Form/AIFormStep3StructureLoading';
+import { AIFormStep2 } from '~/features/wiki/PagesAssistant/AI/Form/AIFormStep2';
+import { AIImportPDFStructureLoading } from '~/features/wiki/PagesAssistant/AI/ImportPDF/AIImportPDFStructureLoading';
+import { AIPagesStructureResults } from '~/features/wiki/PagesAssistant/AI/AIPagesStructureResults';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -42,24 +43,28 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'pages/assistant',
-        element: <PagesAssistantRoot />,
+        element: <Home />,
         errorElement: <PageError withoutLayout={true} />,
       },
       {
         path: 'pages/assistant/ai/step1Form',
-        element: <PagesAssistantAIStep1Form />,
+        element: <AIFormStep1 />,
       },
       {
         path: 'pages/assistant/ai/step2Form',
-        element: <PagesAssistantAIStep2Form />,
+        element: <AIFormStep2 />,
       },
       {
         path: 'pages/assistant/ai/step3StructureLoading',
-        element: <PagesAssistantAIStep3StructureLoading />,
+        element: <AIFormStep3StructureLoading />,
       },
       {
-        path: 'pages/assistant/ai/step4StructureResult',
-        element: <PagesAssistantAIStep4StructureResult />,
+        path: 'pages/assistant/ai/structureResult',
+        element: <AIPagesStructureResults />,
+      },
+      {
+        path: 'pages/assistant/ai/importPDFLoading',
+        element: <AIImportPDFStructureLoading />,
       },
       {
         path: 'page/:pageId',
