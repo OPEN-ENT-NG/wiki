@@ -69,7 +69,7 @@ export const ButtonAIScreebActivate = ({
       onClick={handleGoToWiki}
       rightIcon={<IconArrowRight color="#ECBE30" />}
     >
-      {t('wiki.assistant.ai.step4.structure.result.wait.button.finished', {
+      {t('wiki.assistant.ai.step4.structure.result.finished', {
         ns: appCode,
       })}
     </AIButton>

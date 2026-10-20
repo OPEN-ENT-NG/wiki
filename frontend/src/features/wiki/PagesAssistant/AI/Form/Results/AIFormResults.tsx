@@ -12,51 +12,20 @@ import {
   IconTextPage,
   IconWand,
 } from '@edifice.io/react/icons';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  usePagesAssistantActions,
-  usePagesStructureStore,
-} from '~/store/assistant';
 import AIButton from '~/components/AIButton/AIButton';
-import { WikiDto } from '~/models';
-import { odeServices } from '@edifice.io/client';
-import { ButtonAIScreebActivate } from './Form/ButtonAIScreebActivate';
+import { ButtonAIScreebActivate } from '../../ButtonAIScreebActivate';
+import { useAIFormResults } from './useAIFormResults';
 
-export const AIPagesStructureResults = () => {
-  const [contentFinished, setContentFinished] = useState(false);
-  const [generatedWiki, setGeneratedWiki] = useState<WikiDto>();
+export const AIFormResults = () => {
+  const {
+    contentFinished,
+    generatedWiki,
+    pagesStructure,
+    handleCancelButtonClick,
+  } = useAIFormResults();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
-  const pagesStructure = usePagesStructureStore();
-  const { setFormValues } = usePagesAssistantActions();
-  const params = useParams();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const wikiResponse = await odeServices
-        .http()
-        .get<WikiDto>(`/wiki/${params.wikiId}`);
-
-      if (wikiResponse.aiMetadata?.contentGenerated) {
-        clearInterval(intervalId);
-        setContentFinished(true);
-        setGeneratedWiki(wikiResponse);
-      }
-    }, 5000);
-
-    // Cleanup: stop interval when component unmounts
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [params.wikiId]);
-
-  const handleCancelButtonClick = () => {
-    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
-    navigate(`/id/${params.wikiId}/pages/assistant`);
-  };
 
   return (
     <Flex justify="center">
