@@ -8,7 +8,7 @@ import { assistantService } from '~/services/api/assistant/assistant.service';
 import { AssistantImportPDFRequest } from '~/services/api/assistant/assistant.types';
 import { usePagesAssistantActions, usePdfFileId } from '~/store/assistant';
 
-export const useAIImportPDFStructureLoading = () => {
+export const useImportPDFGenerate = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const params = useParams();
@@ -76,7 +76,7 @@ export const useAIImportPDFStructureLoading = () => {
             wikiResponse.pages.map((page) => ({ title: page.title })),
           );
 
-          navigate(`/id/${params.wikiId}/pages/assistant/ai/structureResult`);
+          navigate(`/id/${params.wikiId}/pages/assistant/ai/importPDFResults`);
         }
       }, 3000);
     };

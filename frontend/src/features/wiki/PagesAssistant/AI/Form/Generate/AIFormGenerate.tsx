@@ -2,14 +2,13 @@ import { Flex, Stepper, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
 import { IconClock } from '@edifice.io/react/icons';
 import Lottie from 'lottie-react';
-import loadingAnimation from '../animations/loading.json';
-import { useAIImportPDFStructureLoading } from './useAIImportPDFStructureLoading';
+import loadingAnimation from '../../../../../../animations/AILoading.json';
+import { useAIFormGenerate } from './useAIFormGenerate';
 
-export const AIImportPDFStructureLoading = () => {
+export const AIFormGenerate = () => {
+  const { structureLoading } = useAIFormGenerate();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
-
-  const { structureLoading } = useAIImportPDFStructureLoading();
 
   return (
     <Flex justify="center">
@@ -19,7 +18,7 @@ export const AIImportPDFStructureLoading = () => {
             <div>
               <Stepper currentStep={1} nbSteps={3} />
               <h2 className="mt-16">
-                {t('wiki.assistant.ai.importpdf.loading.title', {
+                {t('wiki.assistant.ai.step3.structure.loading.title', {
                   ns: appCode,
                 })}
               </h2>
@@ -32,13 +31,13 @@ export const AIImportPDFStructureLoading = () => {
                   />
                 </Flex>
                 <h3 className="mt-16">
-                  {t('wiki.assistant.ai.importpdf.loading.description', {
+                  {t('wiki.assistant.ai.step3.structure.loading.description', {
                     ns: appCode,
                   })}
                 </h3>
                 <Flex justify="center" className="text-gray-700 mt-8" gap="4">
                   <IconClock />
-                  {t('wiki.assistant.ai.importpdf.loading.subtitle', {
+                  {t('wiki.assistant.ai.step3.structure.loading.subtitle', {
                     ns: appCode,
                   })}
                 </Flex>

@@ -10,67 +10,27 @@ import {
   IconRafterLeft,
   IconRafterRight,
 } from '@edifice.io/react/icons';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Form, useNavigate, useParams } from 'react-router-dom';
-import { useLevels } from './useLevels';
-import {
-  useFormValuesStore,
-  usePagesAssistantActions,
-} from '~/store/assistant';
-import { PagesAssistantAIStep1FormValues as PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
+import { Form } from 'react-router-dom';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
-import { useSubjects } from './useSubjects';
+import { useAIFormStep1 } from './useAIFormStep1';
 
 export const AIFormStep1 = () => {
+  const {
+    subjects,
+    collegeLevels,
+    lyceeLevels,
+    control,
+    isValid,
+    handleLevelChange,
+    handleSubjectSuggestionClick,
+    handleBackButtonClick,
+    handleSubmit,
+    onSubmit,
+  } = useAIFormStep1();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const params = useParams();
-
-  const { collegeLevels, lyceeLevels } = useLevels();
-  const formValues = useFormValuesStore();
-  const { setFormValues } = usePagesAssistantActions();
-
-  const {
-    handleSubmit,
-    setValue,
-    watch,
-    control,
-    formState: { isValid },
-  } = useForm<PagesAssistantAIStep1FormValues>({
-    defaultValues: {
-      level: formValues.level || '6ème',
-      subject: formValues.subject || '',
-    },
-  });
-
-  const selectedLevel = watch('level');
-
-  const { subjects } = useSubjects(selectedLevel);
-
-  const onSubmit = async (step1FormValues: PagesAssistantAIStep1FormValues) => {
-    // Add values to store
-    setFormValues({ ...formValues, ...step1FormValues });
-    // Navigate to next step
-    navigate(`/id/${params.wikiId}/pages/assistant/ai/step2Form`);
-  };
-
-  const handleLevelChange = () => {
-    // Reset subject, sequence when level changes
-    setValue('subject', '');
-  };
-
-  const handleBackButtonClick = () => {
-    navigate(`/id/${params.wikiId}/pages/assistant`);
-  };
-
-  const handleSubjectSuggestionClick = () => {
-    window.open(
-      'https://survey.edifice.io/index.php/679298?newtest=Y&lang=fr',
-      '_blank',
-    );
-  };
 
   return (
     <Flex justify="center">

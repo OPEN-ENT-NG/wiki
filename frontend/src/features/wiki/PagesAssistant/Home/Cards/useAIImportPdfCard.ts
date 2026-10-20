@@ -61,7 +61,7 @@ export const useAIImportPdfCard = () => {
     }
 
     setPdfFileId(element.file!);
-    navigate(`/id/${params.wikiId}/pages/assistant/ai/importPDFLoading`);
+    navigate(`/id/${params.wikiId}/pages/assistant/ai/importPDFGenerate`);
   };
 
   const handleMediaLibraryCancel = async (uploads?: WorkspaceElement[]) => {

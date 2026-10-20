@@ -46,7 +46,6 @@ import {
 import {
   getUserRightsActions,
   useOpenConfirmVisibilityModal,
-  useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenMoveModal,
   useOpenRevisionModal,
@@ -55,7 +54,7 @@ import {
 } from '~/store';
 import { getToastActions } from '~/store/toast';
 import { findLastPage } from '~/utils/findLastPage';
-import loadingAnimation from '../../features/wiki/PagesAssistant/AI/animations/loading.json';
+import loadingAnimation from '../../animations/AILoading.json';
 import './page.css';
 
 const DeletePageModal = lazy(
@@ -152,7 +151,6 @@ export const Page = () => {
   const [isViewsModalOpen, setIsViewsModalOpen] = useState<boolean>(false);
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
-  const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
   const openMoveModal = useOpenMoveModal();
@@ -333,7 +331,7 @@ export const Page = () => {
         />
       )}
       <Suspense fallback={<LoadingScreen position={false} />}>
-        {openDeleteModal && <DeletePageModal />}
+        {<DeletePageModal />}
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
         {openDuplicateModal && (
           <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
