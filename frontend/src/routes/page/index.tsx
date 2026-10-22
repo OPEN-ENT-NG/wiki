@@ -46,6 +46,7 @@ import {
 import {
   getUserRightsActions,
   useOpenConfirmVisibilityModal,
+  useOpenDeleteModal,
   useOpenDuplicateModal,
   useOpenMoveModal,
   useOpenRevisionModal,
@@ -151,6 +152,7 @@ export const Page = () => {
   const [isViewsModalOpen, setIsViewsModalOpen] = useState<boolean>(false);
   const params = useParams();
   const editorRef = useRef<EditorRef>(null);
+  const openDeleteModal = useOpenDeleteModal();
   const openVersionsModal = useOpenRevisionModal();
   const openDuplicateModal = useOpenDuplicateModal();
   const openMoveModal = useOpenMoveModal();
@@ -331,7 +333,7 @@ export const Page = () => {
         />
       )}
       <Suspense fallback={<LoadingScreen position={false} />}>
-        {<DeletePageModal />}
+        {openDeleteModal && <DeletePageModal />}
         {openVersionsModal && <RevisionModal pageId={params.pageId!} />}
         {openDuplicateModal && (
           <DuplicateModal pageId={params.pageId!} wikiId={params.wikiId!} />
