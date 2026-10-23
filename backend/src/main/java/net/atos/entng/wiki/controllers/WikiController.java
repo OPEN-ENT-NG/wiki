@@ -853,7 +853,7 @@ public class WikiController extends MongoDbControllerHelper {
 
     @Post("/pdfimport")
     @ApiDoc("Generate a wiki by importing a pdf using AI")
-    @SecuredAction("wiki.generate")
+    @SecuredAction("wiki.importPDF")
     public void generateFromPdf(final HttpServerRequest request) {
         UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user ->
             RequestUtils.bodyToJson(request, pathPrefix + "wikiPdfImport", payload -> {

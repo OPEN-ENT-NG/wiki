@@ -21,6 +21,7 @@ export const Home = () => {
   const { t } = useTranslation();
   const libraryUrl = useLibraryUrl();
   const hasGenerateWorkflow = useHasWorkflow(workflows.generate);
+  const hasImportPDFWorkflow = useHasWorkflow(workflows.importPDF);
   const userRights = useUserRights();
 
   // Restrict Pages Assistant access to managers, creators and contributors
@@ -56,9 +57,11 @@ export const Home = () => {
             )}
 
             {/* IMPORT */}
-            <Grid.Col sm="4" md="8" lg="8" xl="6">
-              <AIImportPdfCard />
-            </Grid.Col>
+            {hasImportPDFWorkflow && (
+              <Grid.Col sm="4" md="8" lg="8" xl="6">
+                <AIImportPdfCard />
+              </Grid.Col>
+            )}
           </Grid>
         </div>
       </div>
