@@ -1527,6 +1527,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
             final JsonObject body = res.body();
             if (!"ok".equals(body.getString("status")) || body.getJsonObject("result") == null) {
                 promise.fail("wiki.id.notfound: " + wikiId);
+				return;
             }
             final JsonObject existingWiki = body.getJsonObject("result");
 
@@ -1537,7 +1538,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 			this.addNormalizedShares(existingWiki);
 			final boolean isManager = WikiServiceMongoImpl.isManager(existingWiki, user);
 
-            if (!isOwner || !isManager) {
+			if (!isOwner && !isManager) {
                 promise.fail("wiki.not.owner.nor.manager");
             } else {
                 promise.complete(wikiId);
