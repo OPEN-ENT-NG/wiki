@@ -18,7 +18,7 @@ export const ImportPDFGenerate = () => {
             <div>
               <Stepper currentStep={1} nbSteps={3} />
               <h2 className="mt-16">
-                {t('wiki.assistant.ai.importpdf.loading.title', {
+                {t('wiki.assistant.ai.importpdf.generate.title', {
                   ns: appCode,
                 })}
               </h2>
@@ -31,13 +31,13 @@ export const ImportPDFGenerate = () => {
                   />
                 </Flex>
                 <h3 className="mt-16">
-                  {t('wiki.assistant.ai.importpdf.loading.description', {
+                  {t('wiki.assistant.ai.importpdf.generate.description', {
                     ns: appCode,
                   })}
                 </h3>
                 <Flex justify="center" className="text-gray-700 mt-8" gap="4">
                   <IconClock />
-                  {t('wiki.assistant.ai.importpdf.loading.subtitle', {
+                  {t('wiki.assistant.ai.importpdf.generate.subtitle', {
                     ns: appCode,
                   })}
                 </Flex>
