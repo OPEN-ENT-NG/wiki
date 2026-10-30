@@ -23,7 +23,6 @@ import static com.mongodb.client.model.Filters.*;
 import static net.atos.entng.wiki.Wiki.REVISIONS_COLLECTION;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,6 @@ import fr.wseduc.transformer.to.ContentTransformerFormat;
 import fr.wseduc.transformer.to.ContentTransformerRequest;
 import fr.wseduc.transformer.to.ContentTransformerResponse;
 import fr.wseduc.webutils.Utils;
-import io.netty.handler.codec.http.HttpRequest;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.logging.Logger;
@@ -1513,13 +1511,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 	}
 
     /**
-     * Verifies that a wiki exists AND is owned by given user
+     * Verifies that a wiki exists AND is owned or managed by given user
      * @param wikiId ID of the wiki to lookup
-     * @param userId the user ID to test for wiki ownership
+     * @param user the user to test for wiki ownership or manager
      * @return the wiki ID if all checks are successful
      */
-    private Future<String> checkWikiOwner(String wikiId, String userId) {
-        final Promise<String> promise = Promise.promise();
+    private Future<String> checkWikiRights(String wikiId, UserInfos user) {
+		final Promise<String> promise = Promise.promise();
+		if (user == null || user.getUserId() == null) {
+			promise.fail("wiki.user.undefined");
+			return promise.future();
+		}
         final Bson query = eq("_id", wikiId);
         mongo.findOne(collection, MongoQueryBuilder.build(query), res -> {
             final JsonObject body = res.body();
@@ -1528,8 +1530,10 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
             }
             final JsonObject existingWiki = body.getJsonObject("result");
             final JsonObject owner = existingWiki.getJsonObject("owner", new JsonObject());
-            if (!userId.equals(owner.getString("userId"))) {
-                promise.fail("wiki.not.owner");
+			final boolean isOwner = user.getUserId().equals(owner.getString("userId"));
+			final boolean isManager = WikiServiceMongoImpl.isManager(existingWiki, user);
+            if (!isOwner || !isManager) {
+                promise.fail("wiki.not.owner.nor.manager");
             } else {
                 promise.complete(wikiId);
             }
@@ -1552,8 +1556,8 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
     @Override
     public Future<String> generateWiki(UserInfos user, WikiGenerateRequest dto, String sessionId, String userAgent) {
         final String wikiId = dto.getWikiId();
-        return this.checkWikiOwner(
-            wikiId, user.getUserId()
+        return this.checkWikiRights(
+            wikiId, user
         ).compose(_wikiId -> {
             final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
             final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
@@ -1613,7 +1617,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
     @Override
     public Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent) {
         final String wikiId = dto.getWikiId();
-        return this.checkWikiOwner(wikiId, user.getUserId())
+        return this.checkWikiRights(wikiId, user)
             .compose(_wikiId -> {
                 final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
                 final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
