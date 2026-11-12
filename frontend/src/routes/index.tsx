@@ -19,13 +19,15 @@ import {
 } from './page/list/list';
 import { Index, loader as wikiLoader } from './wiki';
 import { pageEditAction } from './page/pageEditAction';
-import { Home } from '~/features/wiki/PagesAssistant/Home/Home';
-import { AIFormGenerate } from '~/features/wiki/PagesAssistant/AI/Form/Generate/AIFormGenerate';
+import { AssistantHome } from '~/features/wiki/PagesAssistant/AssistantHome/AssistantHome';
 import { ImportPDFGenerate } from '~/features/wiki/PagesAssistant/AI/ImportPDF/Generate/ImportPDFGenerate';
-import { AIFormResults } from '~/features/wiki/PagesAssistant/AI/Form/Results/AIFormResults';
-import { AIFormStep1 } from '~/features/wiki/PagesAssistant/AI/Form/Steps/Step1/AIFormStep1';
-import { AIFormStep2 } from '~/features/wiki/PagesAssistant/AI/Form/Steps/Step2/AIFormStep2';
 import { ImportPDFResults } from '~/features/wiki/PagesAssistant/AI/ImportPDF/Results/ImportPDFResults';
+import { AIChooseRender } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/ChooseRender/AIChooseRender';
+import { AITraceStep1 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Steps/Step1/AITraceStep1';
+import { AITraceStep2 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Steps/Step2/AITraceStep2';
+import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Generate/AITraceGenerate';
+import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Results/AITraceResults';
+import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/AIPlanStep1';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -44,24 +46,32 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
       },
       {
         path: 'pages/assistant',
-        element: <Home />,
+        element: <AssistantHome />,
         errorElement: <PageError withoutLayout={true} />,
       },
       {
-        path: 'pages/assistant/ai/step1Form',
-        element: <AIFormStep1 />,
+        path: 'pages/assistant/ai/creation/choose',
+        element: <AIChooseRender />,
       },
       {
-        path: 'pages/assistant/ai/step2Form',
-        element: <AIFormStep2 />,
+        path: 'pages/assistant/ai/creation/plan/step1',
+        element: <AIPlanStep1 />,
       },
       {
-        path: 'pages/assistant/ai/formGenerate',
-        element: <AIFormGenerate />,
+        path: 'pages/assistant/ai/creation/trace/step1',
+        element: <AITraceStep1 />,
       },
       {
-        path: 'pages/assistant/ai/formResults',
-        element: <AIFormResults />,
+        path: 'pages/assistant/ai/creation/trace/step2',
+        element: <AITraceStep2 />,
+      },
+      {
+        path: 'pages/assistant/ai/creation/trace/generate',
+        element: <AITraceGenerate />,
+      },
+      {
+        path: 'pages/assistant/ai/creation/results',
+        element: <AITraceResults />,
       },
       {
         path: 'pages/assistant/ai/importPDFGenerate',

@@ -1,0 +1,23 @@
+.ai-render-type-preview {
+  background-color: var(--edifice-gray-200);
+  min-height: 120px;
+  border-radius: var(--edifice-border-radius);
+  margin-bottom: var(--edifice-spacer-12);
+}
+
+.ai-render-type-preview__title {
+  margin: var(--edifice-spacer-12);
+}
+
+.ai-render-type-preview__body-line1 {
+  background-color: var(--edifice-white);
+  margin: var(--edifice-spacer-12);
+  max-height: 16px;
+}
+
+.ai-render-type-preview__body-line2 {
+  background-color: var(--edifice-white);
+  width: 70%;
+  margin: var(--edifice-spacer-12);
+  max-height: 16px;
+}

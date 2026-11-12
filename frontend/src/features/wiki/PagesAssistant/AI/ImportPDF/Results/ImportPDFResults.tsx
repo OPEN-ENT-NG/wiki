@@ -13,7 +13,7 @@ import {
   IconWand,
 } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
-import AIButton from '~/components/AIButton/AIButton';
+import AIButton from '~/components/AI/AIButton/AIButton';
 import { ButtonAIScreebActivate } from '../../ButtonAIScreebActivate';
 import { useImportPDFResults } from './useImportPDFResults';
 

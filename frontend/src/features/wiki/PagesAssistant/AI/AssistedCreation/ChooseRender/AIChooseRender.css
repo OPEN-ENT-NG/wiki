@@ -1,0 +1,5 @@
+.ai-choose-render__preview {
+  border: 1px solid var(--edifice-gray-400);
+  border-radius: var(--edifice-border-radius-2xl);
+  padding: var(--edifice-spacer-24);
+}
