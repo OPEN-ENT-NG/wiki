@@ -80,7 +80,7 @@ export const ImportPDFResults = () => {
                   </span>
                 </Flex>
                 <Alert type="warning">
-                  {t('wiki.assistant.ai.importpdf.results.warning', {
+                  {t('wiki.assistant.ai.importpdf.results.info.warning', {
                     ns: appCode,
                   })}
                 </Alert>
