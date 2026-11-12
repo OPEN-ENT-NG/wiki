@@ -69,6 +69,8 @@
   "wiki.assistant.ai.importpdf.results.title": "Sommaire du contenu du Cours et Wiki",
   "wiki.assistant.ai.importpdf.results.wait.info": "Enrichissement des pages en cours...",
   "wiki.assistant.ai.importpdf.results.wait.info.finished": "Enrichissement des pages terminé",
+  "wiki.assistant.ai.importpdf.error": "Une erreur est survenue",
+  "wiki.assistant.ai.importpdf.error.pdf.tooManyPages": "le PDF contient trop de pages (20 pages maximum)",
   "wiki.assistant.ai.step1.button.add.sequence": "Suggérer une séquence",
   "wiki.assistant.ai.step1.description": "Choisissez le niveau et la matière de votre cours",
   "wiki.assistant.ai.step1.level": "Niveau",
