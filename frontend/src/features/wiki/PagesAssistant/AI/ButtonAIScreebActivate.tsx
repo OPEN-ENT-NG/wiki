@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePagesAssistantActions } from '~/store/assistant';
-import AIButton from '~/components/AIButton/AIButton';
+import AIButton from '~/components/AI/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { wikiQueryOptions } from '~/services';
 

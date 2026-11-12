@@ -1,18 +1,23 @@
 import { createStore, useStore } from 'zustand';
+import { AIPlanStep1FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/useAIPlanStep1';
+import { AIPlanStep2FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/AIPlanStep2';
 import {
   PagesAssistantAIFormValues,
   PageStructure,
 } from '~/services/api/assistant/assistant.types';
 
+export interface AIFormValues
+  extends AIPlanStep1FormValues, AIPlanStep2FormValues {}
+
 interface State {
-  formValues: PagesAssistantAIFormValues;
+  formValues: AIFormValues;
   pagesStructure: PageStructure[];
   pdfFileId: string;
 }
 
 type Action = {
   actions: {
-    setFormValues: (formData: PagesAssistantAIFormValues) => void;
+    setFormValues: (formData: AIFormValues) => void;
     setPagesStructure: (pagesStructure: PageStructure[]) => void;
     setPdfFileId: (pdfFileId: string) => void;
   };
@@ -21,7 +26,13 @@ type Action = {
 type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 
 const initialState: State = {
-  formValues: { level: '', subject: '', sequence: '', keywords: '' },
+  formValues: {
+    schoolType: '',
+    level: '',
+    subject: '',
+    sequence: '',
+    keywords: '',
+  },
   pagesStructure: [],
   pdfFileId: '',
 };
@@ -29,8 +40,7 @@ const initialState: State = {
 const store = createStore<State & Action>()((set) => ({
   ...initialState,
   actions: {
-    setFormValues: (formData: PagesAssistantAIFormValues) =>
-      set({ formValues: formData }),
+    setFormValues: (formData: AIFormValues) => set({ formValues: formData }),
     setPagesStructure: (pagesStructure: PageStructure[]) =>
       set({ pagesStructure }),
     setPdfFileId: (pdfFileId: string) => set({ pdfFileId }),

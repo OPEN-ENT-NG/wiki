@@ -1,0 +1,12 @@
+.ai-step-header {
+
+}
+
+.ai-step-header__title {
+  margin-top: var(--edifice-spacer-24);
+}
+
+.ai-step-header__description {
+  color: var(--edifice-gray-700);
+  margin-bottom: var(--edifice-spacer-16);
+}
