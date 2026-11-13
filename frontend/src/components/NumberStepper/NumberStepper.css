@@ -1,0 +1,54 @@
+.number-stepper {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr) 5rem;
+  width: 100%;
+  height: 5.2rem;
+  overflow: hidden;
+  border: 1px solid var(--edifice-gray-400);
+  border-radius: var(--edifice-border-radius);
+  background: var(--edifice-white);
+}
+
+.number-stepper__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--edifice-primary-200);
+  color: var(--edifice-primary);
+  cursor: pointer;
+}
+
+.number-stepper__button:first-child {
+  border-right: 1px solid var(--edifice-gray-400);
+}
+
+.number-stepper__button:last-child {
+  border-left: 1px solid var(--edifice-gray-400);
+}
+
+.number-stepper__button:hover:not(:disabled) > svg {
+  transform: translateY(-2px);
+}
+
+.number-stepper__button:active:not(:disabled) {
+  background: var(--edifice-white);
+}
+
+.number-stepper__button:active:not(:disabled) > svg {
+  transform: translateY(2px);
+}
+
+.number-stepper__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.number-stepper__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,19 @@
+.ai-choose-render__question {
+  margin-top: var(--edifice-spacer-24);
+  margin-bottom: var(--edifice-spacer-16);
+}
+
+.ai-choose-render__radios > label {
+  margin-bottom: var(--edifice-spacer-16);
+}
+
+.ai-choose-render__navigation {
+  margin-top: var(--edifice-spacer-8);
+}
+
+.ai-choose-render__preview {
+  border: 1px solid var(--edifice-gray-400);
+  border-radius: var(--edifice-border-radius-2xl);
+  padding: var(--edifice-spacer-24);
+  margin-top: var(--edifice-spacer-24);
+}

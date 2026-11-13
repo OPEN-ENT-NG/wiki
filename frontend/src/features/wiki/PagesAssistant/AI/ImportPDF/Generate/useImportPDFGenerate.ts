@@ -6,7 +6,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { WikiDto } from '~/models';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import { AssistantImportPDFRequest } from '~/services/api/assistant/assistant.types';
-import { usePagesAssistantActions, usePdfFileId } from '~/store/assistant';
+import {
+  usePagesAssistantActions,
+  usePdfFileId,
+} from '~/store/assistant/importPDF/importPDFStore';
 
 export const useImportPDFGenerate = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);

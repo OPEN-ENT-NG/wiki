@@ -1,0 +1,22 @@
+.ai-form-objectives {
+  border: 1px solid var(--edifice-gray-300);
+  border-radius: var(--edifice-border-radius);
+  margin-top: var(--edifice-spacer-24);
+  padding: var(--edifice-spacer-24);
+}
+
+.ai-form-objectives__description {
+  margin-top: var(--edifice-spacer-4);
+}
+
+.ai-form-objectives__list {
+  margin-top: var(--edifice-spacer-16);
+}
+
+.ai-form-objectives__add {
+  margin-top: var(--edifice-spacer-8);
+}
+
+.ai-form-objectives__bloom {
+  margin-top: var(--edifice-spacer-16);
+}

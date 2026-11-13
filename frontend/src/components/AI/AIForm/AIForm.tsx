@@ -9,7 +9,6 @@ import { useAIForm } from './useAIForm';
 
 export interface AIFormProps<T extends FieldValues> {
   id: string;
-  key: string;
   defaultValues: DefaultValues<T>;
   onSubmit: (formValues: T) => Promise<void>;
   children: ReactNode;

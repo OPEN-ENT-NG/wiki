@@ -1,17 +1,17 @@
 import { ChangeEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
-  useFormValuesStore,
+  usePlanFormValuesStore,
   usePagesAssistantActions,
-} from '~/store/assistant';
+} from '~/store/assistant/plan/planStore';
 
 export interface SchoolTypeFormValues {
   schoolType: string;
 }
 
 export const useAIFormSchoolType = () => {
-  const { control, formState } = useFormContext<SchoolTypeFormValues>();
-  const formValues = useFormValuesStore();
+  const { control } = useFormContext<SchoolTypeFormValues>();
+  const formValues = usePlanFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
   // TODO Dynamic values
@@ -31,7 +31,6 @@ export const useAIFormSchoolType = () => {
 
   return {
     control,
-    formState,
     schoolTypes,
     handleSchoolTypeChange,
   };

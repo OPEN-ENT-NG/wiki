@@ -3,7 +3,10 @@ import { IconArrowRight } from '@edifice.io/react/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { usePagesAssistantActions } from '~/store/assistant';
+import {
+  DEFAULT_AI_FORM_VALUES,
+  usePagesAssistantActions,
+} from '~/store/assistant/trace/traceStore';
 import AIButton from '~/components/AI/AIButton/AIButton';
 import { WikiDto } from '~/models';
 import { wikiQueryOptions } from '~/services';
@@ -37,13 +40,7 @@ export const ButtonAIScreebActivate = ({
       return;
     }
 
-    setFormValues({
-      schoolType: '',
-      level: '',
-      subject: '',
-      sequence: '',
-      keywords: '',
-    });
+    setFormValues(DEFAULT_AI_FORM_VALUES);
 
     const surveyHooks = {
       version: '1.0.0',
