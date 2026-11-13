@@ -33,9 +33,14 @@ export const useAIPlanStep1 = () => {
     navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step2`);
   };
 
+  const handlePreviousClick = () => {
+    navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/choose`);
+  };
+
   return {
     defaultValues,
     formValues,
+    handlePreviousClick,
     onSubmit,
   };
 };

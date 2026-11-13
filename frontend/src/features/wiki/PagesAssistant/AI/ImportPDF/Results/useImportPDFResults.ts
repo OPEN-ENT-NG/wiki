@@ -35,7 +35,13 @@ export const useImportPDFResults = () => {
   }, [params.wikiId]);
 
   const handleCancelButtonClick = () => {
-    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
+    setFormValues({
+      schoolType: '',
+      level: '',
+      subject: '',
+      sequence: '',
+      keywords: '',
+    });
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 

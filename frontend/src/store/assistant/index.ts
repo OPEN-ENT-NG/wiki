@@ -1,10 +1,7 @@
 import { createStore, useStore } from 'zustand';
 import { AIPlanStep1FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/useAIPlanStep1';
 import { AIPlanStep2FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/AIPlanStep2';
-import {
-  PagesAssistantAIFormValues,
-  PageStructure,
-} from '~/services/api/assistant/assistant.types';
+import { PageStructure } from '~/services/api/assistant/assistant.types';
 
 export interface AIFormValues
   extends AIPlanStep1FormValues, AIPlanStep2FormValues {}

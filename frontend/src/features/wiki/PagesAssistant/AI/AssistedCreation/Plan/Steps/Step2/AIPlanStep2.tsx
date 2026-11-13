@@ -1,7 +1,5 @@
 import { useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
-import AIForm from '~/components/AI/AIForm/AIForm';
-import AIFormSchoolType from '~/components/AI/AIForm/AIFormSchoolType/AIFormSchoolType';
 import { AIStepHeader } from '~/components/AI/AIStepHeader/AIStepHeader';
 import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
 
