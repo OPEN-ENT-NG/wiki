@@ -10,7 +10,7 @@ export interface SchoolTypeFormValues {
 }
 
 export const useAIFormSchoolType = () => {
-  const { control, formState } = useFormContext<SchoolTypeFormValues>();
+  const { control } = useFormContext<SchoolTypeFormValues>();
   const formValues = useFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
@@ -31,7 +31,6 @@ export const useAIFormSchoolType = () => {
 
   return {
     control,
-    formState,
     schoolTypes,
     handleSchoolTypeChange,
   };

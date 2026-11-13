@@ -27,7 +27,7 @@ export const useAIPlanStep1 = () => {
 
   // submit function called by react hook form
   // - add form values to FormValues Store
-  // - navigate to next step
+  // - navigate to step 2
   const onSubmit = async (step1FormValues: AIPlanStep1FormValues) => {
     setFormValues({ ...formValues, ...step1FormValues });
     navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step2`);

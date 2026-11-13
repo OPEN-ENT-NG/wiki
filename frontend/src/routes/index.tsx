@@ -28,6 +28,7 @@ import { AITraceStep2 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation
 import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Generate/AITraceGenerate';
 import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Results/AITraceResults';
 import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/AIPlanStep1';
+import { AIPlanStep2 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/AIPlanStep2';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -56,6 +57,10 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: 'pages/assistant/ai/creation/plan/step1',
         element: <AIPlanStep1 />,
+      },
+      {
+        path: 'pages/assistant/ai/creation/plan/step2',
+        element: <AIPlanStep2 />,
       },
       {
         path: 'pages/assistant/ai/creation/trace/step1',

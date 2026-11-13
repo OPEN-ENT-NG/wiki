@@ -1,6 +1,6 @@
 import { createStore, useStore } from 'zustand';
 import { AIPlanStep1FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/useAIPlanStep1';
-import { AIPlanStep2FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/AIPlanStep2';
+import { AIPlanStep2FormValues } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/useAIPlanStep2';
 import { PageStructure } from '~/services/api/assistant/assistant.types';
 
 export interface AIFormValues
@@ -27,6 +27,7 @@ const initialState: State = {
     schoolType: '',
     level: '',
     subject: '',
+    sequenceType: 'program',
     sequence: '',
     keywords: '',
   },

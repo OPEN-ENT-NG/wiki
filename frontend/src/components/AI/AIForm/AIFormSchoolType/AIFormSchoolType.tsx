@@ -5,7 +5,7 @@ import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { useAIFormSchoolType } from './useAIFormSchoolType';
 
 const AIFormSchoolType = () => {
-  const { control, formState, schoolTypes, handleSchoolTypeChange } =
+  const { control, schoolTypes, handleSchoolTypeChange } =
     useAIFormSchoolType();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -41,7 +41,6 @@ const AIFormSchoolType = () => {
           </Flex>
         </Grid.Col>
       </Grid>
-      <div>SchoolType form state isValid: {formState.isValid.toString()}</div>
     </div>
   );
 };

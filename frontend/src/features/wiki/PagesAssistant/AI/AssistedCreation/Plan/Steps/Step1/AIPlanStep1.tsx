@@ -26,8 +26,7 @@ export const AIPlanStep1 = () => {
       />
       {/* AI PLAN Step 1 Form */}
       <AIForm
-        id="aiPlanForm"
-        key="aiPlanForm"
+        id="aiPlanStep1Form"
         defaultValues={defaultValues}
         onSubmit={onSubmit}
       >
