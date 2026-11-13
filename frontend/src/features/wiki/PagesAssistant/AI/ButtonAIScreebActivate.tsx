@@ -37,7 +37,13 @@ export const ButtonAIScreebActivate = ({
       return;
     }
 
-    setFormValues({ level: '', subject: '', sequence: '', keywords: '' });
+    setFormValues({
+      schoolType: '',
+      level: '',
+      subject: '',
+      sequence: '',
+      keywords: '',
+    });
 
     const surveyHooks = {
       version: '1.0.0',
