@@ -29,6 +29,7 @@ export const useAIPlanStep1 = () => {
   // - add form values to FormValues Store
   // - navigate to step 2
   const onSubmit = async (step1FormValues: AIPlanStep1FormValues) => {
+    console.log('step2FormValues', step1FormValues);
     setFormValues({ ...formValues, ...step1FormValues });
     navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step2`);
   };

@@ -43,6 +43,8 @@ export const ButtonAIScreebActivate = ({
       subject: '',
       sequence: '',
       keywords: '',
+      sequenceType: 'program',
+      sessionCount: 1,
     });
 
     const surveyHooks = {

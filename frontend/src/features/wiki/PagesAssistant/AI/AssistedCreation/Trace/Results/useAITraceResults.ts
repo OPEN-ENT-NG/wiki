@@ -41,6 +41,8 @@ export const useAITraceResults = () => {
       subject: '',
       sequence: '',
       keywords: '',
+      sequenceType: 'program',
+      sessionCount: 1,
     });
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };

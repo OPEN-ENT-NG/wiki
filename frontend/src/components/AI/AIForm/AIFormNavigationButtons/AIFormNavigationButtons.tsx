@@ -2,6 +2,7 @@ import { Button, Flex, useEdificeClient } from '@edifice.io/react';
 import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
+import './AIFormNavigationButtons.css';
 
 const AIFormNavigationButtons = ({
   handlePreviousClick,
@@ -15,9 +16,9 @@ const AIFormNavigationButtons = ({
 
   return (
     <>
-      <div>isValid: {formState.isValid.toString()}</div>
-      <Flex className="mt-24" justify="end">
+      <Flex className="ai-form-navigation" justify="end">
         <Button
+          data-testid="ai-form-navigation-back"
           variant="ghost"
           color="tertiary"
           leftIcon={<IconRafterLeft />}
@@ -26,6 +27,7 @@ const AIFormNavigationButtons = ({
           {t('previous')}
         </Button>
         <Button
+          data-testid="ai-form-navigation-next"
           type="submit"
           rightIcon={<IconRafterRight />}
           disabled={!formState.isValid}

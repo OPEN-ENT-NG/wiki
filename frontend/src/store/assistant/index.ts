@@ -29,6 +29,7 @@ const initialState: State = {
     subject: '',
     sequenceType: 'program',
     sequence: '',
+    sessionCount: 5,
     keywords: '',
   },
   pagesStructure: [],

@@ -9,6 +9,7 @@ import {
 export interface SequenceFormValues {
   sequenceType: AIFormSequenceType;
   sequence: string;
+  sessionCount: number;
 }
 
 export const useAIFormSequence = () => {

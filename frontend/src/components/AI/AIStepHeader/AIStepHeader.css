@@ -1,9 +1,10 @@
 .ai-step-header {
-
+  margin-top: var(--edifice-spacer-24);
+  margin-bottom: var(--edifice-spacer-24);
 }
 
 .ai-step-header__title {
-  margin-top: var(--edifice-spacer-24);
+
 }
 
 .ai-step-header__description {
