@@ -18,7 +18,7 @@
   </scm>
   <properties>
     <entcore.version>6.18-develop-pedago-SNAPSHOT</entcore.version>
-    <wiki-generator.version>1.2.1</wiki-generator.version>
+    <edifice-events.version>0.2.0</edifice-events.version>
     <modMongoVersion>4.2-develop-pedago-SNAPSHOT</modMongoVersion>
     <modJsonSchemaValidatorVersion>2.2-SNAPSHOT</modJsonSchemaValidatorVersion>
     <entCoreLibsVersion>6.16-develop-pedago-SNAPSHOT</entCoreLibsVersion>
@@ -92,9 +92,34 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.entcore.edificewikigenerator</groupId>
-      <artifactId>edifice-wiki-generator-client-vertx</artifactId>
-      <version>${wiki-generator.version}</version>
+      <groupId>io.edifice</groupId>
+      <artifactId>aiwiki-vertx-client</artifactId>
+      <version>${edifice-events.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.entcore</groupId>
+          <artifactId>broker-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.entcore</groupId>
+          <artifactId>broker-nats</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.edifice</groupId>
+      <artifactId>aiwiki-vertx-server</artifactId>
+      <version>${edifice-events.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.entcore</groupId>
+          <artifactId>broker-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.entcore</groupId>
+          <artifactId>broker-nats</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.entcore</groupId>

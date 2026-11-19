@@ -35,11 +35,9 @@ import net.atos.entng.wiki.service.WikiRepositoryEvents;
 import net.atos.entng.wiki.service.WikiSearchingEvents;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import net.atos.entng.wiki.service.WikiService;
 import net.atos.entng.wiki.service.WikiServiceMongoImpl;
-import org.entcore.broker.api.ENTBrokerListener;
 import org.entcore.broker.api.utils.AddressParameter;
 import org.entcore.broker.api.utils.BrokerProxyUtils;
 import org.entcore.common.audience.AudienceHelper;
@@ -77,13 +75,10 @@ public class Wiki extends BaseServer {
 
 	private MessageConsumer<Object> audienceRightChecker;
 
-    private final List<ENTBrokerListener> listeners = new ArrayList<>();
-
 	@Override
     public void start(Promise<Void> startPromise) throws Exception {
         final Promise<Void> promise = Promise.promise();
         super.start(promise);
-        listeners.clear();
         promise.future()
             .compose(init -> SharedDataHelper.getInstance().getLocalMulti("server", "content-transformer"))
             .compose(configMap ->
@@ -154,9 +149,8 @@ public class Wiki extends BaseServer {
             final ShareService shareService = this.plugin.createShareService(new HashMap<>());
             BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
             // add broker listener for wiki ai service
-            listeners.add(new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService));
-            List<Future<Void>> futureListeners = listeners.stream().map(ENTBrokerListener::start).collect(Collectors.toList());
-            return Future.all(futureListeners).mapEmpty();
+            BrokerProxyUtils.addBrokerProxy(new AIWikiGeneratorListenerImpl(wikiService), vertx, new AddressParameter("pfId", platformId));
+            return Future.succeededFuture();
         });
     }
 
@@ -181,8 +175,5 @@ public class Wiki extends BaseServer {
 		if (audienceRightChecker != null) {
 			audienceRightChecker.unregister();
 		}
-        for (ENTBrokerListener listener : listeners) {
-            listener.stop();
-        }
 	}
 }

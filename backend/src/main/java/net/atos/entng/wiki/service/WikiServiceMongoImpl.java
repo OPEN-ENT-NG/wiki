@@ -65,7 +65,8 @@ import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.mongodb.MongoUpdateBuilder;
 import fr.wseduc.webutils.Either;
-import org.entcore.edificewikigenerator.*;
+import io.edifice.aiwiki.events.AiwikiNatsServicePublisher;
+import io.edifice.aiwiki.v1.*;
 
 public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiService {
 	protected static final Logger log = LoggerFactory.getLogger(WikiServiceMongoImpl.class);
@@ -85,7 +86,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 
     private final Storage wikiGenStorage;
 
-	private final EdificeWikiGeneratorPublisher aiWikiPublisher;
+	private final AiwikiNatsServicePublisher aiWikiPublisher;
 
     private final String plateformId;
 
@@ -112,7 +113,7 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
 				new AddressParameter("application", Wiki.APPLICATION)
 		);
         this.wikiGenStorage = wikiGenStorage;
-		this.aiWikiPublisher = new EdificeWikiGeneratorPublisher(vertx);
+		this.aiWikiPublisher = new AiwikiNatsServicePublisher(vertx);
         this.plateformId = pfId;
 	}
 
@@ -1577,17 +1578,17 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
                 .put("generationDate", MongoDb.now()));
             return mongoUpdate(updateQuery, modifier.build());
         }).compose( _updatedResult -> {
-            final ContentRequest contentRequest = new ContentRequest(
-                userAgent != null ? userAgent : "",
-                dto.getSequence(),
-                dto.getKeywords(),
-                dto.getLevel(),
-                plateformId,
-                sessionId != null ? sessionId : "",
-                dto.getSubject(),
-                user.getUserId(),
-                wikiId
-            );
+            final ContentRequest contentRequest = new ContentRequestBuilder()
+                .withUserId(user.getUserId())
+                .withWikiId(wikiId)
+                .withSession(sessionId != null ? sessionId : "")
+                .withBrowser(userAgent != null ? userAgent : "")
+                .withLevel(dto.getLevel())
+                .withSubject(dto.getSubject())
+                .withContent(dto.getSequence())
+                .withKeywords(dto.getKeywords())
+                .withPfId(plateformId)
+                .build();
             return aiWikiPublisher.createWiki(contentRequest).compose(jobAccepted -> {
                 if(jobAccepted.isAccepted()) {
                     log.info("AI wiki generation started for wiki: " + wikiId);
@@ -1636,22 +1637,22 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
             }).compose( _updatedResult ->
                 this.transferFileToBucket(dto.getFileId())
             ).compose( pdfFileS3Id -> {
-                final FileCheckRequest fileCheckRequest = new FileCheckRequest(
-                    pdfFileS3Id,
-                    plateformId,
-                    user.getUserId()
-                );
+                final FileCheckRequest fileCheckRequest = new FileCheckRequestBuilder()
+                    .withUserId(user.getUserId())
+                    .withPathFile(pdfFileS3Id)
+                    .withPfId(plateformId)
+                    .build();
                 return aiWikiPublisher.checkFile(fileCheckRequest).compose(fileCheckResponse -> {
                     final Promise<String> promise = Promise.promise();
                     if(fileCheckResponse.isUsable()) {
-                        final ContentTransformRequest transformRequest = new ContentTransformRequest(
-                            userAgent != null ? userAgent : "",
-                            pdfFileS3Id,
-                            plateformId,
-                            sessionId != null ? sessionId : "",
-                            user.getUserId(),
-                            wikiId
-                        );
+                        final ContentTransformRequest transformRequest = new ContentTransformRequestBuilder()
+                            .withUserId(user.getUserId())
+                            .withWikiId(wikiId)
+                            .withPathFile(pdfFileS3Id)
+                            .withPfId(plateformId)
+                            .withSession(sessionId != null ? sessionId : "")
+                            .withBrowser(userAgent != null ? userAgent : "")
+                            .build();
                         aiWikiPublisher.transformWiki(transformRequest);
                         log.info("Wiki PDF import started for wiki: " + wikiId);
                         promise.complete(wikiId);
@@ -1991,40 +1992,38 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
         final Course wiki = originalCourse.getCourse();
         final Page originalPage = wiki.getPages().get(0);
         final List<Page> pages = new ArrayList<>();
-        pages.add(new Page(
-            originalPage.getId(),
-            originalPage.getAuthor(),
-            originalPage.getAuthorName(),
-            modifiedContent,
-            originalPage.getContentVersion(),
-            originalPage.getCreated(),
-            new ArrayList<>(),
-            originalPage.isIsVisible(),
-            modifiedJsonContent,
-            originalPage.getLastContributer(),
-            originalPage.getLastContributerName(),
-            originalPage.getModified(),
-            originalPage.getPosition(),
-            originalPage.getTitle()
-        ));
-        return new CourseResponse(
-            new Course(
-                wiki.getId(),
-                wiki.getCreated(),
-                wiki.getDescription(),
-                wiki.getModified(),
-                wiki.getOwner(),
-                pages,
-                wiki.getThumbnail(),
-                wiki.getTitle()
-            ),
-            originalCourse.isFromPdf(),
-            originalCourse.getMessage(),
-            originalCourse.getModel(),
-            originalCourse.getStatus(),
-            originalCourse.getUsage(),
-            originalCourse.getVersion(),
-            originalCourse.getWikiId()
-        );
+        pages.add(new PageBuilder()
+            .withTitle(originalPage.getTitle())
+            .withContent(modifiedContent)
+            .withIsVisible(originalPage.isIsVisible())
+            .withPosition(originalPage.getPosition())
+            .withAuthor(originalPage.getAuthor())
+            .withAuthorName(originalPage.getAuthorName())
+            .withModified(originalPage.getModified())
+            .withCreated(originalPage.getCreated())
+            .withContentVersion(originalPage.getContentVersion())
+            .withJsonContent(modifiedJsonContent)
+            .withImages(new ArrayList<>())
+            .withLastContributer(originalPage.getLastContributer())
+            .withLastContributerName(originalPage.getLastContributerName())
+            .build());
+        return new CourseResponseBuilder()
+            .withStatus(originalCourse.getStatus())
+            .withMessage(originalCourse.getMessage())
+            .withModel(originalCourse.getModel())
+            .withVersion(originalCourse.getVersion())
+            .withWikiId(originalCourse.getWikiId())
+            .withUsage(originalCourse.getUsage())
+            .withCourse(new CourseBuilder()
+                .withTitle(wiki.getTitle())
+                .withDescription(wiki.getDescription())
+                .withPages(pages)
+                .withThumbnail(wiki.getThumbnail())
+                .withCreated(wiki.getCreated())
+                .withModified(wiki.getModified())
+                .withOwner(wiki.getOwner())
+                .build())
+            .withFromPdf(originalCourse.isFromPdf())
+            .build();
     }
 }
