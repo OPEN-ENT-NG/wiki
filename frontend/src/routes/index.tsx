@@ -22,13 +22,14 @@ import { pageEditAction } from './page/pageEditAction';
 import { AssistantHome } from '~/features/wiki/PagesAssistant/AssistantHome/AssistantHome';
 import { ImportPDFGenerate } from '~/features/wiki/PagesAssistant/AI/ImportPDF/Generate/ImportPDFGenerate';
 import { ImportPDFResults } from '~/features/wiki/PagesAssistant/AI/ImportPDF/Results/ImportPDFResults';
-import { AIChooseRender } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/ChooseRender/AIChooseRender';
-import { AITraceStep1 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Steps/Step1/AITraceStep1';
-import { AITraceStep2 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Steps/Step2/AITraceStep2';
-import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Generate/AITraceGenerate';
-import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Trace/Results/AITraceResults';
-import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step1/AIPlanStep1';
-import { AIPlanStep2 } from '~/features/wiki/PagesAssistant/AI/AssistedCreation/Plan/Steps/Step2/AIPlanStep2';
+import { AIChooseRender } from '~/features/wiki/PagesAssistant/AI/Creation/ChooseRender/AIChooseRender';
+import { AITraceStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Steps/Step1/AITraceStep1';
+import { AITraceStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Steps/Step2/AITraceStep2';
+import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Generate/AITraceGenerate';
+import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Results/AITraceResults';
+import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step1/AIPlanStep1';
+import { AIPlanStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step2/AIPlanStep2';
+import { AIGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Generate/AIGenerate';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -69,6 +70,10 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
       {
         path: 'pages/assistant/ai/creation/trace/step2',
         element: <AITraceStep2 />,
+      },
+      {
+        path: 'pages/assistant/ai/creation/generate',
+        element: <AIGenerate />,
       },
       {
         path: 'pages/assistant/ai/creation/trace/generate',

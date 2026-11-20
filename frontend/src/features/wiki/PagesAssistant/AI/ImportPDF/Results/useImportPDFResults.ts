@@ -2,16 +2,12 @@ import { odeServices } from '@edifice.io/client';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WikiDto } from '~/models';
-import {
-  usePagesAssistantActions,
-  usePagesStructureStore,
-} from '~/store/assistant';
+import { usePagesStructureStore } from '~/store/assistant/importPDF/importPDFStore';
 
 export const useImportPDFResults = () => {
   const [contentFinished, setContentFinished] = useState(false);
   const [generatedWiki, setGeneratedWiki] = useState<WikiDto>();
   const pagesStructure = usePagesStructureStore();
-  const { setFormValues } = usePagesAssistantActions();
   const params = useParams();
   const navigate = useNavigate();
 
@@ -35,15 +31,6 @@ export const useImportPDFResults = () => {
   }, [params.wikiId]);
 
   const handleCancelButtonClick = () => {
-    setFormValues({
-      schoolType: '',
-      level: '',
-      subject: '',
-      sequence: '',
-      keywords: '',
-      sequenceType: 'program',
-      sessionCount: 1,
-    });
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 

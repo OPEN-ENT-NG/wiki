@@ -2,17 +2,22 @@ import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PagesAssistantAIStep2FormValues } from '~/services/api/assistant/assistant.types';
-import {
-  useFormValuesStore,
-  usePagesAssistantActions,
-} from '~/store/assistant';
 import { useSubjects } from '../Step1/useSubjects';
+import {
+  usePagesAssistantActions,
+  useTraceFormValuesStore,
+} from '~/store/assistant/trace/traceStore';
+
+export interface AITraceStep2FormValues {
+  sequence: string;
+  keywords?: string;
+}
 
 export const useAITraceStep2 = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const formValues = useFormValuesStore();
+  const formValues = useTraceFormValuesStore();
   const { subjects } = useSubjects(formValues.level);
   const { setFormValues } = usePagesAssistantActions();
 

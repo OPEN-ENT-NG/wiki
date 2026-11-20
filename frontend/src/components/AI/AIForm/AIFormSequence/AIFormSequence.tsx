@@ -5,7 +5,6 @@ import {
   FormControl,
   Grid,
   RadioCard,
-  Select,
   TextArea,
   useEdificeClient,
 } from '@edifice.io/react';
@@ -27,7 +26,7 @@ const AIFormSequence = () => {
   return (
     <div className="ai-form-sequence">
       <h3 className="ai-form-sequence__title">
-        {t('wiki.assistant.ai.form.sequence.title')}
+        {t('wiki.assistant.ai.form.sequence.title', 'Séquence')}
       </h3>
 
       {/*
@@ -47,10 +46,12 @@ const AIFormSequence = () => {
                 data-testid="ai-form-sequence-program-radio"
                 label={t(
                   'wiki.assistant.ai.form.sequence.program.choose.label',
+                  'Choisir dans le programme',
                 )}
                 value="program"
                 description={t(
                   'wiki.assistant.ai.form.sequence.program.choose.description',
+                  'Diplôme • Module • Capacité',
                 )}
                 groupName="sequenceType"
                 selectedValue={value}
@@ -72,10 +73,14 @@ const AIFormSequence = () => {
             render={({ field: { value, onChange } }) => (
               <RadioCard
                 data-testid="ai-form-sequence-theme-radio"
-                label={t('wiki.assistant.ai.form.sequence.theme.choose.label')}
+                label={t(
+                  'wiki.assistant.ai.form.sequence.theme.choose.label',
+                  'Décrire mon thème',
+                )}
                 value="theme"
                 description={t(
                   'wiki.assistant.ai.form.sequence.theme.choose.description',
+                  'Avec vos mots',
                 )}
                 groupName="sequenceType"
                 selectedValue={value}
@@ -92,7 +97,7 @@ const AIFormSequence = () => {
       {/* Sequence Program Dropdown */}
       {formValues.sequenceType === 'program' && (
         <Controller
-          name="sequence"
+          name="sequenceProgram"
           control={control}
           rules={{ required: true }}
           render={({ field: { value, onChange } }) => (
@@ -100,9 +105,11 @@ const AIFormSequence = () => {
               <Dropdown.Trigger
                 size="md"
                 label={
-                  <span className="text-truncate">
-                    {value || t('wiki.assistant.ai.step2.select.sequence')}
-                  </span>
+                  value ||
+                  t(
+                    'wiki.assistant.ai.form.sequence.program.select',
+                    '-- Choisir une séquence --',
+                  )
                 }
               />
               <Dropdown.Menu role="listbox">
@@ -125,7 +132,10 @@ const AIFormSequence = () => {
                     leftIcon={<IconPlus />}
                     onClick={() => {}}
                   >
-                    {t('wiki.assistant.ai.step2.button.add.sequence')}
+                    {t(
+                      'wiki.assistant.ai.form.sequence.program.button.add.sequence',
+                      'Suggérer une séquence',
+                    )}
                   </Button>
                 </Flex>
               </Dropdown.Menu>
@@ -139,11 +149,12 @@ const AIFormSequence = () => {
           <TextArea
             data-testid="ai-form-sequence-theme-textarea"
             placeholder={t(
-              'wiki.assistant.ai.step2.sequence.theme.placeholder',
+              'wiki.assistant.ai.form.sequence.theme.placeholder',
+              'Ex: La division cellulaire de la mitose et de la méiose',
             )}
             size="md"
             maxLength={MAX_AI_SEQUENCE_THEME_LENGTH}
-            {...register('sequence', {
+            {...register('sequenceTheme', {
               required: true,
               maxLength: MAX_AI_SEQUENCE_THEME_LENGTH,
             })}
@@ -153,63 +164,83 @@ const AIFormSequence = () => {
       )}
 
       {/* Seances */}
-      <Grid className="ai-form-sequence-seances">
+      <Grid className="ai-form-sequence-seances__label">
         <Grid.Col sm="4" xl="6">
           <label
-            htmlFor="ai-form-sequence-session-count"
+            htmlFor="ai-form-sequence-seances-count"
             className="ai-form-sequence-seances-nb-label"
           >
-            {t('wiki.assistant.ai.form.sequence.seances.nb.label')}
+            {t(
+              'wiki.assistant.ai.form.sequence.seances.nb.label',
+              'Nombre de séances',
+            )}
           </label>
         </Grid.Col>
         <Grid.Col sm="4" xl="6">
           <span className="ai-form-sequence-seances-duration-label">
-            {t('wiki.assistant.ai.form.sequence.seances.duration.label')}
+            {t(
+              'wiki.assistant.ai.form.sequence.seances.duration.label',
+              'Durée des séances',
+            )}
           </span>
         </Grid.Col>
       </Grid>
 
       <Grid className="">
         <Grid.Col sm="4" xl="6">
+          {/* Seances number */}
           <Controller
-            name="sessionCount"
+            name="seancesCount"
             control={control}
-            rules={{ required: true, min: 1 }}
+            rules={{ required: true, min: 1, max: 10 }}
             render={({ field }) => (
               <NumberStepper
                 {...field}
-                id="ai-form-sequence-session-count"
+                id="ai-form-sequence-seances-count"
                 min={1}
+                max={10}
                 decrementLabel={t(
                   'wiki.assistant.ai.form.sequence.seances.decrement',
-                  {
-                    defaultValue: 'Decrease session count',
-                  },
+                  'Diminuer',
                 )}
                 incrementLabel={t(
                   'wiki.assistant.ai.form.sequence.seances.increment',
-                  {
-                    defaultValue: 'Increase session count',
-                  },
+                  'Augmenter',
                 )}
                 formatValue={(count) =>
-                  t('wiki.assistant.ai.form.sequence.seances.count', {
-                    count,
-                    defaultValue:
-                      count === 1 ? '{{count}} session' : '{{count}} sessions',
-                  })
+                  count === 1
+                    ? `${count} ${t('wiki.assistant.ai.form.sequence.seance', 'séance')}`
+                    : `${count} ${t('wiki.assistant.ai.form.sequence.seances', 'séances')}`
                 }
               />
             )}
           />
         </Grid.Col>
         <Grid.Col sm="4" xl="6">
-          <Select
-            block
-            onValueChange={() => {}}
-            options={['1 heure', '2 heures', '3 heures', '4 heures']}
-            placeholderOption="Choose seances duration"
-            selectedValue={'1 heure'}
+          {/* Seances duration */}
+          <Controller
+            name="seancesDuration"
+            control={control}
+            rules={{ required: true, min: 1, max: 2 }}
+            render={({ field }) => (
+              <NumberStepper
+                {...field}
+                id="ai-form-sequence-seances-duration"
+                min={1}
+                max={2}
+                decrementLabel={t(
+                  'wiki.assistant.ai.form.sequence.seances.decrement',
+                  'Diminuer',
+                )}
+                incrementLabel={t(
+                  'wiki.assistant.ai.form.sequence.seances.increment',
+                  'Augmenter',
+                )}
+                formatValue={(count) =>
+                  `${count} ${t('wiki.assistant.ai.form.sequence.seances.duration', 'heure(s)')}`
+                }
+              />
+            )}
           />
         </Grid.Col>
       </Grid>

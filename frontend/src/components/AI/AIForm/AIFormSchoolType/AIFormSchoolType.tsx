@@ -14,7 +14,7 @@ const AIFormSchoolType = () => {
   return (
     <div className="ai-form-school-type">
       <h3 className="ai-form-school-type__title">
-        {t('wiki.assistant.ai.step1.schoolType')}
+        {t('wiki.assistant.ai.step1.schoolType', "Type d'établissement")}
       </h3>
       <Flex gap="8">
         {schoolTypes.map((schoolType) => (

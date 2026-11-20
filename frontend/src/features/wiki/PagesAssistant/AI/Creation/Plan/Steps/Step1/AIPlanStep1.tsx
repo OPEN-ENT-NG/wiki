@@ -7,7 +7,7 @@ import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
 import { useAIPlanStep1 } from './useAIPlanStep1';
 import AIFormLevel from '~/components/AI/AIForm/AIFormLevel/AIFormLevel';
 import AIFormSubject from '~/components/AI/AIForm/AIFormSubject/AIFormSubject';
-import AIFormNavigationButtons from '~/components/AI/AIForm/AIFormNavigationButtons/AIFormNavigationButtons';
+import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
 
 export const AIPlanStep1 = () => {
   const { formValues, defaultValues, onSubmit, handlePreviousClick } =
@@ -40,7 +40,7 @@ export const AIPlanStep1 = () => {
         {formValues.level && <AIFormSubject />}
 
         {/* Previous and Next buttons */}
-        <AIFormNavigationButtons handlePreviousClick={handlePreviousClick} />
+        <AIFormNavigation handlePreviousClick={handlePreviousClick} />
       </AIForm>
     </AIStepLayout>
   );

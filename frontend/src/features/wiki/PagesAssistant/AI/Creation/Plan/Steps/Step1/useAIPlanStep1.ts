@@ -1,18 +1,19 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { LevelFormValues } from '~/components/AI/AIForm/AIFormLevel/useAIFormLevel';
+import { SchoolTypeFormValues } from '~/components/AI/AIForm/AIFormSchoolType/useAIFormSchoolType';
+import { SubjectFormValues } from '~/components/AI/AIForm/AIFormSubject/useAIFormSubject';
 import {
-  useFormValuesStore,
   usePagesAssistantActions,
-} from '~/store/assistant';
+  usePlanFormValuesStore,
+} from '~/store/assistant/plan/planStore';
 
-export interface AIPlanStep1FormValues {
-  schoolType: string;
-  level: string;
-  subject: string;
-}
+export type AIPlanStep1FormValues = SchoolTypeFormValues &
+  LevelFormValues &
+  SubjectFormValues;
 
 export const useAIPlanStep1 = () => {
   // get the Form Values from the Store
-  const formValues = useFormValuesStore();
+  const formValues = usePlanFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const useAIPlanStep1 = () => {
   // - add form values to FormValues Store
   // - navigate to step 2
   const onSubmit = async (step1FormValues: AIPlanStep1FormValues) => {
-    console.log('step2FormValues', step1FormValues);
+    console.log('step1FormValues', step1FormValues);
     setFormValues({ ...formValues, ...step1FormValues });
     navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step2`);
   };

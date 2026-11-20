@@ -4,9 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { WikiDto } from '~/models';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import {
-  useFormValuesStore,
   usePagesAssistantActions,
-} from '~/store/assistant';
+  useTraceFormValuesStore,
+} from '~/store/assistant/trace/traceStore';
 
 /**
  * Handles the AITraceGenerate logic:
@@ -21,7 +21,7 @@ export const useAITraceGenerate = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { setPagesStructure } = usePagesAssistantActions();
-  const formValues = useFormValuesStore();
+  const formValues = useTraceFormValuesStore();
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;

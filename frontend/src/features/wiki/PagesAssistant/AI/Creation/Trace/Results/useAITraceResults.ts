@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { WikiDto } from '~/models';
 import {
+  DEFAULT_AI_FORM_VALUES,
   usePagesAssistantActions,
   usePagesStructureStore,
-} from '~/store/assistant';
+} from '~/store/assistant/trace/traceStore';
 
 export const useAITraceResults = () => {
   const [contentFinished, setContentFinished] = useState(false);
@@ -35,15 +36,7 @@ export const useAITraceResults = () => {
   }, [params.wikiId]);
 
   const handleCancelButtonClick = () => {
-    setFormValues({
-      schoolType: '',
-      level: '',
-      subject: '',
-      sequence: '',
-      keywords: '',
-      sequenceType: 'program',
-      sessionCount: 1,
-    });
+    setFormValues(DEFAULT_AI_FORM_VALUES);
     navigate(`/id/${params.wikiId}/pages/assistant`);
   };
 

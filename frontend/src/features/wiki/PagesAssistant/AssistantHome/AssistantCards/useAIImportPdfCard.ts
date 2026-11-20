@@ -10,7 +10,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetWiki } from '~/services';
-import { usePagesAssistantActions } from '~/store/assistant';
+import { usePagesAssistantActions } from '~/store/assistant/importPDF/importPDFStore';
 
 // Owns PDF validation, import, polling, and media-library handlers for the card.
 export const useAIImportPdfCard = () => {

@@ -5,7 +5,8 @@ import { AIStepHeader } from '~/components/AI/AIStepHeader/AIStepHeader';
 import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
 import { useAIPlanStep2 } from './useAIPlanStep2';
 import AIFormSequence from '~/components/AI/AIForm/AIFormSequence/AIFormSequence';
-import AIFormNavigationButtons from '~/components/AI/AIForm/AIFormNavigationButtons/AIFormNavigationButtons';
+import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
+import AIFormObjective from '~/components/AI/AIForm/AIFormObjective/AIFormObjective';
 
 export const AIPlanStep2 = () => {
   const { defaultValues, handlePreviousClick, onSubmit } = useAIPlanStep2();
@@ -18,7 +19,7 @@ export const AIPlanStep2 = () => {
       <AIStepHeader
         title={t('wiki.assistant.ai.step2.title')}
         description={t('wiki.assistant.ai.step2.description')}
-        currentStep={1}
+        currentStep={2}
         nbSteps={4}
       />
       <AIForm
@@ -29,8 +30,11 @@ export const AIPlanStep2 = () => {
         {/* Choose Sequence */}
         <AIFormSequence />
 
+        {/* Choose Objective */}
+        <AIFormObjective />
+
         {/* Previous and Next buttons */}
-        <AIFormNavigationButtons handlePreviousClick={handlePreviousClick} />
+        <AIFormNavigation handlePreviousClick={handlePreviousClick} />
       </AIForm>
     </AIStepLayout>
   );

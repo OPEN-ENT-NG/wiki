@@ -2,9 +2,9 @@ import { Button, Flex, useEdificeClient } from '@edifice.io/react';
 import { IconRafterLeft, IconRafterRight } from '@edifice.io/react/icons';
 import { useTranslation } from 'react-i18next';
 import { useFormContext } from 'react-hook-form';
-import './AIFormNavigationButtons.css';
+import './AIFormNavigation.css';
 
-const AIFormNavigationButtons = ({
+const AIFormNavigation = ({
   handlePreviousClick,
 }: {
   handlePreviousClick: () => void;
@@ -39,4 +39,4 @@ const AIFormNavigationButtons = ({
   );
 };
 
-export default AIFormNavigationButtons;
+export default AIFormNavigation;

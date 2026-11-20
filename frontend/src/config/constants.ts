@@ -6,3 +6,4 @@ export const ADDITIONAL_COMMENTS = 10;
 export const MAX_REPLIES = 2;
 export const ADDITIONAL_REPLIES = 10;
 export const MAX_AI_SEQUENCE_THEME_LENGTH = 400;
+export const MAX_AI_OBJECTIVE_LENGTH = 200;

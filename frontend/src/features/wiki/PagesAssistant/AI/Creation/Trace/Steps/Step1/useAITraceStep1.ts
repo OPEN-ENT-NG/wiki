@@ -1,19 +1,23 @@
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PagesAssistantAIStep1FormValues } from '~/services/api/assistant/assistant.types';
-import {
-  useFormValuesStore,
-  usePagesAssistantActions,
-} from '~/store/assistant';
 import { useLevels } from './useLevels';
 import { useSubjects } from './useSubjects';
+import { LevelFormValues } from '~/components/AI/AIForm/AIFormLevel/useAIFormLevel';
+import { SubjectFormValues } from '~/components/AI/AIForm/AIFormSubject/useAIFormSubject';
+import {
+  usePagesAssistantActions,
+  useTraceFormValuesStore,
+} from '~/store/assistant/trace/traceStore';
+
+export type AITraceStep1FormValues = LevelFormValues & SubjectFormValues;
 
 export const useAITraceStep1 = () => {
   const navigate = useNavigate();
   const params = useParams();
 
   const { collegeLevels, lyceeLevels } = useLevels();
-  const formValues = useFormValuesStore();
+  const formValues = useTraceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
   const {
@@ -22,7 +26,7 @@ export const useAITraceStep1 = () => {
     watch,
     control,
     formState: { isValid },
-  } = useForm<PagesAssistantAIStep1FormValues>({
+  } = useForm<AITraceStep1FormValues>({
     defaultValues: {
       level: formValues.level || '6ème',
       subject: formValues.subject || '',

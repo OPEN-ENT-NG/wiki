@@ -17,25 +17,19 @@ export interface NumberStepperProps extends Omit<
 }
 
 export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
-  function NumberStepper(
-    {
-      value,
-      onChange,
-      min = 0,
-      max,
-      step = 1,
-      formatValue = String,
-      decrementLabel,
-      incrementLabel,
-      disabled,
-      readOnly,
-      className,
-      name,
-      onKeyDown,
-      ...inputProps
-    },
-    ref,
-  ) {
+  function NumberStepper({
+    value,
+    onChange,
+    min = 0,
+    max,
+    step = 1,
+    formatValue = String,
+    decrementLabel,
+    incrementLabel,
+    disabled,
+    readOnly,
+    name,
+  }) {
     const changeValue = (nextValue: number) => {
       if (disabled || readOnly) return;
       const boundedValue = Math.min(max ?? Infinity, Math.max(min, nextValue));
@@ -43,7 +37,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
     };
 
     return (
-      <div className={['number-stepper', className].filter(Boolean).join(' ')}>
+      <div className="number-stepper">
         <button
           type="button"
           className="number-stepper__button"
@@ -54,34 +48,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
         >
           <IconMinus aria-hidden="true" />
         </button>
-        <input
-          {...inputProps}
-          ref={ref}
-          type="text"
-          role="spinbutton"
-          className="number-stepper__input"
-          value={formatValue(value)}
-          aria-valuenow={value}
-          aria-valuemin={min}
-          aria-valuemax={max}
-          aria-valuetext={formatValue(value)}
-          disabled={disabled}
-          readOnly
-          onKeyDown={(event) => {
-            onKeyDown?.(event);
-            if (event.defaultPrevented) return;
-            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-              event.preventDefault();
-              changeValue(value + (event.key === 'ArrowUp' ? step : -step));
-            } else if (event.key === 'Home') {
-              event.preventDefault();
-              changeValue(min);
-            } else if (event.key === 'End' && max !== undefined) {
-              event.preventDefault();
-              changeValue(max);
-            }
-          }}
-        />
+        <span className="number-stepper__label">{formatValue(value)}</span>
         {name && (
           <input type="hidden" name={name} value={value} disabled={disabled} />
         )}
