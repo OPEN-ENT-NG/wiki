@@ -22,6 +22,7 @@ package net.atos.entng.wiki;
 import fr.wseduc.transformer.ContentTransformerFactoryProvider;
 import fr.wseduc.transformer.IContentTransformerClient;
 import fr.wseduc.webutils.collections.SharedDataHelper;
+import io.edifice.events.vertx.AbstractBrokerListener;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.MessageConsumer;
@@ -74,6 +75,8 @@ public class Wiki extends BaseServer {
 	private WikiExplorerPlugin plugin;
 
 	private MessageConsumer<Object> audienceRightChecker;
+
+    private AbstractBrokerListener aiWikiListener;
 
 	@Override
     public void start(Promise<Void> startPromise) throws Exception {
@@ -149,7 +152,8 @@ public class Wiki extends BaseServer {
             final ShareService shareService = this.plugin.createShareService(new HashMap<>());
             BrokerProxyUtils.addBrokerProxy(new ShareBrokerListenerImpl(this.securedActions, shareService), vertx, new AddressParameter("application", "wiki"));
             // add broker listener for wiki ai service
-            BrokerProxyUtils.addBrokerProxy(new AIWikiGeneratorListenerImpl(wikiService), vertx, new AddressParameter("pfId", platformId));
+            aiWikiListener = new AIWikiGeneratorListenerImpl(vertx, platformId, wikiService);
+            aiWikiListener.start().onFailure(err -> log.error("Could not start the AI wiki broker listener", err));
             return Future.succeededFuture();
         });
     }
@@ -170,6 +174,10 @@ public class Wiki extends BaseServer {
 
 		if (this.plugin != null) {
 			this.plugin.stop();
+		}
+
+		if (aiWikiListener != null) {
+			aiWikiListener.stop();
 		}
 
 		if (audienceRightChecker != null) {

@@ -6,6 +6,7 @@ import io.edifice.aiwiki.v1.CourseResponse;
 import io.edifice.aiwiki.v1.MessageReceived;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.service.WikiService;
@@ -16,17 +17,20 @@ import static io.vertx.core.Future.failedFuture;
  * Listener implementation for AI wiki generator events.
  * Handles asynchronous updates from the AI service by delegating to WikiService.
  */
-public class AIWikiGeneratorListenerImpl implements WikiReceiverBrokerListener {
+public class AIWikiGeneratorListenerImpl extends WikiReceiverBrokerListener {
     private static final Logger log = LoggerFactory.getLogger(AIWikiGeneratorListenerImpl.class);
     
     private final WikiService wikiService;
 
-    public AIWikiGeneratorListenerImpl(final WikiService wikiService) {
+    public AIWikiGeneratorListenerImpl(final Vertx vertx,
+                                       final String pfId,
+                                       final WikiService wikiService) {
+        super(vertx, Parameters.builder().pfId(pfId).build());
         this.wikiService = wikiService;
     }
 
     @Override
-    public Future<MessageReceived> updateWikiStructure(CourseHierarchy structure) {
+    protected Future<MessageReceived> onUpdateWikiStructure(CourseHierarchy structure) {
         if (structure == null) {
             log.error("Received null wiki structure");
             return failedFuture("Received null wiki structure");
@@ -55,7 +59,7 @@ public class AIWikiGeneratorListenerImpl implements WikiReceiverBrokerListener {
     }
 
     @Override
-    public Future<MessageReceived> updateWikiContent(CourseResponse courseResponse) {
+    protected Future<MessageReceived> onUpdateWikiContent(CourseResponse courseResponse) {
         if (courseResponse == null || courseResponse.getCourse() == null) {
             log.error("Received null wiki content");
             return failedFuture("Received null wiki content");
