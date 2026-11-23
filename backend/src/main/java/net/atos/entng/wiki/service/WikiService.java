@@ -34,8 +34,8 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import fr.wseduc.webutils.Either;
-import org.entcore.edificewikigenerator.CourseHierarchy;
-import org.entcore.edificewikigenerator.CourseResponse;
+import io.edifice.aiwiki.v1.CourseHierarchy;
+import io.edifice.aiwiki.v1.CourseResponse;
 
 public interface WikiService extends AudienceRightChecker {
 

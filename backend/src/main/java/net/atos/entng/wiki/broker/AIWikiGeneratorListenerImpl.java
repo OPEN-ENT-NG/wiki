@@ -1,15 +1,15 @@
 package net.atos.entng.wiki.broker;
 
+import io.edifice.aiwiki.events.WikiReceiverBrokerListener;
+import io.edifice.aiwiki.v1.CourseHierarchy;
+import io.edifice.aiwiki.v1.CourseResponse;
+import io.edifice.aiwiki.v1.MessageReceived;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import net.atos.entng.wiki.service.WikiService;
-import org.entcore.edificewikigenerator.AbstractEdificeWikiGeneratorListener;
-import org.entcore.edificewikigenerator.CourseHierarchy;
-import org.entcore.edificewikigenerator.CourseResponse;
-import org.entcore.edificewikigenerator.MessageReceived;
 
 import static io.vertx.core.Future.failedFuture;
 
@@ -17,18 +17,20 @@ import static io.vertx.core.Future.failedFuture;
  * Listener implementation for AI wiki generator events.
  * Handles asynchronous updates from the AI service by delegating to WikiService.
  */
-public class AIWikiGeneratorListenerImpl extends AbstractEdificeWikiGeneratorListener {
+public class AIWikiGeneratorListenerImpl extends WikiReceiverBrokerListener {
     private static final Logger log = LoggerFactory.getLogger(AIWikiGeneratorListenerImpl.class);
     
     private final WikiService wikiService;
 
-    public AIWikiGeneratorListenerImpl(final Vertx vertx, final String platformName, final WikiService wikiService) {
-        super(vertx, platformName);
+    public AIWikiGeneratorListenerImpl(final Vertx vertx,
+                                       final String pfId,
+                                       final WikiService wikiService) {
+        super(vertx, Parameters.builder().pfId(pfId).build());
         this.wikiService = wikiService;
     }
 
     @Override
-    public Future<MessageReceived> onUpdateWikiStructure(CourseHierarchy structure) {
+    protected Future<MessageReceived> onUpdateWikiStructure(CourseHierarchy structure) {
         if (structure == null) {
             log.error("Received null wiki structure");
             return failedFuture("Received null wiki structure");
@@ -47,17 +49,17 @@ public class AIWikiGeneratorListenerImpl extends AbstractEdificeWikiGeneratorLis
         wikiService.updateWikiStructureFromAI(wikiId, structure)
             .onSuccess(v -> {
                 log.info("Wiki structure updated successfully for wiki: " + wikiId);
-                promise.complete(new MessageReceived(null, true));
+                promise.complete(new MessageReceived(true, null));
             })
             .onFailure(err -> {
                 log.error("Failed to update wiki structure for wiki: " + wikiId, err);
-                promise.complete(new MessageReceived(err.getMessage(), false));
+                promise.complete(new MessageReceived(false, err.getMessage()));
             });
         return promise.future();
     }
 
     @Override
-    public Future<MessageReceived> onUpdateWikiContent(CourseResponse courseResponse) {
+    protected Future<MessageReceived> onUpdateWikiContent(CourseResponse courseResponse) {
         if (courseResponse == null || courseResponse.getCourse() == null) {
             log.error("Received null wiki content");
             return failedFuture("Received null wiki content");
@@ -79,11 +81,11 @@ public class AIWikiGeneratorListenerImpl extends AbstractEdificeWikiGeneratorLis
             wikiService.updateWikiContentFromAI(wikiId, transformedCourse)
                 .onSuccess(v -> {
                     log.info("Wiki content updated successfully for wiki: " + wikiId);
-                    promise.complete(new MessageReceived(null, true));
+                    promise.complete(new MessageReceived(true, null));
                 })
                 .onFailure(err -> {
                     log.error("Failed to update wiki content for wiki: " + wikiId, err);
-                    promise.complete(new MessageReceived(err.getMessage(), false));
+                    promise.complete(new MessageReceived(false, err.getMessage()));
                 })
         );
         return promise.future();
