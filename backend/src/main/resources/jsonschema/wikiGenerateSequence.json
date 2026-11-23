@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "wikiId": {
+      "type": "string"
+    },
+    "schoolType": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "content": {
+      "type": "string"
+    },
+    "seanceCount": {
+      "type": "number"
+    },
+    "seanceDuration": {
+      "type": "number"
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "verb": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "priorKnowledge": {
+      "type": "string"
+    },
+    "hook": {
+      "type": "string"
+    },
+    "difficulties": {
+      "type": "string"
+    },
+    "inclusion": {
+      "type": "string"
+    },
+    "jobFamily": {
+      "type": "string"
+    }
+  },
+  "required": ["level", "subject", "seanceCount"],
+  "additionalProperties": false
+}

@@ -32,11 +32,7 @@ import net.atos.entng.wiki.filters.OwnerAuthorOrShared;
 import net.atos.entng.wiki.filters.OwnerAuthorOrSharedPage;
 import net.atos.entng.wiki.service.NotificationServiceImpl;
 import net.atos.entng.wiki.service.WikiService;
-
-import net.atos.entng.wiki.to.PageId;
-import net.atos.entng.wiki.to.PageListRequest;
-import net.atos.entng.wiki.to.WikiGenerateRequest;
-import net.atos.entng.wiki.to.WikiPdfImportRequest;
+import net.atos.entng.wiki.to.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.entcore.common.events.EventHelper;
@@ -869,6 +865,25 @@ public class WikiController extends MongoDbControllerHelper {
             })
         );
     }
+
+	@Post("/generate-sequence")
+	@ApiDoc("Generate an educational sequence using AI")
+	@SecuredAction("wiki.generateSequence")
+	public void generateSequence(final HttpServerRequest request) {
+		UserUtils.getAuthenticatedUserInfos(eb, request).onSuccess(user ->
+			RequestUtils.bodyToJson(request, pathPrefix + "wikiGenerateSequence", payload -> {
+				SequenceGenerateRequest dto = SequenceGenerateRequest.fromJson(payload);
+				final String userAgent = Optional.ofNullable(request.getHeader("User-Agent")).orElse("");
+				final String sessionId = UserUtils.getSessionId(request).orElse("");
+				wikiService.generateSequence(user, dto, sessionId, userAgent)
+					.onSuccess(wikiId -> renderJson(request, new JsonObject().put("wikiId", wikiId)))
+					.onFailure(err -> {
+						log.error("Error generating educational sequence", err);
+						renderJson(request, new JsonObject().put("error", err.getMessage()), 500);
+					});
+			})
+		);
+	}
 
 	private void deleteRevisions(final String idWiki, final String idPage) {
 		wikiService.deleteRevisions(idWiki, idPage, new Handler<Either<String, JsonObject>>() {

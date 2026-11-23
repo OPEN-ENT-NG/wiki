@@ -61,6 +61,16 @@ public interface WikiService extends AudienceRightChecker {
      */
     Future<String> generateFromPdf(UserInfos user, WikiPdfImportRequest dto, String sessionId, String userAgent);
 
+	/**
+	 * Generate a learning sequence using AI
+	 * @param user      The user requesting sequence generation.
+	 * @param dto       The DTO containing all required fields for sequence generation.
+	 * @param sessionId The session ID extracted from the HTTP request.
+	 * @param userAgent The User-Agent string extracted from the HTTP request.
+	 * @return Future with the generated wiki ID.
+	 */
+	Future<String> generateSequence(UserInfos user, SequenceGenerateRequest dto, String sessionId, String userAgent);
+
 	default void getWiki(String id, Handler<Either<String, JsonObject>> handler){
 		getWiki(id, false, handler);
 	}
