@@ -1602,6 +1602,53 @@ public class WikiServiceMongoImpl extends MongoDbCrudService implements WikiServ
         });
     }
 
+	@Override
+	public Future<String> generateSequence(UserInfos user, SequenceGenerateRequest dto, String sessionId, String userAgent) {
+		final String wikiId = dto.getWikiId();
+		return this.checkWikiRights(
+			wikiId, user
+		).compose(_wikiId -> {
+			final JsonObject updateQuery = new JsonObject().put("_id", wikiId);
+			final MongoUpdateBuilder modifier = new MongoUpdateBuilder();
+			modifier.set("modified", MongoDb.now());
+			modifier.set("aiGenerated", true);
+			modifier.set("aiMetadata", new JsonObject()
+				.put("LearningSequence", true)
+				.put("generationDate", MongoDb.now()));
+			return mongoUpdate(updateQuery, modifier.build());
+		}).compose( _updatedResult -> {
+			final SequenceRequest sequenceRequest = new SequenceRequestBuilder()
+				.withUserId(user.getUserId())
+				.withWikiId(wikiId)
+				.withSession(sessionId != null ? sessionId : "")
+				.withBrowser(userAgent != null ? userAgent : "")
+				.withSchoolType(dto.getSchoolType())
+				.withLevel(dto.getLevel())
+				.withSubject(dto.getSubject())
+				.withContent(dto.getContent())
+				.withSeanceCount(dto.getSeanceCount())
+				.withSeanceDuration(dto.getSeanceDuration())
+				.withObjectives(dto.getObjectives())
+				.withPriorKnowledge(dto.getPriorKnowledge())
+				.withHook(dto.getHook())
+				.withDifficulties(dto.getDifficulties())
+				.withInclusion(dto.getInclusion())
+				.withJobFamily(dto.getJobFamily())
+				.withPfId(plateformId)
+				.build();
+			return aiWikiPublisher.createSequence(sequenceRequest).compose(jobAccepted -> {
+				if(jobAccepted.isAccepted()) {
+					log.info("AI sequence generation started for wiki: " + wikiId);
+					return Future.succeededFuture(wikiId);
+				} else {
+					final String errorStr = jobAccepted.getReason();
+					log.info("AI sequence generation failed with error: " + errorStr);
+					return Future.failedFuture(errorStr);
+				}
+			});
+		});
+	}
+
     private Future<String> transferFileToBucket(String fileId) {
         final Promise<String> promise = Promise.promise();
         this.workspaceHelper.readFile(fileId, fileBuffer -> { //TODO: implement streaming in WorkspaceHelper
