@@ -8,11 +8,21 @@ import './polyfills';
 import '@testing-library/jest-dom/vitest';
 import { RenderOptions, render, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import i18n from 'i18next';
 import { ReactElement } from 'react';
+import { initReactI18next } from 'react-i18next';
 import { afterAll, afterEach, beforeAll } from 'vitest';
-import '../i18n';
 import { CustomProviders } from '../providers';
 import { server } from './server';
+
+await i18n.use(initReactI18next).init({
+  lng: 'fr',
+  fallbackLng: 'fr',
+  defaultNS: 'common',
+  ns: ['common', 'wiki'],
+  resources: { fr: { common: {}, wiki: {} } },
+  interpolation: { escapeValue: false, prefix: '[[', suffix: ']]' },
+});
 
 // Enable API mocking before tests.
 beforeAll(() =>
