@@ -116,5 +116,12 @@
       <scope>runtime</scope>
       <classifier>fat</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.entcore</groupId>
+      <artifactId>workspace</artifactId>
+      <version>${entcore.version}</version>
+      <scope>runtime</scope>
+      <classifier>fat</classifier>
+    </dependency>
   </dependencies>
 </project>
