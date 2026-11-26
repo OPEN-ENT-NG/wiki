@@ -40,8 +40,7 @@ export const useAIPlanStep2 = () => {
   const onSubmit = async (step2FormValues: AIPlanStep2FormValues) => {
     console.log('step2FormValues', step2FormValues);
     setFormValues({ ...formValues, ...step2FormValues });
-    // TODO wiki generation
-    navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/generate`);
+    navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/generate`);
   };
 
   const handlePreviousClick = () => {

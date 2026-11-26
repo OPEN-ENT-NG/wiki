@@ -38,7 +38,10 @@ export const AIPlanStep2 = () => {
         <AIFormOptionalFields />
 
         {/* Previous and Next buttons */}
-        <AIFormNavigation handlePreviousClick={handlePreviousClick} />
+        <AIFormNavigation
+          isFinalStep={true}
+          handlePreviousClick={handlePreviousClick}
+        />
       </AIForm>
     </AIStepLayout>
   );

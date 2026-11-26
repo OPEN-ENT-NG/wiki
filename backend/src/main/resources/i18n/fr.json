@@ -144,6 +144,7 @@
   "wiki.assistant.ai.form.inclusion.title": "Inclusion et différenciation",
   "wiki.assistant.ai.form.inclusion.description": "Pour des suggestions d'adaptation intégrées au plan (formulation, variantes d'activité).",
   "wiki.assistant.ai.form.inclusion.textarea.placeholder": "Ex. : Élèves allophones, présence d'un AESH, écarts de niveau importants dans la classe...",
+  "wiki.assistant.ai.form.generate": "Générer la séquence",
   "wiki.assistant.ai.step3.structure.loading.description": "Génération en cours de l'ébauche",
   "wiki.assistant.ai.step3.structure.loading.subtitle": "La création peut prendre quelques secondes",
   "wiki.assistant.ai.step3.structure.loading.title": "Création de l'ébauche",

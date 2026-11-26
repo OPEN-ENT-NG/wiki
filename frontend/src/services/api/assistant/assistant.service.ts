@@ -3,6 +3,7 @@ import {
   AssistantGenerateResponse,
   AssistantImportPDFRequest,
   AssistantImportPDFResponse,
+  GenerateSequenceRequestDto,
 } from './assistant.types';
 import { odeServices } from '@edifice.io/client';
 
@@ -22,6 +23,22 @@ const createAssistantService = (baseURL: string) => ({
     const response = await odeServices
       .http()
       .post<AssistantGenerateResponse>(`${baseURL}/generate`, requestPayload);
+    return response;
+  },
+
+  /**
+   * Generate the wiki sequence.
+   * @returns a Promise of PagesStructureResponse
+   */
+  async generateSequence(
+    requestPayload: GenerateSequenceRequestDto,
+  ): Promise<AssistantGenerateResponse> {
+    const response = await odeServices
+      .http()
+      .post<AssistantGenerateResponse>(
+        `${baseURL}/generate-sequence`,
+        requestPayload,
+      );
     return response;
   },
 

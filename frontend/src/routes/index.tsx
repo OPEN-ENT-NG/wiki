@@ -29,7 +29,8 @@ import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Trac
 import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Results/AITraceResults';
 import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step1/AIPlanStep1';
 import { AIPlanStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step2/AIPlanStep2';
-import { AIGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Generate/AIGenerate';
+import { AIPlanGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Generate/AIPlanGenerate';
+import { AIPlanResults } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Results/AIPlanResults';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -64,16 +65,20 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
         element: <AIPlanStep2 />,
       },
       {
+        path: 'pages/assistant/ai/creation/plan/generate',
+        element: <AIPlanGenerate />,
+      },
+      {
+        path: 'pages/assistant/ai/creation/plan/results',
+        element: <AIPlanResults />,
+      },
+      {
         path: 'pages/assistant/ai/creation/trace/step1',
         element: <AITraceStep1 />,
       },
       {
         path: 'pages/assistant/ai/creation/trace/step2',
         element: <AITraceStep2 />,
-      },
-      {
-        path: 'pages/assistant/ai/creation/generate',
-        element: <AIGenerate />,
       },
       {
         path: 'pages/assistant/ai/creation/trace/generate',

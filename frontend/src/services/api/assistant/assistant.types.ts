@@ -18,6 +18,22 @@ export interface AssistantGenerateRequest extends PagesAssistantAIFormValues {
   wikiId: string;
 }
 
+export interface GenerateSequenceRequestDto {
+  wikiId: string;
+  schoolType: string;
+  level: string;
+  subject: string;
+  content: string;
+  seanceCount: number;
+  seanceDuration: number;
+  objectives: { verb: string; text: string }[];
+  priorKnowledge?: string;
+  hook?: string;
+  difficulties?: string;
+  inclusion?: string;
+  jobFamily?: string;
+}
+
 // ==================================
 // Types for Pages Structure API
 // ==================================
