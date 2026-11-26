@@ -52,6 +52,15 @@
       "type": "string"
     }
   },
-  "required": ["level", "subject", "seanceCount"],
+  "required": [
+    "wikiId",
+    "schoolType",
+    "level",
+    "subject",
+    "content",
+    "seanceCount",
+    "seanceDuration",
+    "objectives"
+  ],
   "additionalProperties": false
 }
