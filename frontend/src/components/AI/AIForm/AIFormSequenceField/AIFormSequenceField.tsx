@@ -17,8 +17,8 @@ import { NumberStepper } from '~/components/NumberStepper/NumberStepper';
 import './AIFormSequenceField.css';
 import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
-const AIFormSequenceField = () => {
-  const { control, sequences, formValues, register, handleSequenceTypeChange } =
+const AIFormSequenceField = ({ data }: { data: string[] }) => {
+  const { control, formValues, register, handleSequenceTypeChange } =
     useAIFormSequenceField();
 
   const { appCode } = useEdificeClient();
@@ -118,7 +118,7 @@ const AIFormSequenceField = () => {
                 }
               />
               <Dropdown.Menu role="listbox">
-                {sequences.map((sequence) => (
+                {data.map((sequence) => (
                   <Dropdown.Item
                     key={sequence}
                     type="action"

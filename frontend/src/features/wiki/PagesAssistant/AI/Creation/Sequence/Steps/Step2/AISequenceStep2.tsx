@@ -8,9 +8,11 @@ import AIFormSequenceField from '~/components/AI/AIForm/AIFormSequenceField/AIFo
 import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
 import AIFormObjectives from '~/components/AI/AIForm/AIFormObjectives/AIFormObjectives';
 import AIFormOptionalFields from '~/components/AI/AIForm/AIFormOptionalFields/AIFormOptionalFields';
+import { useReferentiel } from '../useReferentiel';
 
 export const AISequenceStep2 = () => {
   const { defaultValues, handlePreviousClick, onSubmit } = useAISequenceStep2();
+  const { sequenceValues } = useReferentiel();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -29,7 +31,7 @@ export const AISequenceStep2 = () => {
         onSubmit={onSubmit}
       >
         {/* Choose Sequence */}
-        <AIFormSequenceField />
+        <AIFormSequenceField data={sequenceValues} />
 
         {/* Choose Objective */}
         <AIFormObjectives />

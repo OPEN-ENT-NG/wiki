@@ -25,14 +25,6 @@ export const useAIFormSchoolType = () => {
   const formValues = useSequenceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
-  // TODO Dynamic values
-  const schoolTypes: SchoolType[] = [
-    { label: 'Collège', value: 'college' },
-    { label: 'Lycée général et techno.', value: 'lycee_general_techno' },
-    { label: 'Lycée professionnel', value: 'lycee_pro' },
-    { label: 'Lycée agricole', value: 'lycee_agricole' },
-  ];
-
   const handleSchoolTypeChange = (schoolType: SchoolTypeValue) => {
     setFormValues({
       ...formValues,
@@ -42,7 +34,6 @@ export const useAIFormSchoolType = () => {
 
   return {
     control,
-    schoolTypes,
     handleSchoolTypeChange,
   };
 };

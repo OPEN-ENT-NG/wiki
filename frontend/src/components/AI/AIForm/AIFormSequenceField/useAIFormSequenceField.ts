@@ -19,15 +19,6 @@ export const useAIFormSequenceField = () => {
   const formValues = useSequenceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
-  // TODO Dynamic values
-  const sequences = [
-    'Sequence 1',
-    'Sequence 2',
-    'Sequence 3',
-    'Sequence 4',
-    'Sequence 5',
-  ];
-
   const handleSequenceTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFormValues({
       ...formValues,
@@ -37,7 +28,6 @@ export const useAIFormSequenceField = () => {
 
   return {
     control,
-    sequences,
     formValues,
     register,
     handleSequenceTypeChange,

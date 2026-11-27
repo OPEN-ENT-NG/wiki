@@ -6,13 +6,9 @@ import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { IconQuestion } from '@edifice.io/react/icons';
 import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
-const AIFormSubject = () => {
-  const {
-    control,
-    subjects,
-    handleSubjectChange,
-    handleSubjectSuggestionClick,
-  } = useAIFormSubject();
+const AIFormSubject = ({ data }: { data: string[] }) => {
+  const { control, handleSubjectChange, handleSubjectSuggestionClick } =
+    useAIFormSubject();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -22,7 +18,7 @@ const AIFormSubject = () => {
       title={t('wiki.assistant.ai.step1.subject', { ns: appCode })}
     >
       <Flex gap="8">
-        {subjects.map((subject) => (
+        {data.map((subject) => (
           <Controller
             key={subject}
             name="subject"

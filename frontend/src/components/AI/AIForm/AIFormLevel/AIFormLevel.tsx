@@ -5,15 +5,15 @@ import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { useAIFormLevel } from './useAIFormLevel';
 import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
-const AIFormLevel = () => {
-  const { control, levels, handleLevelChange } = useAIFormLevel();
+const AIFormLevel = ({ data }: { data: string[] }) => {
+  const { control, handleLevelChange } = useAIFormLevel();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
   return (
     <AIFormFieldLayout title={t('wiki.assistant.ai.step1.level')}>
       <Flex gap="8">
-        {levels.map((level) => (
+        {data.map((level) => (
           <Controller
             key={level}
             name="level"

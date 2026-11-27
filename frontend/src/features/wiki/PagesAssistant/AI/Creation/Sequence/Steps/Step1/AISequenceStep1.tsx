@@ -9,10 +9,13 @@ import AIFormLevel from '~/components/AI/AIForm/AIFormLevel/AIFormLevel';
 import AIFormSubject from '~/components/AI/AIForm/AIFormSubject/AIFormSubject';
 import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
 import AIFormJobFamily from '~/components/AI/AIForm/AIFormJobFamily/AIFormJobFamily';
+import { useReferentiel } from '../useReferentiel';
 
 export const AISequenceStep1 = () => {
   const { formValues, defaultValues, onSubmit, handlePreviousClick } =
     useAISequenceStep1();
+
+  const { schoolTypeValues, levelValues, subjectValues } = useReferentiel();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -32,10 +35,10 @@ export const AISequenceStep1 = () => {
         onSubmit={onSubmit}
       >
         {/* Choose School Type */}
-        <AIFormSchoolType />
+        <AIFormSchoolType data={schoolTypeValues} />
 
         {/* Choose Level */}
-        {formValues.schoolType && <AIFormLevel />}
+        {formValues.schoolType && <AIFormLevel data={levelValues} />}
 
         {/* If Lycee pro, choose Profession */}
         {formValues.level && formValues.schoolType === 'lycee_pro' && (
@@ -44,10 +47,10 @@ export const AISequenceStep1 = () => {
 
         {/* Choose Subject */}
         {formValues.schoolType === 'lycee_pro' && formValues.jobFamily && (
-          <AIFormSubject />
+          <AIFormSubject data={subjectValues} />
         )}
         {formValues.schoolType !== 'lycee_pro' && formValues.level && (
-          <AIFormSubject />
+          <AIFormSubject data={subjectValues} />
         )}
 
         {/* Previous and Next buttons */}

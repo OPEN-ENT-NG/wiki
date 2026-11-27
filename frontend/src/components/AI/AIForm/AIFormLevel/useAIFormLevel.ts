@@ -14,9 +14,6 @@ export const useAIFormLevel = () => {
   const formValues = useSequenceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
-  // TODO Dynamic values
-  const levels = ['6ème', '5ème', '4ème', '3ème'];
-
   const handleLevelChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFormValues({
       ...formValues,
@@ -26,7 +23,6 @@ export const useAIFormLevel = () => {
 
   return {
     control,
-    levels,
     handleLevelChange,
   };
 };
