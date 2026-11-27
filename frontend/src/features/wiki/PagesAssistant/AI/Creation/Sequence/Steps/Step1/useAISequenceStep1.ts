@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { LevelFormValues } from '~/components/AI/AIForm/AIFormLevel/useAIFormLevel';
+import { JobFamilyFormValues } from '~/components/AI/AIForm/AIFormJobFamily/useAIFormJobFamily';
 import { SchoolTypeFormValues } from '~/components/AI/AIForm/AIFormSchoolType/useAIFormSchoolType';
 import { SubjectFormValues } from '~/components/AI/AIForm/AIFormSubject/useAIFormSubject';
 import {
@@ -9,6 +10,7 @@ import {
 
 export type AISequenceStep1FormValues = SchoolTypeFormValues &
   LevelFormValues &
+  JobFamilyFormValues &
   SubjectFormValues;
 
 export const useAISequenceStep1 = () => {
@@ -23,6 +25,7 @@ export const useAISequenceStep1 = () => {
   const defaultValues: AISequenceStep1FormValues = {
     schoolType: formValues.schoolType,
     level: formValues.level,
+    jobFamily: formValues.jobFamily,
     subject: formValues.subject,
   };
 

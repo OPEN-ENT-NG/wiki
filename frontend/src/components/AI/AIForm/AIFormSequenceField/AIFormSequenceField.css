@@ -1,13 +1,3 @@
-.ai-form-sequence {
-  border: 1px solid var(--edifice-gray-300);
-  border-radius: var(--edifice-border-radius);
-  padding: var(--edifice-spacer-24);
-}
-
-.ai-form-sequence__title {
-  margin-bottom: var(--edifice-spacer-16);
-}
-
 .ai-form-sequenceType__radios {
   margin-bottom: var(--edifice-spacer-16);
 }

@@ -15,6 +15,7 @@ import { useAIFormSequenceField } from './useAIFormSequenceField';
 import { MAX_AI_SEQUENCE_THEME_LENGTH } from '~/config';
 import { NumberStepper } from '~/components/NumberStepper/NumberStepper';
 import './AIFormSequenceField.css';
+import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
 const AIFormSequenceField = () => {
   const { control, sequences, formValues, register, handleSequenceTypeChange } =
@@ -24,11 +25,11 @@ const AIFormSequenceField = () => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="ai-form-sequence">
-      <h3 className="ai-form-sequence__title">
-        {t('wiki.assistant.ai.form.sequence.title', 'Séquence')}
-      </h3>
-
+    <AIFormFieldLayout
+      title={t('wiki.assistant.ai.form.sequence.title', 'Séquence')}
+      number={1}
+      withBorder={true}
+    >
       {/*
        * Choose Sequence Type Radio Cards:
        * - Dropdown "program"
@@ -202,7 +203,7 @@ const AIFormSequenceField = () => {
                 {...field}
                 id="ai-form-sequence-seances-count"
                 min={1}
-                max={10}
+                max={6}
                 decrementLabel={t(
                   'wiki.assistant.ai.form.sequence.seances.decrement',
                   'Diminuer',
@@ -248,7 +249,7 @@ const AIFormSequenceField = () => {
           />
         </Grid.Col>
       </Grid>
-    </div>
+    </AIFormFieldLayout>
   );
 };
 

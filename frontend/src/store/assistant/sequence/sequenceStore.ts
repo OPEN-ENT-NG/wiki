@@ -23,6 +23,7 @@ type Params<U> = Parameters<typeof useStore<typeof store, U>>;
 export const DEFAULT_AI_FORM_VALUES: AISequenceFormValues = {
   schoolType: '',
   level: '',
+  jobFamily: '',
   subject: '',
   sequenceType: 'program',
   sequenceContentProgram: '',
@@ -30,7 +31,7 @@ export const DEFAULT_AI_FORM_VALUES: AISequenceFormValues = {
   seancesCount: 3,
   seancesDuration: 1,
   objectives: [{ verb: '', text: '' }],
-  previousKnowledge: '',
+  priorKnowledge: '',
   accroche: '',
   difficulties: '',
   inclusion: '',

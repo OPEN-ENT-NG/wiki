@@ -20,6 +20,7 @@ const AIFormDifficulties = () => {
         'wiki.assistant.ai.form.difficulties.description',
         'Les points sur lesquels les élèves butent souvent.',
       )}
+      withBorder={true}
     >
       <FormControl id="ai-form-difficulties" isOptional>
         <TextArea

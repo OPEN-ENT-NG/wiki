@@ -12,6 +12,7 @@ import { Controller, useFieldArray } from 'react-hook-form';
 import { MAX_AI_OBJECTIVE_LENGTH } from '~/config';
 import { IconPlus, IconQuestion } from '@edifice.io/react/icons';
 import './AIFormObjectives.css';
+import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
 const AIFormObjectives = () => {
   const { control, objectives, register } = useAIFormObjectives();
@@ -21,20 +22,18 @@ const AIFormObjectives = () => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="ai-form-objectives">
-      <h3 className="ai-form-objectives__title">
-        {t(
-          'wiki.assistant.ai.form.objectives.title',
-          "Objectif d'apprentissage",
-        )}
-      </h3>
-      <div className="ai-form-objectives__description">
-        {t(
-          'wiki.assistant.ai.form.objectives.description',
-          "À la fin du cours, l'élève sera capable de...",
-        )}
-      </div>
-
+    <AIFormFieldLayout
+      title={t(
+        'wiki.assistant.ai.form.objectives.title',
+        "Objectif d'apprentissage",
+      )}
+      description={t(
+        'wiki.assistant.ai.form.objectives.description',
+        "À la fin du cours, l'élève sera capable de...",
+      )}
+      number={2}
+      withBorder={true}
+    >
       {fields.map((field, index) => (
         <Flex
           key={field.id}
@@ -122,7 +121,7 @@ const AIFormObjectives = () => {
           )}
         </span>
       </Flex>
-    </div>
+    </AIFormFieldLayout>
   );
 };
 

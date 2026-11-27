@@ -1,7 +1,10 @@
 .ai-form-field {
+  margin-top: var(--edifice-spacer-24);
+}
+
+.ai-form-field-border {
   border: 1px solid var(--edifice-gray-300);
   border-radius: var(--edifice-border-radius);
-  margin-top: var(--edifice-spacer-24);
   padding: var(--edifice-spacer-24);
 }
 

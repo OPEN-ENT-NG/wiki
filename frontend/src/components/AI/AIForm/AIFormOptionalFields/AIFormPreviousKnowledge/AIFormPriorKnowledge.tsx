@@ -1,11 +1,11 @@
 import { FormControl, TextArea, useEdificeClient } from '@edifice.io/react';
 import { MAX_AI_OPTIONAL_FIELDS_LENGTH } from '~/config';
-import { useAIFormPreviousKnowledge } from './useAIFormPreviousKnowledge';
+import { useAIFormPriorKnowledge } from './useAIFormPriorKnowledge';
 import { useTranslation } from 'react-i18next';
 import AIFormFieldLayout from '../../AIFormFieldLayout/AIFormFieldLayout';
 
-const AIFormPreviousKnowledge = () => {
-  const { register } = useAIFormPreviousKnowledge();
+const AIFormPriorKnowledge = () => {
+  const { register } = useAIFormPriorKnowledge();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
 
@@ -13,24 +13,25 @@ const AIFormPreviousKnowledge = () => {
     <AIFormFieldLayout
       number={3}
       title={t(
-        'wiki.assistant.ai.form.previousKnowledge.title',
+        'wiki.assistant.ai.form.priorKnowledge.title',
         'Connaisssances antérieures',
       )}
       description={t(
-        'wiki.assistant.ai.form.previousKnowledge.description',
+        'wiki.assistant.ai.form.priorKnowledge.description',
         'Les prérequis indispensables et acquis mobilisables qui vont aider à calibrer la séquence.',
       )}
+      withBorder={true}
     >
-      <FormControl id="ai-form-previousKnowledge" isOptional>
+      <FormControl id="ai-form-priorKnowledge" isOptional>
         <TextArea
-          data-testid="ai-form-previousKnowledge-textarea"
+          data-testid="ai-form-priorKnowledge-textarea"
           placeholder={t(
-            'wiki.assistant.ai.form.previousKnowledge.textarea.placeholder',
+            'wiki.assistant.ai.form.priorKnowledge.textarea.placeholder',
             'Ex.: La division cellulaire de la mitose et de la méiose',
           )}
           size="md"
           maxLength={MAX_AI_OPTIONAL_FIELDS_LENGTH}
-          {...register('previousKnowledge', {
+          {...register('priorKnowledge', {
             required: false,
             maxLength: MAX_AI_OPTIONAL_FIELDS_LENGTH,
           })}
@@ -41,4 +42,4 @@ const AIFormPreviousKnowledge = () => {
   );
 };
 
-export default AIFormPreviousKnowledge;
+export default AIFormPriorKnowledge;

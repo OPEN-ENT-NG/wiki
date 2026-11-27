@@ -2,25 +2,31 @@ import { Flex } from '@edifice.io/react';
 import './AIFormFieldLayout.css';
 
 export interface AIFormFieldLayoutProps {
-  number: number;
   title: string;
-  description: string;
+  number?: number;
+  description?: string;
+  withBorder?: boolean;
   children: React.ReactNode;
 }
 
 const AIFormFieldLayout = ({
-  number,
   title,
+  number,
   description,
+  withBorder = false,
   children,
 }: AIFormFieldLayoutProps) => {
+  const extraClasses = withBorder && 'ai-form-field-border';
+
   return (
-    <div className="ai-form-field">
+    <div className={`ai-form-field ${extraClasses}`}>
       <Flex>
-        <span className="ai-form-field__number">{number}</span>
+        {number && <span className="ai-form-field__number">{number}</span>}
         <h3 className="ai-form-field__title">{title}</h3>
       </Flex>
-      <div className="ai-form-field__description">{description}</div>
+      {description && (
+        <div className="ai-form-field__description">{description}</div>
+      )}
       <div className="ai-form-field__input">{children}</div>
     </div>
   );

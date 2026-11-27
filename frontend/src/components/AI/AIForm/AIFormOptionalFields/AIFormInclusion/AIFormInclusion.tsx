@@ -20,6 +20,7 @@ const AIFormInclusion = () => {
         'wiki.assistant.ai.form.inclusion.description',
         "Pour des suggestions d'adaptation intégrées au plan (formulation, variantes d'activité).",
       )}
+      withBorder={true}
     >
       <FormControl id="ai-form-inclusion" isOptional>
         <TextArea

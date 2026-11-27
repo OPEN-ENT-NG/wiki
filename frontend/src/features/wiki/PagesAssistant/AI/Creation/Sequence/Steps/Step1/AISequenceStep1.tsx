@@ -8,6 +8,7 @@ import { useAISequenceStep1 } from './useAISequenceStep1';
 import AIFormLevel from '~/components/AI/AIForm/AIFormLevel/AIFormLevel';
 import AIFormSubject from '~/components/AI/AIForm/AIFormSubject/AIFormSubject';
 import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
+import AIFormJobFamily from '~/components/AI/AIForm/AIFormJobFamily/AIFormJobFamily';
 
 export const AISequenceStep1 = () => {
   const { formValues, defaultValues, onSubmit, handlePreviousClick } =
@@ -36,8 +37,18 @@ export const AISequenceStep1 = () => {
         {/* Choose Level */}
         {formValues.schoolType && <AIFormLevel />}
 
+        {/* If Lycee pro, choose Profession */}
+        {formValues.level && formValues.schoolType === 'lycee_pro' && (
+          <AIFormJobFamily />
+        )}
+
         {/* Choose Subject */}
-        {formValues.level && <AIFormSubject />}
+        {formValues.schoolType === 'lycee_pro' && formValues.jobFamily && (
+          <AIFormSubject />
+        )}
+        {formValues.schoolType !== 'lycee_pro' && formValues.level && (
+          <AIFormSubject />
+        )}
 
         {/* Previous and Next buttons */}
         <AIFormNavigation handlePreviousClick={handlePreviousClick} />

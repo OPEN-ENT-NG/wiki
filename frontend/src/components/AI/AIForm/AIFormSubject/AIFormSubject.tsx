@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { IconQuestion } from '@edifice.io/react/icons';
-import './AIFormSubject.css';
+import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
 const AIFormSubject = () => {
   const {
@@ -18,10 +18,9 @@ const AIFormSubject = () => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="ai-form-subject">
-      <h3 className="ai-form-subject__title">
-        {t('wiki.assistant.ai.step1.subject', { ns: appCode })}
-      </h3>
+    <AIFormFieldLayout
+      title={t('wiki.assistant.ai.step1.subject', { ns: appCode })}
+    >
       <Flex gap="8">
         {subjects.map((subject) => (
           <Controller
@@ -61,7 +60,7 @@ const AIFormSubject = () => {
           })}
         </Button>
       </Flex>
-    </div>
+    </AIFormFieldLayout>
   );
 };
 

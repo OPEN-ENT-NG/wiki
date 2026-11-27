@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { useAIFormLevel } from './useAIFormLevel';
-import './AIFormLevel.css';
+import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
 const AIFormLevel = () => {
   const { control, levels, handleLevelChange } = useAIFormLevel();
@@ -11,10 +11,7 @@ const AIFormLevel = () => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="ai-form-level">
-      <h3 className="ai-form-level__title">
-        {t('wiki.assistant.ai.step1.level', { ns: appCode })}
-      </h3>
+    <AIFormFieldLayout title={t('wiki.assistant.ai.step1.level')}>
       <Flex gap="8">
         {levels.map((level) => (
           <Controller
@@ -37,7 +34,7 @@ const AIFormLevel = () => {
           />
         ))}
       </Flex>
-    </div>
+    </AIFormFieldLayout>
   );
 };
 

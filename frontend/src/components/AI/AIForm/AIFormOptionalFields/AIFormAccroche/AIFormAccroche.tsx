@@ -21,6 +21,7 @@ const AIFormAccroche = () => {
         'wiki.assistant.ai.form.accroche.description',
         'L\'accroche initiale : la "situation" qui éveille l\'intérêt des élèves, qui aide à déclencher leur mise en action et leur participation.',
       )}
+      withBorder={true}
     >
       <FormControl id="ai-form-accroche" isOptional>
         <TextArea

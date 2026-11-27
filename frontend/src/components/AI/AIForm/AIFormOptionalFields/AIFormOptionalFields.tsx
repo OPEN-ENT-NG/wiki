@@ -1,7 +1,7 @@
 import { Alert, useEdificeClient } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
-import AIFormPreviousKnowledge from './AIFormPreviousKnowledge/AIFormPreviousKnowledge';
-import { PreviousKnowledgeFormValues } from './AIFormPreviousKnowledge/useAIFormPreviousKnowledge';
+import AIFormPriorKnowledge from './AIFormPreviousKnowledge/AIFormPriorKnowledge';
+import { PriorKnowledgeFormValues } from './AIFormPreviousKnowledge/useAIFormPriorKnowledge';
 import './AIFormOptionalFields.css';
 import { AccrocheFormValues } from './AIFormAccroche/useAIFormAccroche';
 import AIFormAccroche from './AIFormAccroche/AIFormAccroche';
@@ -10,7 +10,7 @@ import AIFormInclusion from './AIFormInclusion/AIFormInclusion';
 import { DifficultiesFormValues } from './AIFormDifficulties/useAIFormDifficulties';
 import { InclusionFormValues } from './AIFormInclusion/useAIFormInclusion';
 
-export type OptionalFieldsFormValues = PreviousKnowledgeFormValues &
+export type OptionalFieldsFormValues = PriorKnowledgeFormValues &
   AccrocheFormValues &
   DifficultiesFormValues &
   InclusionFormValues;
@@ -30,7 +30,7 @@ const AIFormOptionalFields = () => {
       </Alert>
 
       {/* Optional fields */}
-      <AIFormPreviousKnowledge />
+      <AIFormPriorKnowledge />
       <AIFormAccroche />
       <AIFormDifficulties />
       <AIFormInclusion />

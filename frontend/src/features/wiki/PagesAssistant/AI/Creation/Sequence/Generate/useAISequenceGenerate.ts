@@ -30,17 +30,17 @@ export const useAISequenceGenerate = () => {
       wikiId: params.wikiId || '',
       schoolType: formValues.schoolType,
       level: formValues.level,
+      jobFamily: formValues.jobFamily,
       subject: formValues.subject,
       content:
         formValues.sequenceContentProgram || formValues.sequenceContentTheme,
       seanceCount: formValues.seancesCount,
       seanceDuration: formValues.seancesDuration === 1 ? 60 : 120,
       objectives: formValues.objectives,
-      priorKnowledge: formValues.previousKnowledge,
+      priorKnowledge: formValues.priorKnowledge,
       hook: formValues.accroche,
       difficulties: formValues.difficulties,
       inclusion: formValues.inclusion,
-      jobFamily: '', // TODO
     };
   };
 

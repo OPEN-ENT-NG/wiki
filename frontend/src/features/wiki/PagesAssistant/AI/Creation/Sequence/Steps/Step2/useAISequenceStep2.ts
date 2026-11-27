@@ -28,7 +28,7 @@ export const useAISequenceStep2 = () => {
     seancesCount: formValues.seancesCount,
     seancesDuration: formValues.seancesDuration,
     objectives: formValues.objectives,
-    previousKnowledge: formValues.previousKnowledge,
+    priorKnowledge: formValues.priorKnowledge,
     accroche: formValues.accroche,
     difficulties: formValues.difficulties,
     inclusion: formValues.inclusion,

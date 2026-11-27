@@ -1,12 +1,23 @@
-import { ChangeEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
 import {
   useSequenceFormValuesStore,
   usePagesAssistantActions,
 } from '~/store/assistant/sequence/sequenceStore';
 
+export type SchoolTypeValue =
+  | ''
+  | 'college'
+  | 'lycee_general_techno'
+  | 'lycee_pro'
+  | 'lycee_agricole';
+
+export interface SchoolType {
+  label: string;
+  value: SchoolTypeValue;
+}
+
 export interface SchoolTypeFormValues {
-  schoolType: string;
+  schoolType: SchoolTypeValue;
 }
 
 export const useAIFormSchoolType = () => {
@@ -15,17 +26,17 @@ export const useAIFormSchoolType = () => {
   const { setFormValues } = usePagesAssistantActions();
 
   // TODO Dynamic values
-  const schoolTypes = [
-    'Collège',
-    'Lycée général et techno.',
-    'Lycée professionnel',
-    'Lycée agricole',
+  const schoolTypes: SchoolType[] = [
+    { label: 'Collège', value: 'college' },
+    { label: 'Lycée général et techno.', value: 'lycee_general_techno' },
+    { label: 'Lycée professionnel', value: 'lycee_pro' },
+    { label: 'Lycée agricole', value: 'lycee_agricole' },
   ];
 
-  const handleSchoolTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSchoolTypeChange = (schoolType: SchoolTypeValue) => {
     setFormValues({
       ...formValues,
-      schoolType: event.target.value,
+      schoolType,
     });
   };
 

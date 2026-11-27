@@ -3,7 +3,7 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import SimpleRadioCard from '~/components/SimpleRadioCard/SimpleRadioCard';
 import { useAIFormSchoolType } from './useAIFormSchoolType';
-import './AIFormSchoolType.css';
+import AIFormFieldLayout from '../AIFormFieldLayout/AIFormFieldLayout';
 
 const AIFormSchoolType = () => {
   const { control, schoolTypes, handleSchoolTypeChange } =
@@ -12,33 +12,32 @@ const AIFormSchoolType = () => {
   const { t } = useTranslation(appCode);
 
   return (
-    <div className="ai-form-school-type">
-      <h3 className="ai-form-school-type__title">
-        {t('wiki.assistant.ai.step1.schoolType', "Type d'établissement")}
-      </h3>
+    <AIFormFieldLayout
+      title={t('wiki.assistant.ai.step1.schoolType', "Type d'établissement")}
+    >
       <Flex gap="8">
         {schoolTypes.map((schoolType) => (
           <Controller
-            key={schoolType}
+            key={schoolType.value}
             name="schoolType"
             control={control}
             rules={{ required: true }}
             render={({ field: { value, onChange } }) => (
               <SimpleRadioCard
-                label={schoolType}
-                value={schoolType}
+                label={schoolType.label}
+                value={schoolType.value}
                 groupName="schoolType"
                 selectedValue={value}
-                onChange={(v) => {
-                  onChange(v);
-                  handleSchoolTypeChange(v);
+                onChange={() => {
+                  onChange(schoolType.value);
+                  handleSchoolTypeChange(schoolType.value);
                 }}
               />
             )}
           />
         ))}
       </Flex>
-    </div>
+    </AIFormFieldLayout>
   );
 };
 
