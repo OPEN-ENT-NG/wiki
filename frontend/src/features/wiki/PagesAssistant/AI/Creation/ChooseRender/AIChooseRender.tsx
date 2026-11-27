@@ -6,7 +6,7 @@ import {
   useEdificeClient,
 } from '@edifice.io/react';
 import { useTranslation } from 'react-i18next';
-import { AIRenderPlanPreview } from './AIRenderPreviews/AIRenderPlanPreview';
+import { AIRenderSequencePreview } from './AIRenderPreviews/AIRenderSequencePreview';
 import { useState } from 'react';
 import { AIRenderTracePreview } from './AIRenderPreviews/AIRenderTracePreview';
 import './AIChooseRender.css';
@@ -15,10 +15,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
 import { AIStepHeader } from '~/components/AI/AIStepHeader/AIStepHeader';
 
-export type RenderType = 'plan' | 'trace';
+export type RenderType = 'sequence' | 'trace';
 
 export const AIChooseRender = () => {
-  const [type, setType] = useState<RenderType>('plan');
+  const [type, setType] = useState<RenderType>('sequence');
   const params = useParams();
   const navigate = useNavigate();
 
@@ -33,8 +33,10 @@ export const AIChooseRender = () => {
   const handleNextButton = () => {
     console.log(type);
     switch (type) {
-      case 'plan':
-        navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step1`);
+      case 'sequence':
+        navigate(
+          `/id/${params.wikiId}/pages/assistant/ai/creation/sequence/step1`,
+        );
         break;
       case 'trace':
         navigate(
@@ -72,18 +74,18 @@ export const AIChooseRender = () => {
           <Flex direction="column" className="ai-choose-render__radios" fill>
             <RadioCard
               selectedValue={type}
-              value="plan"
+              value="sequence"
               model={type}
               label={t(
-                'wiki.assistant.ai.choose.render.radio.plan.label',
+                'wiki.assistant.ai.choose.render.radio.sequence.label',
                 'Plan de séquence pour l’enseignant',
               )}
               description={t(
-                'wiki.assistant.ai.choose.render.radio.plan.description',
+                'wiki.assistant.ai.choose.render.radio.sequence.description',
                 'Le déroulé pour conduire la séquence.',
               )}
               onChange={() => {
-                setType('plan');
+                setType('sequence');
               }}
             ></RadioCard>
             <RadioCard
@@ -125,7 +127,7 @@ export const AIChooseRender = () => {
         {/* Render Previews */}
         <Grid.Col sm="3" xl="5">
           <div className="ai-choose-render__preview">
-            {type === 'plan' && <AIRenderPlanPreview />}
+            {type === 'sequence' && <AIRenderSequencePreview />}
             {type === 'trace' && <AIRenderTracePreview />}
           </div>
         </Grid.Col>

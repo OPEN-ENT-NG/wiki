@@ -1,7 +1,7 @@
 import { useEdificeClient } from '@edifice.io/react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { usePlanFormValuesStore } from '~/store/assistant/plan/planStore';
+import { useSequenceFormValuesStore } from '~/store/assistant/sequence/sequenceStore';
 
 export interface Objective {
   verb: string;
@@ -14,7 +14,7 @@ export interface ObjectivesFormValues {
 
 export const useAIFormObjectives = () => {
   const { control, register } = useFormContext<ObjectivesFormValues>();
-  const formValues = usePlanFormValuesStore();
+  const formValues = useSequenceFormValuesStore();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);

@@ -27,10 +27,10 @@ import { AITraceStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/S
 import { AITraceStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Steps/Step2/AITraceStep2';
 import { AITraceGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Generate/AITraceGenerate';
 import { AITraceResults } from '~/features/wiki/PagesAssistant/AI/Creation/Trace/Results/AITraceResults';
-import { AIPlanStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step1/AIPlanStep1';
-import { AIPlanStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step2/AIPlanStep2';
-import { AIPlanGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Generate/AIPlanGenerate';
-import { AIPlanResults } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Results/AIPlanResults';
+import { AISequenceStep1 } from '~/features/wiki/PagesAssistant/AI/Creation/Sequence/Steps/Step1/AISequenceStep1';
+import { AISequenceStep2 } from '~/features/wiki/PagesAssistant/AI/Creation/Sequence/Steps/Step2/AISequenceStep2';
+import { AISequenceGenerate } from '~/features/wiki/PagesAssistant/AI/Creation/Sequence/Generate/AISequenceGenerate';
+import { AISequenceResults } from '~/features/wiki/PagesAssistant/AI/Creation/Sequence/Results/AISequenceResults';
 
 export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
   {
@@ -57,20 +57,20 @@ export const wikiRoutes = (queryClient: QueryClient): RouteObject[] => [
         element: <AIChooseRender />,
       },
       {
-        path: 'pages/assistant/ai/creation/plan/step1',
-        element: <AIPlanStep1 />,
+        path: 'pages/assistant/ai/creation/sequence/step1',
+        element: <AISequenceStep1 />,
       },
       {
-        path: 'pages/assistant/ai/creation/plan/step2',
-        element: <AIPlanStep2 />,
+        path: 'pages/assistant/ai/creation/sequence/step2',
+        element: <AISequenceStep2 />,
       },
       {
-        path: 'pages/assistant/ai/creation/plan/generate',
-        element: <AIPlanGenerate />,
+        path: 'pages/assistant/ai/creation/sequence/generate',
+        element: <AISequenceGenerate />,
       },
       {
-        path: 'pages/assistant/ai/creation/plan/results',
-        element: <AIPlanResults />,
+        path: 'pages/assistant/ai/creation/sequence/results',
+        element: <AISequenceResults />,
       },
       {
         path: 'pages/assistant/ai/creation/trace/step1',

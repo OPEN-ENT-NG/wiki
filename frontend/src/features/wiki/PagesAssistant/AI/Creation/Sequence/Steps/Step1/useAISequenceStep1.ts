@@ -4,23 +4,23 @@ import { SchoolTypeFormValues } from '~/components/AI/AIForm/AIFormSchoolType/us
 import { SubjectFormValues } from '~/components/AI/AIForm/AIFormSubject/useAIFormSubject';
 import {
   usePagesAssistantActions,
-  usePlanFormValuesStore,
-} from '~/store/assistant/plan/planStore';
+  useSequenceFormValuesStore,
+} from '~/store/assistant/sequence/sequenceStore';
 
-export type AIPlanStep1FormValues = SchoolTypeFormValues &
+export type AISequenceStep1FormValues = SchoolTypeFormValues &
   LevelFormValues &
   SubjectFormValues;
 
-export const useAIPlanStep1 = () => {
+export const useAISequenceStep1 = () => {
   // get the Form Values from the Store
-  const formValues = usePlanFormValuesStore();
+  const formValues = useSequenceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
   const navigate = useNavigate();
   const params = useParams();
 
   // form defaultValues (from the FormValues store or initialized)
-  const defaultValues: AIPlanStep1FormValues = {
+  const defaultValues: AISequenceStep1FormValues = {
     schoolType: formValues.schoolType,
     level: formValues.level,
     subject: formValues.subject,
@@ -29,10 +29,10 @@ export const useAIPlanStep1 = () => {
   // submit function called by react hook form
   // - add form values to FormValues Store
   // - navigate to step 2
-  const onSubmit = async (step1FormValues: AIPlanStep1FormValues) => {
+  const onSubmit = async (step1FormValues: AISequenceStep1FormValues) => {
     console.log('step1FormValues', step1FormValues);
     setFormValues({ ...formValues, ...step1FormValues });
-    navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/plan/step2`);
+    navigate(`/id/${params.wikiId}/pages/assistant/ai/creation/sequence/step2`);
   };
 
   const handlePreviousClick = () => {

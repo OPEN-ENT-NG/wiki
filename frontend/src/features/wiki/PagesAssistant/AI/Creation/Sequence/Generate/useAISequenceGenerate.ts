@@ -5,10 +5,10 @@ import { WikiDto } from '~/models';
 import { assistantService } from '~/services/api/assistant/assistant.service';
 import { GenerateSequenceRequestDto } from '~/services/api/assistant/assistant.types';
 import {
-  AIPlanFormValues,
+  AISequenceFormValues,
   usePagesAssistantActions,
-  usePlanFormValuesStore,
-} from '~/store/assistant/plan/planStore';
+  useSequenceFormValuesStore,
+} from '~/store/assistant/sequence/sequenceStore';
 
 /**
  * Handles the AITGenerate logic:
@@ -18,20 +18,21 @@ import {
  *
  * @returns hook to handle AITraceGenerate logic.
  */
-export const useAIPlanGenerate = () => {
+export const useAISequenceGenerate = () => {
   const [structureLoading, setStructureLoading] = useState<boolean>(false);
-  const formValues = usePlanFormValuesStore();
+  const formValues = useSequenceFormValuesStore();
   const navigate = useNavigate();
   const params = useParams();
   const { setPagesStructure } = usePagesAssistantActions();
 
-  const formValuesToDto = (formValues: AIPlanFormValues) => {
+  const formValuesToDto = (formValues: AISequenceFormValues) => {
     return {
       wikiId: params.wikiId || '',
       schoolType: formValues.schoolType,
       level: formValues.level,
       subject: formValues.subject,
-      content: formValues.sequenceProgram || formValues.sequenceTheme,
+      content:
+        formValues.sequenceContentProgram || formValues.sequenceContentTheme,
       seanceCount: formValues.seancesCount,
       seanceDuration: formValues.seancesDuration === 1 ? 60 : 120,
       objectives: formValues.objectives,
@@ -70,7 +71,7 @@ export const useAIPlanGenerate = () => {
           );
 
           navigate(
-            `/id/${params.wikiId}/pages/assistant/ai/creation/plan/results`,
+            `/id/${params.wikiId}/pages/assistant/ai/creation/sequence/results`,
           );
         }
       }, 3000);

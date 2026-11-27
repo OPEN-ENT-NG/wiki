@@ -4,14 +4,14 @@ import AIForm from '~/components/AI/AIForm/AIForm';
 import AIFormSchoolType from '~/components/AI/AIForm/AIFormSchoolType/AIFormSchoolType';
 import { AIStepHeader } from '~/components/AI/AIStepHeader/AIStepHeader';
 import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
-import { useAIPlanStep1 } from './useAIPlanStep1';
+import { useAISequenceStep1 } from './useAISequenceStep1';
 import AIFormLevel from '~/components/AI/AIForm/AIFormLevel/AIFormLevel';
 import AIFormSubject from '~/components/AI/AIForm/AIFormSubject/AIFormSubject';
 import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
 
-export const AIPlanStep1 = () => {
+export const AISequenceStep1 = () => {
   const { formValues, defaultValues, onSubmit, handlePreviousClick } =
-    useAIPlanStep1();
+    useAISequenceStep1();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -24,9 +24,9 @@ export const AIPlanStep1 = () => {
         currentStep={1}
         nbSteps={4}
       />
-      {/* AI PLAN Step 1 Form */}
+      {/* AI Sequence Step 1 Form */}
       <AIForm
-        id="aiPlanStep1Form"
+        id="aiSequenceStep1Form"
         defaultValues={defaultValues}
         onSubmit={onSubmit}
       >

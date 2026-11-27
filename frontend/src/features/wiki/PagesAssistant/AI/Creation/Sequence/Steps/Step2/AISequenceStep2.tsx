@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import AIForm from '~/components/AI/AIForm/AIForm';
 import { AIStepHeader } from '~/components/AI/AIStepHeader/AIStepHeader';
 import { AIStepLayout } from '~/components/AI/AIStepLayout/AIStepLayout';
-import { useAIPlanStep2 } from './useAIPlanStep2';
-import AIFormSequence from '~/components/AI/AIForm/AIFormSequence/AIFormSequence';
+import { useAISequenceStep2 } from './useAISequenceStep2';
+import AIFormSequenceField from '~/components/AI/AIForm/AIFormSequenceField/AIFormSequenceField';
 import AIFormNavigation from '~/components/AI/AIForm/AIFormNavigation/AIFormNavigation';
 import AIFormObjectives from '~/components/AI/AIForm/AIFormObjectives/AIFormObjectives';
 import AIFormOptionalFields from '~/components/AI/AIForm/AIFormOptionalFields/AIFormOptionalFields';
 
-export const AIPlanStep2 = () => {
-  const { defaultValues, handlePreviousClick, onSubmit } = useAIPlanStep2();
+export const AISequenceStep2 = () => {
+  const { defaultValues, handlePreviousClick, onSubmit } = useAISequenceStep2();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -24,12 +24,12 @@ export const AIPlanStep2 = () => {
         nbSteps={4}
       />
       <AIForm
-        id="aiPlanStep2Form"
+        id="aiSequenceStep2Form"
         defaultValues={defaultValues}
         onSubmit={onSubmit}
       >
         {/* Choose Sequence */}
-        <AIFormSequence />
+        <AIFormSequenceField />
 
         {/* Choose Objective */}
         <AIFormObjectives />

@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { IconClock } from '@edifice.io/react/icons';
 import Lottie from 'lottie-react';
 import loadingAnimation from '../../../../../../../animations/AILoading.json';
-import { useAIPlanGenerate } from './useAIPlanGenerate';
+import { useAISequenceGenerate } from './useAISequenceGenerate';
 
-export const AIPlanGenerate = () => {
-  const { structureLoading } = useAIPlanGenerate();
+export const AISequenceGenerate = () => {
+  const { structureLoading } = useAISequenceGenerate();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);

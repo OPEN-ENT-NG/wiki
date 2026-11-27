@@ -1,22 +1,22 @@
 import { ChangeEvent } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { AIFormSequenceType } from '~/features/wiki/PagesAssistant/AI/Creation/Plan/Steps/Step2/useAIPlanStep2';
+import { AIFormSequenceType } from '~/features/wiki/PagesAssistant/AI/Creation/Sequence/Steps/Step2/useAISequenceStep2';
 import {
-  usePlanFormValuesStore,
+  useSequenceFormValuesStore,
   usePagesAssistantActions,
-} from '~/store/assistant/plan/planStore';
+} from '~/store/assistant/sequence/sequenceStore';
 
-export interface SequenceFormValues {
+export interface SequenceFieldFormValues {
   sequenceType: AIFormSequenceType;
-  sequenceProgram: string;
-  sequenceTheme: string;
+  sequenceContentProgram: string;
+  sequenceContentTheme: string;
   seancesCount: number;
   seancesDuration: number;
 }
 
-export const useAIFormSequence = () => {
-  const { control, register } = useFormContext<SequenceFormValues>();
-  const formValues = usePlanFormValuesStore();
+export const useAIFormSequenceField = () => {
+  const { control, register } = useFormContext<SequenceFieldFormValues>();
+  const formValues = useSequenceFormValuesStore();
   const { setFormValues } = usePagesAssistantActions();
 
   // TODO Dynamic values

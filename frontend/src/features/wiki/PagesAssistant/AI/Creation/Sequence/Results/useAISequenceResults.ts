@@ -6,9 +6,9 @@ import {
   DEFAULT_AI_FORM_VALUES,
   usePagesAssistantActions,
   usePagesStructureStore,
-} from '~/store/assistant/plan/planStore';
+} from '~/store/assistant/sequence/sequenceStore';
 
-export const useAIPlanResults = () => {
+export const useAISequenceResults = () => {
   const [contentFinished, setContentFinished] = useState(false);
   const [generatedWiki, setGeneratedWiki] = useState<WikiDto>();
   const pagesStructure = usePagesStructureStore();

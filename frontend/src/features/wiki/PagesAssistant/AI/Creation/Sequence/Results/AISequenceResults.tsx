@@ -15,15 +15,15 @@ import {
 import { useTranslation } from 'react-i18next';
 import AIButton from '~/components/AI/AIButton/AIButton';
 import { ButtonAIScreebActivate } from '../../../ButtonAIScreebActivate';
-import { useAIPlanResults } from './useAIPlanResults';
+import { useAISequenceResults } from './useAISequenceResults';
 
-export const AIPlanResults = () => {
+export const AISequenceResults = () => {
   const {
     contentFinished,
     generatedWiki,
     pagesStructure,
     handleCancelButtonClick,
-  } = useAIPlanResults();
+  } = useAISequenceResults();
   const { appCode } = useEdificeClient();
   const { t } = useTranslation();
 

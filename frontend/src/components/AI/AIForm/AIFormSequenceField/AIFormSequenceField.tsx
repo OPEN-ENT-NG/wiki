@@ -11,14 +11,14 @@ import {
 import { IconPlus } from '@edifice.io/react/icons';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useAIFormSequence } from './useAIFormSequence';
+import { useAIFormSequenceField } from './useAIFormSequenceField';
 import { MAX_AI_SEQUENCE_THEME_LENGTH } from '~/config';
 import { NumberStepper } from '~/components/NumberStepper/NumberStepper';
-import './AIFormSequence.css';
+import './AIFormSequenceField.css';
 
-const AIFormSequence = () => {
+const AIFormSequenceField = () => {
   const { control, sequences, formValues, register, handleSequenceTypeChange } =
-    useAIFormSequence();
+    useAIFormSequenceField();
 
   const { appCode } = useEdificeClient();
   const { t } = useTranslation(appCode);
@@ -101,7 +101,7 @@ const AIFormSequence = () => {
       {/* Sequence Program Dropdown */}
       {formValues.sequenceType === 'program' && (
         <Controller
-          name="sequenceProgram"
+          name="sequenceContentProgram"
           control={control}
           rules={{ required: true }}
           render={({ field: { value, onChange } }) => (
@@ -158,7 +158,7 @@ const AIFormSequence = () => {
             )}
             size="md"
             maxLength={MAX_AI_SEQUENCE_THEME_LENGTH}
-            {...register('sequenceTheme', {
+            {...register('sequenceContentTheme', {
               required: true,
               maxLength: MAX_AI_SEQUENCE_THEME_LENGTH,
             })}
@@ -252,4 +252,4 @@ const AIFormSequence = () => {
   );
 };
 
-export default AIFormSequence;
+export default AIFormSequenceField;
